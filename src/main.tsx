@@ -6,6 +6,7 @@ import { OwnerSecurityProvider } from './context/OwnerSecurityContext';
 import { UserProvider } from './context/UserContext';
 import { ToastProvider } from './context/ToastContext';
 import { AuthProvider } from './context/AuthContext';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 import './index.css';
 
 if ('serviceWorker' in navigator) {
@@ -22,6 +23,7 @@ createRoot(document.getElementById('root')!).render(
           <SettingsProvider>
             <OwnerSecurityProvider>
               <App />
+              <SpeedInsights />
             </OwnerSecurityProvider>
           </SettingsProvider>
         </AuthProvider>
