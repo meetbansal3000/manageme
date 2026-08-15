@@ -245,9 +245,10 @@ export const Header: React.FC<HeaderProps> = ({
 
   return (
     <>
-      <header className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${
-        isScrolled ? 'glass-panel border-b border-[var(--border)] shadow-sm py-2' : 'bg-transparent py-4'
+      <header className={`fixed top-0 left-0 right-0 z-40 transition-all duration-200 ${
+        isScrolled ? 'bg-slate-950/80 backdrop-blur-md border-b border-white/10 shadow-sm py-2' : 'bg-transparent py-4'
       }`}>
+
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between">
             
@@ -465,14 +466,15 @@ export const Header: React.FC<HeaderProps> = ({
                   setDrawerOpen(false);
                 }
               }}
-              transition={{ type: 'spring', damping: 28, stiffness: 250 }}
-              className="fixed bottom-0 left-0 right-0 sm:top-0 sm:left-auto sm:right-0 sm:bottom-0 w-full sm:max-w-sm border-t sm:border-t-0 sm:border-l border-slate-200 dark:border-zinc-800 z-50 flex flex-col shadow-2xl bg-white dark:bg-zinc-900 rounded-t-3xl sm:rounded-none max-h-[88vh] sm:max-h-full touch-none"
+              transition={{ type: 'spring', damping: 30, stiffness: 350 }}
+              className="fixed bottom-0 left-0 right-0 sm:top-0 sm:left-auto sm:right-0 sm:bottom-0 w-full sm:max-w-sm border-t sm:border-t-0 sm:border-l border-white/10 z-50 flex flex-col shadow-2xl bg-slate-950/90 backdrop-blur-md rounded-t-3xl sm:rounded-none max-h-[88vh] sm:max-h-full touch-none"
             >
               {/* Drag handle for mobile bottom sheet */}
-              <div className="w-12 h-1 bg-slate-300 dark:bg-white/20 rounded-full my-2 mx-auto cursor-grab active:cursor-grabbing sm:hidden" />
+              <div className="w-12 h-1 bg-white/20 rounded-full my-2 mx-auto cursor-grab active:cursor-grabbing sm:hidden" />
 
               {/* Drawer Header */}
-              <div className="flex items-center justify-between p-5 border-b border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-950/80">
+              <div className="flex items-center justify-between p-5 border-b border-white/10 bg-slate-950/80">
+
                 <div className="flex items-center gap-2">
                   <span className="w-2 h-2 rounded-full bg-blue-600 dark:bg-blue-400"></span>
                   <h2 className="text-base font-bold text-slate-900 dark:text-slate-100 uppercase tracking-wider font-mono text-xs">

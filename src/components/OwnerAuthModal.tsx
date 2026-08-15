@@ -73,13 +73,14 @@ export const OwnerAuthModal: React.FC = () => {
 
         {/* Modal Container */}
         <motion.div 
-          initial={{ opacity: 0, scale: 0.94, y: 15 }}
+          initial={{ opacity: 0, scale: 0.96, y: 8 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.94, y: 15 }}
-          transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-          className="relative w-full max-w-md bg-neutral-950/85 backdrop-blur-2xl border border-amber-500/40 rounded-3xl p-6 sm:p-7 shadow-2xl shadow-amber-950/50 overflow-hidden z-10"
+          exit={{ opacity: 0, scale: 0.96, y: 8 }}
+          transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+          className="relative w-full max-w-md bg-slate-950/90 backdrop-blur-md border border-amber-500/40 rounded-3xl p-6 sm:p-7 shadow-2xl shadow-amber-950/50 overflow-hidden z-10"
           onClick={(e) => e.stopPropagation()}
         >
+
           {/* Top Glow Accent */}
           <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-500 via-emerald-500 to-sky-500" />
           

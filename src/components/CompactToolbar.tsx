@@ -32,8 +32,9 @@ export const CompactToolbar: React.FC<CompactToolbarProps> = ({
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-6 mt-6">
-      <div className="glass-panel border border-[var(--border)] rounded-full px-4 py-2 flex flex-col md:flex-row items-center justify-between gap-4 relative pr-10">
-        <button onClick={() => setIsVisible(false)} className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[rgba(128,128,128,0.1)] rounded-full transition-colors"><X className="w-4 h-4" /></button>
+      <div className="bg-slate-950/80 backdrop-blur-md border border-white/10 shadow-lg rounded-full px-4 py-2 flex flex-col md:flex-row items-center justify-between gap-4 relative pr-10">
+        <button onClick={() => setIsVisible(false)} className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-white/10 rounded-full transition-colors"><X className="w-4 h-4" /></button>
+
         
         <div className="flex items-center gap-3 w-full md:w-auto">
           <div className="relative flex-1 md:w-64">

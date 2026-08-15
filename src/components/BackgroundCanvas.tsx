@@ -1,9 +1,13 @@
-import React from 'react';
-import { InteractiveBackground } from './canvas/InteractiveBackground';
+import React, { Suspense, lazy } from 'react';
+
+const LazyInteractiveBackground = lazy(() => import('./canvas/InteractiveBackground'));
 
 export const BackgroundCanvas: React.FC = () => {
-  return <InteractiveBackground />;
+  return (
+    <Suspense fallback={null}>
+      <LazyInteractiveBackground />
+    </Suspense>
+  );
 };
 
 export default BackgroundCanvas;
-
