@@ -70,6 +70,7 @@ export interface PartTimeRole {
   contact: string;
   notes: string;
   dateApplied?: string;
+  link?: string;
 }
 
 export type TrackerStatus = 
@@ -108,6 +109,7 @@ export interface ChecklistItem {
   details: string;
   completed: boolean;
   isUrgent?: boolean;
+  link?: string;
 }
 
 export interface NoteSection {
@@ -299,10 +301,13 @@ export interface JobApplication {
   company: string;
   location: string;
   salary: string;
-  platform: 'LinkedIn' | 'Indeed';
-  status: 'Potential' | 'Applied' | 'Interview' | 'Offer';
-  dateAdded: string;
+  platform: 'LinkedIn' | 'Indeed' | string;
+  status: 'Potential' | 'Applied' | 'Interview' | 'Offer' | 'To Apply' | string;
+  dateAdded?: string;
+  appliedDate?: string;
   deadline?: string;
+  link?: string;
+  notes?: string;
 }
 
 export interface JobPreferences {
@@ -319,6 +324,7 @@ export interface Trip {
   startDate: string;
   endDate: string;
   companions: string[];
+  notes?: string;
 }
 
 export interface TripExpense {
@@ -383,14 +389,13 @@ export interface VehicleCost {
   currency: string;
 }
 
-
 // --- Paper Trading & Portfolio Simulator Types ---
 
 export interface PortfolioPosition {
   id: string;
   symbol: string;
   name: string;
-  assetClass: 'Stock' | 'ETF' | 'Commodity' | 'FX';
+  assetClass: 'Stock' | 'ETF' | 'Commodity' | 'FX' | string;
   quantity: number;
   averageEntryPrice: number;
   currentPrice: number;
@@ -399,12 +404,12 @@ export interface PortfolioPosition {
 export interface TradeOrder {
   id: string;
   symbol: string;
-  type: 'Market' | 'Limit' | 'Stop-Loss' | 'Take-Profit';
-  side: 'Buy' | 'Sell';
+  type: 'Market' | 'Limit' | 'Stop-Loss' | 'Take-Profit' | string;
+  side: 'Buy' | 'Sell' | string;
   quantity: number;
   targetPrice?: number; // for Limit/Stop
   executionPrice?: number; // null if pending
-  status: 'Pending' | 'Executed' | 'Cancelled';
+  status: 'Pending' | 'Executed' | 'Cancelled' | string;
   timestamp: number;
 }
 

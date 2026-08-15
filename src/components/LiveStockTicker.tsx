@@ -72,7 +72,7 @@ export const LiveStockTicker: React.FC = () => {
     const interval = setInterval(() => {
       setTickers(prev => {
         // Randomly pick 2-4 tickers to micro-oscillate
-        const updated = prev.map(ticker => {
+        const updated: MarketTickerItem[] = prev.map(ticker => {
           const shouldUpdate = Math.random() > 0.45;
           if (!shouldUpdate) return { ...ticker, lastTick: undefined };
 
@@ -102,6 +102,7 @@ export const LiveStockTicker: React.FC = () => {
         return updated;
       });
     }, 2200);
+
 
     return () => clearInterval(interval);
   }, [isStreaming]);

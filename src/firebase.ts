@@ -10,29 +10,38 @@ import firebaseConfig from '../firebase-applet-config.json';
  * - Custom domain or localhost environments
  */
 const getDynamicAuthDomain = (): string => {
+  const envAuthDomain = (import.meta as any).env?.VITE_FIREBASE_AUTH_DOMAIN;
+  if (envAuthDomain) return envAuthDomain;
+
   if (typeof window !== 'undefined') {
     const hostname = window.location.hostname;
-    // Check if custom authDomain is explicitly provided in env
-    const envAuthDomain = (import.meta as any).env?.VITE_FIREBASE_AUTH_DOMAIN;
-    if (envAuthDomain) {
-      return envAuthDomain;
-    }
     // For Vercel production or preview URLs (*.vercel.app)
     if (hostname === 'manageme-three.vercel.app' || hostname.endsWith('.vercel.app')) {
-      return firebaseConfig.authDomain || 'shaped-hash-7f6jr.firebaseapp.com';
+      return (import.meta as any).env?.VITE_FIREBASE_AUTH_DOMAIN || firebaseConfig.authDomain || 'manageme-9fccc.firebaseapp.com';
     }
   }
-  return firebaseConfig.authDomain || 'shaped-hash-7f6jr.firebaseapp.com';
+  return firebaseConfig.authDomain || 'manageme-9fccc.firebaseapp.com';
 };
 
+const env = (import.meta as any).env || {};
+
 const effectiveFirebaseConfig = {
-  ...firebaseConfig,
-  authDomain: getDynamicAuthDomain()
+  apiKey: env.VITE_FIREBASE_API_KEY || firebaseConfig.apiKey,
+  authDomain: env.VITE_FIREBASE_AUTH_DOMAIN || getDynamicAuthDomain(),
+  projectId: env.VITE_FIREBASE_PROJECT_ID || firebaseConfig.projectId,
+  storageBucket: env.VITE_FIREBASE_STORAGE_BUCKET || firebaseConfig.storageBucket,
+  messagingSenderId: env.VITE_FIREBASE_MESSAGING_SENDER_ID || firebaseConfig.messagingSenderId,
+  appId: env.VITE_FIREBASE_APP_ID || firebaseConfig.appId,
+  measurementId: env.VITE_FIREBASE_MEASUREMENT_ID || firebaseConfig.measurementId || ""
 };
 
 const app = initializeApp(effectiveFirebaseConfig);
 export const auth = getAuth(app);
-export const db = getFirestore(app, firebaseConfig.firestoreDatabaseId);
+
+// Use default database for custom projects, or specific databaseId if defined
+const customDbId = env.VITE_FIREBASE_FIRESTORE_DATABASE_ID || (env.VITE_FIREBASE_PROJECT_ID ? undefined : firebaseConfig.firestoreDatabaseId);
+export const db = customDbId ? getFirestore(app, customDbId) : getFirestore(app);
+
 
 export const googleProvider = new GoogleAuthProvider();
 googleProvider.setCustomParameters({

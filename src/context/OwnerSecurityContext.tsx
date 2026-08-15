@@ -39,7 +39,7 @@ export const OwnerSecurityProvider: React.FC<{ children: ReactNode }> = ({ child
   const [currentUserEmail, setCurrentUserEmail] = useState<string | null>(null);
   const [currentUserName, setCurrentUserName] = useState<string | null>(null);
   const [isPinUnlocked, setIsPinUnlocked] = useState<boolean>(() => {
-    return sessionStorage.getItem('owner_pin_unlocked') !== 'false';
+    return sessionStorage.getItem('owner_pin_unlocked') === 'true';
   });
   
   const [copyProtectionActive, setCopyProtectionActive] = useState<boolean>(() => {
@@ -67,11 +67,12 @@ export const OwnerSecurityProvider: React.FC<{ children: ReactNode }> = ({ child
     return () => unsubscribe();
   }, [auth]);
 
-  // Authenticated Google user or default workspace owner in AI Studio is verified as owner
-  const isMasterEmailAuth = Boolean(currentUserEmail);
+  // Authenticated Google Master Owner account or verified Master PIN unlocks owner permissions
+  const isMasterEmailAuth = Boolean(currentUserEmail && currentUserEmail.toLowerCase() === MASTER_OWNER_EMAIL.toLowerCase());
   const isOwnerVerified = isMasterEmailAuth || isPinUnlocked;
   const isOwner = isOwnerVerified;
   const isProtectedMode = !isOwnerVerified;
+
 
   const unlockWithPin = (pin: string): boolean => {
     const savedPin = localStorage.getItem('master_owner_pin') || DEFAULT_MASTER_PIN;

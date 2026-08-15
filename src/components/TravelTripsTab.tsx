@@ -113,7 +113,8 @@ export const TravelTripsTab: React.FC<Props> = ({ userData, updateData, defaultV
   // Trips State
   const [showTripModal, setShowTripModal] = useState(false);
   const [editingTripId, setEditingTripId] = useState<string | null>(null);
-  const [tripForm, setTripForm] = useState({ destination: '', startDate: '', endDate: '', companions: '' });
+  const [tripForm, setTripForm] = useState({ destination: '', startDate: '', endDate: '', companions: '', notes: '' });
+
   const [tripToDelete, setTripToDelete] = useState<Trip | null>(null);
   const [tripForExpense, setTripForExpense] = useState<Trip | null>(null);
   const [expenseForm, setExpenseForm] = useState({ description: '', amount: '', date: '', splitWith: [] as string[] });
@@ -167,7 +168,7 @@ export const TravelTripsTab: React.FC<Props> = ({ userData, updateData, defaultV
   const handleOpenCreateTrip = () => {
     requireOwnerPermission('Create New Travel Trip', () => {
       setEditingTripId(null);
-      setTripForm({ destination: '', startDate: '', endDate: '', companions: '' });
+      setTripForm({ destination: '', startDate: '', endDate: '', companions: '', notes: '' });
       setShowTripModal(true);
     });
   };
@@ -179,11 +180,13 @@ export const TravelTripsTab: React.FC<Props> = ({ userData, updateData, defaultV
         destination: trip.destination,
         startDate: trip.startDate,
         endDate: trip.endDate,
-        companions: trip.companions ? trip.companions.join(', ') : ''
+        companions: trip.companions ? trip.companions.join(', ') : '',
+        notes: trip.notes || ''
       });
       setShowTripModal(true);
     });
   };
+
 
   const handleSaveTrip = (e: React.FormEvent) => {
     e.preventDefault();

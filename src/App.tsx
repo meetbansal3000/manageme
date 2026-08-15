@@ -50,7 +50,8 @@ import { AppTab } from './components/Header';
 const PRIMARY_TABS: AppTab[] = ['landing', 'news', 'study', 'metasuite', 'jobs', 'outreach', 'tasks', 'uni', 'finance', 'trading', 'work', 'skills', 'travel', 'transit', 'chat', 'resume'];
 import { MobileBottomNav } from './components/MobileBottomNav';
 
-import { GoogleSyncState, GraduateScheme, PartTimeRole } from './types';
+import { GoogleSyncState, GraduateScheme, PartTimeRole, PriorityTrackerItem } from './types';
+
 import { exportMultiSheetWorkbook } from './utils/excelExporter';
 import { uploadMasterTrackerToGoogleDrive } from './utils/googleDriveUpload';
 import { useFirestoreData } from './hooks/useFirestoreData';
@@ -235,9 +236,15 @@ export default function App() {
 
   const [googleSyncState, setGoogleSyncState] = useState<GoogleSyncState>({
     isConnected: false,
+    userEmail: null,
+    spreadsheetId: null,
+    spreadsheetUrl: null,
     lastSynced: null,
-    sheetUrl: null
+    isSyncing: false,
+    error: null,
+    accessToken: null
   });
+
 
   const [isGoogleModalOpen, setIsGoogleModalOpen] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -416,8 +423,9 @@ export default function App() {
                 const velocityX = info.velocity.x;
                 // Only switch tabs if horizontal intent dominates vertical scrolling
                 if (Math.abs(offsetX) > Math.abs(offsetY) * 1.5 && Math.abs(offsetX) > 75) {
-                  const currentIndex = PRIMARY_TABS.indexOf(activeTab);
+                  const currentIndex = PRIMARY_TABS.indexOf(activeTab as AppTab);
                   if (currentIndex !== -1) {
+
                     if (offsetX < -75 || velocityX < -250) {
                       const nextIndex = (currentIndex + 1) % PRIMARY_TABS.length;
                       triggerHaptic(15);
@@ -536,7 +544,8 @@ export default function App() {
                     selectedSector={selectedSector}
                     userData={userData}
                   />
-                  <ExtraItemsCard extraItems={userData.extraItems || []} updateData={updateData} />
+                  <ExtraItemsCard items={userData.extraItems || []} userData={userData} updateData={updateData} />
+
                 </div>
               )}
               
@@ -711,7 +720,20 @@ export default function App() {
               <button onClick={() => {
                 const desc = (document.getElementById('quick-task-desc') as HTMLInputElement).value;
                 if (desc) {
-                  updateData({ priorityItems: [{ id: Date.now().toString(), firm: desc, sector: 'Task', role: '', status: 'Not Applied', deadline: '' }, ...userData.priorityItems] });
+                  const newTask: PriorityTrackerItem = {
+                    id: Date.now().toString(),
+                    rank: (userData.priorityItems?.length || 0) + 1,
+                    firm: desc,
+                    sector: 'General Task',
+                    role: 'Action Item',
+                    roleType: 'Grad Scheme',
+                    status: 'Not Applied',
+                    deadline: 'Immediate',
+                    dateApplied: new Date().toISOString().split('T')[0],
+                    nextAction: 'Execute task',
+                    notes: 'Quick-logged task'
+                  };
+                  updateData({ priorityItems: [newTask, ...(userData.priorityItems || [])] });
                   setQuickLog(null);
                 }
               }} className="flex-1 py-2 text-sm bg-[var(--text-primary)] text-[var(--bg)] font-bold rounded-xl">Add Task</button>
@@ -734,19 +756,32 @@ export default function App() {
         onConnectGoogle={() => console.log('Connect to Google')}
         onCreateGoogleSheet={async () => {
           try {
+            let token = await getAccessToken();
+            if (!token) {
+              const res = await googleSignIn();
+              if (res?.accessToken) {
+                token = res.accessToken;
+              }
+            }
+            if (!token) {
+              alert("Google authentication required to sync with Google Drive.");
+              return;
+            }
             const url = await uploadMasterTrackerToGoogleDrive(
-              'placeholder-access-token',
+              token,
               userData.timeline,
               userData.gradSchemes,
               userData.partTimeRoles,
               userData.priorityItems,
               userData.notesSections
             );
-            setGoogleSyncState({
+            setGoogleSyncState(prev => ({
+              ...prev,
               isConnected: true,
               lastSynced: new Date().toISOString(),
-              sheetUrl: url.spreadsheetUrl
-            });
+              spreadsheetId: url.spreadsheetId,
+              spreadsheetUrl: url.spreadsheetUrl
+            }));
           } catch (e) {
             console.error(e);
             alert("Sync failed. Check console.");
@@ -757,14 +792,16 @@ export default function App() {
         isOpen={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
         onAdd={(newApp) => {
-          if (newApp.type === 'grad') {
-            updateData({ gradSchemes: [newApp.data as GraduateScheme, ...userData.gradSchemes] });
-          } else {
-            updateData({ partTimeRoles: [newApp.data as PartTimeRole, ...userData.partTimeRoles] });
-          }
+          const newItem: PriorityTrackerItem = {
+            ...newApp,
+            id: Date.now().toString(),
+            rank: (userData.priorityItems?.length || 0) + 1
+          };
+          updateData({ priorityItems: [newItem, ...(userData.priorityItems || [])] });
           setIsAddModalOpen(false);
         }}
       />
+
       
       <InterviewSimulatorDrawer isOpen={isInterviewOpen} onClose={() => setIsInterviewOpen(false)} />
 

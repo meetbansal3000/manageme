@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { doc, setDoc, onSnapshot } from 'firebase/firestore';
 import { db } from '../firebase';
+
 import { 
   TIMELINE_DATA, 
   GRADUATE_SCHEMES_DATA, 
@@ -421,11 +422,16 @@ export function useFirestoreData() {
     };
   }, [auth]);
 
+  const dataRef = useRef(data);
+  const syncStatusRef = useRef(syncStatus);
+  dataRef.current = data;
+  syncStatusRef.current = syncStatus;
+
   // Periodic Auto-Save Heartbeat (every 30 seconds syncs full state to Firestore if online)
   useEffect(() => {
     const interval = setInterval(async () => {
       const user = auth.currentUser;
-      if (user && navigator.onLine && syncStatus !== 'saving') {
+      if (user && navigator.onLine && syncStatusRef.current !== 'saving') {
         try {
           // If there's an offline queue, flush it first
           const queue = getOfflineQueue();
@@ -434,7 +440,7 @@ export function useFirestoreData() {
           } else {
             setSyncStatus('saving');
             const docRef = doc(db, 'users', user.uid);
-            await setDoc(docRef, data, { merge: true });
+            await setDoc(docRef, dataRef.current, { merge: true });
             setSyncStatus('saved');
           }
         } catch (err) {
@@ -447,7 +453,8 @@ export function useFirestoreData() {
     }, 30000);
 
     return () => clearInterval(interval);
-  }, [auth, data, syncStatus]);
+  }, [auth]);
+
 
   const updateData = async (partialData: Partial<UserTrackerData>) => {
     setData(prev => {
