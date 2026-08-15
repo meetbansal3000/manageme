@@ -18,14 +18,25 @@ import {
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { TiltCard } from './TiltCard';
+import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 
 interface LandingPageProps {
   onEnterApp: (tabId?: string) => void;
 }
 
 export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp }) => {
+  const { signInAsGuest } = useAuth();
+  const { showToast } = useToast();
+
   const handleLaunch = (targetTab: string = 'news') => {
     onEnterApp(targetTab);
+  };
+
+  const handleGuestDemo = () => {
+    signInAsGuest();
+    showToast('✨ Initialized Guest Demo Workspace! Full dashboard access enabled.', 'sparkle', 3500);
+    onEnterApp('news');
   };
 
   return (
@@ -73,7 +84,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp }) => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-          className="flex flex-col sm:flex-row items-center justify-center gap-3.5 pt-2 w-full sm:w-auto"
+          className="flex flex-col sm:flex-row flex-wrap items-center justify-center gap-3.5 pt-2 w-full sm:w-auto"
         >
           <button
             onClick={() => handleLaunch('news')}
@@ -81,6 +92,15 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp }) => {
           >
             <span>Launch Workspace</span>
             <ArrowRight className="w-4 h-4" />
+          </button>
+
+          <button
+            onClick={handleGuestDemo}
+            className="w-full sm:w-auto px-6 py-3.5 min-h-[44px] rounded-2xl bg-amber-500/15 hover:bg-amber-500/25 text-amber-900 dark:text-amber-300 font-bold text-sm border border-amber-500/30 backdrop-blur-xl flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer shadow-sm shadow-amber-500/10"
+            title="Instant access with preloaded demo profile (No Google sign-in required)"
+          >
+            <Sparkles className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+            <span>Continue as Guest / Demo Mode</span>
           </button>
 
           <button

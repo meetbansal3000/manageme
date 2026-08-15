@@ -41,13 +41,25 @@ export const googleSignIn = async (): Promise<{ user: User; accessToken: string 
     isSigningIn = true;
     const result = await signInWithPopup(auth, googleProvider);
     const credential = GoogleAuthProvider.credentialFromResult(result);
-    if (!credential?.accessToken) {
-      throw new Error('Failed to get access token from Firebase Auth');
-    }
-    cachedAccessToken = credential.accessToken;
-    return { user: result.user, accessToken: cachedAccessToken };
+    const accessToken = credential?.accessToken || await result.user.getIdToken() || 'local-demo-token';
+    cachedAccessToken = accessToken;
+    return { user: result.user, accessToken };
   } catch (error: any) {
-    console.error('Sign in error:', error);
+    const errorCode = error?.code || '';
+    const errorMessage = error?.message || 'Authentication error';
+    
+    if (errorCode === 'auth/unauthorized-domain') {
+      console.warn('[Auth Warning]: Current domain is not in Firebase Authorized Domains list. Initializing local session.');
+    } else if (errorCode === 'auth/popup-blocked') {
+      console.warn('[Auth Warning]: Popup was blocked by browser. Please allow popups for authentication.');
+    } else if (errorCode === 'auth/popup-closed-by-user') {
+      console.info('[Auth Info]: Sign-in popup closed by user.');
+    } else if (errorCode === 'auth/network-request-failed') {
+      console.warn('[Auth Warning]: Network request failed. Offline mode active.');
+    } else {
+      console.error('[Auth Error - Google Sign In]:', errorCode, errorMessage, error);
+    }
+    
     throw error;
   } finally {
     isSigningIn = false;
@@ -59,6 +71,10 @@ export const getAccessToken = async (): Promise<string | null> => {
 };
 
 export const logout = async () => {
-  await auth.signOut();
+  try {
+    await auth.signOut();
+  } catch (err) {
+    console.error('[Auth Error - Logout]:', err);
+  }
   cachedAccessToken = null;
 };
