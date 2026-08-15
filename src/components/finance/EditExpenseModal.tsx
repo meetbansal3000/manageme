@@ -77,7 +77,7 @@ export const EditExpenseModal: React.FC<Props> = ({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
       <div 
-        className="bg-[#1c1c1e] border border-[var(--border)] rounded-3xl p-6 max-w-lg w-full shadow-2xl space-y-5 overflow-hidden flex flex-col max-h-[90vh]"
+        className="bg-[var(--surface-solid)] border border-[var(--border)] rounded-3xl p-6 max-w-lg w-full shadow-2xl space-y-5 overflow-hidden flex flex-col max-h-[90vh]"
         onClick={e => e.stopPropagation()}
       >
         {/* Header */}
@@ -110,7 +110,7 @@ export const EditExpenseModal: React.FC<Props> = ({
               <select
                 value={formData.category || 'Food'}
                 onChange={e => setFormData({ ...formData, category: e.target.value })}
-                className="apple-input bg-[#141416] text-xs p-2.5 w-full font-medium"
+                className="apple-input bg-[var(--surface-solid)] text-xs p-2.5 w-full font-medium"
               >
                 {categories.map(cat => (
                   <option key={cat} value={cat}>
@@ -135,7 +135,7 @@ export const EditExpenseModal: React.FC<Props> = ({
                   placeholder="0.00"
                   value={formData.amount || ''}
                   onChange={e => setFormData({ ...formData, amount: Number(e.target.value) })}
-                  className="apple-input bg-[#141416] pl-7 text-sm p-2.5 w-full font-bold text-red-400"
+                  className="apple-input bg-[var(--surface-solid)] pl-7 text-sm p-2.5 w-full font-bold text-red-400"
                   required
                 />
               </div>
@@ -152,7 +152,7 @@ export const EditExpenseModal: React.FC<Props> = ({
                 type="date"
                 value={formData.date || ''}
                 onChange={e => setFormData({ ...formData, date: e.target.value })}
-                className="apple-input bg-[#141416] text-xs p-2.5 w-full font-medium"
+                className="apple-input bg-[var(--surface-solid)] text-xs p-2.5 w-full font-medium"
                 required
               />
             </div>
@@ -166,7 +166,7 @@ export const EditExpenseModal: React.FC<Props> = ({
                 placeholder="e.g. Tesco Metro, Uber, Pret"
                 value={formData.description || ''}
                 onChange={e => setFormData({ ...formData, description: e.target.value })}
-                className="apple-input bg-[#141416] text-xs p-2.5 w-full"
+                className="apple-input bg-[var(--surface-solid)] text-xs p-2.5 w-full"
               />
             </div>
           </div>
@@ -179,7 +179,7 @@ export const EditExpenseModal: React.FC<Props> = ({
             <select
               value={formData.paymentMethod || 'Debit Card'}
               onChange={e => setFormData({ ...formData, paymentMethod: e.target.value })}
-              className="apple-input bg-[#141416] text-xs p-2.5 w-full"
+              className="apple-input bg-[var(--surface-solid)] text-xs p-2.5 w-full"
             >
               <option value="Debit Card">Debit Card (Monzo / Barclays / HSBC)</option>
               <option value="Credit Card">Credit Card (Amex / Chase)</option>
@@ -191,7 +191,7 @@ export const EditExpenseModal: React.FC<Props> = ({
           </div>
 
           {/* Split with Peer Toggle */}
-          <div className="bg-[#141416] p-3.5 rounded-2xl border border-[var(--border)] space-y-3">
+          <div className="bg-[var(--surface-solid)] p-3.5 rounded-2xl border border-[var(--border)] space-y-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Users className="w-4 h-4 text-emerald-400" />
@@ -219,7 +219,7 @@ export const EditExpenseModal: React.FC<Props> = ({
                       placeholder="e.g. Alex, Maya"
                       value={formData.splitWith || ''}
                       onChange={e => setFormData({ ...formData, splitWith: e.target.value })}
-                      className="apple-input bg-[#1c1c1e] text-xs p-2 w-full"
+                      className="apple-input bg-[var(--surface-solid)] text-xs p-2 w-full"
                     />
                     <datalist id="peers-list">
                       {peers.map(p => (
@@ -238,12 +238,12 @@ export const EditExpenseModal: React.FC<Props> = ({
                       max="99"
                       value={splitRatio}
                       onChange={e => setSplitRatio(e.target.value)}
-                      className="apple-input bg-[#1c1c1e] text-xs p-2 w-full text-center font-mono"
+                      className="apple-input bg-[var(--surface-solid)] text-xs p-2 w-full text-center font-mono"
                     />
                   </div>
                 </div>
 
-                <div className="flex justify-between items-center bg-[#1c1c1e] p-2.5 rounded-xl text-xs font-mono">
+                <div className="flex justify-between items-center bg-[var(--surface-solid)] p-2.5 rounded-xl text-xs font-mono">
                   <div>
                     <span className="text-[var(--text-secondary)] block text-[10px]">Your Net Cost</span>
                     <span className="text-red-400 font-bold">{currencySymbol}{myShare.toFixed(2)}</span>
@@ -267,7 +267,7 @@ export const EditExpenseModal: React.FC<Props> = ({
               value={formData.notes || ''}
               onChange={e => setFormData({ ...formData, notes: e.target.value })}
               rows={2}
-              className="apple-input bg-[#141416] text-xs p-2.5 w-full resize-none"
+              className="apple-input bg-[var(--surface-solid)] text-xs p-2.5 w-full resize-none"
             />
           </div>
 

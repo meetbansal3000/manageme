@@ -37,11 +37,17 @@ import { StudyIntelligenceEngineTab } from './components/StudyIntelligenceEngine
 
 import { ExtraItemsCard } from './components/ExtraItemsCard';
 import { SmartImportModal } from './components/SmartImportModal';
+import { OutreachHub } from './components/OutreachHub';
+import { AiModelSelector } from './components/AiModelSelector';
+import { JobSyncHub } from './components/JobSyncHub';
 import { ActivityDrawer } from './components/ActivityDrawer';
+import { Spatial3DCanvas } from './components/Spatial3DCanvas';
+import { LiveStockTicker } from './components/LiveStockTicker';
+import { LandingPage } from './components/LandingPage';
 import { triggerHaptic, IOS_SPRING } from './utils/haptics';
 import { AppTab } from './components/Header';
 
-const PRIMARY_TABS: AppTab[] = ['news', 'study', 'metasuite', 'jobs', 'tasks', 'uni', 'finance', 'trading', 'work', 'skills', 'travel', 'transit', 'chat', 'resume'];
+const PRIMARY_TABS: AppTab[] = ['landing', 'news', 'study', 'metasuite', 'jobs', 'outreach', 'tasks', 'uni', 'finance', 'trading', 'work', 'skills', 'travel', 'transit', 'chat', 'resume'];
 import { MobileBottomNav } from './components/MobileBottomNav';
 
 import { GoogleSyncState, GraduateScheme, PartTimeRole } from './types';
@@ -52,16 +58,25 @@ import { ConflictModal } from './components/ConflictModal';
 import { useSettings } from './context/SettingsContext';
 import { useOwnerSecurity } from './context/OwnerSecurityContext';
 import { OwnerAuthModal } from './components/OwnerAuthModal';
+import { DeviceLimitModal } from './components/DeviceLimitModal';
+import { ShortcutDock } from './components/ShortcutDock';
 import { useScrollLock } from './hooks/useScrollLock';
 import { useModalDismiss } from './hooks/useModalDismiss';
+import { useGlobalShortcuts } from './hooks/useGlobalShortcuts';
 
 export default function App() {
   const { settings, updateSettings } = useSettings();
   const { requireOwnerPermission, isOwnerVerified } = useOwnerSecurity();
-  const [activeTab, setActiveTab] = useState<string>('news');
-  const [tabHistory, setTabHistory] = useState<string[]>(['news']);
+  const initialTab = (typeof window !== 'undefined' && window.location.hash.replace('#', '')) || 'landing';
+  const [activeTab, setActiveTab] = useState<string>(initialTab);
+  const [tabHistory, setTabHistory] = useState<string[]>([initialTab]);
   const [pendingShare, setPendingShare] = useState<any>(null);
   const [isInputFocused, setIsInputFocused] = useState(false);
+  const [isSmartImportOpen, setIsSmartImportOpen] = useState(false);
+  const [smartImportScope, setSmartImportScope] = useState<any>('all');
+  const [outreachParams, setOutreachParams] = useState<{ company?: string; role?: string } | null>(null);
+  const [isAiModelSelectorOpen, setIsAiModelSelectorOpen] = useState(false);
+  const [isJobSyncOpen, setIsJobSyncOpen] = useState(false);
 
   const handleTabChange = (newTab: string) => {
     if (!newTab || newTab === activeTab) return;
@@ -78,7 +93,7 @@ export default function App() {
     if (tabHistory.length > 1) {
       const nextHistory = [...tabHistory];
       nextHistory.pop(); // remove current tab
-      const previousTab = nextHistory[nextHistory.length - 1] || 'news';
+      const previousTab = nextHistory[nextHistory.length - 1] || 'landing';
       setTabHistory(nextHistory);
       setActiveTab(previousTab);
       try {
@@ -87,19 +102,53 @@ export default function App() {
     } else if (window.history.length > 1 && window.location.hash) {
       window.history.back();
     } else {
-      setActiveTab('news');
-      setTabHistory(['news']);
+      setActiveTab('landing');
+      setTabHistory(['landing']);
     }
   };
 
   const handleGoHome = () => {
-    if (activeTab !== 'news') {
-      handleTabChange('news');
+    if (activeTab !== 'landing') {
+      handleTabChange('landing');
     } else {
       // scroll to top smoothly if already on home
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
+
+  useEffect(() => {
+    const handleOpenImport = (e: any) => {
+      setSmartImportScope(e.detail?.scope || 'all');
+      setIsSmartImportOpen(true);
+    };
+    window.addEventListener('openSmartImport', handleOpenImport);
+    return () => window.removeEventListener('openSmartImport', handleOpenImport);
+  }, []);
+
+  useEffect(() => {
+    const handleOpenOutreach = (e: any) => {
+      if (e.detail?.company) {
+        setOutreachParams({ company: e.detail.company, role: e.detail.role });
+      }
+      handleTabChange('outreach');
+    };
+    window.addEventListener('openOutreachHub', handleOpenOutreach);
+    return () => window.removeEventListener('openOutreachHub', handleOpenOutreach);
+  }, []);
+
+  useEffect(() => {
+    const handleOpenAiSelector = () => setIsAiModelSelectorOpen(true);
+    const handleOpenJobSync = () => setIsJobSyncOpen(true);
+    const handleOpenCmdPalette = () => setIsCommandPaletteOpen(true);
+    window.addEventListener('openAiModelSelector', handleOpenAiSelector);
+    window.addEventListener('openJobSyncHub', handleOpenJobSync);
+    window.addEventListener('openCommandPalette', handleOpenCmdPalette);
+    return () => {
+      window.removeEventListener('openAiModelSelector', handleOpenAiSelector);
+      window.removeEventListener('openJobSyncHub', handleOpenJobSync);
+      window.removeEventListener('openCommandPalette', handleOpenCmdPalette);
+    };
+  }, []);
 
   useEffect(() => {
     const handlePopState = (e: PopStateEvent) => {
@@ -111,7 +160,7 @@ export default function App() {
         if (hash) {
           setActiveTab(hash);
         } else {
-          setActiveTab('news');
+          setActiveTab('landing');
         }
       }
     };
@@ -195,11 +244,38 @@ export default function App() {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [quickLog, setQuickLog] = useState<'expense' | 'shift' | 'task' | 'ai' | 'quick' | null>(null);
   const [isInterviewOpen, setIsInterviewOpen] = useState(false);
-  const [isSmartImportOpen, setIsSmartImportOpen] = useState(false);
   const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
 
   useScrollLock(!!quickLog);
   useModalDismiss(!!quickLog, () => setQuickLog(null));
+
+  // ── Global Keyboard Shortcuts ──
+  useGlobalShortcuts({
+    onOpenCommandPalette: () => setIsCommandPaletteOpen(true),
+    onToggleTheme: () => {
+      const isDark = document.documentElement.classList.contains('dark');
+      if (isDark) {
+        document.documentElement.classList.remove('dark');
+        updateSettings({ theme: 'light' });
+      } else {
+        document.documentElement.classList.add('dark');
+        updateSettings({ theme: 'obsidian' });
+      }
+    },
+    onSwitchTab: (tab: string) => handleTabChange(tab),
+    onCloseModals: () => {
+      setIsCommandPaletteOpen(false);
+      setIsSettingsOpen(false);
+      setIsSmartImportOpen(false);
+      setIsAiModelSelectorOpen(false);
+      setIsJobSyncOpen(false);
+      setQuickLog(null);
+    },
+    onSave: () => {
+      // Dispatch a custom save event so individual tabs can react
+      window.dispatchEvent(new CustomEvent('manageme:save'));
+    },
+  });
 
   const handleGeminiMutate = (mutations: any) => {
     updateData(mutations);
@@ -278,7 +354,10 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-[var(--bg)] text-[var(--text-primary)] flex flex-col font-sans selection:bg-[var(--accent)] selection:text-white transition-colors duration-300">
+    <div className="min-h-screen bg-[var(--bg)] text-[var(--text-primary)] flex flex-col font-sans selection:bg-[var(--accent)] selection:text-white transition-colors duration-300 relative overflow-x-hidden">
+
+      {/* Clean Spatial Background Mesh */}
+      <Spatial3DCanvas />
 
       <Header 
         activeTab={activeTab} 
@@ -313,8 +392,13 @@ export default function App() {
         updateData={updateData}
       />
 
-      <main className="flex-1 pb-24 pt-20 sm:pt-24 min-h-0">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+      <main className="flex-1 pb-24 pt-20 sm:pt-24 min-h-0 relative z-10">
+        {/* Dynamic Top-Bar Live Stock Ticker */}
+        <div className="mb-4">
+          <LiveStockTicker />
+        </div>
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
           <AnimatePresence mode="wait">
             <motion.div
               key={activeTab}
@@ -346,6 +430,10 @@ export default function App() {
               }}
               transition={IOS_SPRING}
             >
+              {activeTab === 'landing' && (
+                <LandingPage onEnterApp={(target) => handleTabChange(target || 'news')} />
+              )}
+
               {activeTab === 'chat' && <ChatHubTab userData={userData} updateData={updateData} pendingShare={pendingShare} clearPendingShare={() => setPendingShare(null)} />}
               
               {activeTab === 'study' && <StudyIntelligenceEngineTab userData={userData} updateData={updateData} />}
@@ -376,6 +464,13 @@ export default function App() {
                     selectedSector={selectedSector}
                   />
                 </div>
+              )}
+
+              {activeTab === 'outreach' && (
+                <OutreachHub
+                  initialCompany={outreachParams?.company || 'Goldman Sachs'}
+                  initialRole={outreachParams?.role || 'Summer Analyst - M&A Advisory'}
+                />
               )}
               
               {activeTab === 'work' && (
@@ -508,61 +603,7 @@ export default function App() {
       </footer>
 
       
-      {/* macOS Style Quick-Capture Dock */}
-      {!settings.hideFloatingDock && (!settings.autoHideDockWhenTyping || !isInputFocused) && (
-        <div className={`fixed bottom-16 sm:bottom-4 z-30 transition-all duration-300 pointer-events-none ${
-          settings.dockPosition === 'right' ? 'right-4 sm:right-6' : 
-          settings.dockPosition === 'center' ? 'left-1/2 -translate-x-1/2' : 
-          'left-4 sm:left-6'
-        }`}>
-          {settings.dockCollapsed ? (
-            <button 
-              onClick={() => updateSettings({ dockCollapsed: false })}
-              className="apple-dock w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center hover:scale-105 transition-transform pointer-events-auto shadow-xl bg-neutral-900/90 border border-white/20 text-[var(--accent)] hover:border-[var(--accent)]/50 cursor-pointer"
-              title="Expand Quick Actions Dock ($ Finance, Timetable, Checklist, Prompts)"
-            >
-              <Sparkles className="w-4 h-4 text-[var(--accent)]" />
-            </button>
-          ) : (
-            <div className="apple-dock px-3 py-1.5 rounded-full flex items-center gap-2 sm:gap-3 pointer-events-auto shadow-2xl bg-neutral-950/95 border border-white/20 backdrop-blur-2xl">
-              <button onClick={() => updateSettings({ dockCollapsed: true })} className="p-1 hover:bg-[rgba(255,255,255,0.1)] rounded-full transition-colors text-[var(--text-secondary)]" title="Collapse Dock">
-                <ChevronDown className="w-4 h-4" />
-              </button>
-              
-              <div className="w-[1px] h-5 apple-dock-divider mx-0.5"></div>
 
-              <button onClick={() => handleTabChange('finance')} className="flex items-center gap-1.5 px-2 py-1 rounded-lg hover:bg-emerald-500/10 text-[var(--text-primary)] hover:text-emerald-400 transition-colors text-xs font-semibold cursor-pointer" title="Student Finance ($ Finance)">
-                <DollarSign className="w-4 h-4 text-emerald-400" />
-                <span className="text-xs font-medium">Finance</span>
-              </button>
-
-              <button onClick={() => handleTabChange('uni')} className="flex items-center gap-1.5 px-2 py-1 rounded-lg hover:bg-sky-500/10 text-[var(--text-primary)] hover:text-sky-400 transition-colors text-xs font-semibold cursor-pointer" title="Uni Timetable (⏰ Timetable)">
-                <Clock className="w-4 h-4 text-sky-400" />
-                <span className="text-xs font-medium">Timetable</span>
-              </button>
-
-              <button onClick={() => handleTabChange('tasks')} className="flex items-center gap-1.5 px-2 py-1 rounded-lg hover:bg-amber-500/10 text-[var(--text-primary)] hover:text-amber-400 transition-colors text-xs font-semibold cursor-pointer" title="Priority Checklist (☑️ Checklist)">
-                <CheckSquare className="w-4 h-4 text-amber-400" />
-                <span className="text-xs font-medium">Checklist</span>
-              </button>
-              
-              <button onClick={() => setQuickLog('quick')} className="flex items-center gap-1.5 px-2 py-1 rounded-lg hover:bg-indigo-500/10 text-[var(--text-primary)] hover:text-indigo-400 transition-colors text-xs font-semibold cursor-pointer" title="AI Prompts Assistant (>_ Prompts)">
-                <AIAvatar className="w-4 h-4" />
-                <span className="text-xs font-medium">Prompts</span>
-              </button>
-
-              <div className="w-[1px] h-5 apple-dock-divider mx-0.5"></div>
-
-              <button onClick={() => document.getElementById('debugConsoleBtn')?.click()} className="p-1.5 rounded-full hover:bg-gray-500/20 text-[var(--text-primary)] hover:text-gray-300 transition-colors cursor-pointer" title="Debug Console">
-                <Terminal className="w-4 h-4" />
-              </button>
-              <button onClick={() => setIsInterviewOpen(true)} className="p-1.5 rounded-full hover:bg-rose-500/20 text-[var(--text-primary)] hover:text-rose-400 transition-colors cursor-pointer" title="Interview Simulator">
-                <AIAvatar className="w-4 h-4" />
-              </button>
-            </div>
-          )}
-        </div>
-      )}
 
       {/* iOS Style Mobile Bottom Navigation Bar */}
       <MobileBottomNav 
@@ -579,7 +620,7 @@ export default function App() {
             <button onClick={() => setQuickLog(null)} className="absolute top-4 right-4 p-1.5 text-[var(--text-secondary)] hover:text-[var(--text-primary)] z-10"><X className="w-5 h-5"/></button>
             <h3 className="font-bold text-lg mb-4 flex items-center gap-2"><AIAvatar className="w-5 h-5 text-indigo-400"/> AI Quick Capture</h3>
             <p className="text-xs text-[var(--text-primary)] mb-4">Type naturally. Gemini will figure out if it's an expense or a work shift.</p>
-            <input type="text" id="quick-ai-input" placeholder="e.g., Paid £12 for lunch at Nando's..." className="apple-input bg-[#1c1c1e] w-full mb-4 p-4 text-sm border-transparent" onKeyDown={e => { if (e.key === 'Enter') document.getElementById('quick-ai-btn')?.click(); }} />
+            <input type="text" id="quick-ai-input" placeholder="e.g., Paid £12 for lunch at Nando's..." className="apple-input bg-[var(--surface-solid)] border-[var(--border)] w-full mb-4 p-4 text-sm border-transparent" onKeyDown={e => { if (e.key === 'Enter') document.getElementById('quick-ai-btn')?.click(); }} />
             <div className="flex gap-2">
               <button onClick={() => setQuickLog(null)} className="flex-1 py-3 text-sm bg-transparent border border-[var(--border)] rounded-xl">Cancel</button>
               <button id="quick-ai-btn" onClick={async () => {
@@ -618,8 +659,8 @@ export default function App() {
           <div className="glass-panel p-6 rounded-2xl w-full max-w-sm relative">
             <button onClick={() => setQuickLog(null)} className="absolute top-4 right-4 p-1.5 text-[var(--text-secondary)] hover:text-[var(--text-primary)] z-10"><X className="w-5 h-5"/></button>
             <h3 className="font-bold text-lg mb-4">Quick Log Expense</h3>
-            <input type="number" id="quick-expense-amount" placeholder="Amount" className="apple-input bg-[#1c1c1e] w-full mb-3 p-3 text-sm border-transparent" />
-            <input type="text" id="quick-expense-desc" placeholder="Description" className="apple-input bg-[#1c1c1e] w-full mb-4 p-3 text-sm border-transparent" />
+            <input type="number" id="quick-expense-amount" placeholder="Amount" className="apple-input bg-[var(--surface-solid)] border-[var(--border)] w-full mb-3 p-3 text-sm border-transparent" />
+            <input type="text" id="quick-expense-desc" placeholder="Description" className="apple-input bg-[var(--surface-solid)] border-[var(--border)] w-full mb-4 p-3 text-sm border-transparent" />
             <div className="flex gap-2">
               <button onClick={() => setQuickLog(null)} className="flex-1 py-2 text-sm bg-transparent border border-[var(--border)] rounded-xl">Cancel</button>
               <button onClick={() => {
@@ -640,8 +681,8 @@ export default function App() {
           <div className="glass-panel p-6 rounded-2xl w-full max-w-sm relative">
             <button onClick={() => setQuickLog(null)} className="absolute top-4 right-4 p-1.5 text-[var(--text-secondary)] hover:text-[var(--text-primary)] z-10"><X className="w-5 h-5"/></button>
             <h3 className="font-bold text-lg mb-4">Quick Log Work Shift</h3>
-            <input type="date" id="quick-shift-date" defaultValue={new Date().toISOString().split('T')[0]} className="apple-input bg-[#1c1c1e] w-full mb-3 p-3 text-sm border-transparent" />
-            <input type="number" id="quick-shift-hrs" placeholder="Hours" className="apple-input bg-[#1c1c1e] w-full mb-4 p-3 text-sm border-transparent" />
+            <input type="date" id="quick-shift-date" defaultValue={new Date().toISOString().split('T')[0]} className="apple-input bg-[var(--surface-solid)] border-[var(--border)] w-full mb-3 p-3 text-sm border-transparent" />
+            <input type="number" id="quick-shift-hrs" placeholder="Hours" className="apple-input bg-[var(--surface-solid)] border-[var(--border)] w-full mb-4 p-3 text-sm border-transparent" />
             <div className="flex gap-2">
               <button onClick={() => setQuickLog(null)} className="flex-1 py-2 text-sm bg-transparent border border-[var(--border)] rounded-xl">Cancel</button>
               <button onClick={() => {
@@ -662,7 +703,7 @@ export default function App() {
           <div className="glass-panel p-6 rounded-2xl w-full max-w-sm relative">
             <button onClick={() => setQuickLog(null)} className="absolute top-4 right-4 p-1.5 text-[var(--text-secondary)] hover:text-[var(--text-primary)] z-10"><X className="w-5 h-5"/></button>
             <h3 className="font-bold text-lg mb-4">Quick Add Task</h3>
-            <input type="text" id="quick-task-desc" placeholder="Task Description" className="apple-input bg-[#1c1c1e] w-full mb-4 p-3 text-sm border-transparent" />
+            <input type="text" id="quick-task-desc" placeholder="Task Description" className="apple-input bg-[var(--surface-solid)] border-[var(--border)] w-full mb-4 p-3 text-sm border-transparent" />
             <div className="flex gap-2">
               <button onClick={() => setQuickLog(null)} className="flex-1 py-2 text-sm bg-transparent border border-[var(--border)] rounded-xl">Cancel</button>
               <button onClick={() => {
@@ -750,7 +791,29 @@ export default function App() {
         userData={userData}
       />
 
+      <SmartImportModal
+        isOpen={isSmartImportOpen}
+        onClose={() => setIsSmartImportOpen(false)}
+        userData={userData}
+        updateData={updateData}
+        targetScope={smartImportScope}
+      />
+
+      <AiModelSelector
+        isOpen={isAiModelSelectorOpen}
+        onClose={() => setIsAiModelSelectorOpen(false)}
+      />
+
+      <JobSyncHub
+        isOpen={isJobSyncOpen}
+        onClose={() => setIsJobSyncOpen(false)}
+        userData={userData}
+        updateData={updateData}
+      />
+
       <OwnerAuthModal />
+      <DeviceLimitModal />
+      <ShortcutDock />
 
       <ConflictModal
         isOpen={Boolean(conflict)}

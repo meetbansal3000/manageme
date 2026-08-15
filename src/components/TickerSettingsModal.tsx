@@ -106,7 +106,7 @@ export const TickerSettingsModal: React.FC<Props> = ({ onClose, activeTickers, s
                   <Reorder.Item key={ticker.symbol} value={ticker} className="flex items-center justify-between p-3 bg-[var(--surface)] border border-[var(--border)] rounded-xl cursor-grab active:cursor-grabbing">
                     <div className="flex items-center gap-3">
                       <GripVertical className="w-4 h-4 text-gray-400" />
-                      <span className="font-bold">{ticker.symbol}</span>
+                      <span className="font-bold font-mono tracking-tighter">{ticker.symbol}</span>
                     </div>
                     <button 
                       onClick={() => toggleTicker(ticker)}
@@ -138,8 +138,8 @@ export const TickerSettingsModal: React.FC<Props> = ({ onClose, activeTickers, s
               {availableTickers.filter(t => !orderedTickers.some(ot => ot.symbol === t.symbol)).map(ticker => (
                 <div key={ticker.symbol} className="flex items-center justify-between p-2 rounded-lg hover:bg-white/5 border border-transparent hover:border-[var(--border)] transition-colors">
                   <div>
-                    <span className="font-bold text-sm block">{ticker.symbol}</span>
-                    <span className="text-[10px] text-gray-400">{ticker.region}</span>
+                    <span className="font-bold text-sm block font-mono tracking-tighter">{ticker.symbol}</span>
+                    <span className="text-[10px] text-gray-400 font-mono tracking-tighter">{ticker.region}</span>
                   </div>
                   <button 
                     onClick={() => toggleTicker(ticker)}

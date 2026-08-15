@@ -208,7 +208,7 @@ export const UniTimetableTab: React.FC<Props> = ({ userData, updateData }) => {
 
 
       {/* Sub-Tab Toggle */}
-      <div className="flex items-center gap-2 bg-[#1c1c1e] p-1 rounded-xl w-max border border-[var(--border)]">
+      <div className="flex items-center gap-2 bg-[var(--surface-solid)] p-1 rounded-xl w-max border border-[var(--border)]">
         <button 
           onClick={() => setActiveSubTab('schedule')}
           className={`px-4 py-1.5 text-sm font-semibold rounded-lg transition-all ${activeSubTab === 'schedule' ? 'bg-[var(--text-primary)] text-[var(--bg)] shadow-md' : 'text-[var(--text-secondary)] hover:text-white'}`}
@@ -275,10 +275,10 @@ export const UniTimetableTab: React.FC<Props> = ({ userData, updateData }) => {
                   }}
                 >
                   <div className="absolute inset-0 backface-hidden flex items-center justify-center p-8 bg-[rgba(255,255,255,0.02)] rounded-3xl border-2 border-purple-500/20" style={{ backfaceVisibility: 'hidden' }}>
-                    <h3 className="text-xl font-bold text-[var(--text-primary)]">{flashcards[activeCardIndex]?.front || ''}</h3>
+                    <h3 className="text-xl font-bold text-white">{flashcards[activeCardIndex]?.front || ''}</h3>
                   </div>
                   <div className="absolute inset-0 backface-hidden flex items-center justify-center p-8 bg-purple-500/10 rounded-3xl border-2 border-purple-500/30" style={{ backfaceVisibility: 'hidden', transform: 'rotateX(180deg)' }}>
-                    <p className="text-base font-medium text-purple-100">{flashcards[activeCardIndex]?.back || ''}</p>
+                    <p className="text-base font-semibold text-white">{flashcards[activeCardIndex]?.back || ''}</p>
                   </div>
                 </div>
               </div>
@@ -358,19 +358,19 @@ export const UniTimetableTab: React.FC<Props> = ({ userData, updateData }) => {
           <input 
             type="text" 
             placeholder="Module Name" 
-            className="apple-input bg-[#1c1c1e] border-transparent text-sm p-3" 
+            className="apple-input bg-[var(--surface-solid)] border-transparent text-sm p-3" 
             value={newClass.moduleName} 
             onChange={e => setNewClass({...newClass, moduleName: e.target.value})}
           />
           <select 
-            className="apple-input bg-[#1c1c1e] border-transparent text-sm p-3"
+            className="apple-input bg-[var(--surface-solid)] border-transparent text-sm p-3"
             value={newClass.type}
             onChange={e => setNewClass({...newClass, type: e.target.value as any})}
           >
             {['Lecture', 'Seminar', 'Workshop', 'Exam Prep'].map(t => <option key={t} value={t}>{t}</option>)}
           </select>
           <select 
-            className="apple-input bg-[#1c1c1e] border-transparent text-sm p-3"
+            className="apple-input bg-[var(--surface-solid)] border-transparent text-sm p-3"
             value={newClass.dayOfWeek}
             onChange={e => setNewClass({...newClass, dayOfWeek: e.target.value as any})}
           >
@@ -379,27 +379,27 @@ export const UniTimetableTab: React.FC<Props> = ({ userData, updateData }) => {
           <input 
             type="text" 
             placeholder="Location / Room" 
-            className="apple-input bg-[#1c1c1e] border-transparent text-sm p-3" 
+            className="apple-input bg-[var(--surface-solid)] border-transparent text-sm p-3" 
             value={newClass.location} 
             onChange={e => setNewClass({...newClass, location: e.target.value})}
           />
           <div className="flex gap-2 col-span-1 md:col-span-2">
             <input 
               type="time" 
-              className="apple-input bg-[#1c1c1e] border-transparent text-sm p-3 flex-1" 
+              className="apple-input bg-[var(--surface-solid)] border-transparent text-sm p-3 flex-1" 
               value={newClass.startTime} 
               onChange={e => setNewClass({...newClass, startTime: e.target.value})}
             />
             <span className="flex items-center text-[var(--text-secondary)]">to</span>
             <input 
               type="time" 
-              className="apple-input bg-[#1c1c1e] border-transparent text-sm p-3 flex-1" 
+              className="apple-input bg-[var(--surface-solid)] border-transparent text-sm p-3 flex-1" 
               value={newClass.endTime} 
               onChange={e => setNewClass({...newClass, endTime: e.target.value})}
             />
           </div>
           <select 
-            className="apple-input bg-[#1c1c1e] border-transparent text-sm p-3"
+            className="apple-input bg-[var(--surface-solid)] border-transparent text-sm p-3"
             value={newClass.term}
             onChange={e => setNewClass({...newClass, term: e.target.value as any})}
           >
@@ -482,11 +482,11 @@ export const UniTimetableTab: React.FC<Props> = ({ userData, updateData }) => {
             </div>
 
             {/* Add Grade Form */}
-            <div className="grid grid-cols-1 md:grid-cols-5 gap-3 mb-6 bg-[#1c1c1e]/50 p-4 rounded-2xl border border-[var(--border)]">
-              <input type="text" placeholder="Module Name" value={newGrade.moduleName} onChange={e => setNewGrade({...newGrade, moduleName: e.target.value})} className="apple-input bg-[#1c1c1e] text-sm p-3" />
-              <input type="text" placeholder="Assessment (e.g. Exam)" value={newGrade.assessmentTitle} onChange={e => setNewGrade({...newGrade, assessmentTitle: e.target.value})} className="apple-input bg-[#1c1c1e] text-sm p-3" />
-              <input type="number" placeholder="Weight %" value={newGrade.weight || ''} onChange={e => setNewGrade({...newGrade, weight: Number(e.target.value)})} className="apple-input bg-[#1c1c1e] text-sm p-3" />
-              <input type="number" placeholder="Grade %" value={newGrade.grade || ''} onChange={e => setNewGrade({...newGrade, grade: Number(e.target.value)})} className="apple-input bg-[#1c1c1e] text-sm p-3" />
+            <div className="grid grid-cols-1 md:grid-cols-5 gap-3 mb-6 bg-[var(--surface-solid)]/50 p-4 rounded-2xl border border-[var(--border)]">
+              <input type="text" placeholder="Module Name" value={newGrade.moduleName} onChange={e => setNewGrade({...newGrade, moduleName: e.target.value})} className="apple-input bg-[var(--surface-solid)] text-sm p-3" />
+              <input type="text" placeholder="Assessment (e.g. Exam)" value={newGrade.assessmentTitle} onChange={e => setNewGrade({...newGrade, assessmentTitle: e.target.value})} className="apple-input bg-[var(--surface-solid)] text-sm p-3" />
+              <input type="number" placeholder="Weight %" value={newGrade.weight || ''} onChange={e => setNewGrade({...newGrade, weight: Number(e.target.value)})} className="apple-input bg-[var(--surface-solid)] text-sm p-3" />
+              <input type="number" placeholder="Grade %" value={newGrade.grade || ''} onChange={e => setNewGrade({...newGrade, grade: Number(e.target.value)})} className="apple-input bg-[var(--surface-solid)] text-sm p-3" />
               <button onClick={handleAddGrade} className="bg-[var(--text-primary)] text-[var(--bg)] font-semibold rounded-xl text-sm p-3 hover:opacity-90 transition-opacity">
                 Add Grade
               </button>
@@ -500,7 +500,7 @@ export const UniTimetableTab: React.FC<Props> = ({ userData, updateData }) => {
                 const currentScore = mod.totalWeight > 0 ? (mod.weightedSum / mod.totalWeight) : 0;
 
                 return (
-                  <div key={modName} className="bg-[#1c1c1e] rounded-2xl p-4 border border-[var(--border)]">
+                  <div key={modName} className="bg-[var(--surface-solid)] rounded-2xl p-4 border border-[var(--border)]">
                     <div className="flex justify-between items-center mb-3 pb-2 border-b border-[rgba(255,255,255,0.1)]">
                       <h4 className="font-bold text-sm text-[var(--text-primary)] truncate">{modName}</h4>
                       <span className={`text-xs font-bold px-2 py-1 rounded-md ${currentScore >= 70 ? 'bg-emerald-500/10 text-emerald-400' : currentScore >= 60 ? 'bg-blue-500/10 text-blue-400' : 'bg-amber-500/10 text-amber-400'}`}>

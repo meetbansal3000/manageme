@@ -107,7 +107,7 @@ export const HubCustomizerModal: React.FC<Props> = ({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
       <div 
-        className="bg-[#1c1c1e] border border-[var(--border)] rounded-3xl p-6 max-w-xl w-full shadow-2xl space-y-5 overflow-hidden flex flex-col max-h-[90vh]"
+        className="bg-[var(--surface-solid)] border border-[var(--border)] rounded-3xl p-6 max-w-xl w-full shadow-2xl space-y-5 overflow-hidden flex flex-col max-h-[90vh]"
         onClick={e => e.stopPropagation()}
       >
         {/* Header */}
@@ -194,7 +194,7 @@ export const HubCustomizerModal: React.FC<Props> = ({
                       step="50"
                       value={prefs.monthlyTargetEarnings}
                       onChange={e => setPrefs({ ...prefs, monthlyTargetEarnings: Number(e.target.value) })}
-                      className="apple-input bg-[#1c1c1e] pl-6 text-xs p-2 w-full text-right font-bold text-emerald-400 font-mono"
+                      className="apple-input bg-[var(--surface-solid)] pl-6 text-xs p-2 w-full text-right font-bold text-emerald-400 font-mono"
                     />
                   </div>
                 </div>
@@ -229,7 +229,7 @@ export const HubCustomizerModal: React.FC<Props> = ({
                         max="60"
                         value={prefs.taxRatePct}
                         onChange={e => setPrefs({ ...prefs, taxRatePct: Number(e.target.value) })}
-                        className="apple-input bg-[#1c1c1e] text-xs p-1.5 w-16 text-center font-mono font-bold"
+                        className="apple-input bg-[var(--surface-solid)] text-xs p-1.5 w-16 text-center font-mono font-bold"
                       />
                       <span className="text-xs text-[var(--text-secondary)]">%</span>
                     </div>
@@ -287,7 +287,7 @@ export const HubCustomizerModal: React.FC<Props> = ({
                       max="168"
                       value={prefs.visaLimit}
                       onChange={e => setPrefs({ ...prefs, visaLimit: Number(e.target.value) })}
-                      className="apple-input bg-[#1c1c1e] text-xs p-2 w-20 text-center font-bold text-amber-400 font-mono"
+                      className="apple-input bg-[var(--surface-solid)] text-xs p-2 w-20 text-center font-bold text-amber-400 font-mono"
                     />
                     <span className="text-xs text-[var(--text-secondary)]">hrs</span>
                   </div>
@@ -329,7 +329,7 @@ export const HubCustomizerModal: React.FC<Props> = ({
                       step="0.5"
                       value={prefs.visaWarningMargin}
                       onChange={e => setPrefs({ ...prefs, visaWarningMargin: Number(e.target.value) })}
-                      className="apple-input bg-[#1c1c1e] text-xs p-1.5 w-16 text-center font-mono"
+                      className="apple-input bg-[var(--surface-solid)] text-xs p-1.5 w-16 text-center font-mono"
                     />
                     <span className="text-xs text-[var(--text-secondary)]">hrs</span>
                   </div>
@@ -372,7 +372,7 @@ export const HubCustomizerModal: React.FC<Props> = ({
                       updated[idx].label = e.target.value;
                       setPrefs({ ...prefs, shiftPresets: updated });
                     }}
-                    className="apple-input bg-[#1c1c1e] text-xs p-2 w-full font-semibold"
+                    className="apple-input bg-[var(--surface-solid)] text-xs p-2 w-full font-semibold"
                   />
                   <div className="flex items-center gap-1">
                     <input
@@ -383,7 +383,7 @@ export const HubCustomizerModal: React.FC<Props> = ({
                         updated[idx].start = e.target.value;
                         setPrefs({ ...prefs, shiftPresets: updated });
                       }}
-                      className="apple-input bg-[#1c1c1e] text-xs p-1.5 text-center w-full"
+                      className="apple-input bg-[var(--surface-solid)] text-xs p-1.5 text-center w-full"
                     />
                     <span className="text-xs text-[var(--text-secondary)]">-</span>
                     <input
@@ -394,7 +394,7 @@ export const HubCustomizerModal: React.FC<Props> = ({
                         updated[idx].end = e.target.value;
                         setPrefs({ ...prefs, shiftPresets: updated });
                       }}
-                      className="apple-input bg-[#1c1c1e] text-xs p-1.5 text-center w-full"
+                      className="apple-input bg-[var(--surface-solid)] text-xs p-1.5 text-center w-full"
                     />
                   </div>
                   <div className="flex items-center gap-1">
@@ -407,7 +407,7 @@ export const HubCustomizerModal: React.FC<Props> = ({
                         updated[idx].hours = Number(e.target.value);
                         setPrefs({ ...prefs, shiftPresets: updated });
                       }}
-                      className="apple-input bg-[#1c1c1e] text-xs p-2 text-center w-20 font-bold text-blue-400"
+                      className="apple-input bg-[var(--surface-solid)] text-xs p-2 text-center w-20 font-bold text-blue-400"
                     />
                     <span className="text-xs text-[var(--text-secondary)]">hrs</span>
                   </div>

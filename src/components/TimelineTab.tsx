@@ -126,7 +126,7 @@ export const TimelineTab: React.FC<TimelineTabProps> = ({
                     <div className={`p-3 border leading-relaxed ${
                       isWarn 
                         ? 'apple-notice' 
-                        : 'bg-[#1c1c1e] border border-[rgba(255,255,255,0.1)] text-[#f5f5f7] rounded-xl p-4'
+                        : 'bg-[var(--surface-solid)] border border-[var(--border)] text-[var(--text-primary)] rounded-xl p-4'
                     }`}>
                       <div className="whitespace-pre-line text-xs font-mono">{item.deadlines}</div>
                       {item.notes && (

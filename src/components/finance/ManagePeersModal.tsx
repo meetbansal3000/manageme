@@ -56,7 +56,7 @@ export const ManagePeersModal: React.FC<Props> = ({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
       <div 
-        className="bg-[#1c1c1e] border border-[var(--border)] rounded-3xl p-6 max-w-lg w-full shadow-2xl space-y-5 overflow-hidden flex flex-col max-h-[90vh]"
+        className="bg-[var(--surface-solid)] border border-[var(--border)] rounded-3xl p-6 max-w-lg w-full shadow-2xl space-y-5 overflow-hidden flex flex-col max-h-[90vh]"
         onClick={e => e.stopPropagation()}
       >
         {/* Header */}
@@ -79,7 +79,7 @@ export const ManagePeersModal: React.FC<Props> = ({
         </div>
 
         {/* Add Peer Form */}
-        <div className="bg-[#141416] p-3.5 rounded-2xl border border-[var(--border)] space-y-3">
+        <div className="bg-[var(--surface-solid)] p-3.5 rounded-2xl border border-[var(--border)] space-y-3">
           <h4 className="text-xs font-semibold text-[var(--text-primary)] flex items-center gap-1.5">
             <Plus className="w-3.5 h-3.5 text-emerald-400" />
             Add New Peer Contact
@@ -90,21 +90,21 @@ export const ManagePeersModal: React.FC<Props> = ({
               placeholder="Peer Name (e.g. Alex, Maya)"
               value={newPeer.name}
               onChange={e => setNewPeer({ ...newPeer, name: e.target.value })}
-              className="apple-input bg-[#1c1c1e] text-xs p-2.5 w-full"
+              className="apple-input bg-[var(--surface-solid)] text-xs p-2.5 w-full"
             />
             <input
               type="text"
               placeholder="Payment Handle (e.g. monzo.me/alex, revolut)"
               value={newPeer.paymentHandle || ''}
               onChange={e => setNewPeer({ ...newPeer, paymentHandle: e.target.value })}
-              className="apple-input bg-[#1c1c1e] text-xs p-2.5 w-full"
+              className="apple-input bg-[var(--surface-solid)] text-xs p-2.5 w-full"
             />
             <input
               type="email"
               placeholder="Email address (for Settle-Up emails)"
               value={newPeer.email || ''}
               onChange={e => setNewPeer({ ...newPeer, email: e.target.value })}
-              className="apple-input bg-[#1c1c1e] text-xs p-2.5 w-full"
+              className="apple-input bg-[var(--surface-solid)] text-xs p-2.5 w-full"
             />
             <div className="flex gap-2">
               <div className="relative flex-1">
@@ -115,7 +115,7 @@ export const ManagePeersModal: React.FC<Props> = ({
                   placeholder="Split %"
                   value={newPeer.defaultSplitPct || 50}
                   onChange={e => setNewPeer({ ...newPeer, defaultSplitPct: Number(e.target.value) })}
-                  className="apple-input bg-[#1c1c1e] text-xs p-2.5 w-full text-center"
+                  className="apple-input bg-[var(--surface-solid)] text-xs p-2.5 w-full text-center"
                 />
               </div>
               <button
@@ -140,7 +140,7 @@ export const ManagePeersModal: React.FC<Props> = ({
             list.map(p => (
               <div
                 key={p.name}
-                className="p-3.5 rounded-2xl bg-[#141416] border border-[var(--border)] space-y-2.5"
+                className="p-3.5 rounded-2xl bg-[var(--surface-solid)] border border-[var(--border)] space-y-2.5"
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
@@ -165,7 +165,7 @@ export const ManagePeersModal: React.FC<Props> = ({
                       placeholder="e.g. monzo.me/..."
                       value={p.paymentHandle || ''}
                       onChange={e => handleUpdate(p.name, { paymentHandle: e.target.value })}
-                      className="apple-input bg-[#1c1c1e] text-xs p-1.5 w-full mt-0.5"
+                      className="apple-input bg-[var(--surface-solid)] text-xs p-1.5 w-full mt-0.5"
                     />
                   </div>
                   <div>
@@ -175,7 +175,7 @@ export const ManagePeersModal: React.FC<Props> = ({
                       placeholder="alex@example.com"
                       value={p.email || ''}
                       onChange={e => handleUpdate(p.name, { email: e.target.value })}
-                      className="apple-input bg-[#1c1c1e] text-xs p-1.5 w-full mt-0.5"
+                      className="apple-input bg-[var(--surface-solid)] text-xs p-1.5 w-full mt-0.5"
                     />
                   </div>
                 </div>

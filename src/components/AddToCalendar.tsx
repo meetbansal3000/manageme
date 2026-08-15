@@ -87,7 +87,7 @@ export const AddToCalendar: React.FC<AddToCalendarProps> = ({
       {isOpen && (
         <>
           <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)}></div>
-          <div className="absolute right-0 mt-2 w-48 rounded-xl shadow-lg bg-[#2c2c2e] border border-[var(--border)] ring-1 ring-black ring-opacity-5 z-50 overflow-hidden">
+          <div className="absolute right-0 mt-2 w-48 rounded-xl shadow-lg bg-[var(--surface-solid)] border border-[var(--border)] ring-1 ring-black ring-opacity-5 z-50 overflow-hidden">
             <div className="py-1">
               <a 
                 href={createGoogleCalendarUrl()}

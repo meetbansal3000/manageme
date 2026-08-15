@@ -73,7 +73,7 @@ export const EditInvoiceModal: React.FC<Props> = ({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
       <div 
-        className="bg-[#1c1c1e] border border-[var(--border)] rounded-3xl p-6 max-w-lg w-full shadow-2xl space-y-5 overflow-hidden flex flex-col max-h-[90vh]"
+        className="bg-[var(--surface-solid)] border border-[var(--border)] rounded-3xl p-6 max-w-lg w-full shadow-2xl space-y-5 overflow-hidden flex flex-col max-h-[90vh]"
         onClick={e => e.stopPropagation()}
       >
         {/* Header */}
@@ -110,7 +110,7 @@ export const EditInvoiceModal: React.FC<Props> = ({
                 placeholder="e.g. Apple, Amazon, British Gas"
                 value={formData.vendor || ''}
                 onChange={e => setFormData({ ...formData, vendor: e.target.value })}
-                className="apple-input bg-[#141416] text-xs p-2.5 w-full font-medium"
+                className="apple-input bg-[var(--surface-solid)] text-xs p-2.5 w-full font-medium"
                 required
               />
             </div>
@@ -124,13 +124,13 @@ export const EditInvoiceModal: React.FC<Props> = ({
                 placeholder="e.g. INV-2026-089"
                 value={formData.invoiceNumber || ''}
                 onChange={e => setFormData({ ...formData, invoiceNumber: e.target.value })}
-                className="apple-input bg-[#141416] text-xs p-2.5 w-full font-mono"
+                className="apple-input bg-[var(--surface-solid)] text-xs p-2.5 w-full font-mono"
               />
             </div>
           </div>
 
           {/* Amount & Date */}
-          <div className="grid grid-cols-2 gap-3 bg-[#141416] p-3.5 rounded-2xl border border-[var(--border)]">
+          <div className="grid grid-cols-2 gap-3 bg-[var(--surface-solid)] p-3.5 rounded-2xl border border-[var(--border)]">
             <div>
               <label className="block text-[11px] font-semibold text-[var(--text-secondary)] mb-1">
                 Total Amount *
@@ -144,7 +144,7 @@ export const EditInvoiceModal: React.FC<Props> = ({
                   placeholder="0.00"
                   value={formData.amount ?? ''}
                   onChange={e => setFormData({ ...formData, amount: Number(e.target.value) })}
-                  className="apple-input bg-[#1c1c1e] pl-7 text-xs p-2 w-full font-bold text-red-400 font-mono"
+                  className="apple-input bg-[var(--surface-solid)] pl-7 text-xs p-2 w-full font-bold text-red-400 font-mono"
                   required
                 />
               </div>
@@ -158,7 +158,7 @@ export const EditInvoiceModal: React.FC<Props> = ({
                 type="date"
                 value={formData.date || ''}
                 onChange={e => setFormData({ ...formData, date: e.target.value })}
-                className="apple-input bg-[#1c1c1e] text-xs p-2 w-full font-medium"
+                className="apple-input bg-[var(--surface-solid)] text-xs p-2 w-full font-medium"
                 required
               />
             </div>
@@ -173,7 +173,7 @@ export const EditInvoiceModal: React.FC<Props> = ({
               <select
                 value={formData.category || 'Other'}
                 onChange={e => setFormData({ ...formData, category: e.target.value })}
-                className="apple-input bg-[#141416] text-xs p-2.5 w-full"
+                className="apple-input bg-[var(--surface-solid)] text-xs p-2.5 w-full"
               >
                 {categories.map(c => (
                   <option key={c} value={c}>{c}</option>
@@ -188,7 +188,7 @@ export const EditInvoiceModal: React.FC<Props> = ({
               <select
                 value={formData.status || 'Paid'}
                 onChange={e => setFormData({ ...formData, status: e.target.value as any })}
-                className="apple-input bg-[#141416] text-xs p-2.5 w-full"
+                className="apple-input bg-[var(--surface-solid)] text-xs p-2.5 w-full"
               >
                 <option value="Paid">Paid Out of Pocket</option>
                 <option value="Pending">Pending Employer Reimbursement</option>
@@ -209,7 +209,7 @@ export const EditInvoiceModal: React.FC<Props> = ({
                 placeholder="e.g. 5.50"
                 value={formData.taxAmount || ''}
                 onChange={e => setFormData({ ...formData, taxAmount: Number(e.target.value) })}
-                className="apple-input bg-[#141416] text-xs p-2.5 w-full font-mono"
+                className="apple-input bg-[var(--surface-solid)] text-xs p-2.5 w-full font-mono"
               />
             </div>
 
@@ -222,7 +222,7 @@ export const EditInvoiceModal: React.FC<Props> = ({
                 placeholder="e.g. Annual Cloud Hosting"
                 value={formData.description || ''}
                 onChange={e => setFormData({ ...formData, description: e.target.value })}
-                className="apple-input bg-[#141416] text-xs p-2.5 w-full"
+                className="apple-input bg-[var(--surface-solid)] text-xs p-2.5 w-full"
               />
             </div>
           </div>
@@ -237,7 +237,7 @@ export const EditInvoiceModal: React.FC<Props> = ({
               value={formData.notes || ''}
               onChange={e => setFormData({ ...formData, notes: e.target.value })}
               rows={2}
-              className="apple-input bg-[#141416] text-xs p-2.5 w-full resize-none"
+              className="apple-input bg-[var(--surface-solid)] text-xs p-2.5 w-full resize-none"
             />
           </div>
 

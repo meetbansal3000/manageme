@@ -83,7 +83,7 @@ export const EditShiftModal: React.FC<Props> = ({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
       <div 
-        className="bg-[#1c1c1e] border border-[var(--border)] rounded-3xl p-6 max-w-lg w-full shadow-2xl space-y-5 overflow-hidden flex flex-col max-h-[90vh]"
+        className="bg-[var(--surface-solid)] border border-[var(--border)] rounded-3xl p-6 max-w-lg w-full shadow-2xl space-y-5 overflow-hidden flex flex-col max-h-[90vh]"
         onClick={e => e.stopPropagation()}
       >
         {/* Header */}
@@ -118,7 +118,7 @@ export const EditShiftModal: React.FC<Props> = ({
                   type="date"
                   value={formData.date || ''}
                   onChange={e => setFormData({ ...formData, date: e.target.value })}
-                  className="apple-input bg-[#141416] text-sm p-2.5 w-full font-medium"
+                  className="apple-input bg-[var(--surface-solid)] text-sm p-2.5 w-full font-medium"
                   required
                 />
               </div>
@@ -134,14 +134,14 @@ export const EditShiftModal: React.FC<Props> = ({
                   placeholder="e.g. University Library / Barista"
                   value={formData.roleTitle || ''}
                   onChange={e => setFormData({ ...formData, roleTitle: e.target.value })}
-                  className="apple-input bg-[#141416] text-sm p-2.5 w-full"
+                  className="apple-input bg-[var(--surface-solid)] text-sm p-2.5 w-full"
                 />
               </div>
             </div>
           </div>
 
           {/* Time Range & Hours */}
-          <div className="grid grid-cols-3 gap-3 bg-[#141416] p-3.5 rounded-2xl border border-[var(--border)]">
+          <div className="grid grid-cols-3 gap-3 bg-[var(--surface-solid)] p-3.5 rounded-2xl border border-[var(--border)]">
             <div>
               <label className="block text-[11px] font-semibold text-[var(--text-secondary)] mb-1">
                 Start Time *
@@ -150,7 +150,7 @@ export const EditShiftModal: React.FC<Props> = ({
                 type="time"
                 value={formData.startTime || ''}
                 onChange={e => handleTimeChange('startTime', e.target.value)}
-                className="apple-input bg-[#1c1c1e] text-xs p-2 w-full text-center"
+                className="apple-input bg-[var(--surface-solid)] text-xs p-2 w-full text-center"
                 required
               />
             </div>
@@ -163,7 +163,7 @@ export const EditShiftModal: React.FC<Props> = ({
                 type="time"
                 value={formData.endTime || ''}
                 onChange={e => handleTimeChange('endTime', e.target.value)}
-                className="apple-input bg-[#1c1c1e] text-xs p-2 w-full text-center"
+                className="apple-input bg-[var(--surface-solid)] text-xs p-2 w-full text-center"
                 required
               />
             </div>
@@ -179,14 +179,14 @@ export const EditShiftModal: React.FC<Props> = ({
                 max="24"
                 value={formData.hours || ''}
                 onChange={e => setFormData({ ...formData, hours: Number(e.target.value) })}
-                className="apple-input bg-[#1c1c1e] text-xs p-2 w-full text-center font-bold text-blue-400"
+                className="apple-input bg-[var(--surface-solid)] text-xs p-2 w-full text-center font-bold text-blue-400"
                 required
               />
             </div>
           </div>
 
           {/* Pay Rate & Multiplier */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-[#141416] p-3.5 rounded-2xl border border-[var(--border)]">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-[var(--surface-solid)] p-3.5 rounded-2xl border border-[var(--border)]">
             <div>
               <label className="block text-xs font-semibold text-[var(--text-secondary)] mb-1">
                 Base Hourly Rate ({currencySymbol})
@@ -200,7 +200,7 @@ export const EditShiftModal: React.FC<Props> = ({
                   step="0.05"
                   value={formData.hourlyRate || baseHourlyRate}
                   onChange={e => setFormData({ ...formData, hourlyRate: Number(e.target.value) })}
-                  className="apple-input bg-[#1c1c1e] pl-7 text-xs p-2.5 w-full font-mono"
+                  className="apple-input bg-[var(--surface-solid)] pl-7 text-xs p-2.5 w-full font-mono"
                 />
               </div>
             </div>
@@ -212,7 +212,7 @@ export const EditShiftModal: React.FC<Props> = ({
               <select
                 value={formData.rateMultiplier || 1.0}
                 onChange={e => setFormData({ ...formData, rateMultiplier: Number(e.target.value) })}
-                className="apple-input bg-[#1c1c1e] text-xs p-2.5 w-full font-medium"
+                className="apple-input bg-[var(--surface-solid)] text-xs p-2.5 w-full font-medium"
               >
                 <option value={1.0}>1.0x (Standard Rate)</option>
                 <option value={1.25}>1.25x (Evening / Weekend)</option>
@@ -244,7 +244,7 @@ export const EditShiftModal: React.FC<Props> = ({
                 placeholder="e.g. Bill Bryson Library, Level 2"
                 value={formData.location || ''}
                 onChange={e => setFormData({ ...formData, location: e.target.value })}
-                className="apple-input bg-[#141416] text-xs p-2.5 w-full"
+                className="apple-input bg-[var(--surface-solid)] text-xs p-2.5 w-full"
               />
             </div>
 
@@ -257,7 +257,7 @@ export const EditShiftModal: React.FC<Props> = ({
                 value={formData.notes || ''}
                 onChange={e => setFormData({ ...formData, notes: e.target.value })}
                 rows={2}
-                className="apple-input bg-[#141416] text-xs p-2.5 w-full resize-none"
+                className="apple-input bg-[var(--surface-solid)] text-xs p-2.5 w-full resize-none"
               />
             </div>
           </div>

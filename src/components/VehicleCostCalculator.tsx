@@ -95,8 +95,10 @@ export const VehicleCostCalculator: React.FC = () => {
                 <span className="text-gray-400 font-mono">£</span>
                 <input
                   type="number"
-                  value={calcData.depreciation}
-                  onChange={(e) => setCalcData({ ...calcData, depreciation: Number(e.target.value) })}
+                  step="0.01"
+                  placeholder="0.00"
+                  value={calcData.depreciation === 0 ? '' : calcData.depreciation}
+                  onChange={(e) => setCalcData({ ...calcData, depreciation: e.target.value === '' ? 0 : parseFloat(e.target.value) || 0 })}
                   className="bg-transparent text-right outline-none border-b border-white/20 focus:border-blue-500 w-24 text-white font-mono"
                 />
               </div>
@@ -109,8 +111,10 @@ export const VehicleCostCalculator: React.FC = () => {
                 <span className="text-gray-400 font-mono">£</span>
                 <input
                   type="number"
-                  value={calcData.insurance}
-                  onChange={(e) => setCalcData({ ...calcData, insurance: Number(e.target.value) })}
+                  step="0.01"
+                  placeholder="0.00"
+                  value={calcData.insurance === 0 ? '' : calcData.insurance}
+                  onChange={(e) => setCalcData({ ...calcData, insurance: e.target.value === '' ? 0 : parseFloat(e.target.value) || 0 })}
                   className="bg-transparent text-right outline-none border-b border-white/20 focus:border-blue-500 w-24 text-white font-mono"
                 />
               </div>
@@ -123,8 +127,10 @@ export const VehicleCostCalculator: React.FC = () => {
                 <span className="text-gray-400 font-mono">£</span>
                 <input
                   type="number"
-                  value={calcData.fuel}
-                  onChange={(e) => setCalcData({ ...calcData, fuel: Number(e.target.value) })}
+                  step="0.01"
+                  placeholder="0.00"
+                  value={calcData.fuel === 0 ? '' : calcData.fuel}
+                  onChange={(e) => setCalcData({ ...calcData, fuel: e.target.value === '' ? 0 : parseFloat(e.target.value) || 0 })}
                   className="bg-transparent text-right outline-none border-b border-white/20 focus:border-blue-500 w-24 text-white font-mono"
                 />
               </div>
@@ -137,8 +143,10 @@ export const VehicleCostCalculator: React.FC = () => {
                 <span className="text-gray-400 font-mono">£</span>
                 <input
                   type="number"
-                  value={calcData.tax}
-                  onChange={(e) => setCalcData({ ...calcData, tax: Number(e.target.value) })}
+                  step="0.01"
+                  placeholder="0.00"
+                  value={calcData.tax === 0 ? '' : calcData.tax}
+                  onChange={(e) => setCalcData({ ...calcData, tax: e.target.value === '' ? 0 : parseFloat(e.target.value) || 0 })}
                   className="bg-transparent text-right outline-none border-b border-white/20 focus:border-blue-500 w-24 text-white font-mono"
                 />
               </div>
@@ -148,10 +156,10 @@ export const VehicleCostCalculator: React.FC = () => {
             <div className="pt-4 border-t border-[var(--border)] flex justify-between items-center">
               <div>
                 <span className="font-bold text-gray-300 block text-xs uppercase tracking-wider">Net Monthly Cost</span>
-                <span className="text-[11px] text-gray-400 font-mono">Annual: £{(netMonthlyCost * 12).toLocaleString()}</span>
+                <span className="text-[11px] text-gray-400 font-mono">Annual: £{(netMonthlyCost * 12).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
               </div>
               <span className="font-bold text-2xl text-blue-400 font-mono">
-                £{netMonthlyCost.toLocaleString()}
+                £{netMonthlyCost.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </span>
             </div>
           </div>

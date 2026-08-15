@@ -299,6 +299,43 @@ export const SettingsDrawer: React.FC<SettingsDrawerProps> = ({ isOpen, onClose,
             </div>
           </section>
 
+          {/* iOS Inset Grouped List - AI Engine & Model Routing */}
+          <section className="space-y-2">
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-blue-400 px-1 flex items-center gap-1.5">
+              <Sparkles className="w-3.5 h-3.5 stroke-[1.5]" />
+              AI Intelligence Engine
+            </h3>
+            <div className="bg-neutral-900/50 rounded-2xl border border-white/10 divide-y divide-white/5 overflow-hidden">
+              <div className="p-3.5 flex items-center justify-between">
+                <div>
+                  <h4 className="text-xs font-semibold text-white">Default Core Model</h4>
+                  <p className="text-[10px] text-neutral-400">High-speed reasoning & multimodal analysis</p>
+                </div>
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-blue-500/20 text-blue-300 border border-blue-500/30">
+                  gemini-2.5-flash
+                </span>
+              </div>
+              <div className="p-3.5 flex items-center justify-between">
+                <div>
+                  <h4 className="text-xs font-semibold text-white">Live News Impact Agent</h4>
+                  <p className="text-[10px] text-neutral-400">Sector exposure & DCF valuation impact</p>
+                </div>
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                  Connected
+                </span>
+              </div>
+              <div className="p-3.5 flex items-center justify-between">
+                <div>
+                  <h4 className="text-xs font-semibold text-white">Multimodal Study Engine</h4>
+                  <p className="text-[10px] text-neutral-400">Snap & Solve, Mock Exams, Feynman Critique</p>
+                </div>
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-purple-500/20 text-purple-300 border border-purple-500/30">
+                  Active
+                </span>
+              </div>
+            </div>
+          </section>
+
           {/* iOS Inset Grouped List - Display & Dock Toggles */}
           <section className="space-y-2">
             <h3 className="text-xs font-semibold uppercase tracking-wider text-neutral-400 px-1">Display & Controls</h3>

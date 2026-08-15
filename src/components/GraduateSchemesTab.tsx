@@ -31,7 +31,10 @@ import {
   Check,
   Layers,
   CheckCircle2,
-  AlertCircle
+  AlertCircle,
+  Upload,
+  Mail,
+  Link2
 } from 'lucide-react';
 import { GraduateScheme, TrackerStatus, FilterRisk, AccaAdvantage, DifficultyLevel } from '../types';
 import { useScrollFadeUp } from "../hooks/useScrollFadeUp";
@@ -235,7 +238,7 @@ const SchemeRowItem = ({
           className={`w-full px-2 py-1 text-xs font-semibold rounded-md border cursor-pointer focus:outline-none ${getStageBadgeStyle(g.status || 'To Apply')}`}
         >
           {ALL_STAGES.map(st => (
-            <option key={st} value={st} className="bg-[#1c1c1e] text-white">
+            <option key={st} value={st}>
               {st}
             </option>
           ))}
@@ -692,6 +695,30 @@ export const GraduateSchemesTab: React.FC<GraduateSchemesTabProps> = ({
                 {selectedIds.length}
               </span>
             )}
+          </button>
+
+          <button 
+            onClick={() => window.dispatchEvent(new CustomEvent('openSmartImport', { detail: { scope: 'jobs' } }))}
+            className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-blue-600/20 hover:bg-blue-600/30 border border-blue-500/30 text-xs font-semibold text-blue-300 transition-colors cursor-pointer"
+            title="Import target roles from CSV, JSON, TXT or Excel"
+          >
+            <Upload className="w-3.5 h-3.5" /> Smart Import / File Sync
+          </button>
+
+          <button 
+            onClick={() => window.dispatchEvent(new CustomEvent('openJobSyncHub'))}
+            className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-blue-600/20 hover:bg-blue-600/30 border border-blue-500/30 text-xs font-semibold text-blue-300 transition-colors cursor-pointer"
+            title="Connect LinkedIn, Indeed & Auto-Capture Job URLs"
+          >
+            <Link2 className="w-3.5 h-3.5" /> Job Platforms Sync
+          </button>
+
+          <button 
+            onClick={() => window.dispatchEvent(new CustomEvent('openOutreachHub', { detail: { company: 'Goldman Sachs', role: 'Summer Analyst - M&A Advisory' } }))}
+            className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-purple-600/20 hover:bg-purple-600/30 border border-purple-500/30 text-xs font-semibold text-purple-300 transition-colors cursor-pointer"
+            title="Find HR email & draft cold pitch"
+          >
+            <Mail className="w-3.5 h-3.5" /> Cold Outreach & HR Finder
           </button>
 
           <button 
@@ -1172,7 +1199,7 @@ export const GraduateSchemesTab: React.FC<GraduateSchemesTabProps> = ({
                       className={`w-full appearance-none px-3 py-1.5 text-xs font-semibold rounded-lg border cursor-pointer focus:outline-none transition-all ${getStageBadgeStyle(g.status || 'To Apply')}`}
                     >
                       {ALL_STAGES.map(st => (
-                        <option key={st} value={st} className="bg-[#1c1c1e] text-white">
+                        <option key={st} value={st}>
                           {st}
                         </option>
                       ))}
@@ -1181,6 +1208,15 @@ export const GraduateSchemesTab: React.FC<GraduateSchemesTabProps> = ({
                   </div>
 
                   <div className="flex items-center gap-1.5">
+                    <button
+                      onClick={() => window.dispatchEvent(new CustomEvent('openOutreachHub', { detail: { company: g.firm, role: g.roleTitle } }))}
+                      className="px-2.5 py-1.5 rounded-lg bg-purple-500/15 hover:bg-purple-500/25 border border-purple-500/30 text-purple-300 text-xs font-semibold flex items-center gap-1 transition-all cursor-pointer"
+                      title={`Find HR email & draft cold pitch for ${g.firm}`}
+                    >
+                      <Mail className="w-3 h-3" />
+                      <span className="hidden sm:inline">Cold Email</span>
+                    </button>
+
                     <button
                       onClick={() => handleGeneratePitch(g.id, g.firm, g.roleTitle)}
                       disabled={loadingPitch === g.id}

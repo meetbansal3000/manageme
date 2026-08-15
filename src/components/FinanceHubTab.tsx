@@ -72,7 +72,7 @@ const ShiftRowItem = ({
 
   return (
     <div style={style} className="pb-2 pr-2">
-      <div className={`flex items-center justify-between p-3 rounded-2xl bg-[#1c1c1e] border transition-all group h-[72px] ${
+      <div className={`flex items-center justify-between p-3 rounded-2xl bg-[var(--surface-solid)] border transition-all group h-[72px] ${
         isSelected ? 'border-blue-500 bg-blue-500/5 shadow-sm shadow-blue-500/10' : 'border-[var(--border)] hover:border-[var(--border)]/80'
       }`}>
         <div className="flex items-center gap-3 overflow-hidden flex-1 mr-2">
@@ -195,7 +195,7 @@ const ExpenseRowItem = ({
 
   return (
     <div style={style} className="pb-2 pr-2">
-      <div className={`flex items-center justify-between p-3 rounded-2xl bg-[#1c1c1e] border transition-all group h-[74px] ${
+      <div className={`flex items-center justify-between p-3 rounded-2xl bg-[var(--surface-solid)] border transition-all group h-[74px] ${
         isSelected ? 'border-emerald-500 bg-emerald-500/5 shadow-sm shadow-emerald-500/10' : 'border-[var(--border)] hover:border-[var(--border)]/80'
       }`}>
         <div className="flex items-center gap-3 overflow-hidden flex-1 mr-2">
@@ -970,7 +970,7 @@ export const FinanceHubTab: React.FC<Props> = ({ userData, updateData }) => {
       {/* Global Financial Metrics Bar */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         {/* Total Earned */}
-        <div className="p-4 rounded-3xl bg-[#1c1c1e] border border-[var(--border)] flex flex-col justify-between">
+        <div className="p-4 rounded-3xl bg-[var(--surface-solid)] border border-[var(--border)] flex flex-col justify-between">
           <div className="flex justify-between items-start">
             <span className="text-[11px] text-[var(--text-secondary)] font-semibold uppercase tracking-wider">Gross Wages</span>
             <div className="p-1.5 rounded-xl bg-emerald-500/10 text-emerald-400">
@@ -978,7 +978,7 @@ export const FinanceHubTab: React.FC<Props> = ({ userData, updateData }) => {
             </div>
           </div>
           <div className="mt-2">
-            <span className="text-xl font-bold text-emerald-400 font-mono">
+            <span className="text-xl font-bold text-emerald-400 font-mono tracking-tighter tabular-nums">
               {currencySymbol}{totalEarnedGross.toFixed(2)}
             </span>
             <span className="text-[10px] text-[var(--text-secondary)] block mt-0.5">
@@ -988,7 +988,7 @@ export const FinanceHubTab: React.FC<Props> = ({ userData, updateData }) => {
         </div>
 
         {/* Total Spent */}
-        <div className="p-4 rounded-3xl bg-[#1c1c1e] border border-[var(--border)] flex flex-col justify-between">
+        <div className="p-4 rounded-3xl bg-[var(--surface-solid)] border border-[var(--border)] flex flex-col justify-between">
           <div className="flex justify-between items-start">
             <span className="text-[11px] text-[var(--text-secondary)] font-semibold uppercase tracking-wider">Total Expenses</span>
             <div className="p-1.5 rounded-xl bg-red-500/10 text-red-400">
@@ -996,7 +996,7 @@ export const FinanceHubTab: React.FC<Props> = ({ userData, updateData }) => {
             </div>
           </div>
           <div className="mt-2">
-            <span className="text-xl font-bold text-red-400 font-mono">
+            <span className="text-xl font-bold text-red-400 font-mono tracking-tighter tabular-nums">
               {currencySymbol}{totalExpenses.toFixed(2)}
             </span>
             <span className="text-[10px] text-[var(--text-secondary)] block mt-0.5">
@@ -1006,7 +1006,7 @@ export const FinanceHubTab: React.FC<Props> = ({ userData, updateData }) => {
         </div>
 
         {/* Net Savings */}
-        <div className="p-4 rounded-3xl bg-[#1c1c1e] border border-[var(--border)] flex flex-col justify-between">
+        <div className="p-4 rounded-3xl bg-[var(--surface-solid)] border border-[var(--border)] flex flex-col justify-between">
           <div className="flex justify-between items-start">
             <span className="text-[11px] text-[var(--text-secondary)] font-semibold uppercase tracking-wider">Net Position</span>
             <div className={`p-1.5 rounded-xl ${netSavings >= 0 ? 'bg-emerald-500/10 text-emerald-400' : 'bg-red-500/10 text-red-400'}`}>
@@ -1014,7 +1014,7 @@ export const FinanceHubTab: React.FC<Props> = ({ userData, updateData }) => {
             </div>
           </div>
           <div className="mt-2">
-            <span className={`text-xl font-bold font-mono ${netSavings >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+            <span className={`text-xl font-bold font-mono tracking-tighter tabular-nums ${netSavings >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
               {netSavings >= 0 ? '+' : ''}{currencySymbol}{netSavings.toFixed(2)}
             </span>
             <span className="text-[10px] text-[var(--text-secondary)] block mt-0.5">
@@ -1024,7 +1024,7 @@ export const FinanceHubTab: React.FC<Props> = ({ userData, updateData }) => {
         </div>
 
         {/* Monthly Target Goal */}
-        <div className="p-4 rounded-3xl bg-[#1c1c1e] border border-[var(--border)] flex flex-col justify-between">
+        <div className="p-4 rounded-3xl bg-[var(--surface-solid)] border border-[var(--border)] flex flex-col justify-between">
           <div className="flex justify-between items-start">
             <span className="text-[11px] text-[var(--text-secondary)] font-semibold uppercase tracking-wider">Monthly Goal</span>
             <div className="p-1.5 rounded-xl bg-blue-500/10 text-blue-400">
@@ -1082,7 +1082,7 @@ export const FinanceHubTab: React.FC<Props> = ({ userData, updateData }) => {
                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-semibold transition-all ${
                     isBatchShiftMode || selectedShiftIds.length > 0
                       ? 'bg-blue-500/20 text-blue-400 border-blue-500/40 shadow-sm shadow-blue-500/10'
-                      : 'bg-[#141416] hover:bg-[rgba(255,255,255,0.08)] border-[var(--border)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
+                      : 'bg-[var(--surface-solid)] hover:bg-[rgba(255,255,255,0.08)] border-[var(--border)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
                   }`}
                   title="Toggle Batch Shifts Selection"
                 >
@@ -1097,7 +1097,7 @@ export const FinanceHubTab: React.FC<Props> = ({ userData, updateData }) => {
 
                 {/* Visa Limit Toggle */}
                 {hubPrefs.visibleModules.visaCap && (
-                  <div className="flex items-center gap-2 bg-[#141416] px-3 py-1.5 rounded-xl border border-[var(--border)] text-xs">
+                  <div className="flex items-center gap-2 bg-[var(--surface-solid)] px-3 py-1.5 rounded-xl border border-[var(--border)] text-xs">
                     <span className="text-[var(--text-secondary)]">Term-Time:</span>
                     <button
                       onClick={() => {
@@ -1117,7 +1117,7 @@ export const FinanceHubTab: React.FC<Props> = ({ userData, updateData }) => {
 
             {/* Floating / Sticky Batch Actions Bar for Shifts */}
             {(isBatchShiftMode || selectedShiftIds.length > 0) && (
-              <div className="p-3.5 rounded-2xl bg-[#141416] border border-blue-500/40 shadow-lg shadow-blue-500/5 transition-all flex flex-wrap items-center justify-between gap-3">
+              <div className="p-3.5 rounded-2xl bg-[var(--surface-solid)] border border-blue-500/40 shadow-lg shadow-blue-500/5 transition-all flex flex-wrap items-center justify-between gap-3">
                 <div className="flex flex-wrap items-center gap-2.5">
                   <button
                     type="button"
@@ -1152,7 +1152,7 @@ export const FinanceHubTab: React.FC<Props> = ({ userData, updateData }) => {
                         }
                       }}
                       defaultValue=""
-                      className="px-2 py-1 bg-[#1c1c1e] border border-[var(--border)] rounded-lg text-xs font-mono text-[var(--text-primary)] disabled:opacity-50 cursor-pointer focus:outline-none"
+                      className="px-2 py-1 bg-[var(--surface-solid)] border border-[var(--border)] rounded-lg text-xs font-mono text-[var(--text-primary)] disabled:opacity-50 cursor-pointer focus:outline-none"
                     >
                       <option value="" disabled>Set Mult...</option>
                       <option value="1.0">1.0x (Base)</option>
@@ -1191,7 +1191,7 @@ export const FinanceHubTab: React.FC<Props> = ({ userData, updateData }) => {
 
             {/* Visa Cap Progress Widget */}
             {hubPrefs.visibleModules.visaCap && (
-              <div className="bg-[#141416] border border-[var(--border)] rounded-2xl p-4 space-y-2 relative">
+              <div className="bg-[var(--surface-solid)] border border-[var(--border)] rounded-2xl p-4 space-y-2 relative">
                 <div className="flex justify-between items-center text-xs">
                   <span className="text-[var(--text-secondary)] font-medium">
                     Visa Work-Cap ({hubPrefs.visaWindowMode === 'calendarMon' ? 'Mon-Sun Week' : hubPrefs.visaWindowMode === 'calendarSun' ? 'Sun-Sat Week' : 'Rolling 7 Days'})
@@ -1241,7 +1241,7 @@ export const FinanceHubTab: React.FC<Props> = ({ userData, updateData }) => {
                     <button
                       key={idx}
                       onClick={() => handleApplyPreset(preset)}
-                      className="px-3 py-1 rounded-xl bg-[#141416] hover:bg-blue-500/15 text-xs text-[var(--text-secondary)] hover:text-blue-300 border border-[var(--border)] transition-all flex items-center gap-1 font-medium"
+                      className="px-3 py-1 rounded-xl bg-[var(--surface-solid)] hover:bg-blue-500/15 text-xs text-[var(--text-secondary)] hover:text-blue-300 border border-[var(--border)] transition-all flex items-center gap-1 font-medium"
                     >
                       <Sparkles className="w-3 h-3 text-blue-400" />
                       <span>{preset.label}</span>
@@ -1253,7 +1253,7 @@ export const FinanceHubTab: React.FC<Props> = ({ userData, updateData }) => {
             )}
 
             {/* Shift Input Form */}
-            <div className="space-y-3 bg-[#141416] p-4 rounded-2xl border border-[var(--border)]">
+            <div className="space-y-3 bg-[var(--surface-solid)] p-4 rounded-2xl border border-[var(--border)]">
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                 <div className="col-span-2">
                   <label className="block text-[10px] font-semibold text-[var(--text-secondary)] mb-1">Shift Date</label>
@@ -1261,7 +1261,7 @@ export const FinanceHubTab: React.FC<Props> = ({ userData, updateData }) => {
                     type="date" 
                     value={newShift.date} 
                     onChange={e => setNewShift({ ...newShift, date: e.target.value })} 
-                    className="apple-input bg-[#1c1c1e] text-xs p-2.5 w-full font-medium" 
+                    className="apple-input bg-[var(--surface-solid)] text-xs p-2.5 w-full font-medium" 
                   />
                 </div>
                 <div className="col-span-2">
@@ -1271,7 +1271,7 @@ export const FinanceHubTab: React.FC<Props> = ({ userData, updateData }) => {
                     placeholder="e.g. University Library" 
                     value={newShift.roleTitle} 
                     onChange={e => setNewShift({ ...newShift, roleTitle: e.target.value })} 
-                    className="apple-input bg-[#1c1c1e] text-xs p-2.5 w-full" 
+                    className="apple-input bg-[var(--surface-solid)] text-xs p-2.5 w-full" 
                   />
                 </div>
               </div>
@@ -1283,7 +1283,7 @@ export const FinanceHubTab: React.FC<Props> = ({ userData, updateData }) => {
                     type="time" 
                     value={newShift.startTime} 
                     onChange={e => setNewShift({ ...newShift, startTime: e.target.value })} 
-                    className="apple-input bg-[#1c1c1e] text-xs p-2 w-full text-center" 
+                    className="apple-input bg-[var(--surface-solid)] text-xs p-2 w-full text-center" 
                   />
                 </div>
                 <div>
@@ -1292,7 +1292,7 @@ export const FinanceHubTab: React.FC<Props> = ({ userData, updateData }) => {
                     type="time" 
                     value={newShift.endTime} 
                     onChange={e => setNewShift({ ...newShift, endTime: e.target.value })} 
-                    className="apple-input bg-[#1c1c1e] text-xs p-2 w-full text-center" 
+                    className="apple-input bg-[var(--surface-solid)] text-xs p-2 w-full text-center" 
                   />
                 </div>
                 <div>
@@ -1302,7 +1302,7 @@ export const FinanceHubTab: React.FC<Props> = ({ userData, updateData }) => {
                     step="0.25"
                     value={newShift.hours || ''} 
                     onChange={e => setNewShift({ ...newShift, hours: Number(e.target.value) })} 
-                    className="apple-input bg-[#1c1c1e] text-xs p-2 w-full text-center font-bold text-blue-400 font-mono" 
+                    className="apple-input bg-[var(--surface-solid)] text-xs p-2 w-full text-center font-bold text-blue-400 font-mono" 
                   />
                 </div>
                 <div>
@@ -1310,7 +1310,7 @@ export const FinanceHubTab: React.FC<Props> = ({ userData, updateData }) => {
                   <select
                     value={newShift.rateMultiplier}
                     onChange={e => setNewShift({ ...newShift, rateMultiplier: Number(e.target.value) })}
-                    className="apple-input bg-[#1c1c1e] text-xs p-2 w-full font-medium"
+                    className="apple-input bg-[var(--surface-solid)] text-xs p-2 w-full font-medium"
                   >
                     <option value={1.0}>1.0x</option>
                     <option value={1.25}>1.25x</option>
@@ -1344,7 +1344,7 @@ export const FinanceHubTab: React.FC<Props> = ({ userData, updateData }) => {
                     placeholder="Search shifts by employer or date..."
                     value={shiftSearchQuery}
                     onChange={e => setShiftSearchQuery(e.target.value)}
-                    className="apple-input bg-[#141416] pl-8 text-xs p-2 w-full"
+                    className="apple-input bg-[var(--surface-solid)] pl-8 text-xs p-2 w-full"
                   />
                 </div>
                 <span className="text-[11px] font-mono text-[var(--text-secondary)] shrink-0">
@@ -1353,7 +1353,7 @@ export const FinanceHubTab: React.FC<Props> = ({ userData, updateData }) => {
               </div>
 
               {filteredShifts.length === 0 ? (
-                <div className="h-36 flex flex-col items-center justify-center text-[var(--text-secondary)] text-xs italic bg-[#141416] rounded-2xl border border-[var(--border)] p-4 text-center">
+                <div className="h-36 flex flex-col items-center justify-center text-[var(--text-secondary)] text-xs italic bg-[var(--surface-solid)] rounded-2xl border border-[var(--border)] p-4 text-center">
                   No work shifts match your filter. Log a shift above.
                 </div>
               ) : (
@@ -1411,7 +1411,7 @@ export const FinanceHubTab: React.FC<Props> = ({ userData, updateData }) => {
                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-semibold transition-all ${
                     isBatchExpenseMode || selectedExpenseIds.length > 0
                       ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40 shadow-sm shadow-emerald-500/10'
-                      : 'bg-[#141416] hover:bg-[rgba(255,255,255,0.08)] border-[var(--border)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
+                      : 'bg-[var(--surface-solid)] hover:bg-[rgba(255,255,255,0.08)] border-[var(--border)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
                   }`}
                   title="Toggle Batch Expense Selection"
                 >
@@ -1426,7 +1426,7 @@ export const FinanceHubTab: React.FC<Props> = ({ userData, updateData }) => {
 
                 <button
                   onClick={() => setIsCategoriesModalOpen(true)}
-                  className="flex items-center gap-1.5 bg-[#141416] hover:bg-[rgba(255,255,255,0.08)] border border-[var(--border)] text-xs font-semibold text-[var(--text-secondary)] hover:text-[var(--text-primary)] px-3 py-1.5 rounded-xl transition-all"
+                  className="flex items-center gap-1.5 bg-[var(--surface-solid)] hover:bg-[rgba(255,255,255,0.08)] border border-[var(--border)] text-xs font-semibold text-[var(--text-secondary)] hover:text-[var(--text-primary)] px-3 py-1.5 rounded-xl transition-all"
                 >
                   <Tag className="w-3.5 h-3.5 text-orange-400" />
                   <span>Categories</span>
@@ -1436,7 +1436,7 @@ export const FinanceHubTab: React.FC<Props> = ({ userData, updateData }) => {
 
             {/* Floating / Sticky Batch Actions Bar for Expenses */}
             {(isBatchExpenseMode || selectedExpenseIds.length > 0) && (
-              <div className="p-3.5 rounded-2xl bg-[#141416] border border-emerald-500/40 shadow-lg shadow-emerald-500/5 transition-all flex flex-wrap items-center justify-between gap-3">
+              <div className="p-3.5 rounded-2xl bg-[var(--surface-solid)] border border-emerald-500/40 shadow-lg shadow-emerald-500/5 transition-all flex flex-wrap items-center justify-between gap-3">
                 <div className="flex flex-wrap items-center gap-2.5">
                   <button
                     type="button"
@@ -1471,7 +1471,7 @@ export const FinanceHubTab: React.FC<Props> = ({ userData, updateData }) => {
                         }
                       }}
                       defaultValue=""
-                      className="px-2 py-1 bg-[#1c1c1e] border border-[var(--border)] rounded-lg text-xs font-mono text-[var(--text-primary)] disabled:opacity-50 cursor-pointer focus:outline-none"
+                      className="px-2 py-1 bg-[var(--surface-solid)] border border-[var(--border)] rounded-lg text-xs font-mono text-[var(--text-primary)] disabled:opacity-50 cursor-pointer focus:outline-none"
                     >
                       <option value="" disabled>Move to...</option>
                       {categories.map(c => (
@@ -1492,7 +1492,7 @@ export const FinanceHubTab: React.FC<Props> = ({ userData, updateData }) => {
                         }
                       }}
                       defaultValue=""
-                      className="px-2 py-1 bg-[#1c1c1e] border border-[var(--border)] rounded-lg text-xs font-mono text-[var(--text-primary)] disabled:opacity-50 cursor-pointer focus:outline-none"
+                      className="px-2 py-1 bg-[var(--surface-solid)] border border-[var(--border)] rounded-lg text-xs font-mono text-[var(--text-primary)] disabled:opacity-50 cursor-pointer focus:outline-none"
                     >
                       <option value="" disabled>Set Method...</option>
                       <option value="Debit Card">Debit Card</option>
@@ -1532,7 +1532,7 @@ export const FinanceHubTab: React.FC<Props> = ({ userData, updateData }) => {
 
             {/* Category Budgets Mini Progress Bar (if enabled) */}
             {hubPrefs.visibleModules.categoryBudgets && (
-              <div className="bg-[#141416] border border-[var(--border)] rounded-2xl p-4 space-y-3">
+              <div className="bg-[var(--surface-solid)] border border-[var(--border)] rounded-2xl p-4 space-y-3">
                 <div className="flex justify-between items-center text-xs">
                   <span className="text-[var(--text-secondary)] font-semibold uppercase tracking-wider">
                     Category Budgets Health
@@ -1554,7 +1554,7 @@ export const FinanceHubTab: React.FC<Props> = ({ userData, updateData }) => {
                     const isOver = spent > (cat.monthlyBudget || 0);
 
                     return (
-                      <div key={cat.name} className="p-2 rounded-xl bg-[#1c1c1e] border border-[var(--border)] space-y-1">
+                      <div key={cat.name} className="p-2 rounded-xl bg-[var(--surface-solid)] border border-[var(--border)] space-y-1">
                         <div className="flex justify-between items-center text-[10px]">
                           <span className="font-semibold text-[var(--text-primary)] truncate">{cat.name}</span>
                           <span className={`font-mono font-bold ${isOver ? 'text-red-400' : 'text-[var(--text-secondary)]'}`}>
@@ -1582,12 +1582,12 @@ export const FinanceHubTab: React.FC<Props> = ({ userData, updateData }) => {
             )}
 
             {/* Expense Input Form */}
-            <div className="space-y-3 bg-[#141416] p-4 rounded-2xl border border-[var(--border)]">
+            <div className="space-y-3 bg-[var(--surface-solid)] p-4 rounded-2xl border border-[var(--border)]">
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                 <select 
                   value={newExpense.category} 
                   onChange={e => setNewExpense({ ...newExpense, category: e.target.value })} 
-                  className="apple-input bg-[#1c1c1e] text-xs p-2.5 w-full font-medium"
+                  className="apple-input bg-[var(--surface-solid)] text-xs p-2.5 w-full font-medium"
                 >
                   {categories.map(c => (
                     <option key={c.name} value={c.name}>{c.name}</option>
@@ -1602,7 +1602,7 @@ export const FinanceHubTab: React.FC<Props> = ({ userData, updateData }) => {
                     placeholder="Amount" 
                     value={newExpense.amount} 
                     onChange={e => setNewExpense({ ...newExpense, amount: e.target.value })} 
-                    className="apple-input bg-[#1c1c1e] pl-7 text-xs p-2.5 w-full font-bold text-red-400 font-mono" 
+                    className="apple-input bg-[var(--surface-solid)] pl-7 text-xs p-2.5 w-full font-bold text-red-400 font-mono" 
                   />
                 </div>
 
@@ -1610,7 +1610,7 @@ export const FinanceHubTab: React.FC<Props> = ({ userData, updateData }) => {
                   type="date" 
                   value={newExpense.date} 
                   onChange={e => setNewExpense({ ...newExpense, date: e.target.value })} 
-                  className="apple-input bg-[#1c1c1e] text-xs p-2.5 w-full font-medium" 
+                  className="apple-input bg-[var(--surface-solid)] text-xs p-2.5 w-full font-medium" 
                 />
               </div>
 
@@ -1620,12 +1620,12 @@ export const FinanceHubTab: React.FC<Props> = ({ userData, updateData }) => {
                   placeholder="Vendor / Description (e.g. Tesco, Pret, Uber)"
                   value={newExpense.description}
                   onChange={e => setNewExpense({ ...newExpense, description: e.target.value })}
-                  className="apple-input bg-[#1c1c1e] text-xs p-2.5 w-full"
+                  className="apple-input bg-[var(--surface-solid)] text-xs p-2.5 w-full"
                 />
                 <select
                   value={newExpense.paymentMethod}
                   onChange={e => setNewExpense({ ...newExpense, paymentMethod: e.target.value })}
-                  className="apple-input bg-[#1c1c1e] text-xs p-2.5 w-full"
+                  className="apple-input bg-[var(--surface-solid)] text-xs p-2.5 w-full"
                 >
                   <option value="Debit Card">Debit Card</option>
                   <option value="Credit Card">Credit Card</option>
@@ -1637,14 +1637,14 @@ export const FinanceHubTab: React.FC<Props> = ({ userData, updateData }) => {
 
               {/* Split with Peer Drawer */}
               {newExpense.isSplit && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 bg-[#1c1c1e] p-3 rounded-xl border border-dashed border-[var(--border)]">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 bg-[var(--surface-solid)] p-3 rounded-xl border border-dashed border-[var(--border)]">
                   <input 
                     type="text" 
                     list="peers-datalist"
                     placeholder="Peer Name (e.g. Alex)" 
                     value={newExpense.peerName} 
                     onChange={e => setNewExpense({ ...newExpense, peerName: e.target.value })} 
-                    className="apple-input bg-[#141416] text-xs p-2 w-full" 
+                    className="apple-input bg-[var(--surface-solid)] text-xs p-2 w-full" 
                   />
                   <datalist id="peers-datalist">
                     {peers.map(p => (
@@ -1660,7 +1660,7 @@ export const FinanceHubTab: React.FC<Props> = ({ userData, updateData }) => {
                       max="99"
                       value={newExpense.splitRatio} 
                       onChange={e => setNewExpense({ ...newExpense, splitRatio: e.target.value })} 
-                      className="apple-input bg-[#141416] text-xs p-2 w-full text-center font-mono" 
+                      className="apple-input bg-[var(--surface-solid)] text-xs p-2 w-full text-center font-mono" 
                     />
                   </div>
 
@@ -1704,13 +1704,13 @@ export const FinanceHubTab: React.FC<Props> = ({ userData, updateData }) => {
                     placeholder="Search expenses by vendor or note..."
                     value={expenseSearchQuery}
                     onChange={e => setExpenseSearchQuery(e.target.value)}
-                    className="apple-input bg-[#141416] pl-8 text-xs p-2 w-full"
+                    className="apple-input bg-[var(--surface-solid)] pl-8 text-xs p-2 w-full"
                   />
                 </div>
                 <select
                   value={selectedExpenseCatFilter}
                   onChange={e => setSelectedExpenseCatFilter(e.target.value)}
-                  className="apple-input bg-[#141416] text-xs p-2 w-32 shrink-0 font-medium"
+                  className="apple-input bg-[var(--surface-solid)] text-xs p-2 w-32 shrink-0 font-medium"
                 >
                   <option value="ALL">All Categories</option>
                   {categories.map(c => (
@@ -1720,7 +1720,7 @@ export const FinanceHubTab: React.FC<Props> = ({ userData, updateData }) => {
               </div>
 
               {filteredExpenses.length === 0 ? (
-                <div className="h-36 flex flex-col items-center justify-center text-[var(--text-secondary)] text-xs italic bg-[#141416] rounded-2xl border border-[var(--border)] p-4 text-center">
+                <div className="h-36 flex flex-col items-center justify-center text-[var(--text-secondary)] text-xs italic bg-[var(--surface-solid)] rounded-2xl border border-[var(--border)] p-4 text-center">
                   No expenses match your search or filter.
                 </div>
               ) : (
@@ -1767,7 +1767,7 @@ export const FinanceHubTab: React.FC<Props> = ({ userData, updateData }) => {
                   setEditingCard(null);
                   setIsCardModalOpen(true);
                 }}
-                className="flex items-center gap-1 bg-[#141416] hover:bg-[rgba(255,255,255,0.08)] border border-[var(--border)] text-xs font-semibold text-purple-300 px-3 py-1.5 rounded-xl transition-all"
+                className="flex items-center gap-1 bg-[var(--surface-solid)] hover:bg-[rgba(255,255,255,0.08)] border border-[var(--border)] text-xs font-semibold text-purple-300 px-3 py-1.5 rounded-xl transition-all"
               >
                 <Plus className="w-3.5 h-3.5" />
                 <span>Add Card</span>
@@ -1782,7 +1782,7 @@ export const FinanceHubTab: React.FC<Props> = ({ userData, updateData }) => {
                 </h4>
 
                 {(!userData.creditCards || userData.creditCards.length === 0) ? (
-                  <div className="p-4 rounded-2xl bg-[#141416] border border-dashed border-[var(--border)] text-center text-xs text-[var(--text-secondary)] space-y-2">
+                  <div className="p-4 rounded-2xl bg-[var(--surface-solid)] border border-dashed border-[var(--border)] text-center text-xs text-[var(--text-secondary)] space-y-2">
                     <p>No credit cards configured.</p>
                     <button
                       onClick={() => {
@@ -1799,7 +1799,7 @@ export const FinanceHubTab: React.FC<Props> = ({ userData, updateData }) => {
                     {userData.creditCards.map(card => {
                       const remaining = card.statementBalance - card.paymentsMade;
                       return (
-                        <div key={card.id} className="p-4 rounded-2xl bg-[#1c1c1e] border border-[var(--border)] flex flex-col gap-2.5 group hover:border-[var(--border)]/80 transition-all">
+                        <div key={card.id} className="p-4 rounded-2xl bg-[var(--surface-solid)] border border-[var(--border)] flex flex-col gap-2.5 group hover:border-[var(--border)]/80 transition-all">
                           <div className="flex justify-between items-start">
                             <div>
                               <div className="flex items-center gap-1.5">
@@ -1841,7 +1841,7 @@ export const FinanceHubTab: React.FC<Props> = ({ userData, updateData }) => {
                                   type="number" 
                                   id={`pay-${card.id}`} 
                                   placeholder="Amount" 
-                                  className="apple-input bg-[#141416] pl-6 text-xs py-1.5 w-full font-mono" 
+                                  className="apple-input bg-[var(--surface-solid)] pl-6 text-xs py-1.5 w-full font-mono" 
                                 />
                               </div>
                               <button 
@@ -1908,7 +1908,7 @@ export const FinanceHubTab: React.FC<Props> = ({ userData, updateData }) => {
                 {/* Invoices List */}
                 <div className="space-y-2 max-h-[160px] overflow-y-auto custom-scrollbar pr-1">
                   {(userData.invoices || []).map(invoice => (
-                    <div key={invoice.id} className="flex items-center justify-between p-2.5 rounded-2xl bg-[#1c1c1e] border border-[var(--border)] group">
+                    <div key={invoice.id} className="flex items-center justify-between p-2.5 rounded-2xl bg-[var(--surface-solid)] border border-[var(--border)] group">
                       <div className="flex items-center gap-2.5 cursor-pointer truncate flex-1 mr-2" onClick={() => openInvoice(invoice.id)}>
                         <div className="p-1.5 rounded-lg bg-blue-500/10 text-blue-400 shrink-0">
                           <Receipt className="w-3.5 h-3.5" />
@@ -1971,7 +1971,7 @@ export const FinanceHubTab: React.FC<Props> = ({ userData, updateData }) => {
 
               <button
                 onClick={() => setIsPeersModalOpen(true)}
-                className="flex items-center gap-1.5 bg-[#141416] hover:bg-[rgba(255,255,255,0.08)] border border-[var(--border)] text-xs font-semibold text-emerald-300 px-3 py-1.5 rounded-xl transition-all"
+                className="flex items-center gap-1.5 bg-[var(--surface-solid)] hover:bg-[rgba(255,255,255,0.08)] border border-[var(--border)] text-xs font-semibold text-emerald-300 px-3 py-1.5 rounded-xl transition-all"
               >
                 <Users className="w-3.5 h-3.5" />
                 <span>Peer Directory</span>
@@ -1980,7 +1980,7 @@ export const FinanceHubTab: React.FC<Props> = ({ userData, updateData }) => {
             
             <div className="flex-1 overflow-y-auto space-y-3 custom-scrollbar pr-1 max-h-[320px]">
               {Object.keys(peerBalances).length === 0 ? (
-                <div className="p-8 text-center text-xs text-[var(--text-secondary)] italic bg-[#141416] rounded-2xl border border-[var(--border)]">
+                <div className="p-8 text-center text-xs text-[var(--text-secondary)] italic bg-[var(--surface-solid)] rounded-2xl border border-[var(--border)]">
                   All peer balances are fully settled! Log an expense with peer split to track owed balances.
                 </div>
               ) : (
@@ -1989,7 +1989,7 @@ export const FinanceHubTab: React.FC<Props> = ({ userData, updateData }) => {
                   const peerContact = peers.find(p => p.name.toLowerCase() === peer.toLowerCase());
 
                   return (
-                    <div key={peer} className="p-4 bg-[#1c1c1e] border border-[var(--border)] rounded-2xl space-y-3">
+                    <div key={peer} className="p-4 bg-[var(--surface-solid)] border border-[var(--border)] rounded-2xl space-y-3">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
                           <Users className="w-4 h-4 text-emerald-400" />
@@ -2011,7 +2011,7 @@ export const FinanceHubTab: React.FC<Props> = ({ userData, updateData }) => {
                       </div>
 
                       {/* Items itemized breakdown */}
-                      <div className="bg-[#141416] p-2.5 rounded-xl text-[11px] text-[var(--text-secondary)] space-y-1 max-h-24 overflow-y-auto custom-scrollbar">
+                      <div className="bg-[var(--surface-solid)] p-2.5 rounded-xl text-[11px] text-[var(--text-secondary)] space-y-1 max-h-24 overflow-y-auto custom-scrollbar">
                         {data.items.map(item => (
                           <div key={item.id} className="flex justify-between items-center">
                             <span className="truncate mr-2">{item.description || item.category} ({new Date(item.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })})</span>
@@ -2074,7 +2074,7 @@ export const FinanceHubTab: React.FC<Props> = ({ userData, updateData }) => {
       {/* Schedule Conflict Modal */}
       {conflictWarning && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fade-in">
-          <div className="bg-[#1c1c1e] border border-[var(--border)] rounded-3xl p-6 max-w-sm w-full shadow-2xl flex flex-col items-center text-center space-y-4">
+          <div className="bg-[var(--surface-solid)] border border-[var(--border)] rounded-3xl p-6 max-w-sm w-full shadow-2xl flex flex-col items-center text-center space-y-4">
             <div className="w-12 h-12 rounded-full bg-red-500/10 text-red-400 flex items-center justify-center">
               <AlertTriangle className="w-6 h-6" />
             </div>

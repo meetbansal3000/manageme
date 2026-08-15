@@ -36,149 +36,11 @@ import { FinancialAnalysisSuite } from './FinancialAnalysisSuite';
 import { AnnualReportDoc } from '../utils/annualReportPipeline';
 import { VirtualNotebookWorkspace } from './VirtualNotebookWorkspace';
 import { VirtualNotebook } from '../types';
+import { saveStudyDocs, getSavedStudyDocs, loadDocsFromIndexedDB } from '../utils/docStorage';
+import { DEFAULT_NOTEBOOKS } from '../data/notebookData';
+import { DCFValuationHub } from './DCFValuationHub';
 
 export type StudyMode = 'notebook' | 'snap' | 'cram' | 'exec' | 'socratic' | 'flashcards' | 'exam' | 'feynman';
-
-export const DEFAULT_NOTEBOOKS: VirtualNotebook[] = [
-  {
-    id: 'nb-cfa-1',
-    title: 'CFA Level 1 - Corporate Finance & Valuation',
-    description: 'Capital budgeting, WACC hurdle rates, CAPM beta, and DCF terminal value models.',
-    emoji: '📈',
-    color: 'indigo',
-    docIds: ['doc-demo-1'],
-    notes: `# CFA Level 1: Corporate Finance
-
-## Key Equations & Rules
-- **CAPM**: E(R) = Rf + Beta * (E(Rm) - Rf)
-- **WACC**: (E/V * Re) + (D/V * Rd * (1 - Tc))
-- **NPV Rule**: Accept all projects with positive Net Present Value.
-- **Unlevered Beta**: Beta_U = Beta_L / [1 + (1 - T)*(D/E)]
-
-*Grounded on FIN301 lecture materials.*`,
-    createdAt: Date.now() - 86400000 * 3,
-    updatedAt: Date.now() - 86400000 * 1,
-    studyGuide: {
-      title: 'Comprehensive Study Guide: Corporate Finance & Valuation',
-      generatedAt: Date.now() - 86400000 * 1,
-      executiveSummary: 'This module covers core capital allocation frameworks, the Capital Asset Pricing Model (CAPM), cost of capital optimization (WACC), and discounted cash flow valuation principles.',
-      timelineOrRoadmap: [
-        {
-          stage: 'Phase 1: Capital Budgeting & Cash Flow Estimation',
-          periodOrConcept: 'NPV, IRR & Free Cash Flow to Firm (FCFF)',
-          details: 'Focus on relevant cash flows, tax shields, and Net Working Capital changes. Ignore sunk costs.',
-          citations: ['[Source 1: FIN301_Corporate_Finance_Lecture_4.pdf]']
-        },
-        {
-          stage: 'Phase 2: Risk & Expected Returns',
-          periodOrConcept: 'CAPM & Beta Estimation',
-          details: 'Beta measures systematic risk. Pure play peer un-levering and re-levering using target capital structure.',
-          citations: ['[Source 1: FIN301_Corporate_Finance_Lecture_4.pdf]']
-        },
-        {
-          stage: 'Phase 3: Cost of Capital & WACC',
-          periodOrConcept: 'Weighted Average Cost of Capital',
-          details: 'Calculate cost of debt after-tax shield. Blended hurdle rate for firm valuation.',
-          citations: ['[Source 1: FIN301_Corporate_Finance_Lecture_4.pdf]']
-        }
-      ],
-      coreFormulasAndDefinitions: [
-        {
-          term: 'WACC',
-          formulaOrDefinition: '(E/V * Re) + (D/V * Rd * (1 - Tc))',
-          application: 'Discount rate for Enterprise Value and Free Cash Flow to Firm (FCFF)',
-          citation: '[Source 1]'
-        },
-        {
-          term: 'CAPM Cost of Equity',
-          formulaOrDefinition: 'Re = Rf + Beta * (Rm - Rf)',
-          application: 'Estimates return required by equity holders given systematic market risk',
-          citation: '[Source 1]'
-        },
-        {
-          term: 'FCFF',
-          formulaOrDefinition: 'EBIT * (1 - T) + D&A - CapEx - Delta NWC',
-          application: 'Cash flow available to all capital providers after operating and capital reinvestment needs',
-          citation: '[Source 1]'
-        }
-      ],
-      corePrinciples: [
-        'Always evaluate capital allocation decisions using incremental post-tax cash flows [Source 1]',
-        'Sunk costs must be ignored; opportunity costs and externalities must be included [Source 1]',
-        'WACC represents the minimum hurdle rate; projects below WACC destroy shareholder value [Source 1]',
-        'Debt financing creates an interest tax shield, reducing the effective cost of debt up to distress threshold [Source 1]'
-      ],
-      frequentlyTestedQuestions: [
-        {
-          question: 'Why can NPV and IRR give conflicting project rankings for mutually exclusive projects?',
-          answer: 'Conflicting rankings arise due to differing project scales (size disparity) or differing cash flow timing (reinvestment rate assumption: NPV assumes reinvestment at WACC; IRR assumes reinvestment at IRR). NPV is always the superior metric.',
-          citation: '[Source 1]'
-        },
-        {
-          question: 'How do you unlever a peer beta when capital structures differ?',
-          answer: 'Unlevered Beta = Levered Beta / [1 + (1 - Tax Rate) * (Debt / Equity)]. Then relever using the target firm\'s target D/E ratio.',
-          citation: '[Source 1]'
-        }
-      ]
-    },
-    flashcards: [
-      {
-        id: 'cfa-fc-1',
-        front: 'What does Beta measure in the CAPM model?',
-        back: 'Beta measures sensitivity to non-diversifiable systematic market risk [Source 1].',
-        tag: 'CAPM & Beta',
-        citation: '[Source 1]'
-      },
-      {
-        id: 'cfa-fc-2',
-        front: 'Why is interest expense multiplied by (1 - Tc) in WACC?',
-        back: 'Because corporate interest payments are tax-deductible, creating a cash tax shield [Source 1].',
-        tag: 'Cost of Capital',
-        citation: '[Source 1]'
-      },
-      {
-        id: 'cfa-fc-3',
-        front: 'What is the formula for Free Cash Flow to Firm (FCFF)?',
-        back: 'FCFF = EBIT*(1-T) + D&A - CapEx - Change in Net Working Capital [Source 1].',
-        tag: 'Valuation & DCF',
-        citation: '[Source 1]'
-      }
-    ]
-  },
-  {
-    id: 'nb-tech-val',
-    title: 'Tech Venture Valuation & SaaS Metrics',
-    description: 'Unit economics, Rule of 40, LTV/CAC ratios, and Magic Number multiples for venture capital.',
-    emoji: '🚀',
-    color: 'emerald',
-    docIds: [],
-    notes: `# Tech Venture Valuation & SaaS Metrics
-
-## Core SaaS Unit Economics
-- **LTV / CAC Ratio**: Target > 3.0x for healthy unit economics.
-- **Rule of 40**: Revenue Growth Rate YoY (%) + Free Cash Flow Margin (%) >= 40%.
-- **CAC Payback Period**: Months to recover acquisition cost: CAC / (ARPU * Gross Margin). Target < 12 months.
-- **Net Dollar Retention (NDR)**: (Beginning ARR + Expansion - Churn - Contraction) / Beginning ARR. Best in class > 120%.`,
-    createdAt: Date.now() - 86400000 * 2,
-    updatedAt: Date.now() - 86400000 * 1
-  },
-  {
-    id: 'nb-msc-fin',
-    title: 'MSc Finance - Asset Pricing & Fixed Income',
-    description: 'Yield curves, duration, convexity, and multi-factor arbitrage pricing models.',
-    emoji: '🏛️',
-    color: 'purple',
-    docIds: [],
-    notes: `# Asset Pricing & Fixed Income
-
-## Bond Math & Duration
-- **Macaulay Duration**: Weighted average term-to-maturity of cash flows.
-- **Modified Duration**: MacDur / (1 + YTM/m). Measures % price change per 100bp yield shift.
-- **Convexity**: Second derivative of bond price with respect to yield. Higher convexity = superior price upside.`,
-    createdAt: Date.now() - 86400000 * 4,
-    updatedAt: Date.now() - 86400000 * 1
-  }
-];
 
 interface UploadedDoc {
   id: string;
@@ -199,8 +61,12 @@ export const StudyIntelligenceEngineTab: React.FC<StudyIntelligenceEngineTabProp
 }) => {
   const { showToast } = useToast();
 
-  // Knowledge Context State
+  // Knowledge Context State (Persisted via LocalStorage + IndexedDB)
   const [uploadedDocs, setUploadedDocs] = useState<UploadedDoc[]>(() => {
+    const savedLocal = getSavedStudyDocs();
+    if (savedLocal && savedLocal.length > 0) {
+      return savedLocal;
+    }
     return (userData && userData.studyDocs) || [
       {
         id: 'doc-demo-1',
@@ -217,12 +83,45 @@ export const StudyIntelligenceEngineTab: React.FC<StudyIntelligenceEngineTabProp
     ];
   });
 
+  // Automatically sync uploadedDocs to IndexedDB and LocalStorage
+  useEffect(() => {
+    if (uploadedDocs && uploadedDocs.length > 0) {
+      saveStudyDocs(uploadedDocs);
+    }
+  }, [uploadedDocs]);
+
+  // Initial load from IndexedDB in case of clean cache
+  useEffect(() => {
+    loadDocsFromIndexedDB().then(idbDocs => {
+      if (idbDocs && idbDocs.length > 0) {
+        setUploadedDocs(prev => {
+          const ids = new Set(prev.map(d => d.id));
+          const toAdd = idbDocs.filter((d: any) => !ids.has(d.id));
+          return toAdd.length > 0 ? [...prev, ...toAdd] : prev;
+        });
+      }
+    });
+  }, []);
+
   // Notebooks State
   const [notebooks, setNotebooks] = useState<VirtualNotebook[]>(() => {
+    try {
+      const savedNb = localStorage.getItem('manageme_notebooks');
+      if (savedNb) {
+        const parsed = JSON.parse(savedNb);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch (e) {}
     return (userData && userData.notebooks && userData.notebooks.length > 0)
       ? userData.notebooks
       : DEFAULT_NOTEBOOKS;
   });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('manageme_notebooks', JSON.stringify(notebooks));
+    } catch (e) {}
+  }, [notebooks]);
 
   const [activeNotebookId, setActiveNotebookId] = useState<string | null>(() => {
     return userData?.activeNotebookId !== undefined ? userData.activeNotebookId : 'nb-cfa-1';
@@ -230,7 +129,8 @@ export const StudyIntelligenceEngineTab: React.FC<StudyIntelligenceEngineTabProp
 
   const [pastedNotes, setPastedNotes] = useState('');
   const [showNotesInput, setShowNotesInput] = useState(false);
-  const [activeMode, setActiveMode] = useState<StudyMode>('notebook');
+  const [mainStudyTab, setMainStudyTab] = useState<'notebooks' | 'flashcards_quiz' | 'valuation'>('notebooks');
+  const [activeMode, setActiveMode] = useState<StudyMode>('flashcards');
   const [isDragOver, setIsDragOver] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -554,13 +454,14 @@ export const StudyIntelligenceEngineTab: React.FC<StudyIntelligenceEngineTabProp
   const getFallbackMockExam = (topic: string, docName?: string) => {
     const title = docName || topic || 'Study Material';
     return {
-      examTitle: `AI Mock Exam: ${topic} (${title})`,
-      timeLimitMinutes: 20,
+      examTitle: `Adaptive 5-Question Quiz: ${topic} (${title})`,
+      timeLimitMinutes: 15,
       questions: [
         {
           id: 1,
           type: 'mcq',
-          questionText: `According to standard valuation principles in ${topic}, what is the main purpose of calculating Weighted Average Cost of Capital (WACC)?`,
+          topicTag: 'Cost of Capital & WACC',
+          questionText: `According to corporate valuation principles in ${topic}, what is the main purpose of calculating Weighted Average Cost of Capital (WACC)?`,
           options: [
             "To establish the minimum hurdle rate for evaluating capital investment projects",
             "To track historical daily share price fluctuations",
@@ -568,24 +469,26 @@ export const StudyIntelligenceEngineTab: React.FC<StudyIntelligenceEngineTabProp
             "To eliminate debt entirely from corporate balance sheets"
           ],
           correctOptionIndex: 0,
-          explanation: "WACC represents the blended cost of debt and equity capital, acting as the discount rate for project NPV."
+          explanation: "WACC represents the blended cost of debt and equity capital, acting as the discount rate for project NPV. [Source 1]"
         },
         {
           id: 2,
           type: 'mcq',
+          topicTag: 'CAPM & Beta Calibration',
           questionText: "What does a Beta value greater than 1.0 signify in the Capital Asset Pricing Model (CAPM)?",
           options: [
             "The asset has lower volatility than the market index",
-            "The asset exhibits higher systematic risk than the market index benchmark",
+            "The asset exhibits higher systematic risk than the broader market benchmark",
             "The asset is risk-free and backed by government bonds",
             "The asset has zero correlation with market movements"
           ],
           correctOptionIndex: 1,
-          explanation: "Beta > 1.0 indicates that the asset's returns fluctuate with greater variance than the broader market."
+          explanation: "Beta > 1.0 indicates that the asset's returns fluctuate with greater variance than the broader market. [Source 1]"
         },
         {
           id: 3,
           type: 'mcq',
+          topicTag: 'Valuation & Cash Flows',
           questionText: "Which cash flow metric represents cash available to all capital providers (both debt and equity)?",
           options: [
             "Free Cash Flow to Equity (FCFE)",
@@ -594,18 +497,34 @@ export const StudyIntelligenceEngineTab: React.FC<StudyIntelligenceEngineTabProp
             "Retained Earnings"
           ],
           correctOptionIndex: 2,
-          explanation: "FCFF measures un-levered cash flow generated by operations available to both debt and equity holders."
+          explanation: "FCFF measures un-levered cash flow generated by operations available to both debt and equity holders. [Source 1]"
         },
         {
           id: 4,
+          type: 'mcq',
+          topicTag: 'Unlevered Beta & Leverage',
+          questionText: "If a peer company has a levered Beta of 1.25, D/E ratio of 0.50, and marginal tax rate of 20%, what is its unlevered asset Beta?",
+          options: [
+            "0.893 (Beta_U = 1.25 / [1 + (1 - 0.2)*0.5])",
+            "1.250 (Beta does not change with capital structure)",
+            "1.500 (Debt increases operational risk)",
+            "0.625 (Debt halves the asset beta)"
+          ],
+          correctOptionIndex: 0,
+          explanation: "Beta_U = Beta_L / [1 + (1 - T)*(D/E)] = 1.25 / [1 + (0.8 * 0.5)] = 1.25 / 1.4 = 0.893. [Source 1]"
+        },
+        {
+          id: 5,
           type: 'essay',
+          topicTag: 'Capital Structure & Tax Shields',
           questionText: `Explain how interest tax shields affect optimal capital structure choices for a firm studying ${topic}.`,
-          modelAnswer: "Interest on debt is tax-deductible, creating an interest tax shield that increases firm value as leverage increases. However, beyond an optimal leverage threshold, financial distress costs outweigh tax benefits, creating a U-shaped WACC curve.",
+          modelAnswer: "Interest on debt is corporate tax-deductible, creating an interest tax shield that reduces the after-tax cost of debt and increases firm value. However, beyond an optimal leverage threshold, financial distress costs and bankruptcy risk outweigh tax benefits, creating a U-shaped WACC curve.",
           keyGradingPoints: [
-            "Mention of interest tax deductibility",
-            "Trade-off between tax shields and financial distress costs",
-            "Definition of optimal WACC minimization point"
-          ]
+            "Mention of interest tax deductibility (Interest * Tax Rate)",
+            "Trade-off between tax shields and expected financial distress costs",
+            "Identification of the optimal WACC minimization point"
+          ],
+          explanation: "Optimal capital structure balances the marginal present value of interest tax shields against the marginal present value of financial distress costs. [Source 1]"
         }
       ]
     };
@@ -912,42 +831,42 @@ export const StudyIntelligenceEngineTab: React.FC<StudyIntelligenceEngineTabProp
       </AnimatePresence>
 
       {/* Section Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 dark:border-white/10 pb-4">
         <div>
-          <div className="flex items-center gap-2">
-            <span className="p-1.5 rounded-lg bg-indigo-500/20 text-indigo-400">
+          <div className="flex items-center gap-2.5">
+            <span className="p-2 rounded-xl bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20">
               <Brain className="w-5 h-5" />
             </span>
-            <h1 className="text-xl sm:text-2xl font-extrabold text-white tracking-tight font-sans">
+            <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight font-sans">
               Study & Intelligence Engine
             </h1>
           </div>
-          <p className="text-xs sm:text-sm text-neutral-400 mt-1">
-            Multimodal, document-grounded AI learning workspace built with SF Pro dark precision.
+          <p className="text-xs sm:text-sm text-slate-600 dark:text-neutral-400 mt-1">
+            Upload notes, textbooks, or past exams to generate study guides, flashcards, and practice questions.
           </p>
         </div>
 
         {/* Global Context Indicator */}
         <div className="flex flex-wrap items-center gap-2">
           {activeNotebook && (
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-indigo-500/10 border border-indigo-500/30 text-xs text-indigo-300">
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-blue-500/10 border border-blue-500/20 text-xs text-blue-700 dark:text-blue-300">
               <span className="text-sm">{activeNotebook.emoji || '📓'}</span>
               <span className="font-semibold">{activeNotebook.title}</span>
-              <span className="text-[10px] px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-200 font-mono">
+              <span className="text-[10px] px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-800 dark:text-blue-200 font-mono">
                 {scopedDocs.length} doc{scopedDocs.length !== 1 ? 's' : ''} scoped
               </span>
             </div>
           )}
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-neutral-900/60 border border-white/10 text-xs text-neutral-300">
-            <FileText className="w-4 h-4 text-indigo-400" />
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white dark:bg-neutral-900/60 border border-slate-200 dark:border-white/10 text-xs text-slate-700 dark:text-neutral-300 shadow-sm">
+            <FileText className="w-4 h-4 text-blue-600 dark:text-blue-400" />
             <span>
-              Total Library: <strong className="text-white">{uploadedDocs.length} File{uploadedDocs.length !== 1 ? 's' : ''}</strong>
+              Total Library: <strong className="text-slate-900 dark:text-white">{uploadedDocs.length} File{uploadedDocs.length !== 1 ? 's' : ''}</strong>
             </span>
           </div>
         </div>
       </div>
 
-      {/* 1. THE UPLOAD & KNOWLEDGE DROPZONE */}
+      {/* 1. CLEAN KNOWLEDGE UPLOAD ZONE */}
       <div className="space-y-3">
         <div
           onDragOver={(e) => { e.preventDefault(); setIsDragOver(true); }}
@@ -960,10 +879,10 @@ export const StudyIntelligenceEngineTab: React.FC<StudyIntelligenceEngineTabProp
             }
           }}
           onClick={() => fileInputRef.current?.click()}
-          className={`relative group cursor-pointer border-2 border-dashed rounded-2xl p-6 transition-all duration-300 flex flex-col items-center justify-center text-center ${
+          className={`relative group cursor-pointer border-2 border-dashed rounded-2xl p-6 transition-all duration-200 flex flex-col items-center justify-center text-center shadow-sm ${
             isDragOver
-              ? 'border-indigo-400 bg-indigo-500/10'
-              : 'border-white/20 bg-neutral-900/40 hover:border-white/40 hover:bg-neutral-900/60 backdrop-blur-xl'
+              ? 'border-blue-500 bg-blue-50/50 dark:bg-blue-500/10'
+              : 'border-slate-300 dark:border-white/20 bg-white dark:bg-[#121215] hover:border-blue-500 dark:hover:border-blue-400 hover:bg-slate-50 dark:hover:bg-[#1a1a20]'
           }`}
         >
           <input
@@ -972,32 +891,38 @@ export const StudyIntelligenceEngineTab: React.FC<StudyIntelligenceEngineTabProp
             onChange={handleFileUpload}
             multiple
             className="hidden"
-            accept=".pdf,.txt,.docx,.md,.json,.csv,.ppt,.pptx"
+            accept=".pdf,.txt,.docx,.md,.json,.csv,.ppt,.pptx,image/*"
           />
 
-          <div className="w-12 h-12 rounded-2xl bg-neutral-800/80 border border-white/10 flex items-center justify-center mb-3 group-hover:scale-105 transition-transform text-indigo-400 shadow-md">
+          <div className="w-12 h-12 rounded-2xl bg-blue-50 dark:bg-white/10 border border-blue-200 dark:border-white/10 flex items-center justify-center mb-3 group-hover:scale-105 transition-transform text-blue-600 dark:text-blue-400 shadow-sm">
             <UploadCloud className="w-6 h-6" />
           </div>
 
-          <h3 className="text-sm font-semibold text-white mb-1">
-            Drop Textbooks, Lecture Slides, or Past Exams here to build your context engine.
+          <h3 className="text-sm font-bold text-slate-900 dark:text-white mb-1">
+            Drag and drop PDFs or notes here
           </h3>
-          <p className="text-xs text-neutral-400 max-w-md">
-            Supports PDF, DOCX, Slides, Markdown, and TXT files. All AI study modes ground their responses on these documents.
+          <p className="text-xs text-slate-600 dark:text-slate-400 max-w-md">
+            Supports PDF, TXT, DOCX, and images
           </p>
 
           <div className="mt-3 flex items-center gap-3">
-            <span className="text-[11px] px-3 py-1 rounded-full bg-white/5 border border-white/10 text-neutral-300 font-mono">
-              Click or Drag Files
-            </span>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                fileInputRef.current?.click();
+              }}
+              className="text-xs px-4 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold transition-colors shadow-sm cursor-pointer"
+            >
+              Browse Files
+            </button>
             <button
               onClick={(e) => {
                 e.stopPropagation();
                 setShowNotesInput(!showNotesInput);
               }}
-              className="text-[11px] px-3 py-1 rounded-full bg-indigo-500/20 border border-indigo-500/30 text-indigo-300 font-semibold hover:bg-indigo-500/30 transition-colors"
+              className="text-xs px-3.5 py-1.5 rounded-xl bg-slate-100 dark:bg-white/10 border border-slate-200 dark:border-white/10 text-slate-700 dark:text-neutral-300 font-semibold hover:bg-slate-200 dark:hover:bg-white/15 transition-colors cursor-pointer"
             >
-              {showNotesInput ? 'Hide Raw Notes' : '+ Paste Raw Text Notes'}
+              {showNotesInput ? 'Hide Notes Input' : '+ Paste Text Notes'}
             </button>
           </div>
         </div>
@@ -1009,17 +934,17 @@ export const StudyIntelligenceEngineTab: React.FC<StudyIntelligenceEngineTabProp
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: 'auto', opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
-              className="overflow-hidden bg-neutral-900/60 border border-white/10 rounded-2xl p-4 space-y-2 backdrop-blur-xl"
+              className="overflow-hidden bg-white dark:bg-[#121215] border border-slate-200 dark:border-white/10 rounded-2xl p-4 space-y-2 shadow-sm"
             >
-              <label className="text-xs font-semibold text-neutral-300 flex items-center justify-between">
+              <label className="text-xs font-semibold text-slate-700 dark:text-neutral-300 flex items-center justify-between">
                 <span>Paste Raw Lecture Notes or Module Syllabus:</span>
-                <span className="text-[10px] text-neutral-500 font-mono">{pastedNotes.length} chars</span>
+                <span className="text-[10px] text-slate-500 dark:text-neutral-500 font-mono">{pastedNotes.length} chars</span>
               </label>
               <textarea
                 value={pastedNotes}
                 onChange={(e) => setPastedNotes(e.target.value)}
                 placeholder="Paste formula definitions, key textbook paragraphs, or exam review outlines here..."
-                className="w-full h-24 p-3 rounded-xl bg-neutral-950 border border-white/10 text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-indigo-500/50 resize-none font-mono"
+                className="w-full h-24 p-3 rounded-xl bg-slate-50 dark:bg-black/50 border border-slate-200 dark:border-white/10 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-neutral-500 focus:outline-none focus:border-blue-500 resize-none font-mono"
               />
             </motion.div>
           )}
@@ -1028,20 +953,20 @@ export const StudyIntelligenceEngineTab: React.FC<StudyIntelligenceEngineTabProp
         {/* Uploaded File Pills List */}
         {uploadedDocs.length > 0 && (
           <div className="flex flex-wrap items-center gap-2 pt-1">
-            <span className="text-xs text-neutral-400 font-mono mr-1">Active Grounding Context:</span>
+            <span className="text-xs text-slate-500 dark:text-neutral-400 font-mono mr-1">Active Grounding Context:</span>
             {uploadedDocs.map((doc) => (
               <div
                 key={doc.id}
-                className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-neutral-800/80 border border-white/10 text-xs text-neutral-200 shadow-sm backdrop-blur-md group/pill"
+                className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white dark:bg-neutral-800/80 border border-slate-200 dark:border-white/10 text-xs text-slate-800 dark:text-neutral-200 shadow-sm group/pill"
               >
-                <FileText className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
+                <FileText className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400 shrink-0" />
                 <span className="truncate max-w-[180px] sm:max-w-[260px] font-medium" title={doc.name}>
                   {doc.name}
                 </span>
-                <span className="text-[10px] text-neutral-500 font-mono">{doc.size}</span>
+                <span className="text-[10px] text-slate-500 dark:text-neutral-500 font-mono">{doc.size}</span>
                 <button
                   onClick={() => handleRemoveDoc(doc.id)}
-                  className="p-0.5 rounded-full hover:bg-white/20 text-neutral-400 hover:text-red-400 transition-colors ml-1"
+                  className="p-0.5 rounded-full hover:bg-slate-200 dark:hover:bg-white/20 text-slate-400 hover:text-rose-600 dark:text-neutral-400 dark:hover:text-rose-400 transition-colors ml-1 cursor-pointer"
                   title="Remove document"
                 >
                   <X className="w-3 h-3" />
@@ -1050,87 +975,244 @@ export const StudyIntelligenceEngineTab: React.FC<StudyIntelligenceEngineTabProp
             ))}
           </div>
         )}
-
-        {/* Dedicated Financial Analysis Suite for SEC 10-K / Annual Reports */}
-        {activeAnnualReportDoc && (
-          <FinancialAnalysisSuite
-            doc={activeAnnualReportDoc}
-            onAnalysisGenerated={(res) => {
-              showToast(`Generated ${res.title}!`, 'success');
-            }}
-          />
-        )}
       </div>
 
-      {/* 2. THE ACTION BAR (SEGMENTED CONTROLS) */}
-      <div className="bg-neutral-900/80 border border-white/10 p-1.5 rounded-2xl backdrop-blur-xl overflow-x-auto custom-scrollbar">
-        <div className="flex items-center min-w-max gap-1">
-          {studyModeTabs.map((tab) => {
-            const Icon = tab.icon;
-            const isActive = activeMode === tab.id;
-            return (
+      {/* 2. UNIFIED 3 MAIN NAVIGATION TABS */}
+      <div className="bg-slate-100/90 dark:bg-neutral-900/80 border border-slate-200 dark:border-white/10 p-1.5 rounded-2xl shadow-sm backdrop-blur-xl">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-1.5">
+          <button
+            onClick={() => setMainStudyTab('notebooks')}
+            className={`flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
+              mainStudyTab === 'notebooks'
+                ? 'bg-white dark:bg-neutral-800 text-slate-900 dark:text-white shadow-md border border-slate-200 dark:border-white/15'
+                : 'text-slate-600 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-white hover:bg-white/50 dark:hover:bg-white/5'
+            }`}
+          >
+            <BookOpen className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+            <span>Notebooks & Notes</span>
+          </button>
+
+          <button
+            onClick={() => setMainStudyTab('flashcards_quiz')}
+            className={`flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
+              mainStudyTab === 'flashcards_quiz'
+                ? 'bg-white dark:bg-neutral-800 text-slate-900 dark:text-white shadow-md border border-slate-200 dark:border-white/15'
+                : 'text-slate-600 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-white hover:bg-white/50 dark:hover:bg-white/5'
+            }`}
+          >
+            <Layers className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+            <span>Flashcards & Quiz</span>
+          </button>
+
+          <button
+            onClick={() => setMainStudyTab('valuation')}
+            className={`flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
+              mainStudyTab === 'valuation'
+                ? 'bg-white dark:bg-neutral-800 text-slate-900 dark:text-white shadow-md border border-slate-200 dark:border-white/15'
+                : 'text-slate-600 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-white hover:bg-white/50 dark:hover:bg-white/5'
+            }`}
+          >
+            <BarChart2 className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+            <span>Valuation & Financial Reports</span>
+          </button>
+        </div>
+      </div>
+
+      {/* 3. CONTENT PER MAIN TAB */}
+      {mainStudyTab === 'notebooks' && (
+        <VirtualNotebookWorkspace
+          notebooks={notebooks}
+          uploadedDocs={uploadedDocs}
+          activeNotebookId={activeNotebookId}
+          onSelectNotebook={handleSelectNotebook}
+          onUpdateNotebooks={handleUpdateNotebooks}
+          onAddTextDoc={handleAddTextDoc}
+          onUploadDocs={processUploadedFiles}
+          onRemoveDoc={handleRemoveDoc}
+        />
+      )}
+
+      {mainStudyTab === 'valuation' && (
+        <div className="space-y-6">
+          <DCFValuationHub />
+          {activeAnnualReportDoc && (
+            <FinancialAnalysisSuite
+              doc={activeAnnualReportDoc}
+              onAnalysisGenerated={(res) => {
+                showToast(`Generated ${res.title}!`, 'success');
+              }}
+            />
+          )}
+        </div>
+      )}
+
+      {mainStudyTab === 'flashcards_quiz' && (
+        <div className="space-y-6">
+          {/* INTERACTIVE STUDY ASSISTANT 3-STAGE FLOW */}
+          <div className="p-5 rounded-3xl bg-white dark:bg-[#121215] border border-slate-200 dark:border-white/10 shadow-sm space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 dark:border-white/10 pb-3">
+              <div className="flex items-center gap-2.5">
+                <div className="p-2 rounded-xl bg-blue-50 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-500/30">
+                  <Sparkles className="w-4 h-4" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                    Interactive Study Assistant
+                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-500/30 text-blue-700 dark:text-blue-200 font-mono">
+                      Adaptive
+                    </span>
+                  </h3>
+                  <p className="text-xs text-slate-500 dark:text-neutral-400">
+                    Uploaded documents and notes feed directly into active learning and testing.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              {/* Stage 1: Teach Me */}
               <button
-                key={tab.id}
                 onClick={() => {
-                  setActiveMode(tab.id);
-                  if (tab.id === 'cram' && !cramData) triggerStudyAnalyze('cram');
-                  if (tab.id === 'exec' && !execData) triggerStudyAnalyze('exec');
-                  if (tab.id === 'exam' && !mockExam) triggerStudyAnalyze('exam');
-                  if (tab.id === 'flashcards' && (!flashcards || flashcards.length === 0)) generateNewFlashcards();
+                  setActiveMode('cram');
+                  if (!cramData) triggerStudyAnalyze('cram');
                 }}
-                className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all duration-200 ${
-                  isActive
-                    ? 'bg-neutral-800 text-white shadow-lg border border-white/15'
-                    : 'text-neutral-400 hover:text-neutral-200 hover:bg-white/5'
+                className={`text-left p-4 rounded-2xl border transition-all cursor-pointer group ${
+                  activeMode === 'cram'
+                    ? 'bg-amber-50 dark:bg-yellow-500/20 border-amber-300 dark:border-yellow-500/50 shadow-md ring-1 ring-amber-400'
+                    : 'bg-slate-50 dark:bg-neutral-950/60 border-slate-200 dark:border-white/10 hover:border-slate-300 dark:hover:border-white/20'
                 }`}
               >
-                <Icon className={`w-4 h-4 ${isActive ? tab.color : 'text-neutral-500'}`} />
-                <span>{tab.label}</span>
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-mono font-bold text-amber-700 dark:text-yellow-400 uppercase tracking-wider">
+                    Stage 1 • Breakdown
+                  </span>
+                  <Zap className="w-4 h-4 text-amber-600 dark:text-yellow-400 group-hover:scale-110 transition-transform" />
+                </div>
+                <h4 className="text-sm font-bold text-slate-900 dark:text-white mt-1">1. Study Guide</h4>
+                <p className="text-xs text-slate-600 dark:text-neutral-400 mt-1 leading-relaxed">
+                  Step-by-step topic breakdowns with key definitions, formulas & intuition.
+                </p>
               </button>
-            );
-          })}
-        </div>
-      </div>
 
-      {/* Target Topic Bar */}
-      <div className="flex items-center justify-between gap-3 bg-neutral-900/40 border border-white/10 px-4 py-2.5 rounded-xl text-xs backdrop-blur-xl">
-        <div className="flex items-center gap-2 flex-1">
-          <span className="text-neutral-400 font-mono text-[11px] shrink-0">Focus Topic:</span>
-          <input
-            type="text"
-            value={targetTopic}
-            onChange={(e) => setTargetTopic(e.target.value)}
-            placeholder="e.g., Corporate Valuation & DCF Models"
-            className="bg-transparent text-white font-semibold focus:outline-none w-full text-xs"
-          />
-        </div>
-        <button
-          onClick={() => {
-            if (activeMode === 'cram' || activeMode === 'exec' || activeMode === 'exam') {
-              triggerStudyAnalyze(activeMode);
-            } else if (activeMode === 'flashcards') {
-              generateNewFlashcards();
-            } else {
-              showToast(`Updated topic to ${targetTopic}`, 'info');
-            }
-          }}
-          disabled={loading}
-          className="px-3 py-1 rounded-lg bg-indigo-500/20 border border-indigo-500/30 text-indigo-300 hover:bg-indigo-500/30 text-[11px] font-bold flex items-center gap-1 transition-colors shrink-0"
-        >
-          <Sparkles className="w-3.5 h-3.5" />
-          <span>Regenerate for Topic</span>
-        </button>
-      </div>
+              {/* Stage 2: Test Me */}
+              <button
+                onClick={() => {
+                  setActiveMode('exam');
+                  if (!mockExam) triggerStudyAnalyze('exam');
+                }}
+                className={`text-left p-4 rounded-2xl border transition-all cursor-pointer group ${
+                  activeMode === 'exam' && !examSubmitted
+                    ? 'bg-rose-50 dark:bg-rose-500/20 border-rose-300 dark:border-rose-500/50 shadow-md ring-1 ring-rose-400'
+                    : 'bg-slate-50 dark:bg-neutral-950/60 border-slate-200 dark:border-white/10 hover:border-slate-300 dark:hover:border-white/20'
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-mono font-bold text-rose-700 dark:text-rose-400 uppercase tracking-wider">
+                    Stage 2 • Assessment
+                  </span>
+                  <Award className="w-4 h-4 text-rose-600 dark:text-rose-400 group-hover:scale-110 transition-transform" />
+                </div>
+                <h4 className="text-sm font-bold text-slate-900 dark:text-white mt-1">2. Practice Exam</h4>
+                <p className="text-xs text-slate-600 dark:text-neutral-400 mt-1 leading-relaxed">
+                  Interactive 5-question timed adaptive quiz generated from your notes.
+                </p>
+              </button>
 
-      {/* 3. STUDY MODE RENDERERS */}
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={activeMode}
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -10 }}
-          transition={{ duration: 0.2 }}
-        >
+              {/* Stage 3: Score & Feedback */}
+              <button
+                onClick={() => {
+                  setActiveMode('exam');
+                  if (!examSubmitted) setExamSubmitted(true);
+                }}
+                className={`text-left p-4 rounded-2xl border transition-all cursor-pointer group ${
+                  activeMode === 'exam' && examSubmitted
+                    ? 'bg-emerald-50 dark:bg-emerald-500/20 border-emerald-300 dark:border-emerald-500/50 shadow-md ring-1 ring-emerald-400'
+                    : 'bg-slate-50 dark:bg-neutral-950/60 border-slate-200 dark:border-white/10 hover:border-slate-300 dark:hover:border-white/20'
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-mono font-bold text-emerald-700 dark:text-emerald-400 uppercase tracking-wider">
+                    Stage 3 • Grade
+                  </span>
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 group-hover:scale-110 transition-transform" />
+                </div>
+                <h4 className="text-sm font-bold text-slate-900 dark:text-white mt-1">3. Score & Feedback</h4>
+                <p className="text-xs text-slate-600 dark:text-neutral-400 mt-1 leading-relaxed">
+                  Real-time percentage score, correct answer citations & topic weak points.
+                </p>
+              </button>
+            </div>
+          </div>
+
+          {/* Sub-Mode Segmented Control Bar */}
+          <div className="bg-slate-100 dark:bg-neutral-900/80 border border-slate-200 dark:border-white/10 p-1.5 rounded-2xl overflow-x-auto custom-scrollbar shadow-sm">
+            <div className="flex items-center min-w-max gap-1">
+              {studyModeTabs.filter(t => t.id !== 'notebook').map((tab) => {
+                const Icon = tab.icon;
+                const isActive = activeMode === tab.id;
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => {
+                      setActiveMode(tab.id);
+                      if (tab.id === 'cram' && !cramData) triggerStudyAnalyze('cram');
+                      if (tab.id === 'exec' && !execData) triggerStudyAnalyze('exec');
+                      if (tab.id === 'exam' && !mockExam) triggerStudyAnalyze('exam');
+                      if (tab.id === 'flashcards' && (!flashcards || flashcards.length === 0)) generateNewFlashcards();
+                    }}
+                    className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all duration-200 cursor-pointer ${
+                      isActive
+                        ? 'bg-white dark:bg-neutral-800 text-slate-900 dark:text-white shadow-md border border-slate-200 dark:border-white/15'
+                        : 'text-slate-600 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-neutral-200 hover:bg-white/50 dark:hover:bg-white/5'
+                    }`}
+                  >
+                    <Icon className={`w-4 h-4 ${isActive ? 'text-blue-600 dark:text-blue-400' : 'text-slate-400 dark:text-neutral-500'}`} />
+                    <span>{tab.label}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Target Topic Bar */}
+          <div className="flex items-center justify-between gap-3 bg-white dark:bg-neutral-900/40 border border-slate-200 dark:border-white/10 px-4 py-2.5 rounded-xl text-xs shadow-sm">
+            <div className="flex items-center gap-2 flex-1">
+              <span className="text-slate-500 dark:text-neutral-400 font-mono text-[11px] shrink-0">Focus Topic:</span>
+              <input
+                type="text"
+                value={targetTopic}
+                onChange={(e) => setTargetTopic(e.target.value)}
+                placeholder="e.g., Corporate Valuation & DCF Models"
+                className="bg-transparent text-slate-900 dark:text-white font-semibold focus:outline-none w-full text-xs"
+              />
+            </div>
+            <button
+              onClick={() => {
+                if (activeMode === 'cram' || activeMode === 'exec' || activeMode === 'exam') {
+                  triggerStudyAnalyze(activeMode);
+                } else if (activeMode === 'flashcards') {
+                  generateNewFlashcards();
+                } else {
+                  showToast(`Updated topic to ${targetTopic}`, 'info');
+                }
+              }}
+              disabled={loading}
+              className="px-3 py-1 rounded-lg bg-blue-50 dark:bg-indigo-500/20 border border-blue-200 dark:border-indigo-500/30 text-blue-700 dark:text-indigo-300 hover:bg-blue-100 dark:hover:bg-indigo-500/30 text-[11px] font-bold flex items-center gap-1 transition-colors shrink-0 cursor-pointer"
+            >
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>Regenerate for Topic</span>
+            </button>
+          </div>
+
+          {/* STUDY MODE RENDERERS */}
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={activeMode}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.2 }}
+            >
 
           {/* ========================================================= */}
           {/* MODE 0: VIRTUAL NOTEBOOK WORKSPACE & SOURCES */}
@@ -1638,7 +1720,7 @@ export const StudyIntelligenceEngineTab: React.FC<StudyIntelligenceEngineTabProp
                           </span>
                         </div>
 
-                        <p className="text-sm sm:text-base text-neutral-200 text-center leading-relaxed font-medium">
+                        <p className="text-sm sm:text-base text-white text-center leading-relaxed font-semibold">
                           {flashcards[currentCardIndex]?.back}
                         </p>
 
@@ -1762,9 +1844,16 @@ export const StudyIntelligenceEngineTab: React.FC<StudyIntelligenceEngineTabProp
                     <div className="space-y-4">
                       <div className="flex items-center justify-between text-xs font-mono text-neutral-400">
                         <span>Question {currentQuestionIndex + 1} of {mockExam.questions.length}</span>
-                        <span className="uppercase text-rose-400 font-bold">
-                          {mockExam.questions[currentQuestionIndex].type === 'mcq' ? 'Multiple Choice' : 'Essay Response'}
-                        </span>
+                        <div className="flex items-center gap-2">
+                          {mockExam.questions[currentQuestionIndex].topicTag && (
+                            <span className="px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 font-mono text-[10px]">
+                              {mockExam.questions[currentQuestionIndex].topicTag}
+                            </span>
+                          )}
+                          <span className="uppercase text-rose-400 font-bold">
+                            {mockExam.questions[currentQuestionIndex].type === 'mcq' ? 'Multiple Choice' : 'Analytical Response'}
+                          </span>
+                        </div>
                       </div>
 
                       <p className="text-sm font-semibold text-white leading-relaxed">
@@ -1776,6 +1865,7 @@ export const StudyIntelligenceEngineTab: React.FC<StudyIntelligenceEngineTabProp
                         <div className="space-y-2">
                           {mockExam.questions[currentQuestionIndex].options?.map((opt: string, optIdx: number) => {
                             const isSelected = userExamAnswers[currentQuestionIndex] === optIdx;
+                            const isCorrect = mockExam.questions[currentQuestionIndex].correctOptionIndex === optIdx;
                             return (
                               <button
                                 key={optIdx}
@@ -1786,13 +1876,23 @@ export const StudyIntelligenceEngineTab: React.FC<StudyIntelligenceEngineTabProp
                                 }}
                                 disabled={examSubmitted}
                                 className={`w-full text-left p-3.5 rounded-xl border text-xs font-medium transition-all flex items-center justify-between ${
-                                  isSelected
+                                  examSubmitted && isCorrect
+                                    ? 'bg-emerald-500/20 border-emerald-500/50 text-white'
+                                    : examSubmitted && isSelected && !isCorrect
+                                    ? 'bg-rose-500/20 border-rose-500/50 text-white'
+                                    : isSelected
                                     ? 'bg-rose-500/20 border-rose-500/50 text-white shadow-md'
                                     : 'bg-neutral-950/60 border-white/10 text-neutral-300 hover:bg-neutral-950'
                                 }`}
                               >
                                 <span>{opt}</span>
-                                <div className={`w-4 h-4 rounded-full border flex items-center justify-center ${isSelected ? 'border-rose-400 bg-rose-500' : 'border-white/20'}`}>
+                                <div className={`w-4 h-4 rounded-full border flex items-center justify-center ${
+                                  examSubmitted && isCorrect 
+                                    ? 'border-emerald-400 bg-emerald-500' 
+                                    : isSelected 
+                                    ? 'border-rose-400 bg-rose-500' 
+                                    : 'border-white/20'
+                                }`}>
                                   {isSelected && <Check className="w-3 h-3 text-white" />}
                                 </div>
                               </button>
@@ -1813,7 +1913,7 @@ export const StudyIntelligenceEngineTab: React.FC<StudyIntelligenceEngineTabProp
                       {examSubmitted && (
                         <div className="p-4 rounded-xl bg-neutral-950 border border-white/10 text-xs space-y-2">
                           <strong className="text-rose-400 block font-mono uppercase">
-                            Model Solution & Explanation:
+                            Model Solution & Grounded Explanation:
                           </strong>
                           <p className="text-neutral-300">
                             {mockExam.questions[currentQuestionIndex].explanation || mockExam.questions[currentQuestionIndex].modelAnswer}
@@ -1822,6 +1922,76 @@ export const StudyIntelligenceEngineTab: React.FC<StudyIntelligenceEngineTabProp
                       )}
                     </div>
                   )}
+
+                  {/* Real-time Scoring & Weak Points Feedback Header */}
+                  {examSubmitted && (() => {
+                    let correctCount = 0;
+                    const weakPoints: string[] = [];
+
+                    mockExam.questions.forEach((q: any, idx: number) => {
+                      if (q.type === 'mcq') {
+                        if (userExamAnswers[idx] === q.correctOptionIndex) {
+                          correctCount++;
+                        } else {
+                          weakPoints.push(q.topicTag || `Concept in Question ${idx + 1}`);
+                        }
+                      } else {
+                        if (userExamAnswers[idx] && userExamAnswers[idx].trim().length > 10) {
+                          correctCount++;
+                        } else {
+                          weakPoints.push(q.topicTag || `Concept in Question ${idx + 1}`);
+                        }
+                      }
+                    });
+
+                    const totalCount = mockExam.questions.length || 5;
+                    const scorePercent = Math.round((correctCount / totalCount) * 100);
+                    const gradeTier = scorePercent >= 80 ? 'Distinction (High Pass)' : scorePercent >= 60 ? 'Merit (Solid Foundation)' : 'Review Required';
+
+                    return (
+                      <div className="p-5 rounded-2xl bg-neutral-950 border border-rose-500/30 space-y-4 shadow-xl">
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                          <div className="flex items-center gap-4">
+                            <div className="w-14 h-14 rounded-full bg-rose-500/20 border-2 border-rose-500 flex items-center justify-center font-mono font-extrabold text-base text-rose-300 shrink-0">
+                              {scorePercent}%
+                            </div>
+                            <div>
+                              <span className="text-[10px] font-mono text-neutral-400 uppercase block">Active Score & Assessment Result</span>
+                              <h4 className="text-base font-bold text-white mt-0.5">{gradeTier}</h4>
+                              <p className="text-xs text-neutral-400">{correctCount} of {totalCount} Questions Mastered</p>
+                            </div>
+                          </div>
+
+                          <button
+                            onClick={() => {
+                              setActiveMode('cram');
+                              if (!cramData) triggerStudyAnalyze('cram');
+                            }}
+                            className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-md"
+                          >
+                            <Zap className="w-3.5 h-3.5" />
+                            <span>Reinforce in Teach Me</span>
+                          </button>
+                        </div>
+
+                        {weakPoints.length > 0 && (
+                          <div className="pt-3 border-t border-white/10 space-y-2">
+                            <span className="text-xs font-mono font-bold text-amber-400 uppercase flex items-center gap-1.5">
+                              <AlertCircle className="w-3.5 h-3.5" />
+                              <span>AI-Identified Topic Weak Points to Review</span>
+                            </span>
+                            <div className="flex flex-wrap gap-2">
+                              {weakPoints.map((wp, i) => (
+                                <span key={i} className="px-2.5 py-1 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-mono">
+                                  ⚠️ {wp}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })()}
 
                   {/* Exam Navigation Footer */}
                   <div className="flex items-center justify-between pt-4 border-t border-white/10">
@@ -1841,14 +2011,19 @@ export const StudyIntelligenceEngineTab: React.FC<StudyIntelligenceEngineTabProp
                         }}
                         className="px-5 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs shadow-md transition-colors"
                       >
-                        Submit Exam
+                        Submit & Score Quiz
                       </button>
                     ) : (
                       <button
-                        onClick={() => triggerStudyAnalyze('exam')}
+                        onClick={() => {
+                          setExamSubmitted(false);
+                          setUserExamAnswers({});
+                          setCurrentQuestionIndex(0);
+                          triggerStudyAnalyze('exam');
+                        }}
                         className="px-5 py-2 rounded-xl bg-neutral-800 border border-white/15 text-white font-bold text-xs hover:bg-neutral-700 transition-colors"
                       >
-                        Generate New Exam
+                        Generate New Adaptive Quiz
                       </button>
                     )}
 
@@ -1987,6 +2162,8 @@ export const StudyIntelligenceEngineTab: React.FC<StudyIntelligenceEngineTabProp
 
         </motion.div>
       </AnimatePresence>
+      </div>
+      )}
 
     </div>
   );

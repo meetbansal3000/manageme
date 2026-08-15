@@ -5,6 +5,7 @@ import { SettingsProvider } from './context/SettingsContext';
 import { OwnerSecurityProvider } from './context/OwnerSecurityContext';
 import { UserProvider } from './context/UserContext';
 import { ToastProvider } from './context/ToastContext';
+import { AuthProvider } from './context/AuthContext';
 import './index.css';
 
 if ('serviceWorker' in navigator) {
@@ -17,11 +18,13 @@ createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <ToastProvider>
       <UserProvider>
-        <SettingsProvider>
-          <OwnerSecurityProvider>
-            <App />
-          </OwnerSecurityProvider>
-        </SettingsProvider>
+        <AuthProvider>
+          <SettingsProvider>
+            <OwnerSecurityProvider>
+              <App />
+            </OwnerSecurityProvider>
+          </SettingsProvider>
+        </AuthProvider>
       </UserProvider>
     </ToastProvider>
   </StrictMode>,

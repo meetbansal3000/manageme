@@ -35,6 +35,7 @@ import {
   Trip, 
   TripExpense, 
   TransitRoute, 
+  PlaceRecommendation,
   Subscription, 
   TechAsset, 
   VehicleCost,
@@ -66,6 +67,7 @@ export interface UserTrackerData {
   trips?: Trip[];
   tripExpenses?: TripExpense[];
   transitRoutes?: TransitRoute[];
+  places?: PlaceRecommendation[];
   subscriptions?: Subscription[];
   techAssets?: TechAsset[];
   vehicleCosts?: VehicleCost[];

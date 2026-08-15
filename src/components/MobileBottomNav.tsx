@@ -14,10 +14,10 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
   onOpenAiAssistant
 }) => {
   const tabs = [
-    { id: 'news' as AppTab, label: 'Home', icon: Newspaper },
+    { id: 'landing' as AppTab, label: 'Home', icon: Sparkles },
+    { id: 'news' as AppTab, label: 'Markets', icon: Newspaper },
     { id: 'study' as AppTab, label: 'Study', icon: GraduationCap },
     { id: 'jobs' as AppTab, label: 'Pipeline', icon: Briefcase },
-    { id: 'tasks' as AppTab, label: 'Tasks', icon: CheckSquare },
     { id: 'metasuite' as AppTab, label: 'AI Suite', icon: Bot },
   ];
 

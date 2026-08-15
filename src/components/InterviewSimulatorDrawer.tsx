@@ -105,7 +105,7 @@ export const InterviewSimulatorDrawer: React.FC<Props> = ({ isOpen, onClose }) =
         <div className="p-6 border-b border-[var(--border)] bg-[rgba(255,255,255,0.02)]">
           <label className="block text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wider mb-2">Target Role</label>
           <div className="flex gap-2">
-            <select value={category} onChange={e => setCategory(e.target.value)} className="apple-input bg-[#1c1c1e] text-sm p-2 flex-1 border-transparent">
+            <select value={category} onChange={e => setCategory(e.target.value)} className="apple-input bg-[var(--surface-solid)] text-sm p-2 flex-1 border-transparent">
               <option>Asset Management</option>
               <option>Investment Banking (M&A)</option>
               <option>Audit & Assurance</option>
@@ -151,7 +151,7 @@ export const InterviewSimulatorDrawer: React.FC<Props> = ({ isOpen, onClose }) =
               onChange={e => setInput(e.target.value)}
               onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); } }}
               placeholder="Type your answer..."
-              className="w-full apple-input bg-[#1c1c1e] border-transparent resize-none p-3 pr-12 h-20 text-sm"
+              className="w-full apple-input bg-[var(--surface-solid)] border-transparent resize-none p-3 pr-12 h-20 text-sm"
               disabled={isLoading || messages.length === 0}
             />
             <button 

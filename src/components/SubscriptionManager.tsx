@@ -13,7 +13,7 @@ interface SubItem {
 const DEFAULT_SUBS: SubItem[] = [
   { id: '1', name: 'Adobe Creative Cloud', price: 54.99, billingDate: '2026-09-01' },
   { id: '2', name: 'Spotify Premium', price: 10.99, billingDate: '2026-08-28' },
-  { id: '3', name: 'Bloomberg Terminal / Pro', price: 29.99, billingDate: '2026-09-15' },
+  { id: '3', name: 'manageme Pro Intelligence', price: 29.99, billingDate: '2026-09-15' },
 ];
 
 export const SubscriptionManager: React.FC = () => {
@@ -207,8 +207,8 @@ export const SubscriptionManager: React.FC = () => {
                         type="number"
                         step="0.01"
                         placeholder="0.00"
-                        value={sub.price || ''}
-                        onChange={(e) => handlePriceChange(sub.id, parseFloat(e.target.value) || 0)}
+                        value={sub.price === 0 ? '' : sub.price}
+                        onChange={(e) => handlePriceChange(sub.id, e.target.value === '' ? 0 : parseFloat(e.target.value) || 0)}
                         className="w-20 bg-black/40 border border-white/10 rounded-lg px-2.5 py-1.5 text-xs text-white font-mono text-right focus:outline-none focus:border-blue-500"
                       />
                       <button

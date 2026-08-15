@@ -25,7 +25,8 @@ import {
   BarChart2,
   ChevronRight,
   Layers,
-  Zap
+  Zap,
+  Upload
 } from 'lucide-react';
 import { SkillTask, SkillProficiency, CourseCertification } from '../types';
 import { useSettings } from '../context/SettingsContext';
@@ -499,6 +500,14 @@ export const SkillsTrackerTab: React.FC<SkillsTrackerTabProps> = ({
             </button>
           </div>
 
+          <button 
+            onClick={() => window.dispatchEvent(new CustomEvent('openSmartImport', { detail: { scope: 'skills' } }))}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-600/20 hover:bg-blue-600/30 border border-blue-500/30 text-xs font-semibold text-blue-300 transition-colors cursor-pointer"
+            title="Import skills and certificates from CSV, JSON or TXT"
+          >
+            <Upload className="w-3.5 h-3.5" /> Smart Import / File Sync
+          </button>
+
           <button onClick={handleShare} className="p-2 rounded-xl glass-panel border border-[var(--border)] hover:bg-white/5 transition-colors text-[var(--text-secondary)] hover:text-[var(--text-primary)]" title="Export JSON">
             <Share2 className="w-4 h-4" />
           </button>
@@ -671,7 +680,7 @@ export const SkillsTrackerTab: React.FC<SkillsTrackerTabProps> = ({
                               title="Toggle Proficiency Level"
                             >
                               {PROFICIENCY_LEVELS.map(lvl => (
-                                <option key={lvl} value={lvl} className="bg-[#1c1c1e] text-white">{lvl}</option>
+                                <option key={lvl} value={lvl}>{lvl}</option>
                               ))}
                             </select>
 

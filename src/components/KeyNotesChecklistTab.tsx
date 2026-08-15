@@ -18,7 +18,8 @@ import {
   Layers,
   ListTodo,
   Download,
-  FileDown
+  FileDown,
+  Upload
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { NoteSection, UniversalTask, TaskPriority, ChecklistItem } from '../types';
@@ -368,6 +369,14 @@ export const KeyNotesChecklistTab: React.FC<KeyNotesChecklistTabProps> = ({
           </div>
 
           <button 
+            onClick={() => window.dispatchEvent(new CustomEvent('openSmartImport', { detail: { scope: 'tasks' } }))}
+            className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-blue-600/20 hover:bg-blue-600/30 border border-blue-500/30 text-xs font-semibold text-blue-300 transition-colors cursor-pointer"
+            title="Import tasks from CSV, JSON, TXT or Excel"
+          >
+            <Upload className="w-3.5 h-3.5" /> Smart Import / File Sync
+          </button>
+
+          <button 
             onClick={handleSyncTasks} 
             disabled={isSyncing} 
             className="flex items-center gap-2 px-3.5 py-2 rounded-xl glass-panel border border-[var(--border)] text-xs font-semibold text-blue-400 hover:bg-blue-400/10 transition-colors"
@@ -415,9 +424,9 @@ export const KeyNotesChecklistTab: React.FC<KeyNotesChecklistTabProps> = ({
                   onChange={e => setQuickPriority(e.target.value as TaskPriority)}
                   className={`bg-[var(--bg)] border rounded-xl px-3 py-2.5 text-xs font-bold focus:outline-none ${getPriorityBadgeStyle(quickPriority)}`}
                 >
-                  <option value="High" className="bg-[#1c1c1e] text-red-400">High Priority</option>
-                  <option value="Medium" className="bg-[#1c1c1e] text-amber-400">Medium Priority</option>
-                  <option value="Low" className="bg-[#1c1c1e] text-blue-400">Low Priority</option>
+                  <option value="High" className="text-red-500">High Priority</option>
+                  <option value="Medium" className="text-amber-500">Medium Priority</option>
+                  <option value="Low" className="text-blue-500">Low Priority</option>
                 </select>
 
                 <select

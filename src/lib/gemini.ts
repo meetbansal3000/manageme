@@ -2,16 +2,30 @@ import { GoogleGenAI } from '@google/genai';
 
 /**
  * Valid, active Google Gemini Model ID.
- * Standard aliases: gemini-2.5-flash, gemini-1.5-flash
+ * Standard active models: gemini-2.5-flash, gemini-1.5-flash
  */
 export const DEFAULT_GEMINI_MODEL = 'gemini-2.5-flash';
 
 export function getGeminiApiKey(): string {
-  return (
-    import.meta.env.VITE_GEMINI_API_KEY ||
-    (typeof process !== 'undefined' ? process.env.GEMINI_API_KEY || process.env.VITE_GEMINI_API_KEY : '') ||
-    ''
-  );
+  // 1. Vite / browser client environment
+  try {
+    if (typeof import.meta !== 'undefined' && import.meta.env?.VITE_GEMINI_API_KEY) {
+      return import.meta.env.VITE_GEMINI_API_KEY;
+    }
+  } catch (e) {
+    // Ignore in non-Vite contexts
+  }
+
+  // 2. Node / SSR / worker process environment
+  try {
+    if (typeof process !== 'undefined' && process.env) {
+      return process.env.VITE_GEMINI_API_KEY || process.env.GEMINI_API_KEY || '';
+    }
+  } catch (e) {
+    // Ignore
+  }
+
+  return '';
 }
 
 export function getGeminiClient(): GoogleGenAI {
@@ -21,7 +35,7 @@ export function getGeminiClient(): GoogleGenAI {
 
 export async function generateGeminiContent(prompt: string, modelName: string = DEFAULT_GEMINI_MODEL): Promise<string> {
   const ai = getGeminiClient();
-  const candidates = [modelName, 'gemini-2.5-flash', 'gemini-1.5-flash', 'gemini-2.0-flash', 'gemini-3.7-flash'];
+  const candidates = [modelName, 'gemini-2.5-flash', 'gemini-1.5-flash', 'gemini-2.0-flash'];
   let lastError: any = null;
 
   for (let attempt = 0; attempt < candidates.length; attempt++) {
@@ -42,3 +56,4 @@ export async function generateGeminiContent(prompt: string, modelName: string = 
   }
   throw lastError;
 }
+

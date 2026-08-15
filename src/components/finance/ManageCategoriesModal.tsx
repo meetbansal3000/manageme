@@ -84,7 +84,7 @@ export const ManageCategoriesModal: React.FC<Props> = ({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
       <div 
-        className="bg-[#1c1c1e] border border-[var(--border)] rounded-3xl p-6 max-w-lg w-full shadow-2xl space-y-5 overflow-hidden flex flex-col max-h-[90vh]"
+        className="bg-[var(--surface-solid)] border border-[var(--border)] rounded-3xl p-6 max-w-lg w-full shadow-2xl space-y-5 overflow-hidden flex flex-col max-h-[90vh]"
         onClick={e => e.stopPropagation()}
       >
         {/* Header */}
@@ -107,7 +107,7 @@ export const ManageCategoriesModal: React.FC<Props> = ({
         </div>
 
         {/* Add New Category Row */}
-        <div className="bg-[#141416] p-3.5 rounded-2xl border border-[var(--border)] space-y-3">
+        <div className="bg-[var(--surface-solid)] p-3.5 rounded-2xl border border-[var(--border)] space-y-3">
           <h4 className="text-xs font-semibold text-[var(--text-primary)] flex items-center gap-1.5">
             <Plus className="w-3.5 h-3.5 text-orange-400" />
             Add New Custom Category
@@ -118,7 +118,7 @@ export const ManageCategoriesModal: React.FC<Props> = ({
               placeholder="Category Name (e.g. Groceries, Tech, Gym)"
               value={newCatName}
               onChange={e => setNewCatName(e.target.value)}
-              className="apple-input bg-[#1c1c1e] text-xs p-2.5 sm:col-span-6 w-full"
+              className="apple-input bg-[var(--surface-solid)] text-xs p-2.5 sm:col-span-6 w-full"
             />
             <div className="relative sm:col-span-4">
               <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-xs text-[var(--text-secondary)]">{currencySymbol}</span>
@@ -127,7 +127,7 @@ export const ManageCategoriesModal: React.FC<Props> = ({
                 placeholder="Monthly Budget"
                 value={newCatBudget}
                 onChange={e => setNewCatBudget(e.target.value)}
-                className="apple-input bg-[#1c1c1e] pl-6 text-xs p-2.5 w-full font-mono"
+                className="apple-input bg-[var(--surface-solid)] pl-6 text-xs p-2.5 w-full font-mono"
               />
             </div>
             <button
@@ -164,7 +164,7 @@ export const ManageCategoriesModal: React.FC<Props> = ({
           {list.map(cat => (
             <div
               key={cat.name}
-              className="flex items-center justify-between p-3 rounded-2xl bg-[#141416] border border-[var(--border)] hover:border-[var(--border)]/80 transition-colors"
+              className="flex items-center justify-between p-3 rounded-2xl bg-[var(--surface-solid)] border border-[var(--border)] hover:border-[var(--border)]/80 transition-colors"
             >
               <div className="flex items-center gap-2.5">
                 <div
@@ -184,7 +184,7 @@ export const ManageCategoriesModal: React.FC<Props> = ({
                       placeholder="None"
                       value={cat.monthlyBudget ?? ''}
                       onChange={e => handleUpdateBudget(cat.name, e.target.value)}
-                      className="apple-input bg-[#1c1c1e] pl-5 text-xs py-1 px-2 w-24 text-right font-mono"
+                      className="apple-input bg-[var(--surface-solid)] pl-5 text-xs py-1 px-2 w-24 text-right font-mono"
                     />
                   </div>
                 </div>

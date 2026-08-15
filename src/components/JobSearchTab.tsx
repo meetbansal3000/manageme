@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Briefcase, Settings, Search, Clock, MapPin, DollarSign, Send, MessageSquare, ExternalLink, X, Plus, Linkedin, Sparkles, MessageCircle, Upload, FileSpreadsheet, Layers, CheckSquare, Square, Trash2 } from 'lucide-react';
+import { Briefcase, Settings, Search, Clock, MapPin, DollarSign, Send, MessageSquare, ExternalLink, X, Plus, Linkedin, Sparkles, MessageCircle, Upload, FileSpreadsheet, Layers, CheckSquare, Square, Trash2, Mail, Link2 } from 'lucide-react';
 import { UserTrackerData } from '../hooks/useFirestoreData';
 import { JobApplication, JobPreferences } from '../types';
 import { useJobs } from '../hooks/useJobs';
@@ -12,6 +12,7 @@ import { AppleEmptyState } from './AppleEmptyState';
 import { processAutoImport, ExtractedJobApplication } from '../utils/autoImportPipeline';
 import { ImportProgressBar } from './ImportProgressBar';
 import { ReviewJobImportModal } from './ReviewJobImportModal';
+import { OutreachHub } from './OutreachHub';
 
 interface Props {
   userData: UserTrackerData;
@@ -29,6 +30,8 @@ const MOCK_FEED = [
 export const JobSearchTab: React.FC<Props> = ({ userData, updateData }) => {
   const { requireOwnerPermission } = useOwnerSecurity();
   const { addJob } = useJobs();
+  const [careerSubView, setCareerSubView] = useState<'board' | 'outreach'>('board');
+  const [outreachTarget, setOutreachTarget] = useState<{ company: string; role: string } | null>(null);
   const [showPreferences, setShowPreferences] = useState(false);
   const [prefs, setPrefs] = useState<JobPreferences>(() => {
     const raw = userData?.jobPreferences;
@@ -215,13 +218,24 @@ export const JobSearchTab: React.FC<Props> = ({ userData, updateData }) => {
     }
   };
 
+  useEffect(() => {
+    const handler = (e: any) => {
+      if (e.detail?.company) {
+        setOutreachTarget({ company: e.detail.company, role: e.detail.role || 'Graduate Role' });
+        setCareerSubView('outreach');
+      }
+    };
+    window.addEventListener('openOutreachHub', handler);
+    return () => window.removeEventListener('openOutreachHub', handler);
+  }, []);
+
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-[var(--text-primary)]">Job Search & Live Tracker</h1>
-          <p className="text-[var(--text-secondary)] mt-1">Aggregated feed and Kanban application board.</p>
+          <h1 className="text-3xl font-bold tracking-tight text-[var(--text-primary)]">Career & Applications Workspace</h1>
+          <p className="text-[var(--text-secondary)] mt-1">Aggregated feed, Kanban pipeline, and AI cold outreach suite.</p>
         </div>
         <div className="flex items-center gap-2">
           <input
@@ -244,8 +258,50 @@ export const JobSearchTab: React.FC<Props> = ({ userData, updateData }) => {
         </div>
       </div>
 
-      {/* Main Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+      {/* Subview Navigation Bar */}
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex items-center gap-1.5 p-1 rounded-2xl bg-neutral-900 border border-white/10 w-fit">
+          <button
+            onClick={() => setCareerSubView('board')}
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+              careerSubView === 'board' ? 'bg-blue-600 text-white shadow-md' : 'text-neutral-400 hover:text-white'
+            }`}
+          >
+            <Briefcase className="w-3.5 h-3.5" />
+            <span>Application Kanban & Live Feed</span>
+          </button>
+          <button
+            onClick={() => setCareerSubView('outreach')}
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+              careerSubView === 'outreach' ? 'bg-purple-600 text-white shadow-md' : 'text-neutral-400 hover:text-white'
+            }`}
+          >
+            <Mail className="w-3.5 h-3.5" />
+            <span>Cold Email & HR Outreach Suite</span>
+          </button>
+        </div>
+
+        <button
+          onClick={() => window.dispatchEvent(new CustomEvent('openJobSyncHub'))}
+          className="px-4 py-2 rounded-xl text-xs font-bold bg-blue-600/15 hover:bg-blue-600/25 border border-blue-500/30 text-blue-300 transition-all flex items-center gap-2 cursor-pointer shadow-sm"
+          title="Connect LinkedIn, Indeed & Auto-Capture Job URLs"
+        >
+          <Link2 className="w-3.5 h-3.5" />
+          <span>Connected Job Platforms & Auto-Capture</span>
+        </button>
+      </div>
+
+      {/* Outreach Hub View */}
+      {careerSubView === 'outreach' && (
+        <OutreachHub
+          initialCompany={outreachTarget?.company || 'Goldman Sachs'}
+          initialRole={outreachTarget?.role || 'Summer Analyst - M&A Advisory'}
+        />
+      )}
+
+      {/* Kanban & Feed View */}
+      {careerSubView === 'board' && (
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
         
         {/* Live Feed Sidebar */}
         <div className="lg:col-span-1 space-y-4">
@@ -277,14 +333,27 @@ export const JobSearchTab: React.FC<Props> = ({ userData, updateData }) => {
                   <div className="flex items-center gap-1"><MapPin className="w-3 h-3" /> {job.location}</div>
                   <div className="flex items-center gap-1"><DollarSign className="w-3 h-3" /> {job.salary}</div>
                 </div>
-
-                <div className="pt-3 border-t border-[var(--border)] flex flex-wrap gap-2">
-                  <button onClick={() => addApplication('Potential', job)} className="flex-1 py-1.5 bg-[var(--accent)]/10 text-[var(--accent)] text-xs font-semibold rounded-md hover:bg-[var(--accent)]/20 transition-colors">
-                    Save
+                <div className="pt-3 border-t border-[var(--border)] space-y-2">
+                  <div className="flex gap-2">
+                    <button onClick={() => addApplication('Potential', job)} className="flex-1 py-1.5 bg-[var(--accent)]/10 text-[var(--accent)] text-xs font-semibold rounded-md hover:bg-[var(--accent)]/20 transition-colors">
+                      Save
+                    </button>
+                    <button onClick={() => draftMessage(job)} className="flex-1 py-1.5 bg-white/5 text-gray-300 text-xs font-semibold rounded-md hover:bg-white/10 transition-colors flex items-center justify-center gap-1">
+                      <MessageSquare className="w-3 h-3" /> Quick AI
+                    </button>
+                  </div>
+                  <button 
+                    onClick={() => {
+                      setOutreachTarget({ company: job.company, role: job.title });
+                      setCareerSubView('outreach');
+                    }} 
+                    className="w-full py-1.5 bg-purple-600/20 hover:bg-purple-600/30 border border-purple-500/30 text-purple-300 text-xs font-semibold rounded-md transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+                  >
+                    <Mail className="w-3 h-3" />
+                    <span>Apply via Cold Email</span>
                   </button>
-                  <button onClick={() => draftMessage(job)} className="flex-1 py-1.5 bg-white/5 text-gray-300 text-xs font-semibold rounded-md hover:bg-white/10 transition-colors flex items-center justify-center gap-1">
-                    <Sparkles className="w-3 h-3" /> Draft
-                  </button>
+                </div>
+                <div className="flex justify-end">
                   <button 
                     onClick={() => {
                       window.dispatchEvent(new CustomEvent('shareToChat', { 
@@ -339,7 +408,7 @@ export const JobSearchTab: React.FC<Props> = ({ userData, updateData }) => {
 
           {/* Floating / Sticky Batch Actions Bar */}
           {(isBatchMode || selectedAppIds.length > 0) && (
-            <div className="p-3.5 rounded-2xl bg-[#141416] border border-purple-500/40 shadow-lg shadow-purple-500/5 transition-all flex flex-wrap items-center justify-between gap-3">
+            <div className="p-3.5 rounded-2xl bg-[var(--surface-solid)] border border-purple-500/40 shadow-lg shadow-purple-500/5 transition-all flex flex-wrap items-center justify-between gap-3">
               <div className="flex flex-wrap items-center gap-2.5">
                 <button
                   type="button"
@@ -374,7 +443,7 @@ export const JobSearchTab: React.FC<Props> = ({ userData, updateData }) => {
                       }
                     }}
                     defaultValue=""
-                    className="px-2 py-1 bg-[#1c1c1e] border border-[var(--border)] rounded-lg text-xs font-mono text-[var(--text-primary)] disabled:opacity-50 cursor-pointer focus:outline-none"
+                    className="px-2 py-1 bg-[var(--surface-solid)] border border-[var(--border)] rounded-lg text-xs font-mono text-[var(--text-primary)] disabled:opacity-50 cursor-pointer focus:outline-none"
                   >
                     <option value="" disabled>Change Status...</option>
                     {columns.map(c => (
@@ -516,6 +585,7 @@ export const JobSearchTab: React.FC<Props> = ({ userData, updateData }) => {
           </div>
         </div>
       </div>
+      )}
 
       {/* Preferences Modal */}
       <AnimatePresence>

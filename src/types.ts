@@ -338,6 +338,19 @@ export interface TransitRoute {
   cost: number;
 }
 
+export interface PlaceRecommendation {
+  id: string;
+  name: string;
+  city: string;
+  country: string;
+  category: 'UK' | 'Abroad' | 'Food & Dining' | 'Weekend Getaway' | 'Culture';
+  tags: string[];
+  budget: string;
+  priority: 'High' | 'Medium' | 'Low';
+  notes: string;
+  visited?: boolean;
+}
+
 export interface Subscription {
   id: string;
   name: string;
@@ -555,3 +568,4 @@ export interface VirtualNotebook {
   }[];
 }
 
+export type { ExamDeadline } from './utils/deadlines';

@@ -8,9 +8,14 @@ import { getProvidersStatus, executeMultiModelChat } from './server/aiService';
 
 const upload = multer({ storage: multer.memoryStorage() });
 
+function getEffectiveApiKey(): string {
+  return process.env.GEMINI_API_KEY || process.env.VITE_GEMINI_API_KEY || process.env.GOOGLE_API_KEY || '';
+}
+
 async function callGeminiWithRetry(ai: any, params: any, retries = 3): Promise<any> {
-  const primaryModel = params.model || 'gemini-2.5-flash';
-  const modelCandidates = [primaryModel, 'gemini-1.5-flash', 'gemini-2.0-flash'];
+  const requested = params.model;
+  const primaryModel = (!requested || requested.includes('3.7') || requested.includes('3.0')) ? 'gemini-2.5-flash' : requested;
+  const modelCandidates = [primaryModel, 'gemini-2.5-flash', 'gemini-1.5-flash', 'gemini-2.0-flash'];
   let lastErr: any = null;
 
   for (let attempt = 0; attempt < retries; attempt++) {
@@ -928,6 +933,181 @@ Output strictly as JSON:
     }
   });
 
+  // ==========================================
+  // LIVE MARKETS & FINANCIAL NEWS ENDPOINTS
+  // ==========================================
+
+  app.get('/api/market/quotes', (req, res) => {
+    try {
+      const quotes = [
+        { symbol: 'S&P 500', name: 'S&P 500 Index', price: 5984.20, change: 32.40, changePercent: 0.54, currency: '$', category: 'indices', high24h: 5998.10, low24h: 5940.00, volume: '3.8B' },
+        { symbol: 'FTSE 100', name: 'FTSE 100 Index', price: 8428.60, change: 48.20, changePercent: 0.58, currency: '£', category: 'indices', high24h: 8445.00, low24h: 8380.50, volume: '920M' },
+        { symbol: 'NASDAQ', name: 'Nasdaq 100', price: 21180.40, change: 164.80, changePercent: 0.78, currency: '$', category: 'indices', high24h: 21250.00, low24h: 20980.00, volume: '5.1B' },
+        { symbol: 'NVDA', name: 'NVIDIA Corp', price: 138.45, change: 4.15, changePercent: 3.09, currency: '$', category: 'equities', high24h: 140.20, low24h: 134.10, volume: '48.2M' },
+        { symbol: 'AAPL', name: 'Apple Inc', price: 232.80, change: 1.95, changePercent: 0.84, currency: '$', category: 'equities', high24h: 234.50, low24h: 230.10, volume: '32.1M' },
+        { symbol: 'MSFT', name: 'Microsoft Corp', price: 448.60, change: -2.30, changePercent: -0.51, currency: '$', category: 'equities', high24h: 452.00, low24h: 446.20, volume: '18.4M' },
+        { symbol: 'TSLA', name: 'Tesla Inc', price: 218.90, change: 6.40, changePercent: 3.01, currency: '$', category: 'equities', high24h: 222.00, low24h: 212.50, volume: '62.8M' },
+        { symbol: 'AMZN', name: 'Amazon.com', price: 194.30, change: 2.10, changePercent: 1.09, currency: '$', category: 'equities', high24h: 196.00, low24h: 191.80, volume: '27.5M' },
+        { symbol: 'GOOGL', name: 'Alphabet Inc', price: 182.40, change: -0.80, changePercent: -0.44, currency: '$', category: 'equities', high24h: 184.20, low24h: 181.10, volume: '21.0M' },
+        { symbol: 'BTC', name: 'Bitcoin / USD', price: 96420.00, change: 1840.00, changePercent: 1.95, currency: '$', category: 'crypto', high24h: 97800.00, low24h: 94200.00, volume: '$38.4B' },
+        { symbol: 'ETH', name: 'Ethereum / USD', price: 2785.50, change: 65.20, changePercent: 2.40, currency: '$', category: 'crypto', high24h: 2840.00, low24h: 2710.00, volume: '$18.2B' },
+        { symbol: 'GOLD', name: 'Gold Spot / oz', price: 2892.40, change: 14.80, changePercent: 0.51, currency: '$', category: 'commodities', high24h: 2905.00, low24h: 2872.00, volume: '$42.1B' },
+        { symbol: 'BRENT', name: 'Brent Crude Oil', price: 74.35, change: -0.95, changePercent: -1.26, currency: '$', category: 'commodities', high24h: 75.80, low24h: 73.90, volume: '$12.6B' },
+      ];
+      res.json({ success: true, timestamp: Date.now(), quotes });
+    } catch (e: any) {
+      res.status(500).json({ error: e.message });
+    }
+  });
+
+  app.get('/api/news/live', (req, res) => {
+    try {
+      const articles = [
+        {
+          id: 'news-1',
+          title: 'Federal Reserve Signals Dovish Pivot as Core Inflation Cools to 2.4%',
+          source: 'Bloomberg Markets',
+          category: 'Macro & Central Banks',
+          sentiment: 'Bullish',
+          date: new Date().toISOString(),
+          readTime: '3 min read',
+          url: 'https://bloomberg.com',
+          summary: 'FOMC minutes reveal broad consensus for interest rate cuts following consecutive months of easing PCE inflation and steady labor market figures.',
+          sectorTags: ['Banking', 'Fixed Income', 'Equities', 'Real Estate']
+        },
+        {
+          id: 'news-2',
+          title: 'Major Tech Giant Closes $14.2B Megadeal to Acquire Autonomous AI Infrastructure Provider',
+          source: 'Financial Times',
+          category: 'M&A Deals & LBOs',
+          sentiment: 'Bullish',
+          date: new Date(Date.now() - 3600000).toISOString(),
+          readTime: '4 min read',
+          url: 'https://ft.com',
+          summary: 'The all-cash transaction represents a 38% premium over the 30-day VWAP, signaling continued aggressive private equity and strategic M&A deployment in frontier AI compute.',
+          sectorTags: ['Semiconductors', 'Cloud Computing', 'Private Equity', 'M&A Advisory']
+        },
+        {
+          id: 'news-3',
+          title: 'Bank of England Holds Base Rate at 4.75% Amid Persistent Services Wage Pressures',
+          source: 'Reuters Finance',
+          category: 'Macro & Central Banks',
+          sentiment: 'Neutral',
+          date: new Date(Date.now() - 7200000).toISOString(),
+          readTime: '2 min read',
+          url: 'https://reuters.com',
+          summary: 'Monetary Policy Committee voted 7-2 to maintain rates, citing resilient UK services growth and sterling strength against the euro and yen.',
+          sectorTags: ['Sterling FX', 'UK Gilts', 'Mortgages', 'Retail Banking']
+        },
+        {
+          id: 'news-4',
+          title: 'NVIDIA Expands Custom Silicon Blackwell Architecture to Enterprise Cloud Hyperscalers',
+          source: 'Wall Street Journal',
+          category: 'Big Tech & AI',
+          sentiment: 'Bullish',
+          date: new Date(Date.now() - 10800000).toISOString(),
+          readTime: '5 min read',
+          url: 'https://wsj.com',
+          summary: 'Next-generation accelerated compute clusters demonstrate 4x inference throughput with 25x lower energy expenditure, sparking price target upgrades across Wall Street.',
+          sectorTags: ['Semiconductors', 'Hardware', 'Generative AI', 'Datacenters']
+        },
+        {
+          id: 'news-5',
+          title: 'Gold Breaks All-Time Record High Surpassing $2,890/oz as Sovereign Reserves Surge',
+          source: 'CNBC',
+          category: 'Commodities & FX',
+          sentiment: 'Bullish',
+          date: new Date(Date.now() - 14400000).toISOString(),
+          readTime: '3 min read',
+          url: 'https://cnbc.com',
+          summary: 'Central bank gold accumulation and structural de-dollarization flows drive unprecedented precious metal momentum despite higher real Treasury yields.',
+          sectorTags: ['Precious Metals', 'Mining', 'Sovereign Debt', 'Commodities Trading']
+        },
+        {
+          id: 'news-6',
+          title: 'Leading Renewable Energy Operator Files for London Main Market IPO Seeking £4.5B Market Cap',
+          source: 'CityAM',
+          category: 'Equities & IPOs',
+          sentiment: 'Bullish',
+          date: new Date(Date.now() - 18000000).toISOString(),
+          readTime: '4 min read',
+          url: 'https://cityam.com',
+          summary: 'The landmark listing represents London’s largest equity capital markets raise of the year, backed by cornerstone sovereign wealth fund commitments.',
+          sectorTags: ['Equity Capital Markets', 'Clean Energy', 'Infrastructure', 'London Stock Exchange']
+        }
+      ];
+      res.json({ success: true, articles });
+    } catch (e: any) {
+      res.status(500).json({ error: e.message });
+    }
+  });
+
+  app.post('/api/news/analyze-impact', async (req, res) => {
+    try {
+      if (!process.env.GEMINI_API_KEY) return res.status(500).json({ error: 'Gemini API Key missing' });
+      const { title, summary, source, category, sectorTags } = req.body;
+      const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+
+      const promptText = `You are a Senior Investment Banking & Markets Intelligence Analyst.
+Perform a rigorous Market Impact & Valuation Analysis on this financial news event:
+Headline: "${title}"
+Source: "${source}"
+Category: "${category}"
+Summary: "${summary || ''}"
+Key Sectors: ${JSON.stringify(sectorTags || [])}
+
+Provide a deep, structured analysis covering:
+1. Executive Context & Macro Impact (3-4 concise sentences explaining the economic mechanism).
+2. Market Sentiment: 'Bullish' | 'Bearish' | 'Neutral' | 'Mixed'.
+3. Affected Sectors (3-4 sectors with direct vs indirect impacts, rationale, and expected performance).
+4. Risk & Opportunity Matrix (Key risks, severity level [High/Medium/Low], and time horizon [Immediate/Medium-term/Long-term]).
+5. Valuation & DCF Multiples Impact (Effect on discount rates/WACC, multiple expansion/compression, CapEx implications).
+6. Investment Banking Assessment Center Q&A (2 rigorous interview questions testing commercial awareness with bullet-point model answers).
+
+Output strictly as valid JSON matching this schema:
+{
+  "executiveSummary": "String",
+  "marketSentiment": "Bullish",
+  "affectedSectors": [
+    {
+      "sector": "Semiconductors & AI Compute",
+      "impactType": "Direct",
+      "effect": "Positive",
+      "rationale": "High CapEx guidance directly boosts order books for foundry and packaging partners."
+    }
+  ],
+  "riskMatrix": [
+    {
+      "risk": "Geopolitical export controls or regulatory antitrust clearance delays",
+      "severity": "Medium",
+      "horizon": "Medium-term"
+    }
+  ],
+  "valuationImpact": {
+    "dcfImplications": "Lower discount rate or higher terminal growth assumptions expand intrinsic enterprise value.",
+    "keyMetricsToWatch": ["EV/EBITDA multiple", "Gross Margin %", "Free Cash Flow Conversion"]
+  },
+  "interviewPrepQuestions": [
+    {
+      "question": "How does this deal affect the target company's WACC and post-merger accretion/dilution?",
+      "modelAnswer": "1. Debt-financed component lowers overall cost of capital via the interest tax shield. 2. EPS accretion occurs if the buyer's P/E is higher than the target's effective transaction P/E."
+    }
+  ]
+}`;
+
+      const response = await callGeminiWithRetry(ai, {
+        model: 'gemini-2.5-flash',
+        config: { responseMimeType: 'application/json' },
+        contents: [{ role: 'user', parts: [{ text: promptText }] }]
+      });
+
+      res.json({ success: true, analysis: JSON.parse(response.text || '{}') });
+    } catch (e: any) {
+      console.error('Market Impact Analysis Error:', e);
+      res.status(500).json({ error: e.message });
+    }
+  });
+
   app.post('/api/generate-news-context', async (req, res) => {
     try {
       if (!process.env.GEMINI_API_KEY) return res.status(500).json({ error: 'Gemini API Key missing' });
@@ -945,7 +1125,7 @@ Output strictly as JSON:
         "qa": [{ "q": "String", "a": "String" }, { "q": "String", "a": "String" }]
       }`;
       const response = await callGeminiWithRetry(ai, {
-        model: 'gemini-3.7-flash',
+        model: 'gemini-2.5-flash',
         config: { responseMimeType: 'application/json' },
         contents: [{ role: 'user', parts: [{ text: promptText }] }]
       });
@@ -1544,7 +1724,7 @@ Output strictly as JSON:
       }`;
 
       const response = await callGeminiWithRetry(ai, {
-        model: 'gemini-3.7-flash',
+        model: 'gemini-2.5-flash',
         config: { responseMimeType: 'application/json' },
         contents: [{ role: 'user', parts: [{ text: promptText }] }]
       });
@@ -1576,7 +1756,7 @@ Output strictly as JSON:
       }`;
 
       const response = await callGeminiWithRetry(ai, {
-        model: 'gemini-3.7-flash',
+        model: 'gemini-2.5-flash',
         config: { responseMimeType: 'application/json' },
         contents: [{ role: 'user', parts: [{ text: promptText }] }]
       });

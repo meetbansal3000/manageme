@@ -78,7 +78,7 @@ export const EditCreditCardModal: React.FC<Props> = ({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
       <div 
-        className="bg-[#1c1c1e] border border-[var(--border)] rounded-3xl p-6 max-w-lg w-full shadow-2xl space-y-5 overflow-hidden flex flex-col max-h-[90vh]"
+        className="bg-[var(--surface-solid)] border border-[var(--border)] rounded-3xl p-6 max-w-lg w-full shadow-2xl space-y-5 overflow-hidden flex flex-col max-h-[90vh]"
         onClick={e => e.stopPropagation()}
       >
         {/* Header */}
@@ -170,7 +170,7 @@ export const EditCreditCardModal: React.FC<Props> = ({
                   min="0"
                   value={formData.statementBalance ?? ''}
                   onChange={e => setFormData({ ...formData, statementBalance: Number(e.target.value) })}
-                  className="apple-input bg-[#1c1c1e] pl-7 text-xs p-2 w-full font-mono text-red-400 font-bold"
+                  className="apple-input bg-[var(--surface-solid)] pl-7 text-xs p-2 w-full font-mono text-red-400 font-bold"
                   required
                 />
               </div>
@@ -188,7 +188,7 @@ export const EditCreditCardModal: React.FC<Props> = ({
                   min="0"
                   value={formData.paymentsMade ?? ''}
                   onChange={e => setFormData({ ...formData, paymentsMade: Number(e.target.value) })}
-                  className="apple-input bg-[#1c1c1e] pl-7 text-xs p-2 w-full font-mono text-emerald-400 font-bold"
+                  className="apple-input bg-[var(--surface-solid)] pl-7 text-xs p-2 w-full font-mono text-emerald-400 font-bold"
                 />
               </div>
             </div>

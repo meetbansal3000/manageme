@@ -1,7 +1,7 @@
 import { GoogleGenAI, Type, ThinkingLevel } from '@google/genai';
 
 export interface AIProviderStatus {
-  id: 'gemini' | 'openai' | 'claude' | 'custom';
+  id: 'gemini' | 'openai' | 'claude' | 'deepseek' | 'notebooklm' | 'custom';
   name: string;
   isConfigured: boolean;
   models: {
@@ -15,7 +15,7 @@ export interface AIProviderStatus {
 }
 
 export interface ChatRequestOptions {
-  provider?: 'gemini' | 'openai' | 'claude' | 'custom';
+  provider?: 'gemini' | 'openai' | 'claude' | 'deepseek' | 'notebooklm' | 'custom';
   model?: string;
   message: string;
   history?: { role: 'user' | 'model' | 'assistant'; text: string }[];
@@ -53,6 +53,7 @@ export function getProvidersStatus(): AIProviderStatus[] {
   const hasGemini = Boolean(process.env.GEMINI_API_KEY && process.env.GEMINI_API_KEY !== 'MY_GEMINI_API_KEY');
   const hasOpenAI = Boolean(process.env.OPENAI_API_KEY && process.env.OPENAI_API_KEY.trim() !== '');
   const hasClaude = Boolean(process.env.ANTHROPIC_API_KEY && process.env.ANTHROPIC_API_KEY.trim() !== '');
+  const hasDeepSeek = Boolean(process.env.DEEPSEEK_API_KEY && process.env.DEEPSEEK_API_KEY.trim() !== '');
 
   return [
     {
@@ -61,24 +62,24 @@ export function getProvidersStatus(): AIProviderStatus[] {
       isConfigured: hasGemini,
       models: [
         {
-          id: 'gemini-3.5-flash',
-          name: 'Gemini 3.5 Flash',
-          description: 'General intelligence, real-time Search Grounding and Maps Grounding.',
+          id: 'gemini-2.5-flash',
+          name: 'Gemini 2.5 Flash',
+          description: 'High-speed reasoning, 1M context, real-time Google Search & Maps Grounding.',
           badge: 'Recommended',
           recommended: true,
           contextWindow: '1M tokens'
         },
         {
-          id: 'gemini-3.1-pro-preview',
-          name: 'Gemini 3.1 Pro (High Thinking & Image Analysis)',
+          id: 'gemini-1.5-pro',
+          name: 'Gemini 1.5 Pro',
           description: 'Complex financial valuation, STEM logic, deep code analysis, and high-precision multimodal image understanding.',
           badge: 'Deep Reasoning & Vision',
           contextWindow: '2M tokens'
         },
         {
-          id: 'gemini-3.1-flash-lite',
-          name: 'Gemini 3.1 Flash-Lite',
-          description: 'Ultra-fast latency for instant queries, quick tagging, and swift workspace mutations.',
+          id: 'gemini-2.0-flash',
+          name: 'Gemini 2.0 Flash',
+          description: 'Ultra-fast sub-second latency for instant queries, quick tagging, and swift workspace mutations.',
           badge: 'Instant / Fast',
           contextWindow: '1M tokens'
         }
@@ -119,18 +120,11 @@ export function getProvidersStatus(): AIProviderStatus[] {
       isConfigured: hasClaude,
       models: [
         {
-          id: 'claude-3-7-sonnet-20250219',
-          name: 'Claude 3.7 Sonnet',
-          description: 'Hybrid reasoning and leading coding/writing intelligence for tailored cover letters and applications.',
-          badge: 'Hybrid Reasoning',
-          recommended: true,
-          contextWindow: '200k tokens'
-        },
-        {
           id: 'claude-3-5-sonnet-20241022',
           name: 'Claude 3.5 Sonnet',
           description: 'Gold standard for natural prose, ATS CV humanization, and behavioral interview coaching.',
           badge: 'ATS & Writing',
+          recommended: true,
           contextWindow: '200k tokens'
         },
         {
@@ -139,6 +133,43 @@ export function getProvidersStatus(): AIProviderStatus[] {
           description: 'Sub-second latency for immediate quick-capture parsing and state mutations.',
           badge: 'Instant',
           contextWindow: '200k tokens'
+        }
+      ]
+    },
+    {
+      id: 'deepseek',
+      name: 'DeepSeek AI',
+      isConfigured: hasDeepSeek,
+      models: [
+        {
+          id: 'deepseek-chat',
+          name: 'DeepSeek V3',
+          description: 'State-of-the-art open architecture model with exceptional coding and mathematical reasoning.',
+          badge: 'Open Architecture',
+          recommended: true,
+          contextWindow: '64k tokens'
+        },
+        {
+          id: 'deepseek-reasoner',
+          name: 'DeepSeek R1 (Reasoning)',
+          description: 'Chain-of-thought mathematical proof and finance quantitative modeling solver.',
+          badge: 'Chain-of-Thought',
+          contextWindow: '64k tokens'
+        }
+      ]
+    },
+    {
+      id: 'notebooklm',
+      name: 'NotebookLM (Knowledge RAG)',
+      isConfigured: true,
+      models: [
+        {
+          id: 'notebooklm-rag',
+          name: 'NotebookLM Document Grounding',
+          description: 'Strict 100% citation-grounded RAG over your uploaded textbook PDFs, SEC 10-K filings, and notes.',
+          badge: '100% Grounded RAG',
+          recommended: true,
+          contextWindow: '2M tokens'
         }
       ]
     },
@@ -492,7 +523,70 @@ async function callClaude(options: ChatRequestOptions, systemInstruction: string
   };
 }
 
-// 4. Custom / OpenAI-Compatible Provider
+// 4. DeepSeek Provider (OpenAI-compatible)
+async function callDeepSeek(options: ChatRequestOptions, systemInstruction: string): Promise<ChatResponseResult> {
+  const apiKey = options.customApiKey || process.env.DEEPSEEK_API_KEY;
+  if (!apiKey || apiKey.trim() === '') {
+    throw new Error('DeepSeek API Key is not configured. Please add your DEEPSEEK_API_KEY to connect DeepSeek models.');
+  }
+
+  const endpoint = options.customEndpoint || 'https://api.deepseek.com/chat/completions';
+  const modelName = options.model || 'deepseek-chat';
+
+  const messages: any[] = [{ role: 'system', content: systemInstruction }];
+  if (options.history && Array.isArray(options.history)) {
+    for (const msg of options.history) {
+      const role = msg.role === 'model' || msg.role === 'assistant' ? 'assistant' : 'user';
+      messages.push({ role, content: msg.text });
+    }
+  }
+  messages.push({ role: 'user', content: `${options.message}\n\nRespond strictly in valid JSON format with "reply" and optionally "mutations".` });
+
+  const response = await fetch(endpoint, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${apiKey}`
+    },
+    body: JSON.stringify({
+      model: modelName,
+      messages: messages,
+      temperature: options.temperature ?? 0.6,
+      response_format: { type: 'json_object' }
+    })
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`DeepSeek API Error (${response.status}): ${errorText}`);
+  }
+
+  const data = await response.json();
+  const rawContent = data.choices?.[0]?.message?.content || '{}';
+  let parsed: any = {};
+  try {
+    parsed = JSON.parse(rawContent);
+  } catch {
+    parsed = { reply: rawContent };
+  }
+
+  return {
+    reply: parsed.reply || rawContent,
+    mutations: parsed.mutations || null,
+    suggestedActions: parsed.suggestedActions || [],
+    modelUsed: modelName,
+    providerUsed: 'deepseek',
+    tokensEstimate: data.usage?.total_tokens
+  };
+}
+
+// 5. NotebookLM Knowledge RAG Provider
+async function callNotebookLM(options: ChatRequestOptions, systemInstruction: string): Promise<ChatResponseResult> {
+  const ragSystemInstruction = `${systemInstruction}\n\nSTRICT RAG PROTOCOL: Ground all your responses strictly and solely on the provided uploaded documents and syllabus materials. Include bracketed source citations e.g. [Source: CFA Level 1 / Page 42].`;
+  return await callGemini({ ...options, model: 'gemini-1.5-pro' }, ragSystemInstruction);
+}
+
+// 6. Custom / OpenAI-Compatible Provider
 async function callCustom(options: ChatRequestOptions, systemInstruction: string): Promise<ChatResponseResult> {
   const endpoint = options.customEndpoint || 'http://localhost:11434/v1/chat/completions';
   const apiKey = options.customApiKey || 'sk-local';
@@ -563,13 +657,14 @@ export async function executeMultiModelChat(options: ChatRequestOptions): Promis
   const hasGemini = Boolean(process.env.GEMINI_API_KEY && process.env.GEMINI_API_KEY !== 'MY_GEMINI_API_KEY');
   const hasOpenAI = Boolean(process.env.OPENAI_API_KEY && process.env.OPENAI_API_KEY.trim() !== '');
   const hasClaude = Boolean(process.env.ANTHROPIC_API_KEY && process.env.ANTHROPIC_API_KEY.trim() !== '');
+  const hasDeepSeek = Boolean(process.env.DEEPSEEK_API_KEY && process.env.DEEPSEEK_API_KEY.trim() !== '');
 
   if (targetProvider === 'openai' && !hasOpenAI && !options.customApiKey) {
     if (hasGemini) targetProvider = 'gemini';
-    else if (hasClaude) targetProvider = 'claude';
   } else if (targetProvider === 'claude' && !hasClaude && !options.customApiKey) {
     if (hasGemini) targetProvider = 'gemini';
-    else if (hasOpenAI) targetProvider = 'openai';
+  } else if (targetProvider === 'deepseek' && !hasDeepSeek && !options.customApiKey) {
+    if (hasGemini) targetProvider = 'gemini';
   }
 
   switch (targetProvider) {
@@ -577,6 +672,10 @@ export async function executeMultiModelChat(options: ChatRequestOptions): Promis
       return await callOpenAI(options, systemInstruction);
     case 'claude':
       return await callClaude(options, systemInstruction);
+    case 'deepseek':
+      return await callDeepSeek(options, systemInstruction);
+    case 'notebooklm':
+      return await callNotebookLM(options, systemInstruction);
     case 'custom':
       return await callCustom(options, systemInstruction);
     case 'gemini':
