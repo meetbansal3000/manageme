@@ -230,9 +230,12 @@ export const FinancialNewsTab: React.FC<Props> = ({ userData, updateData }) => {
     setIsLoadingNews(true);
     try {
       const res = await fetch('/api/news/live');
-      const data = await res.json();
-      if (res.ok && Array.isArray(data.articles) && data.articles.length > 0) {
-        setNewsArticles(data.articles);
+      const contentType = res.headers.get('content-type') || '';
+      if (res.ok && contentType.includes('application/json')) {
+        const data = await res.json();
+        if (Array.isArray(data?.articles) && data.articles.length > 0) {
+          setNewsArticles(data.articles);
+        }
       }
     } catch (e) {
       console.warn('Failed to fetch live news from server, using cached news', e);

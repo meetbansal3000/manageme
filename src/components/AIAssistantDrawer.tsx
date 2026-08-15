@@ -196,18 +196,33 @@ export const AIAssistantDrawer: React.FC<AIAssistantDrawerProps> = ({
   });
 
   useEffect(() => {
-    fetch('/api/ai/providers')
-      .then(res => res.json())
-      .then(data => {
-        if (data.providers) {
-          const map: Record<string, boolean> = {};
-          data.providers.forEach((p: any) => {
-            map[p.id] = p.isConfigured;
-          });
-          setProviderStatuses(map);
+    let isMounted = true;
+    const fetchProviders = async () => {
+      try {
+        const res = await fetch('/api/ai/providers');
+        const contentType = res.headers.get('content-type') || '';
+        if (res.ok && contentType.includes('application/json')) {
+          const data = await res.json();
+          if (isMounted && data?.providers && Array.isArray(data.providers)) {
+            const map: Record<string, boolean> = {};
+            data.providers.forEach((p: any) => {
+              if (p?.id) {
+                map[p.id] = !!p.isConfigured;
+              }
+            });
+            setProviderStatuses(prev => ({ ...prev, ...map }));
+          }
         }
-      })
-      .catch(err => console.warn('Provider check error:', err));
+      } catch (err) {
+        console.warn('Provider check error:', err);
+      }
+    };
+
+    fetchProviders();
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const [messages, setMessages] = useState<AIAssistantMessage[]>([
@@ -437,9 +452,18 @@ export const AIAssistantDrawer: React.FC<AIAssistantDrawerProps> = ({
         })
       });
 
-      const data = await response.json();
-      if (!response.ok || data.error) {
-        throw new Error(data.error || 'Failed to fetch AI response.');
+      let data: any = null;
+      const contentType = response.headers.get('content-type') || '';
+      if (contentType.includes('application/json')) {
+        try {
+          data = await response.json();
+        } catch {
+          data = null;
+        }
+      }
+
+      if (!response.ok || !data || data.error) {
+        throw new Error(data?.error || `AI service returned error status ${response.status}`);
       }
 
       const botMsg: AIAssistantMessage = {
