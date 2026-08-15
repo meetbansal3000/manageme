@@ -46,6 +46,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { getAuth, onAuthStateChanged, signInWithPopup, signOut } from 'firebase/auth';
 import { googleProvider } from '../firebase';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 import { UserTrackerData } from '../hooks/useFirestoreData';
 import { useScrollLock } from '../hooks/useScrollLock';
 import { useOwnerSecurity } from '../context/OwnerSecurityContext';
@@ -174,19 +175,31 @@ export const Header: React.FC<HeaderProps> = ({
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  const { showToast } = useToast();
+
   const handleLogin = async () => {
     try {
       if (!isAuthenticated || isGuest) {
+        showToast('Connecting to authentication service...', 'info', 2000);
         const success = await signInWithGoogle();
-        if (!success) {
-          console.warn('[Header Auth]: Google sign in did not complete, remaining in local/guest mode');
+        if (success) {
+          showToast('Signed in successfully with Google!', 'success');
+        } else {
+          showToast('Sign-in unavailable. Activated local Guest Demo session.', 'warning', 4000);
         }
       } else {
         await authSignOut();
+        showToast('Signed out of session.', 'info');
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error('[Auth Error - Header Login]:', err);
+      showToast(`Login failed: ${err?.message || 'Network/Auth Error'}. Using local workspace mode.`, 'error', 5000);
     }
+  };
+
+  const handleGuestDemoAccess = () => {
+    signInAsGuest();
+    showToast('✨ Activated full Guest Demo Executive Workspace!', 'sparkle', 3500);
   };
 
   const handleNavigateHome = () => {
@@ -497,7 +510,7 @@ export const Header: React.FC<HeaderProps> = ({
                 <div className="flex items-center gap-1.5">
                   {!isAuthenticated && !isGuest && (
                     <button
-                      onClick={() => signInAsGuest()}
+                      onClick={handleGuestDemoAccess}
                       className="px-2 py-1 rounded-lg text-[11px] font-semibold border border-slate-200 dark:border-zinc-700 bg-slate-100 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 hover:bg-slate-200 dark:hover:bg-zinc-700 transition-colors cursor-pointer shadow-xs"
                       title="Explore in Guest Demo Mode"
                     >

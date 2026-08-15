@@ -64,6 +64,7 @@ import { useScrollLock } from './hooks/useScrollLock';
 import { useModalDismiss } from './hooks/useModalDismiss';
 import { useGlobalShortcuts } from './hooks/useGlobalShortcuts';
 import { SpeedInsights } from '@vercel/speed-insights/react';
+import { Analytics } from '@vercel/analytics/react';
 
 export default function App() {
   const { settings, updateSettings } = useSettings();
@@ -823,6 +824,7 @@ export default function App() {
         onResolve={resolveConflict}
       />
       <SpeedInsights />
+      <Analytics />
 
     </div>
   );
