@@ -25,6 +25,29 @@ interface LandingPageProps {
   onEnterApp: (tabId?: string) => void;
 }
 
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.08,
+      delayChildren: 0.1
+    }
+  }
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.6,
+      ease: [0.16, 1, 0.3, 1]
+    }
+  }
+};
+
 export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp }) => {
   const { signInAsGuest } = useAuth();
   const { showToast } = useToast();
@@ -40,7 +63,12 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp }) => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-16 animate-in fade-in duration-700">
+    <motion.div 
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+      className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-16 relative z-10"
+    >
       
       {/* ========================================================================= */}
       {/* 1. HERO SECTION */}
@@ -49,155 +77,171 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp }) => {
         
         {/* Apple Pill Badge */}
         <motion.div
-          initial={{ opacity: 0, y: -15 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-          className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-100 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 border border-slate-200 dark:border-zinc-700 shadow-sm transition-all cursor-default"
+          variants={itemVariants}
+          whileHover={{ scale: 1.05 }}
+          className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 dark:bg-black/40 backdrop-blur-xl border border-white/20 dark:border-white/10 text-slate-800 dark:text-zinc-200 shadow-lg shadow-blue-500/5 transition-all cursor-default"
         >
           <span className="flex h-2 w-2 relative">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
             <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
           </span>
-          <span className="text-[11px] font-mono font-bold tracking-widest uppercase">
+          <span className="text-[11px] font-mono font-bold tracking-widest uppercase text-slate-700 dark:text-zinc-300">
             Gemini 2.5 Active &bull; manageme Executive Suite
           </span>
         </motion.div>
 
         {/* Hero Title */}
         <motion.div
-          initial={{ opacity: 0, y: 15 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+          variants={itemVariants}
           className="space-y-4 max-w-4xl"
         >
-          <h1 className="text-slate-900 dark:text-slate-100 font-extrabold text-4xl sm:text-6xl tracking-tight leading-[1.08]">
+          <h1 className="text-slate-900 dark:text-slate-100 font-extrabold text-4xl sm:text-6xl tracking-tight leading-[1.08] drop-shadow-sm">
             Master Markets, Academics & Careers in One Spatial OS
           </h1>
 
-          <p className="text-base sm:text-lg md:text-xl text-slate-600 dark:text-slate-400 max-w-2xl mx-auto font-medium leading-relaxed">
+          <p className="text-base sm:text-lg md:text-xl text-slate-600 dark:text-slate-300 max-w-2xl mx-auto font-medium leading-relaxed">
             The next-generation intelligence platform engineered for finance operators, university scholars, and ambitious graduates.
           </p>
         </motion.div>
 
         {/* Hero Action CTAs */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+          variants={itemVariants}
           className="flex flex-col sm:flex-row flex-wrap items-center justify-center gap-3.5 pt-2 w-full sm:w-auto"
         >
-          <button
+          <motion.button
+            whileHover={{ scale: 1.03, y: -2 }}
+            whileTap={{ scale: 0.97 }}
             onClick={() => handleLaunch('news')}
-            className="w-full sm:w-auto px-7 py-3.5 min-h-[44px] rounded-2xl bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-500 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-sm flex items-center justify-center gap-2 shadow-xl shadow-blue-500/25 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
+            className="w-full sm:w-auto px-7 py-3.5 min-h-[44px] rounded-2xl bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-500 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-sm flex items-center justify-center gap-2 shadow-xl shadow-blue-500/25 cursor-pointer"
           >
             <span>Launch Workspace</span>
             <ArrowRight className="w-4 h-4" />
-          </button>
+          </motion.button>
 
-          <button
+          <motion.button
+            whileHover={{ scale: 1.03, y: -2 }}
+            whileTap={{ scale: 0.97 }}
             onClick={handleGuestDemo}
-            className="w-full sm:w-auto px-6 py-3.5 min-h-[44px] rounded-2xl bg-amber-500/15 hover:bg-amber-500/25 text-amber-900 dark:text-amber-300 font-bold text-sm border border-amber-500/30 backdrop-blur-xl flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer shadow-sm shadow-amber-500/10"
+            className="w-full sm:w-auto px-6 py-3.5 min-h-[44px] rounded-2xl bg-amber-500/15 hover:bg-amber-500/25 text-amber-900 dark:text-amber-300 font-bold text-sm border border-amber-500/30 backdrop-blur-xl flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-amber-500/10"
             title="Instant access with preloaded demo profile (No Google sign-in required)"
           >
             <Sparkles className="w-4 h-4 text-amber-600 dark:text-amber-400" />
             <span>Continue as Guest / Demo Mode</span>
-          </button>
+          </motion.button>
 
-          <button
+          <motion.button
+            whileHover={{ scale: 1.03, y: -2 }}
+            whileTap={{ scale: 0.97 }}
             onClick={() => handleLaunch('study')}
-            className="w-full sm:w-auto px-6 py-3.5 min-h-[44px] rounded-2xl bg-white dark:bg-neutral-900/80 hover:bg-slate-100 dark:hover:bg-neutral-800 text-slate-800 dark:text-neutral-200 hover:text-slate-900 dark:hover:text-white font-semibold text-sm border border-slate-200 dark:border-white/15 backdrop-blur-xl flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer shadow-xs"
+            className="w-full sm:w-auto px-6 py-3.5 min-h-[44px] rounded-2xl bg-white/10 dark:bg-black/30 hover:bg-white/20 dark:hover:bg-black/50 text-slate-800 dark:text-neutral-200 hover:text-slate-900 dark:hover:text-white font-semibold text-sm border border-white/20 dark:border-white/10 backdrop-blur-xl flex items-center justify-center gap-2 cursor-pointer shadow-md"
           >
-            <GraduationCap className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+            <GraduationCap className="w-4 h-4 text-purple-500 dark:text-purple-400" />
             <span>Study Intelligence Engine</span>
-          </button>
+          </motion.button>
 
-          <button
+          <motion.button
+            whileHover={{ scale: 1.03, y: -2 }}
+            whileTap={{ scale: 0.97 }}
             onClick={() => handleLaunch('trading')}
-            className="w-full sm:w-auto px-6 py-3.5 min-h-[44px] rounded-2xl bg-white dark:bg-neutral-900/80 hover:bg-slate-100 dark:hover:bg-neutral-800 text-slate-800 dark:text-neutral-200 hover:text-slate-900 dark:hover:text-white font-semibold text-sm border border-slate-200 dark:border-white/15 backdrop-blur-xl flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer shadow-xs"
+            className="w-full sm:w-auto px-6 py-3.5 min-h-[44px] rounded-2xl bg-white/10 dark:bg-black/30 hover:bg-white/20 dark:hover:bg-black/50 text-slate-800 dark:text-neutral-200 hover:text-slate-900 dark:hover:text-white font-semibold text-sm border border-white/20 dark:border-white/10 backdrop-blur-xl flex items-center justify-center gap-2 cursor-pointer shadow-md"
           >
-            <Activity className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+            <Activity className="w-4 h-4 text-emerald-500 dark:text-emerald-400" />
             <span>Paper Trading Sandbox</span>
-          </button>
+          </motion.button>
         </motion.div>
 
-        {/* Live Interactive Hero Mockup Card with 3D Parallax */}
+        {/* Live Interactive Hero Mockup Card with 3D Parallax & Frosted Glass */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.96, y: 30 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+          variants={itemVariants}
           className="w-full max-w-5xl mt-6"
         >
           <TiltCard maxTilt={4} scale={1.01}>
-            <div className="bg-white dark:bg-neutral-950/80 border border-slate-200 dark:border-white/15 rounded-3xl p-6 sm:p-8 backdrop-blur-2xl shadow-xl space-y-6 text-left relative overflow-hidden">
+            <div className="bg-white/60 dark:bg-black/40 border border-white/30 dark:border-white/10 rounded-3xl p-6 sm:p-8 backdrop-blur-2xl shadow-2xl space-y-6 text-left relative overflow-hidden">
               
+              {/* Subtle decorative glow orb */}
+              <div className="absolute top-0 right-0 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
+              <div className="absolute bottom-0 left-0 w-80 h-80 bg-purple-500/10 rounded-full blur-3xl pointer-events-none" />
+
               {/* Top Mockup Bar */}
-              <div className="flex items-center justify-between border-b border-slate-200 dark:border-white/10 pb-4">
+              <div className="flex items-center justify-between border-b border-slate-200/60 dark:border-white/10 pb-4 relative z-10">
                 <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full bg-rose-500/80"></div>
-                  <div className="w-3 h-3 rounded-full bg-amber-500/80"></div>
-                  <div className="w-3 h-3 rounded-full bg-emerald-500/80"></div>
+                  <div className="w-3 h-3 rounded-full bg-rose-500/80 shadow-sm"></div>
+                  <div className="w-3 h-3 rounded-full bg-amber-500/80 shadow-sm"></div>
+                  <div className="w-3 h-3 rounded-full bg-emerald-500/80 shadow-sm"></div>
                   <span className="text-xs font-mono text-slate-500 dark:text-neutral-400 ml-2">manageme.intelligence.terminal</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-emerald-50 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-500/30">
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30 font-semibold">
                     Live Stream: Connected
                   </span>
                 </div>
               </div>
 
               {/* Mockup Content Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 relative z-10">
                 
                 {/* Micro Widget 1 */}
-                <div className="p-4 rounded-2xl bg-slate-50 dark:bg-neutral-900/90 border border-slate-200 dark:border-white/10 space-y-2">
+                <motion.div 
+                  whileHover={{ y: -2 }}
+                  className="p-4 rounded-2xl bg-white/40 dark:bg-neutral-900/60 border border-white/20 dark:border-white/10 space-y-2 backdrop-blur-lg shadow-sm"
+                >
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-mono font-bold text-blue-600 dark:text-blue-400">S&P 500 &bull; LIVE</span>
                     <span className="text-[10px] font-mono text-emerald-600 dark:text-emerald-400 font-bold">+0.54%</span>
                   </div>
                   <span className="text-2xl font-bold font-mono text-slate-900 dark:text-white block">$5,984.20</span>
-                  <p className="text-[11px] text-slate-600 dark:text-neutral-400 leading-tight">
+                  <p className="text-[11px] text-slate-600 dark:text-neutral-300 leading-tight">
                     Dovish Fed signals drive broad index momentum across tech & energy.
                   </p>
-                </div>
+                </motion.div>
 
                 {/* Micro Widget 2 */}
-                <div className="p-4 rounded-2xl bg-slate-50 dark:bg-neutral-900/90 border border-slate-200 dark:border-white/10 space-y-2">
+                <motion.div 
+                  whileHover={{ y: -2 }}
+                  className="p-4 rounded-2xl bg-white/40 dark:bg-neutral-900/60 border border-white/20 dark:border-white/10 space-y-2 backdrop-blur-lg shadow-sm"
+                >
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-mono font-bold text-purple-600 dark:text-purple-400">AI STUDY ENGINE</span>
                     <span className="text-[10px] font-mono text-purple-700 dark:text-purple-300 font-bold">80/20 Cram</span>
                   </div>
                   <span className="text-base font-bold text-slate-900 dark:text-white block">Corporate Valuation (DCF)</span>
-                  <p className="text-[11px] text-slate-600 dark:text-neutral-400 leading-tight">
+                  <p className="text-[11px] text-slate-600 dark:text-neutral-300 leading-tight">
                     3 core formulas, 5 frequently tested exam concepts, and model answers.
                   </p>
-                </div>
+                </motion.div>
 
                 {/* Micro Widget 3 */}
-                <div className="p-4 rounded-2xl bg-slate-50 dark:bg-neutral-900/90 border border-slate-200 dark:border-white/10 space-y-2">
+                <motion.div 
+                  whileHover={{ y: -2 }}
+                  className="p-4 rounded-2xl bg-white/40 dark:bg-neutral-900/60 border border-white/20 dark:border-white/10 space-y-2 backdrop-blur-lg shadow-sm"
+                >
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-mono font-bold text-amber-600 dark:text-amber-400">MARKET IMPACT AGENT</span>
                     <span className="text-[10px] font-mono text-amber-700 dark:text-amber-300 font-bold">Active</span>
                   </div>
                   <span className="text-base font-bold text-slate-900 dark:text-white block">NVIDIA Blackwell Compute</span>
-                  <p className="text-[11px] text-slate-600 dark:text-neutral-400 leading-tight">
+                  <p className="text-[11px] text-slate-600 dark:text-neutral-300 leading-tight">
                     Multiples expansion & supply chain sensitivity breakdown ready.
                   </p>
-                </div>
+                </motion.div>
 
               </div>
 
               {/* Bottom Quick Trigger Bar */}
-              <div className="pt-2 flex flex-wrap items-center justify-between gap-3 text-xs">
+              <div className="pt-2 flex flex-wrap items-center justify-between gap-3 text-xs relative z-10">
                 <span className="text-slate-600 dark:text-neutral-400 font-mono">
                   Quick Query: <span className="text-slate-900 dark:text-neutral-200">"Analyze impact of central bank rate decisions on LBO leverage"</span>
                 </span>
-                <button
+                <motion.button
+                  whileHover={{ scale: 1.04 }}
+                  whileTap={{ scale: 0.96 }}
                   onClick={() => handleLaunch('news')}
-                  className="px-3.5 py-1.5 rounded-xl bg-blue-50 dark:bg-blue-600/30 hover:bg-blue-100 dark:hover:bg-blue-600/50 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-500/40 text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer"
+                  className="px-3.5 py-1.5 rounded-xl bg-blue-500/15 hover:bg-blue-500/25 text-blue-700 dark:text-blue-300 border border-blue-500/30 text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer"
                 >
                   <span>Simulate in Feed</span>
                   <ChevronRight className="w-3.5 h-3.5" />
-                </button>
+                </motion.button>
               </div>
 
             </div>
@@ -226,12 +270,13 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp }) => {
           
           {/* Card 1: Live Financial Intelligence */}
           <TiltCard maxTilt={5} scale={1.01}>
-            <div 
+            <motion.div 
+              whileHover={{ y: -4 }}
               onClick={() => handleLaunch('news')}
-              className="h-full bg-white dark:bg-neutral-900/70 border border-slate-200 dark:border-white/10 rounded-3xl p-6 shadow-sm hover:border-blue-500/40 transition-all flex flex-col justify-between space-y-5 cursor-pointer group"
+              className="h-full bg-white/10 dark:bg-black/40 backdrop-blur-xl border border-white/20 dark:border-white/10 rounded-3xl p-6 shadow-xl hover:border-blue-500/50 hover:shadow-blue-500/10 transition-all flex flex-col justify-between space-y-5 cursor-pointer group"
             >
               <div className="space-y-3">
-                <div className="w-12 h-12 rounded-2xl bg-blue-50 dark:bg-blue-600/20 border border-blue-200 dark:border-blue-500/30 flex items-center justify-center text-blue-600 dark:text-blue-400 group-hover:scale-110 transition-transform">
+                <div className="w-12 h-12 rounded-2xl bg-blue-500/15 border border-blue-500/30 flex items-center justify-center text-blue-600 dark:text-blue-400 group-hover:scale-110 transition-transform shadow-inner">
                   <TrendingUp className="w-6 h-6" />
                 </div>
                 <h3 className="text-lg font-bold text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-300 transition-colors">
@@ -245,17 +290,18 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp }) => {
                 <span>Open Intelligence Feed</span>
                 <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </div>
-            </div>
+            </motion.div>
           </TiltCard>
 
           {/* Card 2: Academic Intelligence Engine */}
           <TiltCard maxTilt={5} scale={1.01}>
-            <div 
+            <motion.div 
+              whileHover={{ y: -4 }}
               onClick={() => handleLaunch('study')}
-              className="h-full bg-white dark:bg-neutral-900/70 border border-slate-200 dark:border-white/10 rounded-3xl p-6 shadow-sm hover:border-purple-500/40 transition-all flex flex-col justify-between space-y-5 cursor-pointer group"
+              className="h-full bg-white/10 dark:bg-black/40 backdrop-blur-xl border border-white/20 dark:border-white/10 rounded-3xl p-6 shadow-xl hover:border-purple-500/50 hover:shadow-purple-500/10 transition-all flex flex-col justify-between space-y-5 cursor-pointer group"
             >
               <div className="space-y-3">
-                <div className="w-12 h-12 rounded-2xl bg-purple-50 dark:bg-purple-600/20 border border-purple-200 dark:border-purple-500/30 flex items-center justify-center text-purple-600 dark:text-purple-400 group-hover:scale-110 transition-transform">
+                <div className="w-12 h-12 rounded-2xl bg-purple-500/15 border border-purple-500/30 flex items-center justify-center text-purple-600 dark:text-purple-400 group-hover:scale-110 transition-transform shadow-inner">
                   <GraduationCap className="w-6 h-6" />
                 </div>
                 <h3 className="text-lg font-bold text-slate-900 dark:text-white group-hover:text-purple-600 dark:group-hover:text-purple-300 transition-colors">
@@ -269,17 +315,18 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp }) => {
                 <span>Launch Study Engine</span>
                 <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </div>
-            </div>
+            </motion.div>
           </TiltCard>
 
           {/* Card 3: Executive AI MetaSuite */}
           <TiltCard maxTilt={5} scale={1.01}>
-            <div 
+            <motion.div 
+              whileHover={{ y: -4 }}
               onClick={() => handleLaunch('metasuite')}
-              className="h-full bg-white dark:bg-neutral-900/70 border border-slate-200 dark:border-white/10 rounded-3xl p-6 shadow-sm hover:border-indigo-500/40 transition-all flex flex-col justify-between space-y-5 cursor-pointer group"
+              className="h-full bg-white/10 dark:bg-black/40 backdrop-blur-xl border border-white/20 dark:border-white/10 rounded-3xl p-6 shadow-xl hover:border-indigo-500/50 hover:shadow-indigo-500/10 transition-all flex flex-col justify-between space-y-5 cursor-pointer group"
             >
               <div className="space-y-3">
-                <div className="w-12 h-12 rounded-2xl bg-indigo-50 dark:bg-indigo-600/20 border border-indigo-200 dark:border-indigo-500/30 flex items-center justify-center text-indigo-600 dark:text-indigo-400 group-hover:scale-110 transition-transform">
+                <div className="w-12 h-12 rounded-2xl bg-indigo-500/15 border border-indigo-500/30 flex items-center justify-center text-indigo-600 dark:text-indigo-400 group-hover:scale-110 transition-transform shadow-inner">
                   <BrainCircuit className="w-6 h-6" />
                 </div>
                 <h3 className="text-lg font-bold text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-300 transition-colors">
@@ -293,17 +340,18 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp }) => {
                 <span>Explore MetaSuite</span>
                 <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </div>
-            </div>
+            </motion.div>
           </TiltCard>
 
           {/* Card 4: Paper Trading Sandbox */}
           <TiltCard maxTilt={5} scale={1.01}>
-            <div 
+            <motion.div 
+              whileHover={{ y: -4 }}
               onClick={() => handleLaunch('trading')}
-              className="h-full bg-white dark:bg-neutral-900/70 border border-slate-200 dark:border-white/10 rounded-3xl p-6 shadow-sm hover:border-emerald-500/40 transition-all flex flex-col justify-between space-y-5 cursor-pointer group"
+              className="h-full bg-white/10 dark:bg-black/40 backdrop-blur-xl border border-white/20 dark:border-white/10 rounded-3xl p-6 shadow-xl hover:border-emerald-500/50 hover:shadow-emerald-500/10 transition-all flex flex-col justify-between space-y-5 cursor-pointer group"
             >
               <div className="space-y-3">
-                <div className="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-600/20 border border-emerald-200 dark:border-emerald-500/30 flex items-center justify-center text-emerald-600 dark:text-emerald-400 group-hover:scale-110 transition-transform">
+                <div className="w-12 h-12 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-600 dark:text-emerald-400 group-hover:scale-110 transition-transform shadow-inner">
                   <Activity className="w-6 h-6" />
                 </div>
                 <h3 className="text-lg font-bold text-slate-900 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-300 transition-colors">
@@ -317,17 +365,18 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp }) => {
                 <span>Open Trading Desk</span>
                 <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </div>
-            </div>
+            </motion.div>
           </TiltCard>
 
           {/* Card 5: Career Vault & Applications */}
           <TiltCard maxTilt={5} scale={1.01}>
-            <div 
+            <motion.div 
+              whileHover={{ y: -4 }}
               onClick={() => handleLaunch('jobs')}
-              className="h-full bg-white dark:bg-neutral-900/70 border border-slate-200 dark:border-white/10 rounded-3xl p-6 shadow-sm hover:border-amber-500/40 transition-all flex flex-col justify-between space-y-5 cursor-pointer group"
+              className="h-full bg-white/10 dark:bg-black/40 backdrop-blur-xl border border-white/20 dark:border-white/10 rounded-3xl p-6 shadow-xl hover:border-amber-500/50 hover:shadow-amber-500/10 transition-all flex flex-col justify-between space-y-5 cursor-pointer group"
             >
               <div className="space-y-3">
-                <div className="w-12 h-12 rounded-2xl bg-amber-50 dark:bg-amber-600/20 border border-amber-200 dark:border-amber-500/30 flex items-center justify-center text-amber-600 dark:text-amber-400 group-hover:scale-110 transition-transform">
+                <div className="w-12 h-12 rounded-2xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-600 dark:text-amber-400 group-hover:scale-110 transition-transform shadow-inner">
                   <Briefcase className="w-6 h-6" />
                 </div>
                 <h3 className="text-lg font-bold text-slate-900 dark:text-white group-hover:text-amber-600 dark:group-hover:text-amber-300 transition-colors">
@@ -341,17 +390,18 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp }) => {
                 <span>View Career Pipeline</span>
                 <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </div>
-            </div>
+            </motion.div>
           </TiltCard>
 
           {/* Card 6: Finance Hub & Calculators */}
           <TiltCard maxTilt={5} scale={1.01}>
-            <div 
+            <motion.div 
+              whileHover={{ y: -4 }}
               onClick={() => handleLaunch('finance')}
-              className="h-full bg-white dark:bg-neutral-900/70 border border-slate-200 dark:border-white/10 rounded-3xl p-6 shadow-sm hover:border-cyan-500/40 transition-all flex flex-col justify-between space-y-5 cursor-pointer group"
+              className="h-full bg-white/10 dark:bg-black/40 backdrop-blur-xl border border-white/20 dark:border-white/10 rounded-3xl p-6 shadow-xl hover:border-cyan-500/50 hover:shadow-cyan-500/10 transition-all flex flex-col justify-between space-y-5 cursor-pointer group"
             >
               <div className="space-y-3">
-                <div className="w-12 h-12 rounded-2xl bg-cyan-50 dark:bg-cyan-600/20 border border-cyan-200 dark:border-cyan-500/30 flex items-center justify-center text-cyan-600 dark:text-cyan-400 group-hover:scale-110 transition-transform">
+                <div className="w-12 h-12 rounded-2xl bg-cyan-500/15 border border-cyan-500/30 flex items-center justify-center text-cyan-600 dark:text-cyan-400 group-hover:scale-110 transition-transform shadow-inner">
                   <DollarSign className="w-6 h-6" />
                 </div>
                 <h3 className="text-lg font-bold text-slate-900 dark:text-white group-hover:text-cyan-600 dark:group-hover:text-cyan-300 transition-colors">
@@ -365,7 +415,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp }) => {
                 <span>Launch Finance Hub</span>
                 <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </div>
-            </div>
+            </motion.div>
           </TiltCard>
 
         </div>
@@ -374,7 +424,10 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp }) => {
       {/* ========================================================================= */}
       {/* 3. METRICS TICKER & PERFORMANCE HIGHLIGHTS */}
       {/* ========================================================================= */}
-      <div className="bg-white dark:bg-neutral-950/70 border border-slate-200 dark:border-white/10 rounded-3xl p-6 sm:p-8 grid grid-cols-2 md:grid-cols-4 gap-6 text-center shadow-sm">
+      <motion.div 
+        variants={itemVariants}
+        className="bg-white/10 dark:bg-black/40 backdrop-blur-xl border border-white/20 dark:border-white/10 rounded-3xl p-6 sm:p-8 grid grid-cols-2 md:grid-cols-4 gap-6 text-center shadow-xl"
+      >
         <div>
           <span className="text-3xl sm:text-4xl font-extrabold text-blue-600 dark:text-blue-400 font-mono">0.8s</span>
           <span className="text-xs text-slate-500 dark:text-neutral-400 block mt-1">Average AI Response</span>
@@ -391,12 +444,15 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp }) => {
           <span className="text-3xl sm:text-4xl font-extrabold text-amber-600 dark:text-amber-400 font-mono">14+</span>
           <span className="text-xs text-slate-500 dark:text-neutral-400 block mt-1">Integrated Career Tools</span>
         </div>
-      </div>
+      </motion.div>
 
       {/* ========================================================================= */}
       {/* 4. BOTTOM CALL TO ACTION BANNER */}
       {/* ========================================================================= */}
-      <div className="relative bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 dark:from-blue-950/40 dark:via-indigo-950/40 dark:to-purple-950/40 border border-blue-200 dark:border-white/15 rounded-3xl p-8 sm:p-12 text-center space-y-6 overflow-hidden shadow-sm">
+      <motion.div 
+        variants={itemVariants}
+        className="relative bg-gradient-to-r from-blue-900/30 via-indigo-900/30 to-purple-900/30 backdrop-blur-2xl border border-white/20 dark:border-white/15 rounded-3xl p-8 sm:p-12 text-center space-y-6 overflow-hidden shadow-2xl"
+      >
         <div className="space-y-2 max-w-2xl mx-auto">
           <h2 className="text-2xl sm:text-4xl font-extrabold text-slate-900 dark:text-white">
             Ready to accelerate your workflow?
@@ -407,17 +463,20 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp }) => {
         </div>
 
         <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
-          <button
+          <motion.button
+            whileHover={{ scale: 1.05, y: -2 }}
+            whileTap={{ scale: 0.95 }}
             onClick={() => handleLaunch('news')}
-            className="px-8 py-3.5 min-h-[44px] rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-extrabold text-sm transition-all hover:scale-105 active:scale-95 shadow-xl cursor-pointer flex items-center gap-2"
+            className="px-8 py-3.5 min-h-[44px] rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-extrabold text-sm shadow-xl shadow-blue-500/25 cursor-pointer flex items-center gap-2"
           >
             <span>Enter manageme Workspace</span>
             <ArrowRight className="w-4 h-4" />
-          </button>
+          </motion.button>
         </div>
-      </div>
+      </motion.div>
 
-    </div>
+    </motion.div>
   );
 };
+
 export default LandingPage;

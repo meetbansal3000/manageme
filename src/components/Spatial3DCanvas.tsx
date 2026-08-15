@@ -1,11 +1,9 @@
 import React from 'react';
+import { InteractiveBackground } from './canvas/InteractiveBackground';
 
-/**
- * Spatial3DCanvas / BackgroundCanvas completely disabled.
- * Returns null to eliminate all floating particles and canvas rendering.
- */
 export const Spatial3DCanvas: React.FC = () => {
-  return null;
+  return <InteractiveBackground />;
 };
 
 export default Spatial3DCanvas;
+
