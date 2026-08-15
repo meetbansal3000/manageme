@@ -1,33 +1,33 @@
 import { initializeApp } from 'firebase/app';
-import { getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithPopup, User } from 'firebase/auth';
+import { 
+  getAuth, 
+  GoogleAuthProvider, 
+  onAuthStateChanged, 
+  signInWithPopup, 
+  signInWithRedirect,
+  getRedirectResult,
+  User 
+} from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 import firebaseConfig from '../firebase-applet-config.json';
 
+const env = (import.meta as any).env || {};
+
 /**
- * Dynamically resolves the Firebase authDomain to support:
- * - Production: manageme-three.vercel.app
- * - Preview Deployments: *.vercel.app
- * - Custom domain or localhost environments
+ * Dynamically resolves the Firebase authDomain:
+ * - Uses VITE_FIREBASE_AUTH_DOMAIN if provided
+ * - Falls back to production project authDomain (manageme-9fccc.firebaseapp.com)
  */
 const getDynamicAuthDomain = (): string => {
-  const envAuthDomain = (import.meta as any).env?.VITE_FIREBASE_AUTH_DOMAIN;
-  if (envAuthDomain) return envAuthDomain;
-
-  if (typeof window !== 'undefined') {
-    const hostname = window.location.hostname;
-    // For Vercel production or preview URLs (*.vercel.app)
-    if (hostname === 'manageme-three.vercel.app' || hostname.endsWith('.vercel.app')) {
-      return (import.meta as any).env?.VITE_FIREBASE_AUTH_DOMAIN || firebaseConfig.authDomain || 'manageme-9fccc.firebaseapp.com';
-    }
+  if (env.VITE_FIREBASE_AUTH_DOMAIN) {
+    return env.VITE_FIREBASE_AUTH_DOMAIN;
   }
   return firebaseConfig.authDomain || 'manageme-9fccc.firebaseapp.com';
 };
 
-const env = (import.meta as any).env || {};
-
 const effectiveFirebaseConfig = {
   apiKey: env.VITE_FIREBASE_API_KEY || firebaseConfig.apiKey,
-  authDomain: env.VITE_FIREBASE_AUTH_DOMAIN || getDynamicAuthDomain(),
+  authDomain: getDynamicAuthDomain(),
   projectId: env.VITE_FIREBASE_PROJECT_ID || firebaseConfig.projectId,
   storageBucket: env.VITE_FIREBASE_STORAGE_BUCKET || firebaseConfig.storageBucket,
   messagingSenderId: env.VITE_FIREBASE_MESSAGING_SENDER_ID || firebaseConfig.messagingSenderId,
@@ -39,9 +39,8 @@ const app = initializeApp(effectiveFirebaseConfig);
 export const auth = getAuth(app);
 
 // Use default database for custom projects, or specific databaseId if defined
-const customDbId = env.VITE_FIREBASE_FIRESTORE_DATABASE_ID || (env.VITE_FIREBASE_PROJECT_ID ? undefined : firebaseConfig.firestoreDatabaseId);
-export const db = customDbId ? getFirestore(app, customDbId) : getFirestore(app);
-
+const customDbId = env.VITE_FIREBASE_FIRESTORE_DATABASE_ID || (env.VITE_FIREBASE_PROJECT_ID ? undefined : (firebaseConfig as any).firestoreDatabaseId);
+export const db = (customDbId && customDbId !== '(default)') ? getFirestore(app, customDbId) : getFirestore(app);
 
 export const googleProvider = new GoogleAuthProvider();
 googleProvider.setCustomParameters({
@@ -60,14 +59,29 @@ export const initAuth = (
   onAuthSuccess?: (user: User, token: string) => void,
   onAuthFailure?: () => void
 ) => {
+  // Check for any redirect result on initial load
+  if (typeof window !== 'undefined') {
+    getRedirectResult(auth)
+      .then(async (result) => {
+        if (result?.user) {
+          const credential = GoogleAuthProvider.credentialFromResult(result);
+          const accessToken = credential?.accessToken || (await result.user.getIdToken()) || 'authenticated-token';
+          cachedAccessToken = accessToken;
+          if (onAuthSuccess) onAuthSuccess(result.user, accessToken);
+        }
+      })
+      .catch((err) => {
+        if (err?.code !== 'auth/popup-closed-by-user') {
+          console.warn('[Auth Redirect Notice]:', err?.message || err);
+        }
+      });
+  }
+
   return onAuthStateChanged(auth, async (user: User | null) => {
     if (user) {
-      if (cachedAccessToken) {
-        if (onAuthSuccess) onAuthSuccess(user, cachedAccessToken);
-      } else if (!isSigningIn) {
-        cachedAccessToken = null;
-        if (onAuthFailure) onAuthFailure();
-      }
+      const accessToken = cachedAccessToken || (await user.getIdToken().catch(() => 'authenticated-token'));
+      cachedAccessToken = accessToken;
+      if (onAuthSuccess) onAuthSuccess(user, accessToken);
     } else {
       cachedAccessToken = null;
       if (onAuthFailure) onAuthFailure();
@@ -78,26 +92,30 @@ export const initAuth = (
 export const googleSignIn = async (): Promise<{ user: User; accessToken: string } | null> => {
   try {
     isSigningIn = true;
-    const result = await signInWithPopup(auth, googleProvider);
+    let result;
+    try {
+      result = await signInWithPopup(auth, googleProvider);
+    } catch (popupError: any) {
+      if (popupError?.code === 'auth/popup-blocked' || popupError?.code === 'auth/cancelled-popup-request') {
+        // Fallback to signInWithRedirect when popup is blocked
+        await signInWithRedirect(auth, googleProvider);
+        return null;
+      }
+      throw popupError;
+    }
     const credential = GoogleAuthProvider.credentialFromResult(result);
-    const accessToken = credential?.accessToken || await result.user.getIdToken() || 'local-demo-token';
+    const accessToken = credential?.accessToken || (await result.user.getIdToken()) || 'authenticated-token';
     cachedAccessToken = accessToken;
     return { user: result.user, accessToken };
   } catch (error: any) {
     const errorCode = error?.code || '';
     const errorMessage = error?.message || 'Authentication error';
-    const currentDomain = typeof window !== 'undefined' ? window.location.hostname : 'current-domain';
     
     if (errorCode === 'auth/unauthorized-domain') {
-      console.warn(`[Auth Warning]: Domain "${currentDomain}" is not in Firebase Authorized Domains list. Initializing local session.`);
-    } else if (errorCode === 'auth/popup-blocked') {
-      console.warn('[Auth Warning]: Popup was blocked by browser. Please allow popups for authentication.');
-    } else if (errorCode === 'auth/popup-closed-by-user') {
-      console.info('[Auth Info]: Sign-in popup closed by user.');
-    } else if (errorCode === 'auth/network-request-failed' || errorMessage.toLowerCase().includes('cors')) {
-      console.warn('[Auth Warning]: Network request failed or blocked by CORS. Offline mode active.');
-    } else {
-      console.error('[Auth Error - Google Sign In]:', errorCode, errorMessage, error);
+      const currentDomain = typeof window !== 'undefined' ? window.location.hostname : 'current-domain';
+      console.warn(`[Auth Warning]: Domain "${currentDomain}" authorization in progress.`);
+    } else if (errorCode !== 'auth/popup-closed-by-user') {
+      console.error('[Auth Error - Google Sign In]:', errorCode, errorMessage);
     }
     
     throw error;
@@ -107,7 +125,18 @@ export const googleSignIn = async (): Promise<{ user: User; accessToken: string 
 };
 
 export const getAccessToken = async (): Promise<string | null> => {
-  return cachedAccessToken;
+  if (cachedAccessToken) return cachedAccessToken;
+  const currentUser = auth.currentUser;
+  if (currentUser) {
+    try {
+      const token = await currentUser.getIdToken();
+      cachedAccessToken = token;
+      return token;
+    } catch {
+      return null;
+    }
+  }
+  return null;
 };
 
 export const logout = async () => {
@@ -118,4 +147,5 @@ export const logout = async () => {
   }
   cachedAccessToken = null;
 };
+
 

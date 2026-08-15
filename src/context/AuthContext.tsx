@@ -256,27 +256,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } catch (error: any) {
       const errorCode = error?.code || '';
       const rawMessage = error?.message || '';
-      let userFriendlyMsg = 'Authentication failed. Switched to local Guest session.';
+      let userFriendlyMsg = 'Google Sign-In failed. Please try again.';
       
       if (errorCode === 'auth/unauthorized-domain') {
         const domain = typeof window !== 'undefined' ? window.location.hostname : 'current domain';
-        userFriendlyMsg = `Domain '${domain}' is pending Firebase authorization. Switched to full Guest Demo Workspace.`;
+        userFriendlyMsg = `Domain '${domain}' authorization in progress. Please retry or continue in Demo Mode.`;
       } else if (errorCode === 'auth/popup-blocked') {
         userFriendlyMsg = 'Sign-in popup was blocked by browser. Please allow popups and try again.';
       } else if (errorCode === 'auth/popup-closed-by-user') {
-        userFriendlyMsg = 'Sign-in popup was closed.';
+        userFriendlyMsg = 'Sign-in was cancelled before completing.';
       } else if (errorCode === 'auth/network-request-failed' || rawMessage.toLowerCase().includes('network') || rawMessage.toLowerCase().includes('cors')) {
-        userFriendlyMsg = 'Network connection issue. Offline Guest Demo Workspace activated.';
+        userFriendlyMsg = 'Network connection issue. Please check your internet connection.';
       } else if (errorCode === 'auth/cancelled-popup-request') {
         userFriendlyMsg = 'Only one sign-in window allowed at a time.';
       }
 
       console.error('[Auth Error - Google Sign In]:', errorCode, error?.message || error);
       setAuthError(userFriendlyMsg);
-      
-      // Auto fallback to Guest mode if external sign-in fails so user is never blocked
-      console.info('[Auth Fallback]: Enabling Guest Demo Mode to prevent lockout');
-      signInAsGuest();
       return false;
     }
   };

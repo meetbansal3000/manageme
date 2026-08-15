@@ -1,7 +1,7 @@
 import { motion, AnimatePresence } from 'motion/react';
 import { AIAvatar } from "./components/AIAvatar";
 import React, { useState, useMemo, useEffect } from 'react';
-import { initAuth, googleSignIn, logout, getAccessToken } from './firebase';
+import { googleSignIn, getAccessToken } from './firebase';
 import { Header } from './components/Header';
 import { CompactToolbar } from './components/CompactToolbar';
 import { TimelineTab } from './components/TimelineTab';
@@ -211,27 +211,6 @@ export default function App() {
   }, [activeTab]);
 
   const { data: userData, updateData, resetToDemoData, loading, conflict, resolveConflict } = useFirestoreData();
-
-  const [needsAuth, setNeedsAuth] = useState(true);
-  const [authToken, setAuthToken] = useState<string | null>(null);
-
-  useEffect(() => {
-    const unsubscribe = initAuth(
-      (user, token) => { setNeedsAuth(false); setAuthToken(token); },
-      () => { setNeedsAuth(true); setAuthToken(null); }
-    );
-    return () => unsubscribe();
-  }, []);
-
-  const handleLogin = async () => {
-    try {
-      const res = await googleSignIn();
-      if (res) {
-        setNeedsAuth(false);
-        setAuthToken(res.accessToken);
-      }
-    } catch (e) { console.error("Login failed", e); }
-  };
 
 
   const [googleSyncState, setGoogleSyncState] = useState<GoogleSyncState>({
