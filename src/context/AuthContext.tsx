@@ -1,20 +1,45 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { User, onAuthStateChanged } from 'firebase/auth';
 import { auth, googleSignIn, logout, db } from '../firebase';
-import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
-import { DeviceSession, getCurrentDeviceSession, getOrCreateDeviceId } from '../utils/deviceFingerprint';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { DeviceSession, getCurrentDeviceSession } from '../utils/deviceFingerprint';
+import { signOutSupabase } from '../lib/supabase';
 
 const MAX_ALLOWED_DEVICES = 2;
 const SESSION_EXPIRY_MS = 30 * 24 * 60 * 60 * 1000; // 30 Days
 
+export interface AuthContextUser {
+  uid: string;
+  displayName: string | null;
+  email: string | null;
+  photoURL: string | null;
+  isAnonymous?: boolean;
+  isGuest?: boolean;
+  emailVerified?: boolean;
+}
+
+// Fallback Demo / Guest User for Offline / Local Testing
+export const DEMO_GUEST_USER: AuthContextUser = {
+  uid: 'guest-demo-executive',
+  displayName: 'Guest Executive',
+  email: 'guest@manageme.internal',
+  photoURL: null,
+  isAnonymous: true,
+  isGuest: true,
+  emailVerified: true
+};
+
 interface AuthContextType {
-  user: User | null;
+  user: User | AuthContextUser | null;
   isAuthenticated: boolean;
+  isGuest: boolean;
   isLoading: boolean;
+  authError: string | null;
   currentDevice: DeviceSession;
   activeSessions: DeviceSession[];
   isDeviceBlocked: boolean;
   signInWithGoogle: () => Promise<boolean>;
+  signInAsGuest: () => void;
   signOut: () => Promise<void>;
   revokeSession: (deviceId: string) => Promise<void>;
   revokeOtherSessions: () => Promise<void>;
@@ -24,8 +49,27 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<User | AuthContextUser | null>(() => {
+    // Check if guest mode was previously active
+    try {
+      const isGuestSaved = localStorage.getItem('manageme_guest_session');
+      if (isGuestSaved === 'true') {
+        return DEMO_GUEST_USER;
+      }
+    } catch {}
+    return null;
+  });
+  
+  const [isGuest, setIsGuest] = useState<boolean>(() => {
+    try {
+      return localStorage.getItem('manageme_guest_session') === 'true';
+    } catch {
+      return false;
+    }
+  });
+
   const [isLoading, setIsLoading] = useState(true);
+  const [authError, setAuthError] = useState<string | null>(null);
   const [currentDevice, setCurrentDevice] = useState<DeviceSession>(() => getCurrentDeviceSession());
   const [activeSessions, setActiveSessions] = useState<DeviceSession[]>([]);
   const [isDeviceBlocked, setIsDeviceBlocked] = useState(false);
@@ -40,6 +84,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // Sync sessions to persistent local storage & Firestore
   const persistSessions = useCallback(async (uid: string, sessions: DeviceSession[]) => {
+    if (uid === DEMO_GUEST_USER.uid) return; // Do not persist guest device limits to Firestore
     const cleaned = cleanExpiredSessions(sessions);
     try {
       localStorage.setItem(getStorageKey(uid), JSON.stringify(cleaned));
@@ -53,25 +98,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           lastActiveDeviceId: currentDevice.deviceId,
           lastActiveTimestamp: Date.now()
         }, { merge: true });
-      } catch (err) {
-        // Firestore sync is optional/best-effort
-        console.warn('Firestore session sync warning:', err);
+      } catch (err: any) {
+        console.error('[Auth Error - Firestore Session Sync]:', err?.message || err);
       }
-    } catch (e) {
-      console.error('Error persisting active device sessions:', e);
+    } catch (e: any) {
+      console.error('[Auth Error - Persisting Active Sessions]:', e?.message || e);
     }
   }, [currentDevice.deviceId]);
 
   // Load sessions for user from LocalStorage / Firestore
   const loadSessions = useCallback(async (uid: string): Promise<DeviceSession[]> => {
+    if (uid === DEMO_GUEST_USER.uid) return [];
     let list: DeviceSession[] = [];
     try {
       const local = localStorage.getItem(getStorageKey(uid)) || localStorage.getItem('user_active_sessions');
       if (local) {
         list = JSON.parse(local);
       }
-    } catch (e) {
-      console.error(e);
+    } catch (e: any) {
+      console.error('[Auth Error - Loading Local Sessions]:', e?.message || e);
     }
 
     // Try fetching from Firestore
@@ -80,13 +125,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (snap.exists() && Array.isArray(snap.data()?.activeSessions)) {
         list = snap.data()?.activeSessions;
       }
-    } catch {}
+    } catch (err: any) {
+      console.warn('[Auth Warning - Firestore Load Sessions]:', err?.message || err);
+    }
 
     return cleanExpiredSessions(list);
   }, []);
 
   // Register or Verify Current Device
-  const evaluateDeviceSession = useCallback(async (firebaseUser: User) => {
+  const evaluateDeviceSession = useCallback(async (firebaseUser: User | AuthContextUser) => {
+    if (firebaseUser.uid === DEMO_GUEST_USER.uid) {
+      setIsDeviceBlocked(false);
+      return;
+    }
+
     const freshDevice = getCurrentDeviceSession();
     setCurrentDevice(freshDevice);
 
@@ -118,18 +170,48 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, [loadSessions, persistSessions]);
 
   useEffect(() => {
+    let isSubscribed = true;
+
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-      setUser(currentUser);
+      if (!isSubscribed) return;
+
       if (currentUser) {
+        setUser(currentUser);
+        setIsGuest(false);
+        try {
+          localStorage.removeItem('manageme_guest_session');
+        } catch {}
         await evaluateDeviceSession(currentUser);
       } else {
-        setActiveSessions([]);
-        setIsDeviceBlocked(false);
+        // Check if guest mode is active
+        try {
+          const isGuestSaved = localStorage.getItem('manageme_guest_session') === 'true';
+          if (isGuestSaved) {
+            setUser(DEMO_GUEST_USER);
+            setIsGuest(true);
+            setIsDeviceBlocked(false);
+          } else {
+            setUser(null);
+            setIsGuest(false);
+            setActiveSessions([]);
+            setIsDeviceBlocked(false);
+          }
+        } catch {
+          setUser(null);
+          setIsGuest(false);
+        }
       }
+      setIsLoading(false);
+    }, (error) => {
+      console.error('[Auth Error - Firebase Auth State]:', error.message, error);
+      setAuthError(error.message);
       setIsLoading(false);
     });
 
-    return () => unsubscribe();
+    return () => {
+      isSubscribed = false;
+      unsubscribe();
+    };
   }, [evaluateDeviceSession]);
 
   // Cross-Tab Session Synchronization
@@ -146,7 +228,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             } else {
               setIsDeviceBlocked(false);
             }
-          } catch {}
+          } catch (err: any) {
+            console.error('[Auth Error - Storage Sync Parse]:', err?.message || err);
+          }
         }
       }
     };
@@ -157,55 +241,97 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signInWithGoogle = async (): Promise<boolean> => {
     try {
+      setAuthError(null);
       const result = await googleSignIn();
       if (result?.user) {
+        setUser(result.user);
+        setIsGuest(false);
+        try {
+          localStorage.removeItem('manageme_guest_session');
+        } catch {}
         await evaluateDeviceSession(result.user);
         return true;
       }
       return false;
-    } catch (error) {
-      console.error('Sign in failed:', error);
+    } catch (error: any) {
+      console.error('[Auth Error - Google Sign In]:', error?.message || error, error);
+      setAuthError(error?.message || 'Authentication failed');
+      
+      // Auto fallback to Guest mode if external sign-in fails so user is not blocked
+      console.info('[Auth Fallback]: Enabling Guest Demo Mode to prevent lockout');
+      signInAsGuest();
       return false;
     }
   };
 
-  const signOut = async (): Promise<void> => {
-    if (user) {
-      // Remove current device from registered sessions
-      const updated = activeSessions.filter(s => s.deviceId !== currentDevice.deviceId);
-      await persistSessions(user.uid, updated);
-    }
-    await logout();
-    setUser(null);
-    setActiveSessions([]);
+  const signInAsGuest = () => {
+    try {
+      localStorage.setItem('manageme_guest_session', 'true');
+    } catch {}
+    setUser(DEMO_GUEST_USER);
+    setIsGuest(true);
     setIsDeviceBlocked(false);
+    setActiveSessions([]);
+    console.info('[Auth]: Activated Guest / Demo Workspace Mode');
+  };
+
+  const signOut = async (): Promise<void> => {
+    try {
+      if (user && !isGuest) {
+        // Remove current device from registered sessions
+        const updated = activeSessions.filter(s => s.deviceId !== currentDevice.deviceId);
+        await persistSessions(user.uid, updated);
+      }
+      
+      try {
+        localStorage.removeItem('manageme_guest_session');
+      } catch {}
+
+      await logout();
+      await signOutSupabase();
+      
+      setUser(null);
+      setIsGuest(false);
+      setActiveSessions([]);
+      setIsDeviceBlocked(false);
+    } catch (err: any) {
+      console.error('[Auth Error - Sign Out]:', err?.message || err);
+    }
   };
 
   const revokeSession = async (targetDeviceId: string): Promise<void> => {
-    if (!user) return;
+    if (!user || isGuest) return;
 
-    // Filter out revoked device
-    const remaining = activeSessions.filter(s => s.deviceId !== targetDeviceId);
+    try {
+      // Filter out revoked device
+      const remaining = activeSessions.filter(s => s.deviceId !== targetDeviceId);
 
-    // If current device was blocked, we now have a free slot -> register current device
-    let updated = remaining;
-    if (isDeviceBlocked && !remaining.some(s => s.deviceId === currentDevice.deviceId)) {
-      const fresh = getCurrentDeviceSession();
-      updated = [fresh, ...remaining];
-      setIsDeviceBlocked(false);
+      // If current device was blocked, we now have a free slot -> register current device
+      let updated = remaining;
+      if (isDeviceBlocked && !remaining.some(s => s.deviceId === currentDevice.deviceId)) {
+        const fresh = getCurrentDeviceSession();
+        updated = [fresh, ...remaining];
+        setIsDeviceBlocked(false);
+      }
+
+      setActiveSessions(updated);
+      await persistSessions(user.uid, updated);
+    } catch (err: any) {
+      console.error('[Auth Error - Revoke Session]:', err?.message || err);
     }
-
-    setActiveSessions(updated);
-    await persistSessions(user.uid, updated);
   };
 
   const revokeOtherSessions = async (): Promise<void> => {
-    if (!user) return;
-    const fresh = getCurrentDeviceSession();
-    const updated = [fresh];
-    setActiveSessions(updated);
-    setIsDeviceBlocked(false);
-    await persistSessions(user.uid, updated);
+    if (!user || isGuest) return;
+    try {
+      const fresh = getCurrentDeviceSession();
+      const updated = [fresh];
+      setActiveSessions(updated);
+      setIsDeviceBlocked(false);
+      await persistSessions(user.uid, updated);
+    } catch (err: any) {
+      console.error('[Auth Error - Revoke Other Sessions]:', err?.message || err);
+    }
   };
 
   const dismissDeviceLimitModal = () => {
@@ -217,11 +343,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       value={{
         user,
         isAuthenticated: !!user,
+        isGuest,
         isLoading,
+        authError,
         currentDevice,
         activeSessions,
         isDeviceBlocked,
         signInWithGoogle,
+        signInAsGuest,
         signOut,
         revokeSession,
         revokeOtherSessions,
@@ -240,3 +369,4 @@ export const useAuth = () => {
   }
   return context;
 };
+

@@ -142,12 +142,14 @@ export const Header: React.FC<HeaderProps> = ({
 
   const { 
     user, 
-    isAuthenticated, 
-    signInWithGoogle, 
+    isAuthenticated,
+    isGuest,
+    signInWithGoogle,
+    signInAsGuest,
     signOut: authSignOut 
   } = useAuth();
   
-  const userName = user?.displayName || user?.email?.split('@')[0] || 'Meet';
+  const userName = user?.displayName || user?.email?.split('@')[0] || (isGuest ? 'Guest Executive' : 'Meet');
 
   // Next Priority Deadline / Exam Countdown
   const [nextDeadline, setNextDeadline] = useState<{ deadline: any; daysRemaining: number } | null>(() => {
@@ -173,10 +175,17 @@ export const Header: React.FC<HeaderProps> = ({
   }, []);
 
   const handleLogin = async () => {
-    if (!isAuthenticated) {
-      await signInWithGoogle();
-    } else {
-      await authSignOut();
+    try {
+      if (!isAuthenticated || isGuest) {
+        const success = await signInWithGoogle();
+        if (!success) {
+          console.warn('[Header Auth]: Google sign in did not complete, remaining in local/guest mode');
+        }
+      } else {
+        await authSignOut();
+      }
+    } catch (err) {
+      console.error('[Auth Error - Header Login]:', err);
     }
   };
 
@@ -463,7 +472,7 @@ export const Header: React.FC<HeaderProps> = ({
               {/* User Account Bar in Drawer */}
               <div className="p-2.5 mx-3 my-2 rounded-xl bg-slate-50 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 flex items-center justify-between">
                 <div className="flex items-center gap-2.5">
-                  {isAuthenticated && user?.photoURL ? (
+                  {isAuthenticated && !isGuest && user?.photoURL ? (
                     <img src={user.photoURL} alt="User" className="w-8 h-8 rounded-full border border-slate-200 dark:border-white/20 shrink-0" />
                   ) : (
                     <div className="w-8 h-8 rounded-full bg-blue-50 dark:bg-blue-600/20 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0 font-bold">
@@ -471,27 +480,47 @@ export const Header: React.FC<HeaderProps> = ({
                     </div>
                   )}
                   <div>
-                    <p className="text-sm font-bold text-slate-900 dark:text-slate-100 leading-tight">{userName || 'Guest Scholar'}</p>
-                    <p className="text-xs text-slate-500 dark:text-zinc-400 leading-tight">{isAuthenticated ? 'Signed in with Google' : 'Local Workspace Mode'}</p>
+                    <div className="flex items-center gap-1.5">
+                      <p className="text-sm font-bold text-slate-900 dark:text-slate-100 leading-tight">{userName}</p>
+                      {isGuest && (
+                        <span className="text-[9px] font-mono font-bold px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/30">
+                          DEMO
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-xs text-slate-500 dark:text-zinc-400 leading-tight">
+                      {isAuthenticated && !isGuest ? 'Signed in with Google' : isGuest ? 'Guest Demo Workspace' : 'Local Workspace Mode'}
+                    </p>
                   </div>
                 </div>
 
-                <button
-                  onClick={handleLogin}
-                  className="px-2.5 py-1 rounded-lg text-xs font-semibold border border-slate-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-slate-700 dark:text-zinc-200 hover:bg-blue-600 hover:text-white dark:hover:bg-blue-600 dark:hover:text-white transition-colors flex items-center gap-1 shrink-0 cursor-pointer shadow-xs"
-                >
-                  {isAuthenticated ? (
-                    <>
-                      <LogOut className="w-3 h-3" />
-                      <span>Sign Out</span>
-                    </>
-                  ) : (
-                    <>
-                      <LogIn className="w-3 h-3" />
-                      <span>Sign In</span>
-                    </>
+                <div className="flex items-center gap-1.5">
+                  {!isAuthenticated && !isGuest && (
+                    <button
+                      onClick={() => signInAsGuest()}
+                      className="px-2 py-1 rounded-lg text-[11px] font-semibold border border-slate-200 dark:border-zinc-700 bg-slate-100 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 hover:bg-slate-200 dark:hover:bg-zinc-700 transition-colors cursor-pointer shadow-xs"
+                      title="Explore in Guest Demo Mode"
+                    >
+                      Demo
+                    </button>
                   )}
-                </button>
+                  <button
+                    onClick={handleLogin}
+                    className="px-2.5 py-1 rounded-lg text-xs font-semibold border border-slate-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-slate-700 dark:text-zinc-200 hover:bg-blue-600 hover:text-white dark:hover:bg-blue-600 dark:hover:text-white transition-colors flex items-center gap-1 shrink-0 cursor-pointer shadow-xs"
+                  >
+                    {isAuthenticated && !isGuest ? (
+                      <>
+                        <LogOut className="w-3 h-3" />
+                        <span>Sign Out</span>
+                      </>
+                    ) : (
+                      <>
+                        <LogIn className="w-3 h-3" />
+                        <span>{isGuest ? 'Sign In' : 'Sign In'}</span>
+                      </>
+                    )}
+                  </button>
+                </div>
               </div>
 
               {/* Scrollable Navigation Directory */}

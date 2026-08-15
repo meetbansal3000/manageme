@@ -75,8 +75,8 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           setUser(updatedUser);
           localStorage.setItem('manageme_user_profile', JSON.stringify(updatedUser));
         }
-      } catch (err) {
-        console.warn('Supabase UserContext fetch error, fallback to local:', err);
+      } catch (err: any) {
+        console.error('[Supabase Auth Error - UserContext fetch]:', err?.message || err);
         setIsSupabaseConnected(false);
       }
     };
@@ -84,20 +84,24 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     fetchSupabaseUser();
 
     const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (session?.user && isMounted) {
-        const authUser = session.user;
-        const updatedUser: UserProfile = {
-          id: authUser.id,
-          email: authUser.email,
-          name: authUser.user_metadata?.full_name || user.name || "User",
-          university: user.university || "University",
-          degree: user.degree || "Degree Program",
-          role: user.role || "Owner Mode",
-          targetSectors: user.targetSectors || ["Investment Banking", "Asset Management", "FinTech"],
-          avatar: user.avatar || "",
-        };
-        setUser(updatedUser);
-        localStorage.setItem('manageme_user_profile', JSON.stringify(updatedUser));
+      try {
+        if (session?.user && isMounted) {
+          const authUser = session.user;
+          const updatedUser: UserProfile = {
+            id: authUser.id,
+            email: authUser.email,
+            name: authUser.user_metadata?.full_name || user.name || "User",
+            university: user.university || "University",
+            degree: user.degree || "Degree Program",
+            role: user.role || "Owner Mode",
+            targetSectors: user.targetSectors || ["Investment Banking", "Asset Management", "FinTech"],
+            avatar: user.avatar || "",
+          };
+          setUser(updatedUser);
+          localStorage.setItem('manageme_user_profile', JSON.stringify(updatedUser));
+        }
+      } catch (authChangeErr: any) {
+        console.error('[Supabase Auth Error - onAuthStateChange]:', authChangeErr?.message || authChangeErr);
       }
     });
 
@@ -128,8 +132,8 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           role: updated.role,
           updated_at: new Date().toISOString(),
         });
-      } catch (err) {
-        console.warn('Failed to sync profile update to Supabase:', err);
+      } catch (err: any) {
+        console.error('[Supabase Error - Profile Sync]:', err?.message || err);
       }
     }
   };

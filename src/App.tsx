@@ -63,6 +63,7 @@ import { ShortcutDock } from './components/ShortcutDock';
 import { useScrollLock } from './hooks/useScrollLock';
 import { useModalDismiss } from './hooks/useModalDismiss';
 import { useGlobalShortcuts } from './hooks/useGlobalShortcuts';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 
 export default function App() {
   const { settings, updateSettings } = useSettings();
@@ -821,6 +822,7 @@ export default function App() {
         remoteData={conflict?.remote || userData}
         onResolve={resolveConflict}
       />
+      <SpeedInsights />
 
     </div>
   );
