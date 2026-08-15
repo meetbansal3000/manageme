@@ -1,6 +1,7 @@
 import { motion, AnimatePresence } from 'motion/react';
 import { AIAvatar } from "./components/AIAvatar";
 import React, { useState, useMemo, useEffect } from 'react';
+import { Analytics } from '@vercel/analytics/react';
 import { initAuth, googleSignIn, logout, getAccessToken } from './firebase';
 import { Header } from './components/Header';
 import { CompactToolbar } from './components/CompactToolbar';
@@ -822,6 +823,7 @@ export default function App() {
         onResolve={resolveConflict}
       />
 
+      <Analytics />
     </div>
   );
 }
