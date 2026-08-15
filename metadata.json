@@ -1,0 +1,6 @@
+{
+  "name": "manageme",
+  "description": "Comprehensive interactive dashboard and career management platform with Graduate Schemes, Skills & Competency Matrix, Universal Task Engine, Google Workspace sync, and multi-model AI Copilot.",
+  "requestFramePermissions": ["microphone"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

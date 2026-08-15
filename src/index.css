@@ -1,0 +1,274 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    /* Light Mode - Base */
+    --bg: #f5f5f7;
+    --surface: rgba(255, 255, 255, 0.8);
+    --surface-solid: #ffffff;
+    --border: rgba(0, 0, 0, 0.1);
+    --text-primary: #1d1d1f;
+    --text-secondary: #515154;
+    --accent: #0071e3;
+        
+    /* Legacy variables for compatibility */
+    --bg-canvas: var(--bg);
+    --ink-main: var(--text-primary);
+    --accent-emerald: var(--accent);
+    --accent-amber: #ff9f0a;
+    --ink-faint: var(--border);
+    --ink-muted: var(--text-secondary);
+  }
+
+  .dark {
+    /* Default Apple Obsidian Dark Theme */
+    --bg: #000000;
+    --surface: rgba(10, 10, 12, 0.75);
+    --surface-solid: #0a0a0c;
+    --border: rgba(255, 255, 255, 0.12);
+    --text-primary: #f5f5f7;
+    --text-secondary: #86868b;
+    --accent: #0071e3;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", sans-serif;
+    background-color: var(--bg);
+    color: var(--text-primary);
+    transition: background-color 0.3s cubic-bezier(0.23, 1, 0.32, 1), color 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Global Focus States - Apple Focus Ring */
+  *:focus {
+    outline: none !important;
+  }
+  *:focus-visible {
+    outline: none !important;
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.25), 0 0 0 4px rgba(0, 0, 0, 0.9) !important;
+  }
+
+  /* Default Button Active Scaling */
+  button {
+    transition: all 0.2s cubic-bezier(0.23, 1, 0.32, 1);
+  }
+  button:active {
+    transform: scale(0.98);
+    opacity: 0.92;
+  }
+  
+  /* Remove old serif/mono fonts, replace with pure sans-serif matching body */
+  .font-serif-luxury,
+  .font-editorial-serif,
+  .font-mono-code,
+  .font-space-mono {
+    font-family: inherit;
+  }
+}
+
+@layer utilities {
+  .apple-ease {
+    transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+  }
+
+  .apple-active:active {
+    transform: scale(0.98);
+    opacity: 0.9;
+  }
+
+  .apple-dock-icon-bg {
+    background-color: rgba(0, 0, 0, 0.05);
+  }
+  .dark .apple-dock-icon-bg {
+    background-color: rgba(255, 255, 255, 0.05);
+  }
+  .apple-dock-divider {
+    background-color: rgba(0, 0, 0, 0.1);
+  }
+  .dark .apple-dock-divider {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+
+  .apple-dock {
+    background: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08);
+  }
+  
+  .dark .apple-dock {
+    background: rgba(10, 10, 12, 0.85);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+  }
+
+  .glass-panel {
+    background-color: var(--surface);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--border);
+  }
+  
+  .bento-card {
+    background-color: var(--surface-solid);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1), box-shadow 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+  }
+  
+  .bento-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 40px -10px rgba(0,0,0,0.1);
+  }
+
+  .dark .bento-card:hover {
+    box-shadow: 0 10px 40px -10px rgba(0,0,0,0.5);
+  }
+
+  .apple-headline {
+    color: var(--text-primary);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+  
+  .dark .apple-headline {
+    background: linear-gradient(180deg, #FFFFFF 0%, #A1A1A6 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  
+  .apple-notice {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 18px;
+    padding: 20px;
+    color: #f5f5f7;
+  }
+
+  .apple-badge-critical {
+    background: rgba(255, 59, 48, 0.15);
+    color: #ff453a;
+    border-radius: 9999px;
+    padding: 4px 12px;
+    font-size: 12px;
+    font-weight: 500;
+  }
+  
+  .apple-badge-normal {
+    background: rgba(255, 255, 255, 0.1);
+    color: #f5f5f7;
+    border-radius: 9999px;
+    padding: 4px 12px;
+    font-size: 12px;
+    font-weight: 500;
+  }
+
+  .apple-input {
+    background-color: var(--surface-solid);
+    border-radius: 12px;
+    color: var(--text-primary);
+    border: 1px solid var(--border);
+    outline: none;
+    transition: all 0.2s cubic-bezier(0.23, 1, 0.32, 1);
+  }
+
+  .apple-input:focus {
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.2), 0 0 0 4px rgba(0, 0, 0, 0.9);
+  }
+}
+
+/* Sleek macOS-style 4px translucent scrollbars */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 9999px;
+}
+.dark ::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.35);
+}
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.35);
+}
+
+.hide-scrollbar::-webkit-scrollbar { display: none; }
+.hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+@layer base {
+  h1, h2, h3, h4, h5, h6 {
+    color: var(--text-primary);
+  }
+  p {
+    color: var(--text-secondary);
+  }
+}
+@layer base {
+  select {
+    background-color: var(--surface-solid);
+    color: var(--text-primary);
+  }
+  select option {
+    background-color: #ffffff;
+    color: #1d1d1f;
+  }
+  .dark select option {
+    background-color: #161617;
+    color: #ffffff;
+  }
+}
+
+/* Laser Scan Animation for Snap & Solve mode */
+@keyframes laserScan {
+  0% { top: 0%; opacity: 0.8; }
+  50% { top: 98%; opacity: 1; }
+  100% { top: 0%; opacity: 0.8; }
+}
+
+.animate-laserScan {
+  animation: laserScan 2.5s ease-in-out infinite;
+}
+
+/* 3D Perspective & Flashcard flip utilities */
+.perspective-1000 {
+  perspective: 1000px;
+}
+.transform-style-3d {
+  transform-style: preserve-3d;
+}
+.backface-hidden {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+.rotate-y-180 {
+  transform: rotateY(180deg);
+}
+
+/* Marquee Animation */
+@keyframes marquee {
+  0% { transform: translateX(0%); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-marquee {
+  display: flex;
+  white-space: nowrap;
+  animation: marquee 30s linear infinite;
+  will-change: transform;
+}
+
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
+

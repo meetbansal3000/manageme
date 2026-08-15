@@ -1,0 +1,91 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwnerUser(userId) {
+      return isSignedIn() && (
+        request.auth.uid == userId ||
+        request.auth.token.email.lower() == 'meetban123@gmail.com'
+      );
+    }
+
+    function isDocOwner() {
+      return isSignedIn() && (
+        resource.data.userId == request.auth.uid ||
+        request.auth.token.email.lower() == 'meetban123@gmail.com'
+      );
+    }
+
+    function isNewDocOwner() {
+      return isSignedIn() && (
+        request.resource.data.userId == request.auth.uid ||
+        request.auth.token.email.lower() == 'meetban123@gmail.com'
+      );
+    }
+
+    match /users/{userId} {
+      allow read: if isSignedIn();
+      allow write: if isOwnerUser(userId);
+    }
+
+    match /timeline/{documentId} {
+      allow read: if isDocOwner();
+      allow create: if isNewDocOwner();
+      allow update: if isDocOwner() && isNewDocOwner();
+      allow delete: if isDocOwner();
+    }
+
+    match /gradSchemes/{documentId} {
+      allow read: if isDocOwner();
+      allow create: if isNewDocOwner();
+      allow update: if isDocOwner() && isNewDocOwner();
+      allow delete: if isDocOwner();
+    }
+
+    match /partTimeRoles/{documentId} {
+      allow read: if isDocOwner();
+      allow create: if isNewDocOwner();
+      allow update: if isDocOwner() && isNewDocOwner();
+      allow delete: if isDocOwner();
+    }
+
+    match /priorityItems/{documentId} {
+      allow read: if isDocOwner();
+      allow create: if isNewDocOwner();
+      allow update: if isDocOwner() && isNewDocOwner();
+      allow delete: if isDocOwner();
+    }
+
+    match /notesSections/{documentId} {
+      allow read: if isDocOwner();
+      allow create: if isNewDocOwner();
+      allow update: if isDocOwner() && isNewDocOwner();
+      allow delete: if isDocOwner();
+    }
+
+    match /skills/{documentId} {
+      allow read: if isDocOwner();
+      allow create: if isNewDocOwner();
+      allow update: if isDocOwner() && isNewDocOwner();
+      allow delete: if isDocOwner();
+    }
+
+    match /channels/{channelId} {
+      allow read, write: if isSignedIn();
+      match /messages/{documentId} {
+        allow read, write: if isSignedIn();
+      }
+    }
+
+    match /dms/{dmId} {
+      allow read, write: if isSignedIn();
+      match /messages/{documentId} {
+        allow read, write: if isSignedIn();
+      }
+    }
+  }
+}

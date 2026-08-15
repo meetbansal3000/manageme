@@ -1,0 +1,130 @@
+{
+  "collections": [
+    {
+      "name": "users",
+      "document": {
+        "fields": [
+          { "name": "email", "type": "string" },
+          { "name": "createdAt", "type": "timestamp" },
+          { "name": "settings", "type": "map" }
+        ]
+      },
+      "rules": {
+        "read": "request.auth != null && request.auth.uid == id",
+        "write": "request.auth != null && request.auth.uid == id"
+      }
+    },
+    {
+      "name": "timeline",
+      "document": {
+        "fields": [
+          { "name": "userId", "type": "string" },
+          { "name": "month", "type": "string" },
+          { "name": "phase", "type": "string" },
+          { "name": "firms", "type": "string" },
+          { "name": "deadlines", "type": "string" },
+          { "name": "keyActions", "type": "array" },
+          { "name": "priority", "type": "string" },
+          { "name": "hours", "type": "string" },
+          { "name": "notes", "type": "string" }
+        ]
+      },
+      "rules": {
+        "read": "request.auth != null && resource.data.userId == request.auth.uid",
+        "write": "request.auth != null && request.resource.data.userId == request.auth.uid"
+      }
+    },
+    {
+      "name": "gradSchemes",
+      "document": {
+        "fields": [
+          { "name": "userId", "type": "string" },
+          { "name": "firm", "type": "string" },
+          { "name": "roleTitle", "type": "string" },
+          { "name": "sector", "type": "string" },
+          { "name": "rank", "type": "string" },
+          { "name": "status", "type": "string" },
+          { "name": "notes", "type": "string" },
+          { "name": "salary", "type": "string" },
+          { "name": "difficulty", "type": "string" },
+          { "name": "filterRisk", "type": "string" }
+        ]
+      },
+      "rules": {
+        "read": "request.auth != null && resource.data.userId == request.auth.uid",
+        "write": "request.auth != null && request.resource.data.userId == request.auth.uid"
+      }
+    },
+    {
+      "name": "partTimeRoles",
+      "document": {
+        "fields": [
+          { "name": "userId", "type": "string" },
+          { "name": "firm", "type": "string" },
+          { "name": "roleTitle", "type": "string" },
+          { "name": "sector", "type": "string" },
+          { "name": "rank", "type": "string" },
+          { "name": "status", "type": "string" },
+          { "name": "notes", "type": "string" }
+        ]
+      },
+      "rules": {
+        "read": "request.auth != null && resource.data.userId == request.auth.uid",
+        "write": "request.auth != null && request.resource.data.userId == request.auth.uid"
+      }
+    },
+    {
+      "name": "priorityItems",
+      "document": {
+        "fields": [
+          { "name": "userId", "type": "string" },
+          { "name": "task", "type": "string" },
+          { "name": "category", "type": "string" },
+          { "name": "status", "type": "string" },
+          { "name": "deadline", "type": "string" },
+          { "name": "notes", "type": "string" }
+        ]
+      },
+      "rules": {
+        "read": "request.auth != null && resource.data.userId == request.auth.uid",
+        "write": "request.auth != null && request.resource.data.userId == request.auth.uid"
+      }
+    },
+    {
+      "name": "notesSections",
+      "document": {
+        "fields": [
+          { "name": "userId", "type": "string" },
+          { "name": "title", "type": "string" },
+          { "name": "items", "type": "array" }
+        ]
+      },
+      "rules": {
+        "read": "request.auth != null && resource.data.userId == request.auth.uid",
+        "write": "request.auth != null && request.resource.data.userId == request.auth.uid"
+      }
+    },
+    {
+      "name": "skills",
+      "document": {
+        "fields": [
+          { "name": "userId", "type": "string" },
+          { "name": "category", "type": "string" },
+          { "name": "name", "type": "string" },
+          { "name": "priority", "type": "number" },
+          { "name": "reason", "type": "string" },
+          { "name": "cost", "type": "string" },
+          { "name": "timeToComplete", "type": "string" },
+          { "name": "keyBenefit", "type": "string" },
+          { "name": "link", "type": "string" },
+          { "name": "targetDate", "type": "string" },
+          { "name": "status", "type": "string" }
+        ]
+      },
+      "rules": {
+        "read": "request.auth != null && resource.data.userId == request.auth.uid",
+        "write": "request.auth != null && request.resource.data.userId == request.auth.uid"
+      }
+    }
+  ]
+}
