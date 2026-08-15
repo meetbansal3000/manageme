@@ -363,10 +363,11 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-[var(--bg)] text-[var(--text-primary)] flex flex-col font-sans selection:bg-[var(--accent)] selection:text-white transition-colors duration-300 relative overflow-x-hidden">
+    <div className="min-h-screen bg-transparent text-[var(--text-primary)] flex flex-col font-sans selection:bg-[var(--accent)] selection:text-white transition-colors duration-300 relative overflow-x-hidden">
 
       {/* Clean Spatial Background Mesh */}
       <Spatial3DCanvas />
+
 
       <Header 
         activeTab={activeTab} 

@@ -134,10 +134,11 @@ export const InteractiveBackground: React.FC = () => {
 
   return (
     <div 
-      className="fixed inset-0 pointer-events-none z-0 overflow-hidden" 
+      className="fixed inset-0 pointer-events-none z-[-1] overflow-hidden" 
       style={{ background: 'radial-gradient(circle at 50% 30%, #0c111e 0%, #07090e 60%, #030407 100%)' }}
       aria-hidden="true"
     >
+
       <Suspense fallback={<CSSFallbackBackground />}>
         <Canvas
           camera={{ position: [0, 0, 7.5], fov: 55 }}
