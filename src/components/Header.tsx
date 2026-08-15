@@ -145,6 +145,7 @@ export const Header: React.FC<HeaderProps> = ({
     user, 
     isAuthenticated,
     isGuest,
+    authError,
     signInWithGoogle,
     signInAsGuest,
     signOut: authSignOut 
@@ -185,7 +186,7 @@ export const Header: React.FC<HeaderProps> = ({
         if (success) {
           showToast('Signed in successfully with Google!', 'success');
         } else {
-          showToast('Sign-in unavailable. Activated local Guest Demo session.', 'warning', 4000);
+          showToast(authError || 'Sign-in unavailable on this domain. Activated local Guest Demo session.', 'warning', 5000);
         }
       } else {
         await authSignOut();
@@ -193,7 +194,11 @@ export const Header: React.FC<HeaderProps> = ({
       }
     } catch (err: any) {
       console.error('[Auth Error - Header Login]:', err);
-      showToast(`Login failed: ${err?.message || 'Network/Auth Error'}. Using local workspace mode.`, 'error', 5000);
+      const isUnauth = err?.code === 'auth/unauthorized-domain' || err?.message?.includes('unauthorized-domain');
+      const feedback = isUnauth 
+        ? 'Domain pending Firebase authorization. Switched to Guest Demo mode.'
+        : `Notice: ${err?.message || 'Offline mode active'}. Switched to Guest mode.`;
+      showToast(feedback, 'warning', 5000);
     }
   };
 

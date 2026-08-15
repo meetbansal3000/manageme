@@ -43,8 +43,9 @@
     --ink-muted: var(--text-secondary);
   }
 
-  html, body, #root, #root > div, main {
-    background-color: var(--bg) !important;
+  html, body, #root, #root > div, main, .dark, .dark body, .dark #root, .dark #root > div, .dark main {
+    background: #09090b !important;
+    background-color: #09090b !important;
   }
 
   html, body {
@@ -71,7 +72,8 @@
 
   body, #root {
     font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", sans-serif;
-    background-color: var(--bg) !important;
+    background: #09090b !important;
+    background-color: #09090b !important;
     background-image: none !important;
     color: var(--text-primary);
     transition: background-color 0.2s cubic-bezier(0.23, 1, 0.32, 1), color 0.2s cubic-bezier(0.23, 1, 0.32, 1);
