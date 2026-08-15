@@ -54,6 +54,8 @@ import { triggerHaptic } from '../utils/haptics';
 import { getActiveAiConfig, SUPPORTED_AI_MODELS } from '../lib/aiGateway';
 import { getExamDeadlines, getNextPriorityDeadline } from '../utils/deadlines';
 
+import { useTheme } from '../context/ThemeContext';
+
 export type AppTab = 'landing' | 'news' | 'study' | 'jobs' | 'outreach' | 'work' | 'trading' | 'travel' | 'transit' | 'finance' | 'tasks' | 'skills' | 'uni' | 'places' | 'chat' | 'resume' | 'metasuite';
 
 interface HeaderProps {
@@ -86,6 +88,7 @@ export const Header: React.FC<HeaderProps> = ({
 }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const { theme, isDark, toggleTheme } = useTheme();
   
   const [isSyncing, setIsSyncing] = useState(false);
   const [showSyncToast, setShowSyncToast] = useState(false);
@@ -103,24 +106,7 @@ export const Header: React.FC<HeaderProps> = ({
   }, []);
 
   useScrollLock(drawerOpen);
-  
-  const [isDark, setIsDark] = useState(() => {
-    const saved = localStorage.getItem('manageme_theme') || localStorage.getItem('theme');
-    if (saved) return saved === 'dark';
-    return window.matchMedia('(prefers-color-scheme: dark)').matches;
-  });
 
-  useEffect(() => {
-    if (isDark) {
-      document.documentElement.classList.add('dark');
-      localStorage.setItem('manageme_theme', 'dark');
-      localStorage.setItem('theme', 'dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-      localStorage.setItem('manageme_theme', 'light');
-      localStorage.setItem('theme', 'light');
-    }
-  }, [isDark]);
 
   const { isOwnerVerified, requireOwnerPermission, lockOwnerMode } = useOwnerSecurity();
   const [activeAiModel, setActiveAiModel] = useState(() => getActiveAiConfig());
@@ -246,7 +232,7 @@ export const Header: React.FC<HeaderProps> = ({
   return (
     <>
       <header className={`fixed top-0 left-0 right-0 z-40 transition-all duration-200 ${
-        isScrolled ? 'bg-slate-950/80 backdrop-blur-md border-b border-white/10 shadow-sm py-2' : 'bg-transparent py-4'
+        isScrolled ? 'bg-white/60 dark:bg-slate-950/60 backdrop-blur-md border-b border-slate-200/50 dark:border-white/10 shadow-sm py-2' : 'bg-transparent py-4'
       }`}>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -259,7 +245,7 @@ export const Header: React.FC<HeaderProps> = ({
               <button
                 id="universalBackBtn"
                 onClick={handleNavigateBack}
-                className="p-2 sm:p-2.5 rounded-full text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[rgba(128,128,128,0.15)] active:scale-90 transition-all flex items-center justify-center border border-transparent hover:border-[var(--border)] group/back cursor-pointer shadow-sm"
+                className="p-2 sm:p-2.5 rounded-full text-slate-600 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white bg-white/60 dark:bg-slate-950/60 border border-slate-200/50 dark:border-white/10 hover:bg-white/80 dark:hover:bg-slate-900/80 backdrop-blur-md active:scale-90 transition-all flex items-center justify-center group/back cursor-pointer shadow-xs"
                 title="Go back to previous page or tab"
                 aria-label="Go Back"
               >
@@ -270,7 +256,7 @@ export const Header: React.FC<HeaderProps> = ({
               <button
                 id="dashboardHomeRedirectBtn"
                 onClick={handleNavigateHome}
-                className="flex items-center space-x-2.5 sm:space-x-3 text-left group/home focus:outline-none rounded-2xl py-1 px-1.5 sm:px-2 hover:bg-[rgba(128,128,128,0.1)] active:scale-[0.98] transition-all cursor-pointer border border-transparent hover:border-[var(--border)]"
+                className="flex items-center space-x-2.5 sm:space-x-3 text-left group/home focus:outline-none rounded-2xl py-1 px-1.5 sm:px-2 hover:bg-white/40 dark:hover:bg-white/5 active:scale-[0.98] transition-all cursor-pointer border border-transparent hover:border-slate-200/50 dark:hover:border-white/10"
                 title="Return to Home Dashboard"
                 aria-label="Return to Home Dashboard"
               >
@@ -280,27 +266,27 @@ export const Header: React.FC<HeaderProps> = ({
                     <img 
                       src={user.photoURL} 
                       alt="Profile" 
-                      className="w-8 h-8 sm:w-9 sm:h-9 rounded-full border border-white/20 group-hover/home:ring-2 group-hover/home:ring-[var(--accent)] group-hover/home:scale-105 group-hover/home:shadow-md transition-all object-cover"
+                      className="w-8 h-8 sm:w-9 sm:h-9 rounded-full border border-slate-200/80 dark:border-white/20 group-hover/home:ring-2 group-hover/home:ring-blue-500 group-hover/home:scale-105 group-hover/home:shadow-md transition-all object-cover"
                     />
                   ) : (
-                    <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white/10 text-[var(--text-primary)] flex items-center justify-center font-bold text-sm border border-[var(--border)] group-hover/home:ring-2 group-hover/home:ring-[var(--accent)] group-hover/home:bg-white/20 group-hover/home:scale-105 group-hover/home:shadow-md transition-all">
-                      <User className="w-4 h-4 text-[var(--accent)]" />
+                    <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-blue-500/10 dark:bg-white/10 text-blue-600 dark:text-white flex items-center justify-center font-bold text-sm border border-slate-200/60 dark:border-white/10 group-hover/home:ring-2 group-hover/home:ring-blue-500 group-hover/home:scale-105 group-hover/home:shadow-md transition-all">
+                      <User className="w-4 h-4 text-blue-600 dark:text-blue-400" />
                     </div>
                   )}
-                  <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-500 ring-2 ring-[var(--bg)] shadow-sm"></span>
+                  <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-500 ring-2 ring-white dark:ring-slate-950 shadow-sm"></span>
                 </div>
 
                 {/* Dashboard Title & Sub-Label */}
                 <div className="flex flex-col min-w-0">
                   <div className="flex items-center gap-1.5">
-                    <span className="font-extrabold text-base sm:text-lg md:text-xl text-[var(--text-primary)] tracking-tight group-hover/home:text-[var(--accent)] transition-colors lowercase">
+                    <span className="font-extrabold text-base sm:text-lg md:text-xl text-slate-900 dark:text-white tracking-tight group-hover/home:text-blue-600 dark:group-hover:text-blue-400 transition-colors lowercase">
                       manageme
                     </span>
-                    <span className="text-[9px] sm:text-[10px] px-1.5 py-0.2 rounded bg-[var(--accent)]/15 text-[var(--accent)] font-mono font-bold tracking-wider hidden sm:inline-block">
+                    <span className="text-[9px] sm:text-[10px] px-1.5 py-0.2 rounded bg-blue-500/15 text-blue-600 dark:text-blue-400 font-mono font-bold tracking-wider hidden sm:inline-block">
                       PRO
                     </span>
                   </div>
-                  <span className="text-[10px] font-mono text-[var(--text-secondary)] -mt-0.5 group-hover/home:text-[var(--text-primary)]/80 transition-colors hidden xs:block truncate">
+                  <span className="text-[10px] font-mono text-slate-500 dark:text-zinc-400 -mt-0.5 group-hover/home:text-slate-800 dark:group-hover/home:text-zinc-200 transition-colors hidden xs:block truncate">
                     Executive Career Workspace
                   </span>
                 </div>
@@ -315,7 +301,7 @@ export const Header: React.FC<HeaderProps> = ({
               {nextDeadline && (
                 <button
                   onClick={() => setActiveTab('uni')}
-                  className="hidden md:flex items-center gap-1.5 px-3 py-1.5 min-h-[38px] rounded-full bg-gradient-to-r from-amber-500/10 to-orange-500/10 hover:from-amber-500/20 hover:to-orange-500/20 border border-amber-500/30 hover:border-amber-500/50 text-amber-800 dark:text-amber-300 text-xs font-semibold transition-all cursor-pointer shadow-xs active:scale-95 group"
+                  className="hidden md:flex items-center gap-1.5 px-3 py-1.5 min-h-[38px] rounded-full bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-amber-800 dark:text-amber-300 text-xs font-semibold backdrop-blur-md transition-all cursor-pointer shadow-xs active:scale-95 group"
                   title={`Priority Deadline: ${nextDeadline.deadline.title} (${nextDeadline.deadline.date}) • Click to manage in Timetable`}
                 >
                   <Timer className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400 animate-pulse shrink-0" />
@@ -329,22 +315,22 @@ export const Header: React.FC<HeaderProps> = ({
               {/* Global Command Palette (⌘K) Trigger */}
               <button
                 onClick={() => window.dispatchEvent(new CustomEvent('openCommandPalette'))}
-                className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 min-h-[38px] sm:min-h-[40px] rounded-full bg-slate-100 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 border border-slate-300 dark:border-zinc-700 hover:border-blue-500/50 hover:bg-slate-200 dark:hover:bg-zinc-700 transition-all cursor-pointer shadow-xs group"
+                className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 min-h-[38px] sm:min-h-[40px] rounded-full bg-white/60 dark:bg-slate-950/60 text-slate-700 dark:text-zinc-300 border border-slate-200/50 dark:border-white/10 hover:border-blue-500/50 hover:bg-white/80 dark:hover:bg-slate-900/80 backdrop-blur-md transition-all cursor-pointer shadow-xs group"
                 title="Global Command Palette (Ctrl+K / Cmd+K)"
                 aria-label="Open Command Palette"
               >
                 <Search className="w-3.5 h-3.5 text-slate-500 dark:text-zinc-400 group-hover:text-blue-500 transition-colors" />
                 <span className="hidden sm:inline text-xs font-medium">Search</span>
-                <kbd className="hidden sm:inline text-[9px] font-mono bg-slate-200 dark:bg-zinc-700 text-slate-600 dark:text-zinc-300 px-1 py-0.5 rounded border border-slate-300 dark:border-zinc-600">
+                <kbd className="hidden sm:inline text-[9px] font-mono bg-slate-200/80 dark:bg-zinc-800 text-slate-600 dark:text-zinc-300 px-1 py-0.5 rounded border border-slate-300/60 dark:border-zinc-700">
                   ⌘K
                 </kbd>
               </button>
 
               {/* Header Quick Action Shortcuts */}
-              <div className="hidden 2xl:flex items-center gap-1.5 bg-slate-200/80 dark:bg-zinc-900/80 p-1 rounded-full border border-slate-300 dark:border-zinc-700 mr-1 shadow-sm">
+              <div className="hidden 2xl:flex items-center gap-1.5 bg-white/40 dark:bg-slate-950/40 backdrop-blur-md p-1 rounded-full border border-slate-200/50 dark:border-white/10 mr-1 shadow-sm">
                 <button
                   onClick={() => setActiveTab('finance')}
-                  className="px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-100 dark:bg-zinc-800 text-slate-800 dark:text-zinc-200 border border-slate-300 dark:border-zinc-700 hover:bg-slate-200 dark:hover:bg-zinc-700 transition-all flex items-center gap-1 cursor-pointer"
+                  className="px-2.5 py-1 rounded-full text-xs font-semibold bg-white/60 dark:bg-slate-950/60 text-slate-800 dark:text-zinc-200 border border-slate-200/50 dark:border-white/10 hover:bg-white/90 dark:hover:bg-slate-900/90 transition-all flex items-center gap-1 cursor-pointer"
                   title="Student Finance & Expenses ($ Finance)"
                 >
                   <DollarSign className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
@@ -352,7 +338,7 @@ export const Header: React.FC<HeaderProps> = ({
                 </button>
                 <button
                   onClick={() => setActiveTab('uni')}
-                  className="px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-100 dark:bg-zinc-800 text-slate-800 dark:text-zinc-200 border border-slate-300 dark:border-zinc-700 hover:bg-slate-200 dark:hover:bg-zinc-700 transition-all flex items-center gap-1 cursor-pointer"
+                  className="px-2.5 py-1 rounded-full text-xs font-semibold bg-white/60 dark:bg-slate-950/60 text-slate-800 dark:text-zinc-200 border border-slate-200/50 dark:border-white/10 hover:bg-white/90 dark:hover:bg-slate-900/90 transition-all flex items-center gap-1 cursor-pointer"
                   title="Timetable & Calendar (⏰ Timetable)"
                 >
                   <Clock className="w-3.5 h-3.5 text-sky-600 dark:text-sky-400" />
@@ -360,7 +346,7 @@ export const Header: React.FC<HeaderProps> = ({
                 </button>
                 <button
                   onClick={() => setActiveTab('tasks')}
-                  className="px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-100 dark:bg-zinc-800 text-slate-800 dark:text-zinc-200 border border-slate-300 dark:border-zinc-700 hover:bg-slate-200 dark:hover:bg-zinc-700 transition-all flex items-center gap-1 cursor-pointer"
+                  className="px-2.5 py-1 rounded-full text-xs font-semibold bg-white/60 dark:bg-slate-950/60 text-slate-800 dark:text-zinc-200 border border-slate-200/50 dark:border-white/10 hover:bg-white/90 dark:hover:bg-slate-900/90 transition-all flex items-center gap-1 cursor-pointer"
                   title="Priority Checklist (☑️ Checklist)"
                 >
                   <CheckSquare className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
@@ -368,7 +354,7 @@ export const Header: React.FC<HeaderProps> = ({
                 </button>
                 <button
                   onClick={() => document.getElementById('geminiAssistantBtn')?.click()}
-                  className="px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-100 dark:bg-zinc-800 text-slate-800 dark:text-zinc-200 border border-slate-300 dark:border-zinc-700 hover:bg-slate-200 dark:hover:bg-zinc-700 transition-all flex items-center gap-1 cursor-pointer"
+                  className="px-2.5 py-1 rounded-full text-xs font-semibold bg-white/60 dark:bg-slate-950/60 text-slate-800 dark:text-zinc-200 border border-slate-200/50 dark:border-white/10 hover:bg-white/90 dark:hover:bg-slate-900/90 transition-all flex items-center gap-1 cursor-pointer"
                   title="AI Prompts Copilot (>_ Prompts)"
                 >
                   <Bot className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
@@ -379,7 +365,7 @@ export const Header: React.FC<HeaderProps> = ({
               {/* AI Model & Engine Switcher Button */}
               <button
                 onClick={() => window.dispatchEvent(new CustomEvent('openAiModelSelector'))}
-                className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 min-h-[38px] sm:min-h-[40px] rounded-full text-xs font-semibold bg-purple-500/10 dark:bg-purple-500/15 hover:bg-purple-500/25 border border-purple-500/30 text-purple-700 dark:text-purple-300 transition-all cursor-pointer shadow-sm active:scale-95"
+                className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 min-h-[38px] sm:min-h-[40px] rounded-full text-xs font-semibold bg-purple-500/10 dark:bg-purple-500/15 hover:bg-purple-500/25 border border-purple-500/30 text-purple-700 dark:text-purple-300 backdrop-blur-md transition-all cursor-pointer shadow-sm active:scale-95"
                 title="Select AI Model & Open API Vault"
                 aria-label="AI Model Selector"
               >
@@ -398,7 +384,7 @@ export const Header: React.FC<HeaderProps> = ({
                     requireOwnerPermission('Authorize Master Owner Controls', () => {});
                   }
                 }}
-                className={`hidden md:flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-xs font-semibold border transition-all cursor-pointer ${
+                className={`hidden md:flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-xs font-semibold border backdrop-blur-md transition-all cursor-pointer ${
                   isOwnerVerified 
                     ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-500/20' 
                     : 'bg-amber-500/10 border-amber-500/30 text-amber-700 dark:text-amber-400 hover:bg-amber-500/20'
@@ -418,29 +404,47 @@ export const Header: React.FC<HeaderProps> = ({
                 )}
               </button>
 
-              <button
-                onClick={() => setIsDark(!isDark)}
-                className="p-2 min-h-[44px] min-w-[44px] text-[var(--text-secondary)] hover:bg-[rgba(128,128,128,0.1)] hover:text-[var(--text-primary)] rounded-full transition-colors flex items-center justify-center cursor-pointer active:scale-95"
-                title="Toggle Theme"
+              {/* Animated Day/Night Mode Switcher */}
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.92 }}
+                onClick={toggleTheme}
+                className="p-2 min-h-[38px] min-w-[38px] rounded-full bg-white/60 dark:bg-slate-950/60 border border-slate-200/50 dark:border-white/10 text-slate-700 dark:text-zinc-200 hover:bg-white/80 dark:hover:bg-slate-900/80 backdrop-blur-md transition-colors flex items-center justify-center cursor-pointer shadow-xs active:scale-95"
+                title={isDark ? "Switch to Day Mode" : "Switch to Night Mode"}
                 aria-label="Toggle Theme"
               >
-                {isDark ? <Sun className="w-5 h-5 text-amber-400" /> : <Moon className="w-5 h-5" />}
-              </button>
+                <AnimatePresence mode="wait" initial={false}>
+                  <motion.div
+                    key={theme}
+                    initial={{ rotate: -90, opacity: 0, scale: 0.75 }}
+                    animate={{ rotate: 0, opacity: 1, scale: 1 }}
+                    exit={{ rotate: 90, opacity: 0, scale: 0.75 }}
+                    transition={{ duration: 0.15 }}
+                  >
+                    {isDark ? (
+                      <Sun className="w-4 h-4 text-amber-400" />
+                    ) : (
+                      <Moon className="w-4 h-4 text-slate-700" />
+                    )}
+                  </motion.div>
+                </AnimatePresence>
+              </motion.button>
               
+              {/* Navigation Drawer Menu Button */}
               <button
                 onClick={() => setDrawerOpen(true)}
-                className="p-2 min-h-[44px] min-w-[44px] text-[var(--text-primary)] hover:bg-[rgba(128,128,128,0.1)] rounded-full transition-colors flex items-center justify-center cursor-pointer active:scale-95"
+                className="p-2 min-h-[38px] min-w-[38px] rounded-full bg-white/60 dark:bg-slate-950/60 border border-slate-200/50 dark:border-white/10 text-slate-800 dark:text-white hover:bg-white/80 dark:hover:bg-slate-900/80 backdrop-blur-md transition-colors flex items-center justify-center cursor-pointer active:scale-95 shadow-xs"
                 title="Open Navigation Menu"
                 aria-label="Open Navigation Menu"
                 id="mainNavMenuBtn"
               >
-                <Menu className="w-6 h-6" />
+                <Menu className="w-5 h-5" />
               </button>
             </div>
           </div>
         </div>
       </header>
-      
+
       {/* Navigation Drawer Overlay */}
       <AnimatePresence>
         {drawerOpen && (
@@ -450,7 +454,7 @@ export const Header: React.FC<HeaderProps> = ({
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setDrawerOpen(false)}
-              className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50"
+              className="fixed inset-0 bg-black/40 dark:bg-black/60 backdrop-blur-sm z-50"
             />
             
             <motion.div
@@ -467,47 +471,47 @@ export const Header: React.FC<HeaderProps> = ({
                 }
               }}
               transition={{ type: 'spring', damping: 30, stiffness: 350 }}
-              className="fixed bottom-0 left-0 right-0 sm:top-0 sm:left-auto sm:right-0 sm:bottom-0 w-full sm:max-w-sm border-t sm:border-t-0 border-l border-white/10 z-50 flex flex-col shadow-2xl bg-slate-950/40 backdrop-blur-2xl rounded-t-3xl sm:rounded-none max-h-[88vh] sm:max-h-full touch-none"
+              className="fixed bottom-0 left-0 right-0 sm:top-0 sm:left-auto sm:right-0 sm:bottom-0 w-full sm:max-w-sm border-t sm:border-t-0 border-l border-slate-200/50 dark:border-white/10 z-50 flex flex-col shadow-2xl bg-white/80 dark:bg-slate-950/60 backdrop-blur-2xl rounded-t-3xl sm:rounded-none max-h-[88vh] sm:max-h-full touch-none"
             >
               {/* Drag handle for mobile bottom sheet */}
-              <div className="w-12 h-1 bg-white/20 rounded-full my-2 mx-auto cursor-grab active:cursor-grabbing sm:hidden" />
+              <div className="w-12 h-1 bg-slate-300 dark:bg-white/20 rounded-full my-2 mx-auto cursor-grab active:cursor-grabbing sm:hidden" />
 
               {/* Drawer Header */}
-              <div className="flex items-center justify-between p-5 border-b border-white/10 bg-transparent">
+              <div className="flex items-center justify-between p-5 border-b border-slate-200/50 dark:border-white/10 bg-transparent">
                 <div className="flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-blue-400"></span>
-                  <h2 className="text-base font-bold text-white uppercase tracking-wider font-mono text-xs">
+                  <span className="w-2 h-2 rounded-full bg-blue-500 dark:bg-blue-400"></span>
+                  <h2 className="text-base font-bold text-slate-900 dark:text-white uppercase tracking-wider font-mono text-xs">
                     Navigation Directory
                   </h2>
                 </div>
                 <button 
                   onClick={() => setDrawerOpen(false)}
-                  className="p-2 bg-white/5 hover:bg-white/10 rounded-full text-zinc-400 hover:text-white transition-colors cursor-pointer border border-white/10"
+                  className="p-2 bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10 rounded-full text-slate-600 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white transition-colors cursor-pointer border border-slate-200/50 dark:border-white/10"
                 >
                   <X className="w-5 h-5" />
                 </button>
               </div>
 
               {/* User Account Bar in Drawer */}
-              <div className="p-2.5 mx-3 my-2 rounded-xl bg-white/5 border border-white/10 flex items-center justify-between backdrop-blur-md">
+              <div className="p-2.5 mx-3 my-2 rounded-xl bg-white/60 dark:bg-white/5 border border-slate-200/50 dark:border-white/10 flex items-center justify-between backdrop-blur-md">
                 <div className="flex items-center gap-2.5">
                   {isAuthenticated && !isGuest && user?.photoURL ? (
-                    <img src={user.photoURL} alt="User" className="w-8 h-8 rounded-full border border-white/20 shrink-0" />
+                    <img src={user.photoURL} alt="User" className="w-8 h-8 rounded-full border border-slate-200/80 dark:border-white/20 shrink-0" />
                   ) : (
-                    <div className="w-8 h-8 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center shrink-0 font-bold">
+                    <div className="w-8 h-8 rounded-full bg-blue-500/10 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0 font-bold">
                       <User className="w-4 h-4" />
                     </div>
                   )}
                   <div>
                     <div className="flex items-center gap-1.5">
-                      <p className="text-sm font-bold text-white leading-tight">{userName}</p>
+                      <p className="text-sm font-bold text-slate-900 dark:text-white leading-tight">{userName}</p>
                       {isGuest && (
-                        <span className="text-[9px] font-mono font-bold px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                        <span className="text-[9px] font-mono font-bold px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/30">
                           DEMO
                         </span>
                       )}
                     </div>
-                    <p className="text-xs text-zinc-400 leading-tight">
+                    <p className="text-xs text-slate-500 dark:text-zinc-400 leading-tight">
                       {isAuthenticated && !isGuest ? 'Signed in with Google' : isGuest ? 'Guest Demo Workspace' : 'Local Workspace Mode'}
                     </p>
                   </div>
@@ -517,7 +521,7 @@ export const Header: React.FC<HeaderProps> = ({
                   {!isAuthenticated && !isGuest && (
                     <button
                       onClick={handleGuestDemoAccess}
-                      className="px-2 py-1 rounded-lg text-[11px] font-semibold border border-white/10 bg-white/5 text-zinc-300 hover:bg-white/10 transition-colors cursor-pointer shadow-xs"
+                      className="px-2 py-1 rounded-lg text-[11px] font-semibold border border-slate-200/60 dark:border-white/10 bg-slate-100/80 dark:bg-white/5 text-slate-700 dark:text-zinc-300 hover:bg-slate-200 dark:hover:bg-white/10 transition-colors cursor-pointer shadow-xs"
                       title="Explore in Guest Demo Mode"
                     >
                       Demo
@@ -525,7 +529,7 @@ export const Header: React.FC<HeaderProps> = ({
                   )}
                   <button
                     onClick={handleLogin}
-                    className="px-2.5 py-1 rounded-lg text-xs font-semibold border border-white/10 bg-white/5 text-zinc-200 hover:bg-blue-600 hover:text-white transition-colors flex items-center gap-1 shrink-0 cursor-pointer shadow-xs"
+                    className="px-2.5 py-1 rounded-lg text-xs font-semibold border border-slate-200/60 dark:border-white/10 bg-slate-100/80 dark:bg-white/5 text-slate-700 dark:text-zinc-200 hover:bg-blue-600 hover:text-white dark:hover:bg-blue-600 dark:hover:text-white transition-colors flex items-center gap-1 shrink-0 cursor-pointer shadow-xs"
                   >
                     {isAuthenticated && !isGuest ? (
                       <>
@@ -546,7 +550,7 @@ export const Header: React.FC<HeaderProps> = ({
               <div className="flex-1 overflow-y-auto min-h-0 py-2 px-3 custom-scrollbar flex flex-col justify-between space-y-4">
                 {/* 1. Primary Navigation Tabs First (Full-Width Clickable Buttons) */}
                 <div className="space-y-1">
-                  <div className="px-2 pb-1.5 pt-1 text-[10px] font-mono uppercase text-zinc-400 font-bold tracking-wider">
+                  <div className="px-2 pb-1.5 pt-1 text-[10px] font-mono uppercase text-slate-500 dark:text-zinc-400 font-bold tracking-wider">
                     Navigation Directory
                   </div>
                   {menuItems.map((item) => {
@@ -565,11 +569,11 @@ export const Header: React.FC<HeaderProps> = ({
                         }}
                         className={`w-full flex items-center gap-3 px-3.5 py-3 min-h-[44px] rounded-xl transition-all duration-200 text-xs sm:text-sm text-left cursor-pointer ${
                           isActive 
-                            ? 'bg-blue-600/80 backdrop-blur-md text-white font-semibold shadow-md shadow-blue-500/20 border border-blue-400/30'
-                            : 'text-zinc-300 hover:bg-white/10 hover:text-white border border-transparent hover:border-white/10'
+                            ? 'bg-blue-600 text-white font-semibold shadow-md shadow-blue-500/20 border border-blue-400/30'
+                            : 'text-slate-700 dark:text-zinc-300 hover:bg-slate-100/80 dark:hover:bg-white/10 hover:text-slate-900 dark:hover:text-white border border-transparent hover:border-slate-200/50 dark:hover:border-white/10'
                         }`}
                       >
-                        <ItemIcon className={`w-4 h-4 shrink-0 ${isActive ? 'text-white' : 'text-blue-400'}`} />
+                        <ItemIcon className={`w-4 h-4 shrink-0 ${isActive ? 'text-white' : 'text-blue-600 dark:text-blue-400'}`} />
                         <span className="truncate">{item.label}</span>
                       </button>
                     );
@@ -577,9 +581,9 @@ export const Header: React.FC<HeaderProps> = ({
                 </div>
 
                 {/* 2. Quick Action Shortcuts (Placed directly below primary navigation tabs) */}
-                <div className="space-y-2 pt-2 border-t border-white/10">
-                  <div className="px-2 pb-1 text-[10px] font-mono uppercase text-zinc-400 font-bold tracking-wider flex items-center gap-1.5">
-                    <Zap className="w-3 h-3 text-amber-400" />
+                <div className="space-y-2 pt-2 border-t border-slate-200/50 dark:border-white/10">
+                  <div className="px-2 pb-1 text-[10px] font-mono uppercase text-slate-500 dark:text-zinc-400 font-bold tracking-wider flex items-center gap-1.5">
+                    <Zap className="w-3 h-3 text-amber-500 dark:text-amber-400" />
                     <span>Quick Action Shortcuts</span>
                   </div>
                   <div className="grid grid-cols-2 gap-2">
@@ -588,9 +592,9 @@ export const Header: React.FC<HeaderProps> = ({
                         setActiveTab('finance');
                         setDrawerOpen(false);
                       }}
-                      className="flex items-center gap-2 px-3 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 backdrop-blur-md text-xs font-semibold text-white transition-all text-left cursor-pointer active:scale-95"
+                      className="flex items-center gap-2 px-3 py-2 rounded-xl bg-slate-100/80 dark:bg-white/5 hover:bg-slate-200/80 dark:hover:bg-white/10 border border-slate-200/50 dark:border-white/10 backdrop-blur-md text-xs font-semibold text-slate-800 dark:text-white transition-all text-left cursor-pointer active:scale-95"
                     >
-                      <DollarSign className="w-4 h-4 text-emerald-400 shrink-0" />
+                      <DollarSign className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
                       <span className="truncate">Finance Hub</span>
                     </button>
                     <button
@@ -598,9 +602,9 @@ export const Header: React.FC<HeaderProps> = ({
                         setActiveTab('uni');
                         setDrawerOpen(false);
                       }}
-                      className="flex items-center gap-2 px-3 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 backdrop-blur-md text-xs font-semibold text-white transition-all text-left cursor-pointer active:scale-95"
+                      className="flex items-center gap-2 px-3 py-2 rounded-xl bg-slate-100/80 dark:bg-white/5 hover:bg-slate-200/80 dark:hover:bg-white/10 border border-slate-200/50 dark:border-white/10 backdrop-blur-md text-xs font-semibold text-slate-800 dark:text-white transition-all text-left cursor-pointer active:scale-95"
                     >
-                      <Clock className="w-4 h-4 text-sky-400 shrink-0" />
+                      <Clock className="w-4 h-4 text-sky-600 dark:text-sky-400 shrink-0" />
                       <span className="truncate">Timetable</span>
                     </button>
                     <button
@@ -608,9 +612,9 @@ export const Header: React.FC<HeaderProps> = ({
                         setActiveTab('tasks');
                         setDrawerOpen(false);
                       }}
-                      className="flex items-center gap-2 px-3 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 backdrop-blur-md text-xs font-semibold text-white transition-all text-left cursor-pointer active:scale-95"
+                      className="flex items-center gap-2 px-3 py-2 rounded-xl bg-slate-100/80 dark:bg-white/5 hover:bg-slate-200/80 dark:hover:bg-white/10 border border-slate-200/50 dark:border-white/10 backdrop-blur-md text-xs font-semibold text-slate-800 dark:text-white transition-all text-left cursor-pointer active:scale-95"
                     >
-                      <CheckSquare className="w-4 h-4 text-amber-400 shrink-0" />
+                      <CheckSquare className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" />
                       <span className="truncate">Checklist</span>
                     </button>
                     <button
@@ -618,9 +622,9 @@ export const Header: React.FC<HeaderProps> = ({
                         document.getElementById('geminiAssistantBtn')?.click();
                         setDrawerOpen(false);
                       }}
-                      className="flex items-center gap-2 px-3 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 backdrop-blur-md text-xs font-semibold text-white transition-all text-left cursor-pointer active:scale-95"
+                      className="flex items-center gap-2 px-3 py-2 rounded-xl bg-slate-100/80 dark:bg-white/5 hover:bg-slate-200/80 dark:hover:bg-white/10 border border-slate-200/50 dark:border-white/10 backdrop-blur-md text-xs font-semibold text-slate-800 dark:text-white transition-all text-left cursor-pointer active:scale-95"
                     >
-                      <Bot className="w-4 h-4 text-indigo-400 shrink-0" />
+                      <Bot className="w-4 h-4 text-indigo-600 dark:text-indigo-400 shrink-0" />
                       <span className="truncate">AI Prompts</span>
                     </button>
                     <button
@@ -628,9 +632,9 @@ export const Header: React.FC<HeaderProps> = ({
                         setActiveTab('resume');
                         setDrawerOpen(false);
                       }}
-                      className="flex items-center gap-2 px-3 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 backdrop-blur-md text-xs font-semibold text-white transition-all text-left cursor-pointer active:scale-95"
+                      className="flex items-center gap-2 px-3 py-2 rounded-xl bg-slate-100/80 dark:bg-white/5 hover:bg-slate-200/80 dark:hover:bg-white/10 border border-slate-200/50 dark:border-white/10 backdrop-blur-md text-xs font-semibold text-slate-800 dark:text-white transition-all text-left cursor-pointer active:scale-95"
                     >
-                      <FileText className="w-4 h-4 text-purple-400 shrink-0" />
+                      <FileText className="w-4 h-4 text-purple-600 dark:text-purple-400 shrink-0" />
                       <span className="truncate">ATS Resume</span>
                     </button>
                     <button
@@ -642,9 +646,9 @@ export const Header: React.FC<HeaderProps> = ({
                         }
                         setDrawerOpen(false);
                       }}
-                      className="flex items-center gap-2 px-3 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 backdrop-blur-md text-xs font-semibold text-white transition-all text-left cursor-pointer active:scale-95"
+                      className="flex items-center gap-2 px-3 py-2 rounded-xl bg-slate-100/80 dark:bg-white/5 hover:bg-slate-200/80 dark:hover:bg-white/10 border border-slate-200/50 dark:border-white/10 backdrop-blur-md text-xs font-semibold text-slate-800 dark:text-white transition-all text-left cursor-pointer active:scale-95"
                     >
-                      <Sparkles className="w-4 h-4 text-pink-400 shrink-0" />
+                      <Sparkles className="w-4 h-4 text-pink-600 dark:text-pink-400 shrink-0" />
                       <span className="truncate">Smart Import</span>
                     </button>
                   </div>
@@ -652,18 +656,17 @@ export const Header: React.FC<HeaderProps> = ({
               </div>
               
               {/* Streamlined Footer (Subtle Settings Button Only) */}
-              <div className="p-3 border-t border-white/10 bg-transparent shrink-0 flex items-center justify-between px-4">
-                <span className="text-[11px] text-zinc-400 font-mono">manageme v2.5</span>
+              <div className="p-3 border-t border-slate-200/50 dark:border-white/10 bg-transparent shrink-0 flex items-center justify-between px-4">
+                <span className="text-[11px] text-slate-500 dark:text-zinc-400 font-mono">manageme v2.5</span>
                 <button 
                   onClick={() => { onOpenSettings(); setDrawerOpen(false); }} 
-                  className="flex items-center gap-2 text-xs font-semibold text-zinc-300 hover:text-white hover:bg-white/10 px-3.5 py-1.5 rounded-xl border border-white/10 bg-white/5 backdrop-blur-md transition-colors cursor-pointer"
+                  className="flex items-center gap-2 text-xs font-semibold text-slate-700 dark:text-zinc-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/80 dark:hover:bg-white/10 px-3.5 py-1.5 rounded-xl border border-slate-200/50 dark:border-white/10 bg-white/40 dark:bg-white/5 backdrop-blur-md transition-colors cursor-pointer"
                 >
-                  <Settings className="w-4 h-4 text-blue-400" />
+                  <Settings className="w-4 h-4 text-blue-600 dark:text-blue-400" />
                   <span>Settings</span>
                 </button>
               </div>
             </motion.div>
-
           </>
         )}
       </AnimatePresence>

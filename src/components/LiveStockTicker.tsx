@@ -112,11 +112,11 @@ export const LiveStockTicker: React.FC = () => {
     : tickers.filter(t => t.category === filterCategory);
 
   return (
-    <div className="w-full bg-white/80 dark:bg-[#09090b]/90 backdrop-blur-md border-b border-black/[0.08] dark:border-white/[0.08] z-30 select-none relative shadow-sm transition-colors">
+    <div className="w-full bg-white/60 dark:bg-slate-950/60 backdrop-blur-md border-b border-slate-200/50 dark:border-white/10 z-30 select-none relative shadow-xs transition-colors">
       <div className="max-w-7xl mx-auto px-2 sm:px-4 flex items-center h-8 overflow-hidden text-xs">
         
         {/* Left Live Badge */}
-        <div className="flex items-center gap-1.5 pr-3 border-r border-black/[0.08] dark:border-white/[0.08] shrink-0 z-10 bg-white dark:bg-[#09090b]">
+        <div className="flex items-center gap-1.5 pr-3 border-r border-slate-200/50 dark:border-white/10 shrink-0 z-10 bg-transparent">
           <span className="relative flex h-1.5 w-1.5">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-75"></span>
             <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-600 dark:bg-[#10b981]"></span>
@@ -127,7 +127,7 @@ export const LiveStockTicker: React.FC = () => {
         </div>
 
         {/* Quick Filter Chips */}
-        <div className="hidden lg:flex items-center gap-1 px-3 border-r border-black/[0.08] dark:border-white/[0.08] shrink-0">
+        <div className="hidden lg:flex items-center gap-1 px-3 border-r border-slate-200/50 dark:border-white/10 shrink-0">
           {(['all', 'indices', 'equities', 'crypto', 'commodities'] as const).map(cat => (
             <button
               key={cat}
@@ -152,8 +152,8 @@ export const LiveStockTicker: React.FC = () => {
           onMouseLeave={() => setIsPaused(false)}
         >
           {/* Edge Blur Gradients */}
-          <div className="absolute left-0 top-0 bottom-0 w-4 sm:w-6 bg-gradient-to-r from-white dark:from-[#09090b] to-transparent z-10 pointer-events-none" />
-          <div className="absolute right-0 top-0 bottom-0 w-4 sm:w-6 bg-gradient-to-l from-white dark:from-[#09090b] to-transparent z-10 pointer-events-none" />
+          <div className="absolute left-0 top-0 bottom-0 w-4 sm:w-6 bg-gradient-to-r from-white/60 dark:from-slate-950/60 to-transparent z-10 pointer-events-none" />
+          <div className="absolute right-0 top-0 bottom-0 w-4 sm:w-6 bg-gradient-to-l from-white/60 dark:from-slate-950/60 to-transparent z-10 pointer-events-none" />
 
           {/* Marquee Container */}
           <div 
@@ -190,10 +190,10 @@ export const LiveStockTicker: React.FC = () => {
         </div>
 
         {/* Right Stream Toggle & Timestamp */}
-        <div className="flex items-center gap-2 pl-3 border-l border-black/[0.08] dark:border-white/[0.08] shrink-0 z-10 bg-white dark:bg-[#09090b]">
+        <div className="flex items-center gap-2 pl-3 border-l border-slate-200/50 dark:border-white/10 shrink-0 z-10 bg-transparent">
           <button
             onClick={() => setIsStreaming(!isStreaming)}
-            className={`p-0.5 rounded transition-colors ${
+            className={`p-0.5 rounded transition-colors cursor-pointer ${
               isStreaming ? 'text-emerald-600 dark:text-[#10b981] hover:bg-emerald-500/10' : 'text-slate-400 dark:text-neutral-500 hover:bg-black/5 dark:hover:bg-white/5'
             }`}
             title={isStreaming ? 'Live Market Streaming Active (Click to Pause)' : 'Streaming Paused (Click to Resume)'}
@@ -216,14 +216,13 @@ export const LiveStockTicker: React.FC = () => {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setSelectedTicker(null)}
-              className="fixed inset-0 bg-black/50 dark:bg-black/70 backdrop-blur-md z-50"
+              className="fixed inset-0 bg-black/40 dark:bg-black/70 backdrop-blur-md z-50"
             />
             <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 15 }}
+              initial={{ opacity: 0, scale: 0.95, y: 10 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 15 }}
-              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-              className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md bg-white/95 dark:bg-neutral-950/95 border border-slate-200 dark:border-white/15 rounded-3xl p-6 shadow-2xl z-50 backdrop-blur-2xl text-slate-900 dark:text-white space-y-5"
+              exit={{ opacity: 0, scale: 0.95, y: 10 }}
+              className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-sm bg-white/90 dark:bg-slate-950/90 backdrop-blur-2xl border border-slate-200/80 dark:border-white/10 rounded-2xl p-4 shadow-2xl z-50 text-slate-900 dark:text-white"
             >
               {/* Header */}
               <div className="flex items-start justify-between">

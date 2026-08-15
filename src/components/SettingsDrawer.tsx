@@ -121,17 +121,17 @@ export const SettingsDrawer: React.FC<SettingsDrawerProps> = ({ isOpen, onClose,
           }
         }}
         transition={IOS_SPRING}
-        className="fixed bottom-0 left-0 right-0 sm:top-0 sm:left-auto sm:right-0 sm:bottom-0 z-[70] w-full sm:max-w-sm glass-panel shadow-2xl flex flex-col border-t sm:border-t-0 sm:border-l border-white/10 rounded-t-3xl sm:rounded-none max-h-[90vh] sm:max-h-full bg-black/90 touch-none"
+        className="fixed bottom-0 left-0 right-0 sm:top-0 sm:left-auto sm:right-0 sm:bottom-0 z-[70] w-full sm:max-w-sm shadow-2xl flex flex-col border-t sm:border-t-0 sm:border-l border-slate-200/50 dark:border-white/10 rounded-t-3xl sm:rounded-none max-h-[90vh] sm:max-h-full bg-white/80 dark:bg-slate-950/60 backdrop-blur-2xl text-slate-900 dark:text-white touch-none"
       >
         
         {/* Drag handle for mobile */}
-        <div className="w-12 h-1 bg-white/20 rounded-full my-2 mx-auto cursor-grab active:cursor-grabbing sm:hidden shrink-0" />
+        <div className="w-12 h-1 bg-slate-300 dark:bg-white/20 rounded-full my-2 mx-auto cursor-grab active:cursor-grabbing sm:hidden shrink-0" />
         
-        <div className="flex items-center justify-between px-6 py-4 sm:py-5 border-b border-white/10 shrink-0">
-          <h2 className="text-xl font-bold tracking-tight text-white">Preferences</h2>
+        <div className="flex items-center justify-between px-6 py-4 sm:py-5 border-b border-slate-200/50 dark:border-white/10 shrink-0">
+          <h2 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">Preferences</h2>
           <button 
             onClick={onClose}
-            className="p-2 rounded-full hover:bg-white/10 text-neutral-400 hover:text-white transition-colors cursor-pointer"
+            className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-white/10 text-slate-500 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-white transition-colors cursor-pointer"
           >
             <X className="w-5 h-5 stroke-[1.5]" />
           </button>
@@ -141,46 +141,46 @@ export const SettingsDrawer: React.FC<SettingsDrawerProps> = ({ isOpen, onClose,
           
           {/* iOS Inset Grouped List - Profile Settings */}
           <section className="space-y-2">
-            <h3 className="text-xs font-semibold uppercase tracking-wider text-neutral-400 px-1">User & Profile</h3>
-            <div className="bg-neutral-900/50 rounded-2xl border border-white/10 divide-y divide-white/5 overflow-hidden">
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-neutral-400 px-1">User & Profile</h3>
+            <div className="bg-white/60 dark:bg-white/5 rounded-2xl border border-slate-200/50 dark:border-white/10 divide-y divide-slate-200/40 dark:divide-white/5 overflow-hidden">
               <div className="p-3.5 space-y-1">
-                <label className="text-[11px] font-medium text-neutral-400 block">Workspace Title</label>
+                <label className="text-[11px] font-medium text-slate-500 dark:text-neutral-400 block">Workspace Title</label>
                 <input
                   type="text"
                   value={userData.userName || ''}
                   onChange={(e) => updateData({ userName: e.target.value })}
                   placeholder="e.g. Alex Morgan"
-                  className="w-full bg-transparent text-xs text-white placeholder:text-neutral-600 focus:outline-none"
+                  className="w-full bg-transparent text-xs text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-neutral-600 focus:outline-none"
                 />
               </div>
               <div className="p-3.5 space-y-1">
-                <label className="text-[11px] font-medium text-neutral-400 block">Degree / Program</label>
+                <label className="text-[11px] font-medium text-slate-500 dark:text-neutral-400 block">Degree / Program</label>
                 <input
                   type="text"
                   value={userData.degreeName || ''}
                   onChange={(e) => updateData({ degreeName: e.target.value })}
                   placeholder="e.g. Finance & Data Analytics"
-                  className="w-full bg-transparent text-xs text-white placeholder:text-neutral-600 focus:outline-none"
+                  className="w-full bg-transparent text-xs text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-neutral-600 focus:outline-none"
                 />
               </div>
               <div className="p-3.5 space-y-1">
-                <label className="text-[11px] font-medium text-neutral-400 block">University</label>
+                <label className="text-[11px] font-medium text-slate-500 dark:text-neutral-400 block">University</label>
                 <input
                   type="text"
                   value={userData.universityName || ''}
                   onChange={(e) => updateData({ universityName: e.target.value })}
                   placeholder="e.g. London School of Economics"
-                  className="w-full bg-transparent text-xs text-white placeholder:text-neutral-600 focus:outline-none"
+                  className="w-full bg-transparent text-xs text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-neutral-600 focus:outline-none"
                 />
               </div>
               <div className="p-3.5 space-y-1">
-                <label className="text-[11px] font-medium text-neutral-400 block">Location</label>
+                <label className="text-[11px] font-medium text-slate-500 dark:text-neutral-400 block">Location</label>
                 <input
                   type="text"
                   value={userData.location || ''}
                   onChange={(e) => updateData({ location: e.target.value })}
                   placeholder="e.g. London, UK"
-                  className="w-full bg-transparent text-xs text-white placeholder:text-neutral-600 focus:outline-none"
+                  className="w-full bg-transparent text-xs text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-neutral-600 focus:outline-none"
                 />
               </div>
             </div>
@@ -189,30 +189,30 @@ export const SettingsDrawer: React.FC<SettingsDrawerProps> = ({ isOpen, onClose,
           {/* iOS Inset Grouped List - Security & Controls */}
           <section className="space-y-2">
             <div className="flex items-center justify-between px-1">
-              <h3 className="text-xs font-semibold uppercase tracking-wider text-amber-400 flex items-center gap-1.5">
+              <h3 className="text-xs font-semibold uppercase tracking-wider text-amber-600 dark:text-amber-400 flex items-center gap-1.5">
                 <ShieldCheck className="w-3.5 h-3.5 stroke-[1.5]" />
                 Owner Security
               </h3>
               <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${
-                isOwnerVerified ? 'bg-emerald-500/20 text-emerald-300' : 'bg-amber-500/20 text-amber-300'
+                isOwnerVerified ? 'bg-emerald-500/20 text-emerald-700 dark:text-emerald-300' : 'bg-amber-500/20 text-amber-700 dark:text-amber-300'
               }`}>
                 {isOwnerVerified ? 'Owner Verified' : 'Protected'}
               </span>
             </div>
 
-            <div className="bg-neutral-900/50 rounded-2xl border border-white/10 divide-y divide-white/5 overflow-hidden">
+            <div className="bg-white/60 dark:bg-white/5 rounded-2xl border border-slate-200/50 dark:border-white/10 divide-y divide-slate-200/40 dark:divide-white/5 overflow-hidden">
               {/* Lock/Unlock Switch */}
               <div className="p-3.5 flex items-center justify-between">
                 <div>
-                  <h4 className="text-xs font-semibold text-white">Master Controls</h4>
-                  <p className="text-[10px] text-neutral-400">
+                  <h4 className="text-xs font-semibold text-slate-900 dark:text-white">Master Controls</h4>
+                  <p className="text-[10px] text-slate-500 dark:text-neutral-400">
                     {isOwnerVerified ? 'Administrative rights active' : 'View-Only state active'}
                   </p>
                 </div>
                 {isOwnerVerified ? (
                   <button
                     onClick={lockOwnerMode}
-                    className="px-3 py-1.5 rounded-full bg-neutral-800 hover:bg-neutral-700 text-amber-300 text-xs font-semibold flex items-center gap-1.5 transition-all active:scale-95 cursor-pointer"
+                    className="px-3 py-1.5 rounded-full bg-slate-200 dark:bg-neutral-800 hover:bg-slate-300 dark:hover:bg-neutral-700 text-amber-700 dark:text-amber-300 text-xs font-semibold flex items-center gap-1.5 transition-all active:scale-95 cursor-pointer"
                   >
                     <Lock className="w-3.5 h-3.5 stroke-[1.5]" />
                     <span>Lock</span>
@@ -231,13 +231,13 @@ export const SettingsDrawer: React.FC<SettingsDrawerProps> = ({ isOpen, onClose,
               {/* iOS Toggle - Anti-Copy Protection */}
               <div className="p-3.5 flex items-center justify-between">
                 <div>
-                  <h4 className="text-xs font-semibold text-white">Anti-Theft Copy Guard</h4>
-                  <p className="text-[10px] text-neutral-400">Block scraping & raw source inspection</p>
+                  <h4 className="text-xs font-semibold text-slate-900 dark:text-white">Anti-Theft Copy Guard</h4>
+                  <p className="text-[10px] text-slate-500 dark:text-neutral-400">Block scraping & raw source inspection</p>
                 </div>
                 <button 
                   onClick={() => toggleCopyProtection(!copyProtectionActive)}
                   className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full p-0.5 transition-colors duration-300 ease-in-out ${
-                    copyProtectionActive ? 'bg-emerald-500' : 'bg-neutral-700'
+                    copyProtectionActive ? 'bg-emerald-500' : 'bg-slate-300 dark:bg-neutral-700'
                   }`}
                 >
                   <span className={`pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow-md transform transition duration-300 ease-in-out ${
@@ -251,7 +251,7 @@ export const SettingsDrawer: React.FC<SettingsDrawerProps> = ({ isOpen, onClose,
                 {!showPinChange ? (
                   <button
                     onClick={() => setShowPinChange(true)}
-                    className="text-xs text-amber-400 hover:text-amber-300 font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
+                    className="text-xs text-amber-600 dark:text-amber-400 hover:text-amber-500 dark:hover:text-amber-300 font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
                   >
                     <KeyRound className="w-3.5 h-3.5 stroke-[1.5]" />
                     <span>Change Master Owner PIN</span>
@@ -259,11 +259,11 @@ export const SettingsDrawer: React.FC<SettingsDrawerProps> = ({ isOpen, onClose,
                 ) : (
                   <form onSubmit={handleSavePin} className="space-y-2 pt-1">
                     <div className="flex items-center justify-between mb-1">
-                      <span className="text-[11px] font-bold text-white">Update Master PIN</span>
+                      <span className="text-[11px] font-bold text-slate-900 dark:text-white">Update Master PIN</span>
                       <button 
                         type="button" 
                         onClick={() => setShowPinChange(false)}
-                        className="text-[10px] text-neutral-400 hover:text-white"
+                        className="text-[10px] text-slate-500 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-white"
                       >
                         Cancel
                       </button>
@@ -275,7 +275,7 @@ export const SettingsDrawer: React.FC<SettingsDrawerProps> = ({ isOpen, onClose,
                       value={currentPinInput}
                       onChange={(e) => setCurrentPinInput(e.target.value)}
                       placeholder="Current PIN (Default: 2026)"
-                      className="w-full px-3 py-1.5 rounded-xl bg-black/60 border border-white/10 text-xs text-white placeholder:text-neutral-600 focus:outline-none focus:border-amber-500 font-mono"
+                      className="w-full px-3 py-1.5 rounded-xl bg-white/80 dark:bg-black/60 border border-slate-200 dark:border-white/10 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-neutral-600 focus:outline-none focus:border-amber-500 font-mono"
                     />
 
                     <input
@@ -284,7 +284,7 @@ export const SettingsDrawer: React.FC<SettingsDrawerProps> = ({ isOpen, onClose,
                       value={newPinInput}
                       onChange={(e) => setNewPinInput(e.target.value)}
                       placeholder="New PIN (min 4 digits)"
-                      className="w-full px-3 py-1.5 rounded-xl bg-black/60 border border-white/10 text-xs text-white placeholder:text-neutral-600 focus:outline-none focus:border-amber-500 font-mono"
+                      className="w-full px-3 py-1.5 rounded-xl bg-white/80 dark:bg-black/60 border border-slate-200 dark:border-white/10 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-neutral-600 focus:outline-none focus:border-amber-500 font-mono"
                     />
 
                     <button
@@ -301,35 +301,35 @@ export const SettingsDrawer: React.FC<SettingsDrawerProps> = ({ isOpen, onClose,
 
           {/* iOS Inset Grouped List - AI Engine & Model Routing */}
           <section className="space-y-2">
-            <h3 className="text-xs font-semibold uppercase tracking-wider text-blue-400 px-1 flex items-center gap-1.5">
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-blue-600 dark:text-blue-400 px-1 flex items-center gap-1.5">
               <Sparkles className="w-3.5 h-3.5 stroke-[1.5]" />
               AI Intelligence Engine
             </h3>
-            <div className="bg-neutral-900/50 rounded-2xl border border-white/10 divide-y divide-white/5 overflow-hidden">
+            <div className="bg-white/60 dark:bg-white/5 rounded-2xl border border-slate-200/50 dark:border-white/10 divide-y divide-slate-200/40 dark:divide-white/5 overflow-hidden">
               <div className="p-3.5 flex items-center justify-between">
                 <div>
-                  <h4 className="text-xs font-semibold text-white">Default Core Model</h4>
-                  <p className="text-[10px] text-neutral-400">High-speed reasoning & multimodal analysis</p>
+                  <h4 className="text-xs font-semibold text-slate-900 dark:text-white">Default Core Model</h4>
+                  <p className="text-[10px] text-slate-500 dark:text-neutral-400">High-speed reasoning & multimodal analysis</p>
                 </div>
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-blue-500/20 text-blue-300 border border-blue-500/30">
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-blue-500/20 text-blue-700 dark:text-blue-300 border border-blue-500/30">
                   gemini-2.5-flash
                 </span>
               </div>
               <div className="p-3.5 flex items-center justify-between">
                 <div>
-                  <h4 className="text-xs font-semibold text-white">Live News Impact Agent</h4>
-                  <p className="text-[10px] text-neutral-400">Sector exposure & DCF valuation impact</p>
+                  <h4 className="text-xs font-semibold text-slate-900 dark:text-white">Live News Impact Agent</h4>
+                  <p className="text-[10px] text-slate-500 dark:text-neutral-400">Sector exposure & DCF valuation impact</p>
                 </div>
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30">
                   Connected
                 </span>
               </div>
               <div className="p-3.5 flex items-center justify-between">
                 <div>
-                  <h4 className="text-xs font-semibold text-white">Multimodal Study Engine</h4>
-                  <p className="text-[10px] text-neutral-400">Snap & Solve, Mock Exams, Feynman Critique</p>
+                  <h4 className="text-xs font-semibold text-slate-900 dark:text-white">Multimodal Study Engine</h4>
+                  <p className="text-[10px] text-slate-500 dark:text-neutral-400">Snap & Solve, Mock Exams, Feynman Critique</p>
                 </div>
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-purple-500/20 text-purple-300 border border-purple-500/30">
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-purple-500/20 text-purple-700 dark:text-purple-300 border border-purple-500/30">
                   Active
                 </span>
               </div>
@@ -338,19 +338,19 @@ export const SettingsDrawer: React.FC<SettingsDrawerProps> = ({ isOpen, onClose,
 
           {/* iOS Inset Grouped List - Display & Dock Toggles */}
           <section className="space-y-2">
-            <h3 className="text-xs font-semibold uppercase tracking-wider text-neutral-400 px-1">Display & Controls</h3>
-            <div className="bg-neutral-900/50 rounded-2xl border border-white/10 divide-y divide-white/5 overflow-hidden">
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-neutral-400 px-1">Display & Controls</h3>
+            <div className="bg-white/60 dark:bg-white/5 rounded-2xl border border-slate-200/50 dark:border-white/10 divide-y divide-slate-200/40 dark:divide-white/5 overflow-hidden">
               
               {/* Fluid Animations Toggle */}
               <div className="p-3.5 flex items-center justify-between">
                 <div>
-                  <h4 className="text-xs font-semibold text-white">Fluid Animations</h4>
-                  <p className="text-[10px] text-neutral-400">Enable Apple spring motion effects</p>
+                  <h4 className="text-xs font-semibold text-slate-900 dark:text-white">Fluid Animations</h4>
+                  <p className="text-[10px] text-slate-500 dark:text-neutral-400">Enable Apple spring motion effects</p>
                 </div>
                 <button 
                   onClick={() => updateSettings({ animationsEnabled: !settings.animationsEnabled })}
                   className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full p-0.5 transition-colors duration-300 ease-in-out ${
-                    settings.animationsEnabled ? 'bg-emerald-500' : 'bg-neutral-700'
+                    settings.animationsEnabled ? 'bg-emerald-500' : 'bg-slate-300 dark:bg-neutral-700'
                   }`}
                 >
                   <span className={`pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow-md transform transition duration-300 ease-in-out ${
@@ -362,13 +362,13 @@ export const SettingsDrawer: React.FC<SettingsDrawerProps> = ({ isOpen, onClose,
               {/* Hide Dock Toggle */}
               <div className="p-3.5 flex items-center justify-between">
                 <div>
-                  <h4 className="text-xs font-semibold text-white">Hide Dock</h4>
-                  <p className="text-[10px] text-neutral-400">Hide floating action dock entirely</p>
+                  <h4 className="text-xs font-semibold text-slate-900 dark:text-white">Hide Dock</h4>
+                  <p className="text-[10px] text-slate-500 dark:text-neutral-400">Hide floating action dock entirely</p>
                 </div>
                 <button 
                   onClick={() => updateSettings({ hideFloatingDock: !settings.hideFloatingDock })}
                   className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full p-0.5 transition-colors duration-300 ease-in-out ${
-                    settings.hideFloatingDock ? 'bg-emerald-500' : 'bg-neutral-700'
+                    settings.hideFloatingDock ? 'bg-emerald-500' : 'bg-slate-300 dark:bg-neutral-700'
                   }`}
                 >
                   <span className={`pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow-md transform transition duration-300 ease-in-out ${
@@ -380,13 +380,13 @@ export const SettingsDrawer: React.FC<SettingsDrawerProps> = ({ isOpen, onClose,
               {/* Auto Hide Dock Toggle */}
               <div className="p-3.5 flex items-center justify-between">
                 <div>
-                  <h4 className="text-xs font-semibold text-white">Auto-hide when typing</h4>
-                  <p className="text-[10px] text-neutral-400">Hide dock when typing in text fields</p>
+                  <h4 className="text-xs font-semibold text-slate-900 dark:text-white">Auto-hide when typing</h4>
+                  <p className="text-[10px] text-slate-500 dark:text-neutral-400">Hide dock when typing in text fields</p>
                 </div>
                 <button 
                   onClick={() => updateSettings({ autoHideDockWhenTyping: !settings.autoHideDockWhenTyping })}
                   className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full p-0.5 transition-colors duration-300 ease-in-out ${
-                    settings.autoHideDockWhenTyping ? 'bg-emerald-500' : 'bg-neutral-700'
+                    settings.autoHideDockWhenTyping ? 'bg-emerald-500' : 'bg-slate-300 dark:bg-neutral-700'
                   }`}
                 >
                   <span className={`pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow-md transform transition duration-300 ease-in-out ${
@@ -400,37 +400,37 @@ export const SettingsDrawer: React.FC<SettingsDrawerProps> = ({ isOpen, onClose,
 
           {/* iOS Inset Grouped List - Data Backup & Management */}
           <section className="space-y-2">
-            <h3 className="text-xs font-semibold uppercase tracking-wider text-neutral-400 px-1">Workspace Data</h3>
-            <div className="bg-neutral-900/50 rounded-2xl border border-white/10 divide-y divide-white/5 overflow-hidden">
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-neutral-400 px-1">Workspace Data</h3>
+            <div className="bg-white/60 dark:bg-white/5 rounded-2xl border border-slate-200/50 dark:border-white/10 divide-y divide-slate-200/40 dark:divide-white/5 overflow-hidden">
               <button
                 onClick={handleDownloadBackup}
-                className="w-full p-3.5 text-left text-xs font-semibold text-neutral-200 hover:bg-white/5 flex items-center justify-between transition-colors cursor-pointer"
+                className="w-full p-3.5 text-left text-xs font-semibold text-slate-800 dark:text-neutral-200 hover:bg-slate-100/80 dark:hover:bg-white/5 flex items-center justify-between transition-colors cursor-pointer"
               >
                 <div className="flex items-center gap-2.5">
-                  <Download className="w-4 h-4 text-sky-400 stroke-[1.5]" />
+                  <Download className="w-4 h-4 text-sky-600 dark:text-sky-400 stroke-[1.5]" />
                   <span>Export Personal Workspace (.json)</span>
                 </div>
-                <span className="text-[10px] text-neutral-500">Backup</span>
+                <span className="text-[10px] text-slate-400 dark:text-neutral-500">Backup</span>
               </button>
 
-              <label className="w-full p-3.5 text-left text-xs font-semibold text-neutral-200 hover:bg-white/5 flex items-center justify-between transition-colors cursor-pointer">
+              <label className="w-full p-3.5 text-left text-xs font-semibold text-slate-800 dark:text-neutral-200 hover:bg-slate-100/80 dark:hover:bg-white/5 flex items-center justify-between transition-colors cursor-pointer">
                 <div className="flex items-center gap-2.5">
-                  <Upload className="w-4 h-4 text-emerald-400 stroke-[1.5]" />
+                  <Upload className="w-4 h-4 text-emerald-600 dark:text-emerald-400 stroke-[1.5]" />
                   <span>Import Backup File</span>
                 </div>
                 <input type="file" accept=".json" onChange={handleRestore} className="hidden" />
-                <span className="text-[10px] text-neutral-500">Restore</span>
+                <span className="text-[10px] text-slate-400 dark:text-neutral-500">Restore</span>
               </label>
 
               <button
                 onClick={handleResetDemo}
-                className="w-full p-3.5 text-left text-xs font-semibold text-rose-400 hover:bg-rose-500/10 flex items-center justify-between transition-colors cursor-pointer"
+                className="w-full p-3.5 text-left text-xs font-semibold text-rose-600 dark:text-rose-400 hover:bg-rose-500/10 flex items-center justify-between transition-colors cursor-pointer"
               >
                 <div className="flex items-center gap-2.5">
-                  <RotateCcw className="w-4 h-4 text-rose-400 stroke-[1.5]" />
+                  <RotateCcw className="w-4 h-4 text-rose-600 dark:text-rose-400 stroke-[1.5]" />
                   <span>Reset Workspace to Demo Defaults</span>
                 </div>
-                <span className="text-[10px] text-rose-400/80">Reset</span>
+                <span className="text-[10px] text-rose-600/80 dark:text-rose-400/80">Reset</span>
               </button>
             </div>
           </section>

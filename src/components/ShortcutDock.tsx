@@ -45,13 +45,13 @@ export const ShortcutDock: React.FC = () => {
             exit={{ y: 40, opacity: 0 }}
             transition={{ duration: 0.2, ease: 'easeOut' }}
             className="
-              bg-white/90 dark:bg-zinc-900/90
-              backdrop-blur-md
-              border-t border-slate-200 dark:border-zinc-800
+              bg-white/60 dark:bg-slate-950/60
+              backdrop-blur-2xl
+              border-t border-slate-200/50 dark:border-white/10
               text-slate-700 dark:text-zinc-300
               px-4 py-2
               flex items-center justify-between gap-4
-              shadow-[0_-2px_12px_rgba(0,0,0,0.06)] dark:shadow-[0_-2px_12px_rgba(0,0,0,0.3)]
+              shadow-[0_-2px_12px_rgba(0,0,0,0.04)] dark:shadow-[0_-2px_12px_rgba(0,0,0,0.4)]
             "
           >
             {/* Shortcut list */}
@@ -63,7 +63,7 @@ export const ShortcutDock: React.FC = () => {
                 </span>
               </div>
 
-              <div className="w-px h-4 bg-slate-200 dark:bg-zinc-700 shrink-0" />
+              <div className="w-px h-4 bg-slate-200/60 dark:bg-white/10 shrink-0" />
 
               {SHORTCUTS.map((shortcut, idx) => (
                 <div key={idx} className="flex items-center gap-1.5 shrink-0">
@@ -76,21 +76,21 @@ export const ShortcutDock: React.FC = () => {
                             min-w-[22px] h-[22px] px-1.5
                             rounded-md
                             text-[11px] font-mono font-semibold leading-none
-                            bg-slate-100 dark:bg-zinc-800
-                            text-slate-600 dark:text-zinc-300
-                            border border-slate-300 dark:border-zinc-600
-                            shadow-[0_1px_0_rgba(0,0,0,0.08)] dark:shadow-[0_1px_0_rgba(0,0,0,0.3)]
+                            bg-white/80 dark:bg-white/5
+                            text-slate-700 dark:text-zinc-300
+                            border border-slate-200/80 dark:border-white/10
+                            shadow-xs
                           "
                         >
                           {key}
                         </kbd>
                         {kIdx < shortcut.keys.length - 1 && (
-                          <span className="text-[10px] text-slate-400 dark:text-zinc-600 mx-0.5 font-mono">+</span>
+                          <span className="text-[10px] text-slate-400 dark:text-zinc-500 mx-0.5 font-mono">+</span>
                         )}
                       </span>
                     ))}
                   </div>
-                  <span className="text-[11px] text-slate-500 dark:text-zinc-400 font-medium whitespace-nowrap">
+                  <span className="text-[11px] text-slate-600 dark:text-zinc-400 font-medium whitespace-nowrap">
                     {shortcut.label}
                   </span>
                 </div>
@@ -102,8 +102,8 @@ export const ShortcutDock: React.FC = () => {
               onClick={() => setIsCollapsed(true)}
               className="
                 shrink-0 p-1 rounded-md
-                hover:bg-slate-100 dark:hover:bg-zinc-800
-                text-slate-400 dark:text-zinc-500
+                hover:bg-white/80 dark:hover:bg-white/10
+                text-slate-400 dark:text-zinc-400
                 transition-colors cursor-pointer
               "
               title="Collapse shortcut bar"
@@ -124,12 +124,12 @@ export const ShortcutDock: React.FC = () => {
             fixed bottom-3 right-3 z-40
             hidden md:flex items-center gap-1.5
             px-2.5 py-1.5 rounded-xl
-            bg-white/80 dark:bg-zinc-900/80
+            bg-white/60 dark:bg-slate-950/60
             backdrop-blur-md
-            border border-slate-200 dark:border-zinc-700
-            text-slate-500 dark:text-zinc-400
+            border border-slate-200/50 dark:border-white/10
+            text-slate-600 dark:text-zinc-300
             text-[10px] font-mono uppercase tracking-wider font-semibold
-            hover:bg-slate-50 dark:hover:bg-zinc-800
+            hover:bg-white/80 dark:hover:bg-white/10
             shadow-lg
             transition-all cursor-pointer
             active:scale-95

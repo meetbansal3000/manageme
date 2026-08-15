@@ -2,11 +2,15 @@ import React, { useRef, useMemo, useEffect, useState, Suspense } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 
+interface Props {
+  theme?: 'light' | 'dark';
+}
+
 // ---------------------------------------------------------------------------
 // 1. Ultra-Lightweight InstancedMesh Particle Field
-// Single draw call, low count (180), opacity ~0.10, ultra-slow ambient crawl
+// Single draw call, low count (180), adaptive day/night colors
 // ---------------------------------------------------------------------------
-function InstancedParticleField({ count = 180 }: { count?: number }) {
+function InstancedParticleField({ count = 180, isDark = true }: { count?: number; isDark?: boolean }) {
   const meshRef = useRef<THREE.InstancedMesh>(null);
   const dummy = useMemo(() => new THREE.Object3D(), []);
 
@@ -28,12 +32,19 @@ function InstancedParticleField({ count = 180 }: { count?: number }) {
 
   useEffect(() => {
     if (!meshRef.current) return;
-    const palette = [
-      new THREE.Color('#3b82f6'), // soft blue
-      new THREE.Color('#6366f1'), // indigo
-      new THREE.Color('#38bdf8'), // sky
-      new THREE.Color('#818cf8')  // lavender
-    ];
+    const palette = isDark
+      ? [
+          new THREE.Color('#3b82f6'), // soft blue
+          new THREE.Color('#6366f1'), // indigo
+          new THREE.Color('#38bdf8'), // sky
+          new THREE.Color('#818cf8')  // lavender
+        ]
+      : [
+          new THREE.Color('#2563eb'), // royal blue
+          new THREE.Color('#4f46e5'), // vibrant indigo
+          new THREE.Color('#0284c7'), // sky
+          new THREE.Color('#7c3aed')  // purple
+        ];
 
     for (let i = 0; i < count; i++) {
       const p = particles[i];
@@ -45,7 +56,7 @@ function InstancedParticleField({ count = 180 }: { count?: number }) {
     }
     meshRef.current.instanceMatrix.needsUpdate = true;
     if (meshRef.current.instanceColor) meshRef.current.instanceColor.needsUpdate = true;
-  }, [count, dummy, particles]);
+  }, [count, dummy, particles, isDark]);
 
   useFrame((state, delta) => {
     if (!meshRef.current) return;
@@ -63,8 +74,8 @@ function InstancedParticleField({ count = 180 }: { count?: number }) {
       <sphereGeometry args={[0.04, 6, 6]} />
       <meshBasicMaterial 
         transparent 
-        opacity={0.10} 
-        blending={THREE.AdditiveBlending} 
+        opacity={isDark ? 0.10 : 0.22} 
+        blending={isDark ? THREE.AdditiveBlending : THREE.NormalBlending} 
         depthWrite={false} 
       />
     </instancedMesh>
@@ -74,7 +85,7 @@ function InstancedParticleField({ count = 180 }: { count?: number }) {
 // ---------------------------------------------------------------------------
 // 2. Subtle Low-Poly Geometric Ambient Core
 // ---------------------------------------------------------------------------
-function SubtleGeometricCore() {
+function SubtleGeometricCore({ isDark = true }: { isDark?: boolean }) {
   const groupRef = useRef<THREE.Group>(null);
 
   useFrame((state, delta) => {
@@ -90,12 +101,21 @@ function SubtleGeometricCore() {
       {/* Outer subtle geometric wireframe */}
       <mesh>
         <icosahedronGeometry args={[3.0, 0]} />
-        <meshBasicMaterial color="#3b82f6" wireframe transparent opacity={0.06} />
+        <meshBasicMaterial 
+          color={isDark ? '#3b82f6' : '#2563eb'} 
+          wireframe 
+          transparent 
+          opacity={isDark ? 0.06 : 0.10} 
+        />
       </mesh>
       {/* Dim ambient orbital ring */}
       <mesh rotation={[Math.PI / 3, 0, 0]}>
         <torusGeometry args={[4.2, 0.015, 6, 36]} />
-        <meshBasicMaterial color="#6366f1" transparent opacity={0.07} />
+        <meshBasicMaterial 
+          color={isDark ? '#6366f1' : '#4f46e5'} 
+          transparent 
+          opacity={isDark ? 0.07 : 0.12} 
+        />
       </mesh>
     </group>
   );
@@ -104,10 +124,10 @@ function SubtleGeometricCore() {
 // ---------------------------------------------------------------------------
 // 3. Fallback CSS Glow Canvas
 // ---------------------------------------------------------------------------
-function CSSFallbackBackground() {
+function CSSFallbackBackground({ isDark = true }: { isDark?: boolean }) {
   return (
-    <div className="absolute inset-0 bg-[#07090e] overflow-hidden pointer-events-none">
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-blue-600/5 rounded-full blur-[120px]" />
+    <div className={`fixed inset-0 ${isDark ? 'bg-[#07090e]' : 'bg-[#f8fafc]'} overflow-hidden pointer-events-none z-[-1]`}>
+      <div className={`absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] ${isDark ? 'bg-blue-600/5' : 'bg-blue-400/10'} rounded-full blur-[120px]`} />
     </div>
   );
 }
@@ -115,8 +135,9 @@ function CSSFallbackBackground() {
 // ---------------------------------------------------------------------------
 // 4. Main Exported 3D Background Component
 // ---------------------------------------------------------------------------
-export const InteractiveBackground: React.FC = () => {
+export const InteractiveBackground: React.FC<Props> = ({ theme = 'dark' }) => {
   const [hasWebGL, setHasWebGL] = useState(true);
+  const isDark = theme === 'dark';
 
   useEffect(() => {
     try {
@@ -129,17 +150,20 @@ export const InteractiveBackground: React.FC = () => {
   }, []);
 
   if (!hasWebGL) {
-    return <CSSFallbackBackground />;
+    return <CSSFallbackBackground isDark={isDark} />;
   }
 
   return (
     <div 
-      className="fixed inset-0 pointer-events-none z-[-1] overflow-hidden" 
-      style={{ background: 'radial-gradient(circle at 50% 30%, #0c111e 0%, #07090e 60%, #030407 100%)' }}
+      className="fixed inset-0 pointer-events-none z-[-1] overflow-hidden transition-all duration-700" 
+      style={{ 
+        background: isDark 
+          ? 'radial-gradient(circle at 50% 30%, #0c111e 0%, #07090e 60%, #030407 100%)' 
+          : 'radial-gradient(circle at 50% 30%, #f8fafc 0%, #eef2f6 55%, #e2e8f0 100%)'
+      }}
       aria-hidden="true"
     >
-
-      <Suspense fallback={<CSSFallbackBackground />}>
+      <Suspense fallback={<CSSFallbackBackground isDark={isDark} />}>
         <Canvas
           camera={{ position: [0, 0, 7.5], fov: 55 }}
           dpr={[1, 1.5]} // Strict cap for maximum 60fps mobile & retina efficiency
@@ -150,8 +174,8 @@ export const InteractiveBackground: React.FC = () => {
           }}
           className="w-full h-full pointer-events-none"
         >
-          <SubtleGeometricCore />
-          <InstancedParticleField count={180} />
+          <SubtleGeometricCore isDark={isDark} />
+          <InstancedParticleField count={180} isDark={isDark} />
         </Canvas>
       </Suspense>
     </div>
