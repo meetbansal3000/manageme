@@ -274,7 +274,7 @@ export const SettingsDrawer: React.FC<SettingsDrawerProps> = ({ isOpen, onClose,
                       maxLength={8}
                       value={currentPinInput}
                       onChange={(e) => setCurrentPinInput(e.target.value)}
-                      placeholder="Current PIN (Default: 2026)"
+                      placeholder="Current Master PIN"
                       className="w-full px-3 py-1.5 rounded-xl bg-white/80 dark:bg-black/60 border border-slate-200 dark:border-white/10 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-neutral-600 focus:outline-none focus:border-amber-500 font-mono"
                     />
 

@@ -154,7 +154,7 @@ export const OwnerAuthModal: React.FC = () => {
                   maxLength={8}
                   value={pinInput}
                   onChange={(e) => { setPinInput(e.target.value); setErrorMsg(null); }}
-                  placeholder="Enter PIN (Default: 2026)"
+                  placeholder="Enter Master PIN"
                   className="w-full pl-10 pr-3 py-2.5 rounded-xl bg-white/80 dark:bg-neutral-900/90 border border-slate-200 dark:border-neutral-700/60 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-neutral-500 focus:outline-none focus:border-amber-500 font-mono tracking-widest backdrop-blur-sm transition-colors"
                   autoFocus
                 />

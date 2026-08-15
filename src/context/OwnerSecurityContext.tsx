@@ -4,7 +4,6 @@ import { auth, googleProvider } from '../firebase';
 
 export const MASTER_OWNER_EMAIL = 'Meetban123@gmail.com';
 export const MASTER_OWNER_NAME = 'Workspace Owner';
-export const DEFAULT_MASTER_PIN = '2026';
 
 interface OwnerSecurityContextType {
   isOwner: boolean;
@@ -73,10 +72,14 @@ export const OwnerSecurityProvider: React.FC<{ children: ReactNode }> = ({ child
   const isOwner = isOwnerVerified;
   const isProtectedMode = !isOwnerVerified;
 
-
   const unlockWithPin = (pin: string): boolean => {
-    const savedPin = localStorage.getItem('master_owner_pin') || DEFAULT_MASTER_PIN;
-    if (pin.trim() === savedPin.trim()) {
+    const configuredMasterPin = import.meta.env.VITE_MASTER_PIN ? String(import.meta.env.VITE_MASTER_PIN).trim() : '';
+    // If master PIN environment variable is missing, strictly reject all PIN attempts to enforce Google Auth
+    if (!configuredMasterPin) {
+      return false;
+    }
+    const savedPin = localStorage.getItem('master_owner_pin')?.trim() || configuredMasterPin;
+    if (pin.trim() && pin.trim() === savedPin) {
       setIsPinUnlocked(true);
       sessionStorage.setItem('owner_pin_unlocked', 'true');
       if (pendingCallback) {
@@ -105,8 +108,12 @@ export const OwnerSecurityProvider: React.FC<{ children: ReactNode }> = ({ child
   };
 
   const updateMasterPin = (currentPin: string, newPin: string): boolean => {
-    const savedPin = localStorage.getItem('master_owner_pin') || DEFAULT_MASTER_PIN;
-    if (currentPin.trim() === savedPin.trim() && newPin.trim().length >= 4) {
+    const configuredMasterPin = import.meta.env.VITE_MASTER_PIN ? String(import.meta.env.VITE_MASTER_PIN).trim() : '';
+    if (!configuredMasterPin) {
+      return false;
+    }
+    const savedPin = localStorage.getItem('master_owner_pin')?.trim() || configuredMasterPin;
+    if (currentPin.trim() && currentPin.trim() === savedPin && newPin.trim().length >= 4) {
       localStorage.setItem('master_owner_pin', newPin.trim());
       setIsPinUnlocked(true);
       sessionStorage.setItem('owner_pin_unlocked', 'true');
