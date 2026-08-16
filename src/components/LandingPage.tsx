@@ -468,12 +468,12 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp }) => {
           </p>
         </div>
 
-        <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+        <div className="flex flex-wrap items-center justify-center gap-3 pt-2 w-full sm:w-auto">
           <motion.button
             whileHover={{ scale: 1.02, y: -1 }}
             whileTap={{ scale: 0.98 }}
             onClick={() => handleLaunch('news')}
-            className="px-8 py-3.5 min-h-[44px] rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-extrabold text-sm shadow-xl shadow-blue-500/25 cursor-pointer flex items-center gap-2"
+            className="w-full sm:w-auto px-8 py-3.5 min-h-[44px] rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-extrabold text-sm shadow-xl shadow-blue-500/25 cursor-pointer flex items-center justify-center gap-2"
           >
             <span>Enter manageme Workspace</span>
             <ArrowRight className="w-4 h-4" />
