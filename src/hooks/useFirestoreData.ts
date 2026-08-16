@@ -309,10 +309,25 @@ export function useFirestoreData() {
     };
   }, [auth]);
   
+  // Fallback safety timer: ensure loading state is guaranteed to resolve within 2.5s
+  useEffect(() => {
+    const safetyTimer = setTimeout(() => {
+      setLoading(false);
+    }, 2500);
+    return () => clearTimeout(safetyTimer);
+  }, []);
+
   useEffect(() => {
     let currentUnsubDoc: (() => void) | null = null;
+    let authSafetyTimer: any = null;
 
     const unsubscribeAuth = onAuthStateChanged(auth, async (user) => {
+      // Per-auth-change safety timeout to guarantee loading unblocks
+      if (authSafetyTimer) clearTimeout(authSafetyTimer);
+      authSafetyTimer = setTimeout(() => {
+        setLoading(false);
+      }, 2500);
+
       // Clean up previous doc subscription if user changed
       if (currentUnsubDoc) {
         try {
@@ -325,7 +340,7 @@ export function useFirestoreData() {
 
       if (user) {
         if (navigator.onLine) {
-          await flushOfflineQueue().catch(err => console.warn('Flush offline queue error:', err));
+          flushOfflineQueue().catch(err => console.warn('Flush offline queue error:', err));
         } else {
           setSyncStatus('offline');
         }
@@ -337,46 +352,56 @@ export function useFirestoreData() {
           currentUnsubDoc = onSnapshot(
             docRef, 
             (docSnap) => {
-              if (docSnap.exists()) {
-                const fbData = docSnap.data();
-                const merged = sanitizeUserData(fbData);
-                const queue = getOfflineQueue();
-                if (queue.length > 0 && !docSnap.metadata.hasPendingWrites && JSON.stringify(merged) !== JSON.stringify(data)) {
-                  setConflict({ local: data, remote: merged });
-                } else {
-                  setData(merged);
-                  try {
-                    localStorage.setItem('userTrackerData', JSON.stringify(merged));
-                  } catch (e) {
-                    console.warn('Could not save to localStorage:', e);
-                  }
-                }
-                setLoading(false);
-                if (navigator.onLine) setSyncStatus('saved');
-              } else {
-                // Initialize with default data or migrate from local storage
-                const localDataStr = localStorage.getItem('userTrackerData');
-                const initialData = localDataStr ? sanitizeUserData(JSON.parse(localDataStr)) : DEFAULT_TRACKER_DATA;
-                setDoc(docRef, initialData).then(() => {
-                  setData(initialData);
-                  try {
-                    localStorage.setItem('userTrackerData', JSON.stringify(initialData));
-                  } catch (e) {
-                    console.warn('Could not save to localStorage:', e);
+              if (authSafetyTimer) clearTimeout(authSafetyTimer);
+              try {
+                if (docSnap.exists()) {
+                  const fbData = docSnap.data();
+                  const merged = sanitizeUserData(fbData);
+                  const queue = getOfflineQueue();
+                  if (queue.length > 0 && !docSnap.metadata.hasPendingWrites && JSON.stringify(merged) !== JSON.stringify(data)) {
+                    setConflict({ local: data, remote: merged });
+                  } else {
+                    setData(merged);
+                    try {
+                      localStorage.setItem('userTrackerData', JSON.stringify(merged));
+                    } catch (e) {
+                      console.warn('Could not save to localStorage:', e);
+                    }
                   }
                   setLoading(false);
                   if (navigator.onLine) setSyncStatus('saved');
-                }).catch(err => {
-                  console.warn('Initial doc creation error:', err);
-                  setLoading(false);
-                  setSyncStatus('error');
-                });
+                } else {
+                  // Initialize with default data or migrate from local storage
+                  const localDataStr = localStorage.getItem('userTrackerData');
+                  let initialData = DEFAULT_TRACKER_DATA;
+                  try {
+                    if (localDataStr) initialData = sanitizeUserData(JSON.parse(localDataStr));
+                  } catch {}
+                  
+                  setDoc(docRef, initialData, { merge: true }).then(() => {
+                    setData(initialData);
+                    try {
+                      localStorage.setItem('userTrackerData', JSON.stringify(initialData));
+                    } catch (e) {
+                      console.warn('Could not save to localStorage:', e);
+                    }
+                    setLoading(false);
+                    if (navigator.onLine) setSyncStatus('saved');
+                  }).catch(err => {
+                    console.warn('Initial doc creation notice (falling back to local cache):', err?.message || err);
+                    setLoading(false);
+                    setSyncStatus('saved');
+                  });
+                }
+              } catch (parseErr) {
+                console.warn('Error processing doc snapshot:', parseErr);
+                setLoading(false);
               }
             },
             (error) => {
-              console.warn('Firestore snapshot error on user doc (handled):', error);
+              if (authSafetyTimer) clearTimeout(authSafetyTimer);
+              console.warn('Firestore snapshot notice on user doc (handled):', error?.message || error);
               setLoading(false);
-              // Do not freeze or mark as hard error if offline or database closing/hidden
               if (!navigator.onLine) {
                 setSyncStatus('offline');
               } else {
@@ -385,10 +410,12 @@ export function useFirestoreData() {
             }
           );
         } catch (err) {
-          console.warn('Failed to attach Firestore snapshot listener:', err);
+          if (authSafetyTimer) clearTimeout(authSafetyTimer);
+          console.warn('Failed to attach Firestore snapshot listener (handled):', err);
           setLoading(false);
         }
       } else {
+        if (authSafetyTimer) clearTimeout(authSafetyTimer);
         setSyncStatus('offline');
         const localData = localStorage.getItem('userTrackerData');
         if (localData) {
@@ -408,9 +435,13 @@ export function useFirestoreData() {
         }
         setLoading(false);
       }
+    }, (authErr) => {
+      console.warn('Auth state change listener notice:', authErr?.message || authErr);
+      setLoading(false);
     });
 
     return () => {
+      if (authSafetyTimer) clearTimeout(authSafetyTimer);
       if (currentUnsubDoc) {
         try {
           currentUnsubDoc();

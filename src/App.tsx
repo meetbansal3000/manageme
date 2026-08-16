@@ -343,8 +343,38 @@ export default function App() {
     return Array.from(allSectors).sort();
   }, [userData.gradSchemes, userData.partTimeRoles]);
 
-  if (loading) {
-    return <div className="min-h-screen bg-[var(--bg)] flex items-center justify-center text-white">Loading your profile...</div>;
+  const [forceProfileReady, setForceProfileReady] = useState(false);
+
+  useEffect(() => {
+    // Hard limit: never block the user on loading screen for > 2.5s
+    const timer = setTimeout(() => {
+      setForceProfileReady(true);
+    }, 2500);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (loading && !forceProfileReady) {
+    return (
+      <div className="min-h-screen bg-slate-950 text-white flex flex-col items-center justify-center p-4 relative overflow-hidden">
+        {/* Ambient background glow */}
+        <div className="absolute w-72 h-72 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="relative z-10 flex flex-col items-center space-y-4 max-w-sm text-center">
+          <div className="w-12 h-12 rounded-2xl bg-blue-500/20 border border-blue-500/30 flex items-center justify-center shadow-lg shadow-blue-500/20">
+            <div className="w-6 h-6 border-2 border-blue-400 border-t-transparent rounded-full animate-spin" />
+          </div>
+          <div>
+            <h2 className="text-base font-bold tracking-tight text-white">Initializing Workspace</h2>
+            <p className="text-xs text-slate-400 mt-1 font-mono">Synchronizing career matrix & local intelligence...</p>
+          </div>
+          <button
+            onClick={() => setForceProfileReady(true)}
+            className="px-4 py-1.5 rounded-full text-xs font-semibold bg-white/10 hover:bg-white/20 border border-white/15 text-slate-300 transition-colors cursor-pointer"
+          >
+            Launch Instant Workspace
+          </button>
+        </div>
+      </div>
+    );
   }
 
   return (

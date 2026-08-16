@@ -169,43 +169,64 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, [loadSessions, persistSessions]);
 
+  // Fallback safety timeout: ensure auth loading state never hangs past 2.5s
+  useEffect(() => {
+    const safetyTimer = setTimeout(() => {
+      setIsLoading(false);
+    }, 2500);
+    return () => clearTimeout(safetyTimer);
+  }, []);
+
   useEffect(() => {
     let isSubscribed = true;
 
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       if (!isSubscribed) return;
 
-      if (currentUser) {
-        setUser(currentUser);
-        setIsGuest(false);
-        try {
-          localStorage.removeItem('manageme_guest_session');
-        } catch {}
-        await evaluateDeviceSession(currentUser);
-      } else {
-        // Check if guest mode is active
-        try {
-          const isGuestSaved = localStorage.getItem('manageme_guest_session') === 'true';
-          if (isGuestSaved) {
-            setUser(DEMO_GUEST_USER);
-            setIsGuest(true);
-            setIsDeviceBlocked(false);
-          } else {
+      try {
+        if (currentUser) {
+          setUser(currentUser);
+          setIsGuest(false);
+          try {
+            localStorage.removeItem('manageme_guest_session');
+          } catch {}
+          
+          // Non-blocking device session evaluation
+          evaluateDeviceSession(currentUser).catch(err => {
+            console.warn('[Auth Warning - Device evaluation handled]:', err?.message || err);
+          });
+        } else {
+          // Check if guest mode is active
+          try {
+            const isGuestSaved = localStorage.getItem('manageme_guest_session') === 'true';
+            if (isGuestSaved) {
+              setUser(DEMO_GUEST_USER);
+              setIsGuest(true);
+              setIsDeviceBlocked(false);
+            } else {
+              setUser(null);
+              setIsGuest(false);
+              setActiveSessions([]);
+              setIsDeviceBlocked(false);
+            }
+          } catch {
             setUser(null);
             setIsGuest(false);
-            setActiveSessions([]);
-            setIsDeviceBlocked(false);
           }
-        } catch {
-          setUser(null);
-          setIsGuest(false);
+        }
+      } catch (err: any) {
+        console.warn('[Auth State Notice]:', err?.message || err);
+      } finally {
+        if (isSubscribed) {
+          setIsLoading(false);
         }
       }
-      setIsLoading(false);
     }, (error) => {
-      console.error('[Auth Error - Firebase Auth State]:', error.message, error);
+      console.warn('[Auth Notice - Firebase Auth State]:', error.message, error);
       setAuthError(error.message);
-      setIsLoading(false);
+      if (isSubscribed) {
+        setIsLoading(false);
+      }
     });
 
     return () => {
