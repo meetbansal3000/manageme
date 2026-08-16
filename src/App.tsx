@@ -1,72 +1,67 @@
 import { motion, AnimatePresence } from 'motion/react';
-import { AIAvatar } from "./components/AIAvatar";
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, lazy, Suspense } from 'react';
 import { googleSignIn, getAccessToken } from './firebase';
+import { AIAvatar } from './components/AIAvatar';
 import { Header } from './components/Header';
-import { CompactToolbar } from './components/CompactToolbar';
-import { TimelineTab } from './components/TimelineTab';
-import { GraduateSchemesTab } from './components/GraduateSchemesTab';
-import { PartTimeRolesTab } from './components/PartTimeRolesTab';
-import { PriorityTrackerTab } from './components/PriorityTrackerTab';
-import { KeyNotesChecklistTab } from './components/KeyNotesChecklistTab';
-import { SkillsTrackerTab } from './components/SkillsTrackerTab';
-import { FinanceHubTab } from './components/FinanceHubTab';
-import { UniTimetableTab } from './components/UniTimetableTab';
-import { ChatHubTab } from './components/ChatHubTab';
-import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-
-gsap.registerPlugin(ScrollTrigger);
-import { GoogleSheetsSyncModal } from './components/GoogleSheetsSyncModal';
-import { AddApplicationModal } from './components/AddApplicationModal';
-import { SettingsDrawer } from './components/SettingsDrawer';
-import { InterviewSimulatorDrawer } from './components/InterviewSimulatorDrawer';
-import { ShareAppModal } from './components/ShareAppModal';
-
-import { DollarSign, Clock, CheckSquare, Sparkles, ChevronDown, ChevronUp, X, Terminal } from 'lucide-react';
-import { GeminiDrawer } from './components/GeminiDrawer';
-import { DebugConsole } from './components/DebugConsole';
-import { CommandPalette } from './components/CommandPalette';
-
-import { FinancialNewsTab } from './components/FinancialNewsTab';
-import { JobSearchTab } from './components/JobSearchTab';
-import { TravelTripsTab } from './components/TravelTripsTab';
-import { PaperTradingTab } from './components/PaperTradingTab';
-import ResumeVaultTab from './components/ResumeVaultTab';
-import { ExecutiveAiMetaSuiteTab } from './components/ExecutiveAiMetaSuiteTab';
-import { StudyIntelligenceEngineTab } from './components/StudyIntelligenceEngineTab';
-
-import { ExtraItemsCard } from './components/ExtraItemsCard';
-import { SmartImportModal } from './components/SmartImportModal';
-import { OutreachHub } from './components/OutreachHub';
-import { AiModelSelector } from './components/AiModelSelector';
-import { JobSyncHub } from './components/JobSyncHub';
-import { ActivityDrawer } from './components/ActivityDrawer';
-import { Spatial3DCanvas } from './components/Spatial3DCanvas';
-import { LiveStockTicker } from './components/LiveStockTicker';
 import { LandingPage } from './components/LandingPage';
+import { LiveStockTicker } from './components/LiveStockTicker';
+import { CompactToolbar } from './components/CompactToolbar';
+import { MobileBottomNav } from './components/MobileBottomNav';
+import { ShortcutDock } from './components/ShortcutDock';
+import { OwnerAuthModal } from './components/OwnerAuthModal';
+import { DeviceLimitModal } from './components/DeviceLimitModal';
+import { DollarSign, Clock, CheckSquare, Sparkles, ChevronDown, ChevronUp, X, Terminal } from 'lucide-react';
 import { triggerHaptic, IOS_SPRING } from './utils/haptics';
 import { AppTab } from './components/Header';
-
-const PRIMARY_TABS: AppTab[] = ['landing', 'news', 'study', 'metasuite', 'jobs', 'outreach', 'tasks', 'uni', 'finance', 'trading', 'work', 'skills', 'travel', 'transit', 'chat', 'resume'];
-import { MobileBottomNav } from './components/MobileBottomNav';
-
 import { GoogleSyncState, GraduateScheme, PartTimeRole, PriorityTrackerItem } from './types';
-
 import { exportMultiSheetWorkbook } from './utils/excelExporter';
 import { uploadMasterTrackerToGoogleDrive } from './utils/googleDriveUpload';
 import { useFirestoreData } from './hooks/useFirestoreData';
-import { ConflictModal } from './components/ConflictModal';
 import { useSettings } from './context/SettingsContext';
 import { useOwnerSecurity } from './context/OwnerSecurityContext';
-import { OwnerAuthModal } from './components/OwnerAuthModal';
-import { DeviceLimitModal } from './components/DeviceLimitModal';
-import { ShortcutDock } from './components/ShortcutDock';
 import { useScrollLock } from './hooks/useScrollLock';
 import { useModalDismiss } from './hooks/useModalDismiss';
 import { useGlobalShortcuts } from './hooks/useGlobalShortcuts';
 import { SpeedInsights } from '@vercel/speed-insights/react';
 import { Analytics } from '@vercel/analytics/react';
+
+const PRIMARY_TABS: AppTab[] = ['landing', 'news', 'study', 'metasuite', 'jobs', 'outreach', 'tasks', 'uni', 'finance', 'trading', 'work', 'skills', 'travel', 'transit', 'chat', 'resume'];
+
+// Code-split tabs with React.lazy
+const TimelineTab = lazy(() => import('./components/TimelineTab').then(m => ({ default: m.TimelineTab })));
+const GraduateSchemesTab = lazy(() => import('./components/GraduateSchemesTab').then(m => ({ default: m.GraduateSchemesTab })));
+const PartTimeRolesTab = lazy(() => import('./components/PartTimeRolesTab').then(m => ({ default: m.PartTimeRolesTab })));
+const PriorityTrackerTab = lazy(() => import('./components/PriorityTrackerTab').then(m => ({ default: m.PriorityTrackerTab })));
+const KeyNotesChecklistTab = lazy(() => import('./components/KeyNotesChecklistTab').then(m => ({ default: m.KeyNotesChecklistTab })));
+const SkillsTrackerTab = lazy(() => import('./components/SkillsTrackerTab').then(m => ({ default: m.SkillsTrackerTab })));
+const FinanceHubTab = lazy(() => import('./components/FinanceHubTab').then(m => ({ default: m.FinanceHubTab })));
+const UniTimetableTab = lazy(() => import('./components/UniTimetableTab').then(m => ({ default: m.UniTimetableTab })));
+const ChatHubTab = lazy(() => import('./components/ChatHubTab').then(m => ({ default: m.ChatHubTab })));
+const FinancialNewsTab = lazy(() => import('./components/FinancialNewsTab').then(m => ({ default: m.FinancialNewsTab })));
+const JobSearchTab = lazy(() => import('./components/JobSearchTab').then(m => ({ default: m.JobSearchTab })));
+const TravelTripsTab = lazy(() => import('./components/TravelTripsTab').then(m => ({ default: m.TravelTripsTab })));
+const PaperTradingTab = lazy(() => import('./components/PaperTradingTab').then(m => ({ default: m.PaperTradingTab })));
+const ResumeVaultTab = lazy(() => import('./components/ResumeVaultTab'));
+const ExecutiveAiMetaSuiteTab = lazy(() => import('./components/ExecutiveAiMetaSuiteTab').then(m => ({ default: m.ExecutiveAiMetaSuiteTab })));
+const StudyIntelligenceEngineTab = lazy(() => import('./components/StudyIntelligenceEngineTab').then(m => ({ default: m.StudyIntelligenceEngineTab })));
+const OutreachHub = lazy(() => import('./components/OutreachHub').then(m => ({ default: m.OutreachHub })));
+
+// Code-split 3D background & modals
+const Spatial3DCanvas = lazy(() => import('./components/Spatial3DCanvas'));
+const GoogleSheetsSyncModal = lazy(() => import('./components/GoogleSheetsSyncModal').then(m => ({ default: m.GoogleSheetsSyncModal })));
+const AddApplicationModal = lazy(() => import('./components/AddApplicationModal').then(m => ({ default: m.AddApplicationModal })));
+const SettingsDrawer = lazy(() => import('./components/SettingsDrawer').then(m => ({ default: m.SettingsDrawer })));
+const InterviewSimulatorDrawer = lazy(() => import('./components/InterviewSimulatorDrawer').then(m => ({ default: m.InterviewSimulatorDrawer })));
+const ShareAppModal = lazy(() => import('./components/ShareAppModal').then(m => ({ default: m.ShareAppModal })));
+const GeminiDrawer = lazy(() => import('./components/GeminiDrawer').then(m => ({ default: m.GeminiDrawer })));
+const DebugConsole = lazy(() => import('./components/DebugConsole').then(m => ({ default: m.DebugConsole })));
+const CommandPalette = lazy(() => import('./components/CommandPalette').then(m => ({ default: m.CommandPalette })));
+const ExtraItemsCard = lazy(() => import('./components/ExtraItemsCard').then(m => ({ default: m.ExtraItemsCard })));
+const SmartImportModal = lazy(() => import('./components/SmartImportModal').then(m => ({ default: m.SmartImportModal })));
+const AiModelSelector = lazy(() => import('./components/AiModelSelector').then(m => ({ default: m.AiModelSelector })));
+const JobSyncHub = lazy(() => import('./components/JobSyncHub').then(m => ({ default: m.JobSyncHub })));
+const ActivityDrawer = lazy(() => import('./components/ActivityDrawer').then(m => ({ default: m.ActivityDrawer })));
+const ConflictModal = lazy(() => import('./components/ConflictModal').then(m => ({ default: m.ConflictModal })));
 
 export default function App() {
   const { settings, updateSettings } = useSettings();
@@ -343,45 +338,13 @@ export default function App() {
     return Array.from(allSectors).sort();
   }, [userData.gradSchemes, userData.partTimeRoles]);
 
-  const [forceProfileReady, setForceProfileReady] = useState(false);
-
-  useEffect(() => {
-    // Hard limit: never block the user on loading screen for > 2.5s
-    const timer = setTimeout(() => {
-      setForceProfileReady(true);
-    }, 2500);
-    return () => clearTimeout(timer);
-  }, []);
-
-  if (loading && !forceProfileReady) {
-    return (
-      <div className="min-h-screen bg-slate-950 text-white flex flex-col items-center justify-center p-4 relative overflow-hidden">
-        {/* Ambient background glow */}
-        <div className="absolute w-72 h-72 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="relative z-10 flex flex-col items-center space-y-4 max-w-sm text-center">
-          <div className="w-12 h-12 rounded-2xl bg-blue-500/20 border border-blue-500/30 flex items-center justify-center shadow-lg shadow-blue-500/20">
-            <div className="w-6 h-6 border-2 border-blue-400 border-t-transparent rounded-full animate-spin" />
-          </div>
-          <div>
-            <h2 className="text-base font-bold tracking-tight text-white">Initializing Workspace</h2>
-            <p className="text-xs text-slate-400 mt-1 font-mono">Synchronizing career matrix & local intelligence...</p>
-          </div>
-          <button
-            onClick={() => setForceProfileReady(true)}
-            className="px-4 py-1.5 rounded-full text-xs font-semibold bg-white/10 hover:bg-white/20 border border-white/15 text-slate-300 transition-colors cursor-pointer"
-          >
-            Launch Instant Workspace
-          </button>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-transparent text-[var(--text-primary)] flex flex-col font-sans selection:bg-[var(--accent)] selection:text-white transition-colors duration-300 relative overflow-x-hidden">
 
-      {/* Clean Spatial Background Mesh */}
-      <Spatial3DCanvas />
+      {/* Clean Spatial Background Mesh (Lazy-loaded) */}
+      <Suspense fallback={null}>
+        <Spatial3DCanvas />
+      </Suspense>
 
 
       <Header 
@@ -425,7 +388,13 @@ export default function App() {
         </div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
-          <AnimatePresence mode="wait">
+          <Suspense fallback={
+            <div className="py-24 flex flex-col items-center justify-center space-y-3">
+              <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+              <span className="text-xs text-slate-400 font-mono">Loading module...</span>
+            </div>
+          }>
+            <AnimatePresence mode="wait">
             <motion.div
               key={activeTab}
               initial={{ opacity: 0, x: 20 }}
@@ -592,6 +561,7 @@ export default function App() {
               
             </motion.div>
           </AnimatePresence>
+          </Suspense>
         </div>
         </main>
 
@@ -760,128 +730,130 @@ export default function App() {
       )}
 
 
-      {/* Modals & Drawers */}
-      <GoogleSheetsSyncModal 
-        isOpen={isGoogleModalOpen}
-        onClose={() => setIsGoogleModalOpen(false)}
-        timeline={userData.timeline}
-        gradSchemes={userData.gradSchemes}
-        partTime={userData.partTimeRoles}
-        priorityTracker={userData.priorityItems}
-        notesSections={userData.notesSections}
-        googleSyncState={googleSyncState}
-        onConnectGoogle={() => console.log('Connect to Google')}
-        onCreateGoogleSheet={async () => {
-          try {
-            let token = await getAccessToken();
-            if (!token) {
-              const res = await googleSignIn();
-              if (res?.accessToken) {
-                token = res.accessToken;
+      {/* Modals & Drawers (Lazy-Loaded) */}
+      <Suspense fallback={null}>
+        <GoogleSheetsSyncModal 
+          isOpen={isGoogleModalOpen}
+          onClose={() => setIsGoogleModalOpen(false)}
+          timeline={userData.timeline}
+          gradSchemes={userData.gradSchemes}
+          partTime={userData.partTimeRoles}
+          priorityTracker={userData.priorityItems}
+          notesSections={userData.notesSections}
+          googleSyncState={googleSyncState}
+          onConnectGoogle={() => console.log('Connect to Google')}
+          onCreateGoogleSheet={async () => {
+            try {
+              let token = await getAccessToken();
+              if (!token) {
+                const res = await googleSignIn();
+                if (res?.accessToken) {
+                  token = res.accessToken;
+                }
               }
+              if (!token) {
+                alert("Google authentication required to sync with Google Drive.");
+                return;
+              }
+              const url = await uploadMasterTrackerToGoogleDrive(
+                token,
+                userData.timeline,
+                userData.gradSchemes,
+                userData.partTimeRoles,
+                userData.priorityItems,
+                userData.notesSections
+              );
+              setGoogleSyncState(prev => ({
+                ...prev,
+                isConnected: true,
+                lastSynced: new Date().toISOString(),
+                spreadsheetId: url.spreadsheetId,
+                spreadsheetUrl: url.spreadsheetUrl
+              }));
+            } catch (e) {
+              console.error(e);
+              alert("Sync failed. Check console.");
             }
-            if (!token) {
-              alert("Google authentication required to sync with Google Drive.");
-              return;
-            }
-            const url = await uploadMasterTrackerToGoogleDrive(
-              token,
-              userData.timeline,
-              userData.gradSchemes,
-              userData.partTimeRoles,
-              userData.priorityItems,
-              userData.notesSections
-            );
-            setGoogleSyncState(prev => ({
-              ...prev,
-              isConnected: true,
-              lastSynced: new Date().toISOString(),
-              spreadsheetId: url.spreadsheetId,
-              spreadsheetUrl: url.spreadsheetUrl
-            }));
-          } catch (e) {
-            console.error(e);
-            alert("Sync failed. Check console.");
-          }
-        }}
-      />
-      <AddApplicationModal 
-        isOpen={isAddModalOpen}
-        onClose={() => setIsAddModalOpen(false)}
-        onAdd={(newApp) => {
-          const newItem: PriorityTrackerItem = {
-            ...newApp,
-            id: Date.now().toString(),
-            rank: (userData.priorityItems?.length || 0) + 1
-          };
-          updateData({ priorityItems: [newItem, ...(userData.priorityItems || [])] });
-          setIsAddModalOpen(false);
-        }}
-      />
+          }}
+        />
+        <AddApplicationModal 
+          isOpen={isAddModalOpen}
+          onClose={() => setIsAddModalOpen(false)}
+          onAdd={(newApp) => {
+            const newItem: PriorityTrackerItem = {
+              ...newApp,
+              id: Date.now().toString(),
+              rank: (userData.priorityItems?.length || 0) + 1
+            };
+            updateData({ priorityItems: [newItem, ...(userData.priorityItems || [])] });
+            setIsAddModalOpen(false);
+          }}
+        />
 
-      
-      <InterviewSimulatorDrawer isOpen={isInterviewOpen} onClose={() => setIsInterviewOpen(false)} />
+        <InterviewSimulatorDrawer isOpen={isInterviewOpen} onClose={() => setIsInterviewOpen(false)} />
 
-      <SettingsDrawer 
-        isOpen={isSettingsOpen} 
-        onClose={() => setIsSettingsOpen(false)} 
-        userData={userData} 
-        updateData={updateData} 
-        onResetDemoData={resetToDemoData}
-      />
-      
-      <CommandPalette 
-        isOpen={isCommandPaletteOpen} 
-        onClose={() => setIsCommandPaletteOpen(false)} 
-        userData={userData} 
-        setActiveTab={(tab) => setActiveTab(tab as any)}
-        updateData={updateData}
-      />
+        <SettingsDrawer 
+          isOpen={isSettingsOpen} 
+          onClose={() => setIsSettingsOpen(false)} 
+          userData={userData} 
+          updateData={updateData} 
+          onResetDemoData={resetToDemoData}
+        />
+        
+        <CommandPalette 
+          isOpen={isCommandPaletteOpen} 
+          onClose={() => setIsCommandPaletteOpen(false)} 
+          userData={userData} 
+          setActiveTab={(tab) => setActiveTab(tab as any)}
+          updateData={updateData}
+        />
 
-      <GeminiDrawer trackerContext={userData} activeTab={activeTab} onMutateState={handleGeminiMutate} />
-      <DebugConsole />
+        <GeminiDrawer trackerContext={userData} activeTab={activeTab} onMutateState={handleGeminiMutate} />
+        <DebugConsole />
 
-      <ActivityDrawer
-        isOpen={isActivityDrawerOpen}
-        onClose={() => setIsActivityDrawerOpen(false)}
-        userData={userData}
-      />
+        <ActivityDrawer
+          isOpen={isActivityDrawerOpen}
+          onClose={() => setIsActivityDrawerOpen(false)}
+          userData={userData}
+        />
 
-      <SmartImportModal
-        isOpen={isSmartImportOpen}
-        onClose={() => setIsSmartImportOpen(false)}
-        userData={userData}
-        updateData={updateData}
-        targetScope={smartImportScope}
-      />
+        <SmartImportModal
+          isOpen={isSmartImportOpen}
+          onClose={() => setIsSmartImportOpen(false)}
+          userData={userData}
+          updateData={updateData}
+          targetScope={smartImportScope}
+        />
 
-      <AiModelSelector
-        isOpen={isAiModelSelectorOpen}
-        onClose={() => setIsAiModelSelectorOpen(false)}
-      />
+        <AiModelSelector
+          isOpen={isAiModelSelectorOpen}
+          onClose={() => setIsAiModelSelectorOpen(false)}
+        />
 
-      <JobSyncHub
-        isOpen={isJobSyncOpen}
-        onClose={() => setIsJobSyncOpen(false)}
-        userData={userData}
-        updateData={updateData}
-      />
+        <JobSyncHub
+          isOpen={isJobSyncOpen}
+          onClose={() => setIsJobSyncOpen(false)}
+          userData={userData}
+          updateData={updateData}
+        />
 
-      <ShareAppModal
-        isOpen={isShareModalOpen}
-        onClose={() => setIsShareModalOpen(false)}
-      />
+        <ShareAppModal
+          isOpen={isShareModalOpen}
+          onClose={() => setIsShareModalOpen(false)}
+        />
+
+        <ConflictModal
+          isOpen={Boolean(conflict)}
+          localData={conflict?.local || userData}
+          remoteData={conflict?.remote || userData}
+          onResolve={resolveConflict}
+        />
+      </Suspense>
 
       <OwnerAuthModal />
       <DeviceLimitModal />
       <ShortcutDock />
 
-      <ConflictModal
-        isOpen={Boolean(conflict)}
-        localData={conflict?.local || userData}
-        remoteData={conflict?.remote || userData}
-        onResolve={resolveConflict}
-      />
       <SpeedInsights />
       <Analytics />
 

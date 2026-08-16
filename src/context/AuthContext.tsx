@@ -68,7 +68,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   });
 
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [authError, setAuthError] = useState<string | null>(null);
   const [currentDevice, setCurrentDevice] = useState<DeviceSession>(() => getCurrentDeviceSession());
   const [activeSessions, setActiveSessions] = useState<DeviceSession[]>([]);

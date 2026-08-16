@@ -208,7 +208,7 @@ export function useFirestoreData() {
     return DEFAULT_TRACKER_DATA;
   });
 
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [syncStatus, setSyncStatus] = useState<'saved' | 'saving' | 'error' | 'offline' | 'queued'>('saved');
   const [offlineQueueLength, setOfflineQueueLength] = useState<number>(0);
   const [conflict, setConflict] = useState<{ local: UserTrackerData; remote: UserTrackerData } | null>(null);
