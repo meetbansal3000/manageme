@@ -69,85 +69,88 @@ export interface MarketImpactAnalysis {
 
 const CATEGORIES = [
   'All',
-  'Macro & Central Banks',
-  'M&A Deals & LBOs',
-  'Big Tech & AI',
-  'Equities & IPOs',
-  'Commodities & FX'
+  'Global Macro',
+  'Central Banks',
+  'Global Markets (US, EU, APAC)',
+  'Tech/AI Infrastructure',
+  'M&A',
+  'Commodity Trends',
+  'Market Movers',
+  'Sectors'
 ];
 
 const FALLBACK_NEWS: LiveNewsItem[] = [
   {
-    id: 'news-1',
-    title: 'Federal Reserve Signals Dovish Pivot as Core Inflation Cools to 2.4%',
-    source: 'Global Financial Markets',
-    category: 'Macro & Central Banks',
+    id: 'macro-1',
+    title: 'Federal Reserve Signals Potential Rate Easing as Core PCE Inflation Moderates to 2.4%',
+    source: 'Bloomberg Markets',
+    category: 'Macroeconomics',
     sentiment: 'Bullish',
     date: new Date().toISOString(),
     readTime: '3 min read',
-    url: 'https://ft.com',
-    summary: 'FOMC minutes reveal broad consensus for interest rate cuts following consecutive months of easing PCE inflation and steady labor market figures.',
-    sectorTags: ['Banking', 'Fixed Income', 'Equities', 'Real Estate']
+    url: 'https://bloomberg.com/markets',
+    summary: 'FOMC minutes reveal broad consensus among governors toward calibrating the benchmark rate lower as consumer pricing pressures normalize and employment metrics stabilize.',
+    sectorTags: ['Global Macro', 'Central Banks', 'Fixed Income', 'Banking & Policy']
   },
   {
-    id: 'news-2',
-    title: 'Major Tech Giant Closes $14.2B Megadeal to Acquire Autonomous AI Infrastructure Provider',
+    id: 'ma-1',
+    title: 'Private Equity Syndicate Closes $18.5B Take-Private of High-Throughput Semiconductor Fab',
     source: 'Financial Times',
     category: 'M&A Deals & LBOs',
     sentiment: 'Bullish',
-    date: new Date(Date.now() - 3600000).toISOString(),
+    date: new Date(Date.now() - 1800000).toISOString(),
     readTime: '4 min read',
-    url: 'https://ft.com',
-    summary: 'The all-cash transaction represents a 38% premium over the 30-day VWAP, signaling continued aggressive private equity and strategic M&A deployment in frontier AI compute.',
-    sectorTags: ['Semiconductors', 'Cloud Computing', 'Private Equity', 'M&A Advisory']
+    url: 'https://ft.com/mergers-acquisitions',
+    summary: 'The landmark leveraged buyout values the foundry operator at 14.8x LTM EBITDA, underscoring resilient sponsor appetite for strategic domestic microchip supply chains.',
+    sectorTags: ['M&A', 'Private Equity', 'Semiconductors', 'Sectors']
   },
   {
-    id: 'news-3',
-    title: 'Bank of England Holds Base Rate at 4.75% Amid Persistent Services Wage Pressures',
-    source: 'Reuters Finance',
-    category: 'Macro & Central Banks',
-    sentiment: 'Neutral',
-    date: new Date(Date.now() - 7200000).toISOString(),
-    readTime: '2 min read',
-    url: 'https://reuters.com',
-    summary: 'Monetary Policy Committee voted 7-2 to maintain rates, citing resilient UK services growth and sterling strength against the euro and yen.',
-    sectorTags: ['Sterling FX', 'UK Gilts', 'Mortgages', 'Retail Banking']
-  },
-  {
-    id: 'news-4',
-    title: 'NVIDIA Expands Custom Silicon Blackwell Architecture to Enterprise Cloud Hyperscalers',
+    id: 'tech-1',
+    title: 'Hyperscalers Commit Record $65B Toward Next-Gen AI Datacenter Infrastructure & Silicon',
     source: 'Wall Street Journal',
-    category: 'Big Tech & AI',
+    category: 'Tech/AI Infrastructure',
     sentiment: 'Bullish',
-    date: new Date(Date.now() - 10800000).toISOString(),
+    date: new Date(Date.now() - 3600000).toISOString(),
     readTime: '5 min read',
-    url: 'https://wsj.com',
-    summary: 'Next-generation accelerated compute clusters demonstrate 4x inference throughput with 25x lower energy expenditure, sparking price target upgrades across Wall Street.',
-    sectorTags: ['Semiconductors', 'Hardware', 'Generative AI', 'Datacenters']
+    url: 'https://wsj.com/tech',
+    summary: 'Cloud titans accelerate CapEx cycles into custom Blackwell accelerator clusters, liquid cooling facilities, and nuclear power purchase agreements to power frontier LLMs.',
+    sectorTags: ['Tech/AI Infrastructure', 'Cloud Computing', 'Datacenters', 'Market Movers']
   },
   {
-    id: 'news-5',
-    title: 'Gold Breaks All-Time Record High Surpassing $2,890/oz as Sovereign Reserves Surge',
-    source: 'CNBC',
-    category: 'Commodities & FX',
-    sentiment: 'Bullish',
-    date: new Date(Date.now() - 14400000).toISOString(),
+    id: 'bank-1',
+    title: 'European Central Bank & Bank of England Coordinate Framework on Cross-Border Liquidity Rails',
+    source: 'Reuters Finance',
+    category: 'Banking & Policy (Fed, ECB, BOE)',
+    sentiment: 'Neutral',
+    date: new Date(Date.now() - 5400000).toISOString(),
     readTime: '3 min read',
-    url: 'https://cnbc.com',
-    summary: 'Central bank gold accumulation and structural de-dollarization flows drive unprecedented precious metal momentum despite higher real Treasury yields.',
-    sectorTags: ['Precious Metals', 'Mining', 'Sovereign Debt', 'Commodities Trading']
+    url: 'https://reuters.com/business/finance',
+    summary: 'ECB President and BoE Governor outline unified capital reserve mandates and wholesale digital ledger settlement rails to fortify Tier-1 banking stability.',
+    sectorTags: ['Central Banks', 'Banking & Policy', 'Global Macro', 'Sectors']
   },
   {
-    id: 'news-6',
-    title: 'Leading Renewable Energy Operator Files for London Main Market IPO Seeking £4.5B Market Cap',
-    source: 'CityAM',
-    category: 'Equities & IPOs',
+    id: 'comm-1',
+    title: 'Gold Touches Record High as Sovereign Reserve Allocations Surge; Brent Steady at $74/bbl',
+    source: 'CNBC Markets',
+    category: 'Commodity Trends',
     sentiment: 'Bullish',
-    date: new Date(Date.now() - 18000000).toISOString(),
+    date: new Date(Date.now() - 7200000).toISOString(),
+    readTime: '3 min read',
+    url: 'https://cnbc.com/commodities',
+    summary: 'Central bank physical bullion buying and reserve diversification offset Treasury yield firming, while OPEC+ supply adherence anchors global crude benchmark pricing.',
+    sectorTags: ['Commodity Trends', 'Precious Metals', 'Crude Oil', 'Market Movers']
+  },
+  {
+    id: 'market-1',
+    title: 'Tokyo Nikkei & Hang Seng Rebound on Resilient APAC Manufacturing Output and Tech Inflows',
+    source: 'Nikkei Asia',
+    category: 'Global Markets (US, EU, APAC)',
+    sentiment: 'Bullish',
+    date: new Date(Date.now() - 9000000).toISOString(),
     readTime: '4 min read',
-    url: 'https://cityam.com',
-    summary: 'The landmark listing represents London’s largest equity capital markets raise of the year, backed by cornerstone sovereign wealth fund commitments.',
-    sectorTags: ['Equity Capital Markets', 'Clean Energy', 'Infrastructure', 'London Stock Exchange']
+    url: 'https://asia.nikkei.com',
+    summary: 'Asian equities register strong weekly gains led by electronics exporters and AI supply chain vendors, supported by domestic consumption expansion across East Asia.',
+    sectorTags: ['Global Markets (US, EU, APAC)', 'Equities', 'Sectors']
   }
 ];
 
@@ -226,15 +229,19 @@ export const FinancialNewsTab: React.FC<Props> = ({ userData, updateData }) => {
     }
   };
 
-  const fetchLiveNews = async () => {
+  const [lastRefreshedAt, setLastRefreshedAt] = useState<number>(Date.now());
+
+  const fetchLiveNews = async (forceRefresh = false) => {
     setIsLoadingNews(true);
     try {
-      const res = await fetch('/api/news/live');
+      const url = forceRefresh ? '/api/news/live?refresh=true' : '/api/news/live';
+      const res = await fetch(url);
       const contentType = res.headers.get('content-type') || '';
       if (res.ok && contentType.includes('application/json')) {
         const data = await res.json();
         if (Array.isArray(data?.articles) && data.articles.length > 0) {
           setNewsArticles(data.articles);
+          setLastRefreshedAt(Date.now());
         }
       }
     } catch (e) {
@@ -245,11 +252,17 @@ export const FinancialNewsTab: React.FC<Props> = ({ userData, updateData }) => {
   };
 
   useEffect(() => {
-    fetchLiveNews();
+    fetchLiveNews(false);
+    const newsInterval = setInterval(() => {
+      fetchLiveNews(false);
+    }, 5 * 60 * 1000); // 5 minutes periodic auto-refetch
+
     const age = Date.now() - fxLastUpdated;
     if (age > 3600000 || !localStorage.getItem('fx_rates_cache')) {
       fetchLiveFx();
     }
+
+    return () => clearInterval(newsInterval);
   }, []);
 
   const handleAnalyzeImpact = async (article: LiveNewsItem) => {
@@ -320,38 +333,49 @@ export const FinancialNewsTab: React.FC<Props> = ({ userData, updateData }) => {
   const savedArticles = userData.savedArticles || [];
 
   const filteredNews = newsArticles.filter(article => {
-    const matchesCategory = selectedCategory === 'All' || article.category === selectedCategory;
+    const matchesCategory = selectedCategory === 'All' || 
+      article.category === selectedCategory ||
+      (article.sectorTags && article.sectorTags.some(t => 
+        t.toLowerCase() === selectedCategory.toLowerCase() ||
+        selectedCategory.toLowerCase().includes(t.toLowerCase()) ||
+        t.toLowerCase().includes(selectedCategory.toLowerCase())
+      ));
     const matchesSearch = searchQuery === '' || 
       article.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       (article.summary && article.summary.toLowerCase().includes(searchQuery.toLowerCase())) ||
-      article.source.toLowerCase().includes(searchQuery.toLowerCase());
+      article.source.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (article.sectorTags && article.sectorTags.some(t => t.toLowerCase().includes(searchQuery.toLowerCase())));
     const matchesSaved = !showSavedOnly || savedArticles.some(a => a.id === article.id);
     return matchesCategory && matchesSearch && matchesSaved;
   });
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 space-y-6">
+    <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 space-y-6">
       
       {/* Header Banner */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-neutral-900/60 border border-white/10 p-6 rounded-3xl backdrop-blur-2xl shadow-2xl">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-neutral-900/60 border border-white/10 p-5 sm:p-6 rounded-3xl backdrop-blur-2xl shadow-2xl">
         <div>
           <div className="flex items-center gap-2 mb-1">
             <span className="p-2 rounded-2xl bg-blue-600/20 text-blue-400 border border-blue-500/30">
               <Newspaper className="w-5 h-5" />
             </span>
             <span className="text-xs font-mono font-bold tracking-widest text-blue-400 uppercase">
-              Financial Intelligence Engine
+              Global Markets & Industry News
+            </span>
+            <span className="flex items-center gap-1 text-[10px] font-mono text-emerald-400 bg-emerald-500/15 border border-emerald-500/30 px-2 py-0.5 rounded-full ml-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+              Live Feed
             </span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white mt-1">
-            Live Financial News & Markets
+            Global Financial News Engine
           </h1>
-          <p className="text-sm text-neutral-400 mt-1 max-w-xl">
-            Macroeconomic news, market shifts, and AI impact analysis.
+          <p className="text-xs sm:text-sm text-neutral-400 mt-1 max-w-xl">
+            Real-time macroeconomic intelligence, central bank policies (Fed, ECB, BOE), tech/AI compute, and M&A deal flows.
           </p>
         </div>
 
-        <div className="flex items-center gap-2 flex-wrap">
+        <div className="flex items-center gap-2 flex-wrap w-full sm:w-auto justify-between sm:justify-end">
           <button
             onClick={() => setShowSavedOnly(!showSavedOnly)}
             className={`px-3.5 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
@@ -365,27 +389,28 @@ export const FinancialNewsTab: React.FC<Props> = ({ userData, updateData }) => {
           </button>
 
           <button
-            onClick={fetchLiveNews}
+            onClick={() => fetchLiveNews(true)}
             disabled={isLoadingNews}
-            className="px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold flex items-center gap-1.5 shadow-lg shadow-blue-500/20 transition-all cursor-pointer"
+            className="px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold flex items-center gap-1.5 shadow-lg shadow-blue-500/20 transition-all cursor-pointer disabled:opacity-50"
+            title="Fetch latest global news feeds"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${isLoadingNews ? 'animate-spin' : ''}`} />
-            <span>Refresh Feed</span>
+            <span>{isLoadingNews ? 'Refreshing...' : 'Refresh Feed'}</span>
           </button>
         </div>
       </div>
 
       {/* Filter & Search Bar */}
       <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
-        {/* Category Pills */}
-        <div className="flex items-center gap-1.5 overflow-x-auto w-full sm:w-auto pb-1 sm:pb-0 custom-scrollbar">
+        {/* Swipeable / Scrollable Category Pills */}
+        <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar scroll-smooth w-full sm:w-auto pb-1 sm:pb-0 custom-scrollbar">
           {CATEGORIES.map(cat => (
             <button
               key={cat}
               onClick={() => setSelectedCategory(cat)}
-              className={`px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
+              className={`px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer shrink-0 ${
                 selectedCategory === cat
-                  ? 'bg-white text-black font-bold shadow-md'
+                  ? 'bg-blue-600 text-white font-bold shadow-md shadow-blue-500/20'
                   : 'bg-white/5 hover:bg-white/10 text-neutral-400 hover:text-white border border-white/10'
               }`}
             >
@@ -401,7 +426,7 @@ export const FinancialNewsTab: React.FC<Props> = ({ userData, updateData }) => {
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search news or tickers..."
+            placeholder="Search news, tags, tickers..."
             className="w-full bg-neutral-900/80 border border-white/10 rounded-xl pl-9 pr-3 py-1.5 text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-blue-500 transition-colors"
           />
         </div>
@@ -483,28 +508,38 @@ export const FinancialNewsTab: React.FC<Props> = ({ userData, updateData }) => {
 
                     {/* Bottom Actions Bar */}
                     <div className="pt-3 border-t border-white/10 flex flex-wrap items-center justify-between gap-2">
-                      <span className="text-[11px] font-mono text-neutral-400">
-                        {new Date(article.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
-                        {article.readTime && ` • ${article.readTime}`}
+                      <span className="text-[11px] font-mono text-neutral-400 flex items-center gap-1.5">
+                        <span className="w-1.5 h-1.5 rounded-full bg-blue-400"></span>
+                        <span>{(() => {
+                          const diff = Date.now() - new Date(article.date).getTime();
+                          if (isNaN(diff)) return 'Recent';
+                          const mins = Math.floor(diff / 60000);
+                          if (mins < 1) return 'Just now';
+                          if (mins < 60) return `${mins}m ago`;
+                          const hours = Math.floor(mins / 60);
+                          if (hours < 24) return `${hours}h ago`;
+                          return new Date(article.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+                        })()}</span>
+                        {article.readTime && <span>• {article.readTime}</span>}
                       </span>
 
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 flex-wrap">
                         <a
                           href={article.url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-semibold text-neutral-300 hover:text-white flex items-center gap-1 transition-colors"
+                          className="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-semibold text-neutral-300 hover:text-white flex items-center gap-1 transition-colors cursor-pointer"
                         >
-                          <span>Source</span>
+                          <span>Read Source</span>
                           <ExternalLink className="w-3 h-3" />
                         </a>
 
                         <button
                           onClick={() => handleAnalyzeImpact(article)}
-                          className="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-xs font-bold flex items-center gap-1.5 shadow-md shadow-blue-500/20 transition-all cursor-pointer active:scale-95"
+                          className="px-3 py-1.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-xs font-bold flex items-center gap-1.5 shadow-md shadow-blue-500/20 transition-all cursor-pointer active:scale-95"
                         >
                           <Sparkles className="w-3.5 h-3.5 text-amber-300" />
-                          <span>Analyze Market Impact</span>
+                          <span>AI Impact</span>
                         </button>
                       </div>
                     </div>
