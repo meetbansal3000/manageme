@@ -30,6 +30,7 @@ import { UserTrackerData } from '../hooks/useFirestoreData';
 import { NewsArticle } from '../types';
 import { TiltCard } from './TiltCard';
 import { useScrollLock } from '../hooks/useScrollLock';
+import { fetchUnifiedFinancialNews } from '../services/yahooFinanceService';
 
 interface Props {
   userData: UserTrackerData;
@@ -41,6 +42,7 @@ export interface LiveNewsItem extends NewsArticle {
   readTime?: string;
   summary?: string;
   sectorTags?: string[];
+  provider?: string;
 }
 
 export interface MarketImpactAnalysis {
@@ -69,14 +71,16 @@ export interface MarketImpactAnalysis {
 
 const CATEGORIES = [
   'All',
+  'US Equities',
+  'Global Indexes',
+  'Forex & FX',
+  'Commodities',
+  'Crypto',
   'Global Macro',
   'Central Banks',
-  'Global Markets (US, EU, APAC)',
   'Tech/AI Infrastructure',
   'M&A',
-  'Commodity Trends',
-  'Market Movers',
-  'Sectors'
+  'Market Movers'
 ];
 
 const FALLBACK_NEWS: LiveNewsItem[] = [
@@ -242,10 +246,26 @@ export const FinancialNewsTab: React.FC<Props> = ({ userData, updateData }) => {
         if (Array.isArray(data?.articles) && data.articles.length > 0) {
           setNewsArticles(data.articles);
           setLastRefreshedAt(Date.now());
+          return;
         }
       }
+      // Direct provider fallback
+      const fallbackArticles = await fetchUnifiedFinancialNews(forceRefresh);
+      if (fallbackArticles.length > 0) {
+        setNewsArticles(fallbackArticles as LiveNewsItem[]);
+        setLastRefreshedAt(Date.now());
+      }
     } catch (e) {
-      console.warn('Failed to fetch live news from server, using cached news', e);
+      console.warn('Failed to fetch live news from server, attempting client direct providers:', e);
+      try {
+        const fallbackArticles = await fetchUnifiedFinancialNews(forceRefresh);
+        if (fallbackArticles.length > 0) {
+          setNewsArticles(fallbackArticles as LiveNewsItem[]);
+          setLastRefreshedAt(Date.now());
+        }
+      } catch (fallbackErr) {
+        console.warn('Client provider fallback also unavailable, using cached news', fallbackErr);
+      }
     } finally {
       setIsLoadingNews(false);
     }
@@ -453,11 +473,20 @@ export const FinancialNewsTab: React.FC<Props> = ({ userData, updateData }) => {
                 <TiltCard key={article.id} maxTilt={5} scale={1.01}>
                   <div className="bg-neutral-900/70 border border-white/10 rounded-3xl p-5 sm:p-6 backdrop-blur-xl shadow-xl hover:border-white/20 transition-all flex flex-col justify-between space-y-4">
                     
-                    {/* Top Row: Meta Tags & Bookmark */}
+                    {/* Top Row: Dynamic Source Tag & Meta Tags & Bookmark */}
                     <div className="flex items-start justify-between gap-2">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-white/10 text-neutral-300 uppercase">
-                          {article.source}
+                        <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase border ${
+                          article.source.toLowerCase().includes('yahoo') ? 'bg-purple-500/20 text-purple-300 border-purple-500/40' :
+                          article.source.toLowerCase().includes('finnhub') ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40' :
+                          article.source.toLowerCase().includes('bloomberg') ? 'bg-blue-500/20 text-blue-300 border-blue-500/40' :
+                          article.source.toLowerCase().includes('reuters') ? 'bg-amber-500/20 text-amber-300 border-amber-500/40' :
+                          article.source.toLowerCase().includes('financial times') || article.source.toLowerCase().includes('ft') ? 'bg-rose-500/20 text-rose-300 border-rose-500/40' :
+                          article.source.toLowerCase().includes('wsj') || article.source.toLowerCase().includes('wall street') ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40' :
+                          article.source.toLowerCase().includes('cnbc') ? 'bg-indigo-500/20 text-indigo-300 border-indigo-500/40' :
+                          'bg-white/10 text-neutral-300 border-white/10'
+                        }`}>
+                          {article.source.includes('•') ? article.source : `[${article.source}]`}
                         </span>
                         <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-semibold bg-blue-500/20 text-blue-300 border border-blue-500/30">
                           {article.category}

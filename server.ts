@@ -1081,7 +1081,97 @@ Output strictly as JSON:
         }
       ];
 
-      // Try fetching live RSS updates from Yahoo Finance
+      // Ingest live news from multiple providers: Yahoo Finance (RapidAPI / Public / RSS) and Finnhub
+      const multiSourceArticles: any[] = [];
+
+      // Provider 1: Finnhub API (if configured)
+      const finnhubKey = (req.headers['x-finnhub-token'] as string) || process.env.VITE_FINNHUB_API_KEY || process.env.FINNHUB_API_KEY;
+      if (finnhubKey) {
+        try {
+          const controller = new AbortController();
+          const timeout = setTimeout(() => controller.abort(), 3000);
+          const finnhubRes = await fetch(`https://finnhub.io/api/v1/news?category=general&token=${finnhubKey}`, {
+            signal: controller.signal
+          });
+          clearTimeout(timeout);
+          if (finnhubRes.ok) {
+            const data = await finnhubRes.json();
+            if (Array.isArray(data)) {
+              data.slice(0, 10).forEach((item: any, idx: number) => {
+                if (item.headline) {
+                  multiSourceArticles.push({
+                    id: `finnhub-${item.id || idx}-${Date.now()}`,
+                    title: item.headline,
+                    source: item.source ? `Finnhub • ${item.source}` : 'Finnhub',
+                    category: item.category ? item.category.toUpperCase() : 'US Equities',
+                    sentiment: 'Neutral',
+                    date: new Date(item.datetime ? item.datetime * 1000 : Date.now()).toISOString(),
+                    readTime: '3 min read',
+                    url: item.url || 'https://finnhub.io',
+                    summary: item.summary || item.headline,
+                    sectorTags: ['US Equities', 'Finnhub', 'Global Markets'],
+                    region: 'US',
+                    provider: 'Finnhub'
+                  });
+                }
+              });
+            }
+          }
+        } catch (fhErr) {
+          console.warn('Finnhub provider fetch fallback:', fhErr);
+        }
+      }
+
+      // Provider 2: Yahoo Finance API (RapidAPI or query endpoint)
+      const rapidApiKey = (req.headers['x-rapidapi-key'] as string) || (req.headers['x-yahoo-finance-api-key'] as string) || process.env.VITE_RAPIDAPI_KEY || process.env.VITE_YAHOO_FINANCE_API_KEY || process.env.RAPIDAPI_KEY || process.env.YAHOO_FINANCE_API_KEY;
+      if (rapidApiKey) {
+        try {
+          const controller = new AbortController();
+          const timeout = setTimeout(() => controller.abort(), 3500);
+          const yfRes = await fetch('https://yh-finance.p.rapidapi.com/news/v2/list?region=US&snippetCount=15', {
+            signal: controller.signal,
+            headers: {
+              'X-RapidAPI-Key': rapidApiKey,
+              'X-RapidAPI-Host': 'yh-finance.p.rapidapi.com'
+            }
+          });
+          clearTimeout(timeout);
+          if (yfRes.ok) {
+            const data = await yfRes.json();
+            const items = data?.data?.main?.stream || data?.news || [];
+            if (Array.isArray(items)) {
+              items.slice(0, 10).forEach((item: any, idx: number) => {
+                const title = item.content?.title || item.title;
+                const link = item.content?.clickThroughUrl?.url || item.link || 'https://finance.yahoo.com';
+                const summary = item.content?.summary || item.summary || title;
+                const pubDate = item.content?.pubDate || item.pubDate || new Date().toISOString();
+                const publisher = item.content?.provider?.displayName || 'Yahoo Finance';
+
+                if (title) {
+                  multiSourceArticles.push({
+                    id: `yf-api-${idx}-${Date.now()}`,
+                    title,
+                    source: `Yahoo Finance • ${publisher}`,
+                    category: 'US Equities',
+                    sentiment: 'Neutral',
+                    date: new Date(pubDate).toISOString(),
+                    readTime: '3 min read',
+                    url: link,
+                    summary,
+                    sectorTags: ['US Equities', 'Yahoo Finance', 'Global Markets'],
+                    region: 'US',
+                    provider: 'Yahoo Finance'
+                  });
+                }
+              });
+            }
+          }
+        } catch (yfApiErr) {
+          console.warn('Yahoo Finance RapidAPI provider fallback:', yfApiErr);
+        }
+      }
+
+      // Provider 3: Yahoo Finance Live Stream RSS Feed (Public)
       try {
         const controller = new AbortController();
         const timeout = setTimeout(() => controller.abort(), 3500);
@@ -1095,42 +1185,49 @@ Output strictly as JSON:
           const xmlText = await rssRes.text();
           const itemRegex = /<item>[\s\S]*?<title><!\[CDATA\[([\s\S]*?)\]\]><\/title>[\s\S]*?<link>([\s\S]*?)<\/link>[\s\S]*?<description><!\[CDATA\[([\s\S]*?)\]\]><\/description>[\s\S]*?<pubDate>([\s\S]*?)<\/pubDate>[\s\S]*?<\/item>/gi;
           let match;
-          const liveRssArticles: any[] = [];
           let count = 0;
 
-          while ((match = itemRegex.exec(xmlText)) !== null && count < 6) {
+          while ((match = itemRegex.exec(xmlText)) !== null && count < 8) {
             const title = match[1]?.trim() || '';
             const link = match[2]?.trim() || 'https://finance.yahoo.com';
             const desc = match[3]?.replace(/<[^>]*>?/gm, '').trim() || '';
             const pubDate = match[4]?.trim() || new Date().toISOString();
 
             if (title && !title.toLowerCase().includes('sponsored')) {
-              // Categorize dynamically
-              let category = 'Global Markets (US, EU, APAC)';
-              let tags = ['Global Markets', 'Sectors'];
+              let category = 'US Equities';
+              let tags = ['US Equities', 'Yahoo Finance'];
               const lower = (title + ' ' + desc).toLowerCase();
 
               if (lower.includes('fed') || lower.includes('inflation') || lower.includes('interest rate') || lower.includes('gdp') || lower.includes('cpi') || lower.includes('macro')) {
-                category = 'Macroeconomics';
+                category = 'Global Macro';
                 tags = ['Global Macro', 'Central Banks', 'Fixed Income'];
               } else if (lower.includes('ecb') || lower.includes('bank of england') || lower.includes('powell') || lower.includes('lagarde') || lower.includes('policy') || lower.includes('reserve')) {
-                category = 'Banking & Policy (Fed, ECB, BOE)';
-                tags = ['Central Banks', 'Banking & Policy', 'Global Macro'];
+                category = 'Central Banks';
+                tags = ['Central Banks', 'Forex & FX', 'Global Macro'];
               } else if (lower.includes('ai') || lower.includes('nvidia') || lower.includes('tech') || lower.includes('semiconductor') || lower.includes('cloud') || lower.includes('datacenter')) {
                 category = 'Tech/AI Infrastructure';
-                tags = ['Tech/AI Infrastructure', 'Market Movers', 'Sectors'];
+                tags = ['Tech/AI Infrastructure', 'US Equities', 'Market Movers'];
               } else if (lower.includes('acquire') || lower.includes('merger') || lower.includes('buyout') || lower.includes('deal') || lower.includes('m&a') || lower.includes('takeover')) {
-                category = 'M&A Deals & LBOs';
-                tags = ['M&A', 'Private Equity', 'Corporate Finance'];
-              } else if (lower.includes('oil') || lower.includes('gold') || lower.includes('commodity') || lower.includes('brent') || lower.includes('copper') || lower.includes('dollar') || lower.includes('forex') || lower.includes('fx')) {
-                category = 'Commodity Trends';
-                tags = ['Commodity Trends', 'Market Movers'];
+                category = 'M&A';
+                tags = ['M&A', 'US Equities', 'Corporate Finance'];
+              } else if (lower.includes('oil') || lower.includes('gold') || lower.includes('commodity') || lower.includes('brent') || lower.includes('copper')) {
+                category = 'Commodities';
+                tags = ['Commodities', 'Market Movers'];
+              } else if (lower.includes('bitcoin') || lower.includes('crypto') || lower.includes('ethereum') || lower.includes('solana') || lower.includes('token')) {
+                category = 'Crypto';
+                tags = ['Crypto', 'Market Movers'];
+              } else if (lower.includes('dollar') || lower.includes('forex') || lower.includes('fx') || lower.includes('yen') || lower.includes('euro') || lower.includes('pound')) {
+                category = 'Forex & FX';
+                tags = ['Forex & FX', 'Global Macro'];
+              } else if (lower.includes('nasdaq') || lower.includes('s&p') || lower.includes('nikkei') || lower.includes('ftse') || lower.includes('index') || lower.includes('dax')) {
+                category = 'Global Indexes';
+                tags = ['Global Indexes', 'US Equities', 'Market Movers'];
               }
 
-              liveRssArticles.push({
-                id: `rss-${Date.now()}-${count}`,
+              multiSourceArticles.push({
+                id: `yf-rss-${Date.now()}-${count}`,
                 title,
-                source: 'Yahoo Finance Live',
+                source: 'Yahoo Finance',
                 category,
                 sentiment: lower.includes('surge') || lower.includes('gain') || lower.includes('record') || lower.includes('beat') ? 'Bullish' : lower.includes('drop') || lower.includes('fall') || lower.includes('slump') ? 'Bearish' : 'Neutral',
                 date: new Date(pubDate).toISOString(),
@@ -1138,26 +1235,35 @@ Output strictly as JSON:
                 url: link,
                 summary: desc || title,
                 sectorTags: tags,
-                region: 'Global'
+                region: 'Global',
+                provider: 'Yahoo Finance'
               });
               count++;
             }
           }
-
-          if (liveRssArticles.length > 0) {
-            const combined = [...liveRssArticles, ...globalCuratedArticles];
-            cachedNews = combined;
-            lastNewsFetchTime = now;
-            return res.json({ success: true, timestamp: now, articles: combined, liveRssCount: liveRssArticles.length });
-          }
         }
       } catch (rssErr) {
-        console.warn('Live RSS feed ingestion fallback (using curated real-time global news):', rssErr);
+        console.warn('Yahoo Finance RSS stream fallback:', rssErr);
       }
 
-      cachedNews = globalCuratedArticles;
+      // Combine and merge all streams chronologically
+      const allArticles = [...multiSourceArticles, ...globalCuratedArticles];
+      
+      // Deduplicate by clean title
+      const seenTitles = new Set<string>();
+      const deduplicated = allArticles.filter(art => {
+        const key = art.title.toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 45);
+        if (seenTitles.has(key)) return false;
+        seenTitles.add(key);
+        return true;
+      });
+
+      // Sort chronologically (most recent first)
+      deduplicated.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+      cachedNews = deduplicated;
       lastNewsFetchTime = now;
-      res.json({ success: true, timestamp: now, articles: globalCuratedArticles });
+      res.json({ success: true, timestamp: now, articles: deduplicated, count: deduplicated.length });
     } catch (e: any) {
       res.status(500).json({ error: e.message });
     }
