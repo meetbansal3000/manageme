@@ -192,95 +192,166 @@ export const ChatHubTab: React.FC<Props> = ({ userData, updateData, pendingShare
     }
   };
 
+  const [showMobileSidebar, setShowMobileSidebar] = useState(false);
+
   return (
-    <div className="flex h-[calc(100vh-140px)] w-full rounded-2xl overflow-hidden glass-panel border border-[var(--border)]">
-      {/* Sidebar */}
-      <div className="w-1/3 max-w-[300px] border-r border-[var(--border)] bg-black/20 flex flex-col">
-        <div className="p-4 border-b border-[var(--border)]">
-          <h2 className="text-xl font-bold">Peer Community</h2>
+    <div className="flex h-[calc(100vh-140px)] sm:h-[calc(100vh-160px)] w-full rounded-2xl overflow-hidden glass-panel border border-[var(--border)] relative">
+      {/* Sidebar (Desktop permanent, Mobile off-canvas / overlay) */}
+      <div className={`
+        ${showMobileSidebar ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
+        fixed md:static inset-y-0 left-0 z-30 md:z-auto w-72 sm:w-80 max-w-[85vw]
+        border-r border-[var(--border)] bg-slate-900/95 dark:bg-slate-950/95 md:bg-black/20
+        backdrop-blur-2xl md:backdrop-blur-none flex flex-col transition-transform duration-300 ease-out shadow-2xl md:shadow-none
+      `}>
+        {/* Sidebar Header */}
+        <div className="p-4 border-b border-[var(--border)] flex items-center justify-between">
+          <h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-blue-500"></span>
+            Peer Community
+          </h2>
+          <button
+            onClick={() => setShowMobileSidebar(false)}
+            className="md:hidden p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10"
+          >
+            <X className="w-5 h-5" />
+          </button>
         </div>
-        <div className="flex-1 overflow-y-auto p-2 space-y-4">
+
+        {/* Sidebar Channel List */}
+        <div className="flex-1 overflow-y-auto p-2 space-y-4 custom-scrollbar">
           <div>
-            <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 px-2">Global Channels</h3>
-            {GLOBAL_CHANNELS.map(ch => (
-              <button
-                key={ch.id}
-                onClick={() => setActiveChannelId(ch.id)}
-                className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium transition-colors ${activeChannelId === ch.id ? 'bg-[var(--accent)] text-white' : 'hover:bg-white/5 text-gray-300'}`}
-              >
-                <span>{ch.name}</span>
-                {ch.id === 'general-discussion' && activeChannelId !== ch.id && (
-                  <span className="px-1.5 py-0.5 rounded-full bg-red-500 text-white text-[10px] font-bold">2</span>
-                )}
-              </button>
-            ))}
+            <h3 className="text-[11px] font-mono font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2 px-2">
+              Global Channels
+            </h3>
+            <div className="space-y-1">
+              {GLOBAL_CHANNELS.map(ch => (
+                <button
+                  key={ch.id}
+                  onClick={() => {
+                    setActiveChannelId(ch.id);
+                    setShowMobileSidebar(false);
+                  }}
+                  className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs sm:text-sm font-medium transition-all cursor-pointer ${
+                    activeChannelId === ch.id 
+                      ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20 font-semibold' 
+                      : 'hover:bg-white/5 text-slate-700 dark:text-slate-300'
+                  }`}
+                >
+                  <span className="truncate">{ch.name}</span>
+                  {ch.id === 'general-discussion' && activeChannelId !== ch.id && (
+                    <span className="px-1.5 py-0.5 rounded-full bg-red-500 text-white text-[10px] font-bold shrink-0">2</span>
+                  )}
+                </button>
+              ))}
+            </div>
           </div>
+
           <div>
-            <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 px-2">Direct Messages</h3>
-            {users.map((u, i) => (
-              <button
-                key={u.id}
-                onClick={() => setActiveChannelId(u.id)}
-                className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium transition-colors ${activeChannelId === u.id ? 'bg-[var(--accent)] text-white' : 'hover:bg-white/5 text-gray-300'}`}
-              >
-                <div className="flex items-center gap-2">
-                  <div className="relative">
-                    <div className="w-6 h-6 rounded-full bg-gray-600 flex items-center justify-center text-[10px] text-white">
-                      {u.name[0]}
+            <h3 className="text-[11px] font-mono font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2 px-2">
+              Direct Messages
+            </h3>
+            <div className="space-y-1">
+              {users.map((u, i) => (
+                <button
+                  key={u.id}
+                  onClick={() => {
+                    setActiveChannelId(u.id);
+                    setShowMobileSidebar(false);
+                  }}
+                  className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all cursor-pointer ${
+                    activeChannelId === u.id 
+                      ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20 font-semibold' 
+                      : 'hover:bg-white/5 text-slate-700 dark:text-slate-300'
+                  }`}
+                >
+                  <div className="flex items-center gap-2 min-w-0">
+                    <div className="relative shrink-0">
+                      <div className="w-6 h-6 rounded-full bg-slate-700 text-slate-200 flex items-center justify-center text-[10px] font-bold">
+                        {u.name[0]}
+                      </div>
+                      <div className={`absolute bottom-0 right-0 w-2 h-2 rounded-full ring-1 ring-slate-900 ${u.isOnline ? 'bg-emerald-500' : 'bg-slate-400'}`}></div>
                     </div>
-                    <div className={`absolute bottom-0 right-0 w-2 h-2 rounded-full border border-black ${u.isOnline ? 'bg-green-500' : 'bg-gray-400'}`}></div>
+                    <span className="truncate">{u.name}</span>
                   </div>
-                  <span>{u.name}</span>
-                </div>
-                {i === 0 && activeChannelId !== u.id && (
-                  <span className="px-1.5 py-0.5 rounded-full bg-blue-500 text-white text-[10px] font-bold">1</span>
-                )}
-              </button>
-            ))}
+                  {i === 0 && activeChannelId !== u.id && (
+                    <span className="px-1.5 py-0.5 rounded-full bg-blue-500 text-white text-[10px] font-bold shrink-0">1</span>
+                  )}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       </div>
 
+      {/* Mobile Backdrop for Sidebar */}
+      {showMobileSidebar && (
+        <div
+          onClick={() => setShowMobileSidebar(false)}
+          className="fixed inset-0 bg-black/50 backdrop-blur-xs z-20 md:hidden"
+        />
+      )}
+
       {/* Main Chat Area */}
-      <div className="flex-1 flex flex-col bg-black/40 relative">
-        {/* Header */}
-        <div className="p-4 border-b border-[var(--border)] flex justify-between items-center bg-black/20">
-          <h3 className="font-bold text-lg">
-            {GLOBAL_CHANNELS.find(c => c.id === activeChannelId)?.name || users.find(u => u.id === activeChannelId)?.name || 'Chat'}
-          </h3>
+      <div className="flex-1 flex flex-col bg-black/40 min-w-0 w-full relative">
+        {/* Chat Header */}
+        <div className="p-3 sm:p-4 border-b border-[var(--border)] flex justify-between items-center bg-black/20 shrink-0">
+          <div className="flex items-center gap-2 min-w-0">
+            {/* Mobile Channel Sidebar Toggle */}
+            <button
+              onClick={() => setShowMobileSidebar(true)}
+              className="md:hidden p-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-slate-200 flex items-center gap-1.5 text-xs font-semibold shrink-0 cursor-pointer"
+              title="View Channels & Peers"
+            >
+              <span># Channels</span>
+            </button>
+            <h3 className="font-bold text-sm sm:text-base text-white truncate">
+              {GLOBAL_CHANNELS.find(c => c.id === activeChannelId)?.name || users.find(u => u.id === activeChannelId)?.name || 'Chat'}
+            </h3>
+          </div>
+
+          <div className="flex items-center gap-1.5 text-xs text-slate-400">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span className="hidden sm:inline font-mono">Live Sync Active</span>
+          </div>
         </div>
 
-        {/* Messages */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-4">
+        {/* Messages Container */}
+        <div className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-3 sm:space-y-4 custom-scrollbar">
           {messages.map(msg => (
             <div key={msg.id} className={`flex flex-col ${msg.senderId === auth.currentUser?.uid ? 'items-end' : 'items-start'}`}>
-              <span className="text-[10px] text-gray-500 mb-1 mx-1">{msg.senderName} • {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
-              <div className={`max-w-[75%] p-3 rounded-2xl ${msg.senderId === auth.currentUser?.uid ? 'bg-[var(--accent)] text-white rounded-tr-sm' : 'bg-white/10 text-gray-200 border border-[var(--border)] rounded-tl-sm'}`}>
-                {msg.text && <p className="text-sm whitespace-pre-wrap">{msg.text}</p>}
+              <span className="text-[10px] text-slate-400 mb-1 mx-1 font-mono">
+                {msg.senderName} • {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+              </span>
+              <div className={`max-w-[88%] sm:max-w-[75%] p-3 rounded-2xl break-words ${
+                msg.senderId === auth.currentUser?.uid 
+                  ? 'bg-blue-600 text-white rounded-tr-xs shadow-md shadow-blue-500/10' 
+                  : 'bg-white/10 text-slate-200 border border-[var(--border)] rounded-tl-xs backdrop-blur-md'
+              }`}>
+                {msg.text && <p className="text-xs sm:text-sm whitespace-pre-wrap leading-relaxed">{msg.text}</p>}
                 
                 {msg.mediaType === 'image' && msg.mediaUrl && (
-                  <ZoomableImage src={msg.mediaUrl} alt="attachment" className="mt-2 rounded-xl max-h-60" />
+                  <ZoomableImage src={msg.mediaUrl} alt="attachment" className="mt-2 rounded-xl max-h-60 object-cover" />
                 )}
                 {msg.mediaType === 'video' && msg.mediaUrl && (
-                  <video src={msg.mediaUrl} controls className="mt-2 rounded-xl max-h-60" />
+                  <video src={msg.mediaUrl} controls className="mt-2 rounded-xl max-h-60 w-full" />
                 )}
                 {msg.mediaType === 'audio' && msg.mediaUrl && (
-                  <audio src={msg.mediaUrl} controls className="mt-2 h-8" />
+                  <audio src={msg.mediaUrl} controls className="mt-2 h-8 w-full max-w-full" />
                 )}
                 {msg.mediaType === 'location' && msg.mediaUrl && (
                   <div className="mt-2 relative rounded-xl overflow-hidden border border-white/20">
                     <img src={msg.mediaUrl} alt="Map location" className="w-full h-32 object-cover" />
                     <div className="absolute bottom-0 left-0 right-0 bg-black/60 backdrop-blur-sm p-2 flex items-center gap-1 text-xs font-bold text-white">
-                      <MapPin className="w-3 h-3 text-red-400" /> Shared Location
+                      <MapPin className="w-3 h-3 text-red-400 shrink-0" /> Shared Location
                     </div>
                   </div>
                 )}
                 
                 {msg.sharedCard && (
                   <div className="mt-2 p-3 bg-black/40 rounded-xl border border-white/10 flex flex-col gap-1">
-                    <span className="text-[10px] uppercase font-bold text-gray-400">{msg.sharedCard.type} shared</span>
-                    <strong className="text-sm">{msg.sharedCard.title}</strong>
-                    <p className="text-xs text-gray-300 line-clamp-2">{msg.sharedCard.description}</p>
+                    <span className="text-[10px] uppercase font-bold text-slate-400">{msg.sharedCard.type} shared</span>
+                    <strong className="text-xs sm:text-sm text-white">{msg.sharedCard.title}</strong>
+                    <p className="text-xs text-slate-300 line-clamp-2">{msg.sharedCard.description}</p>
                   </div>
                 )}
               </div>
@@ -291,42 +362,63 @@ export const ChatHubTab: React.FC<Props> = ({ userData, updateData, pendingShare
 
         {/* Pending Share Indicator */}
         {pendingShare && (
-          <div className="mx-4 mb-2 p-3 bg-[var(--accent)]/20 border border-[var(--accent)] rounded-xl flex justify-between items-center">
-            <div className="flex flex-col">
-              <span className="text-xs font-bold text-[var(--accent)]">Ready to Share: {pendingShare.type}</span>
-              <span className="text-sm truncate">{pendingShare.title}</span>
+          <div className="mx-3 sm:mx-4 mb-2 p-2.5 sm:p-3 bg-blue-500/20 border border-blue-500/40 rounded-xl flex justify-between items-center backdrop-blur-md">
+            <div className="flex flex-col min-w-0 pr-2">
+              <span className="text-xs font-bold text-blue-400">Ready to Share: {pendingShare.type}</span>
+              <span className="text-xs text-slate-200 truncate">{pendingShare.title}</span>
             </div>
-            <button onClick={clearPendingShare} className="p-1 hover:bg-black/20 rounded-md">
+            <button onClick={clearPendingShare} className="p-1 hover:bg-white/10 rounded-md text-slate-300 cursor-pointer">
               <X className="w-4 h-4" />
             </button>
           </div>
         )}
 
-        {/* Input Area */}
-        <div className="p-4 border-t border-[var(--border)] bg-black/20">
-          <form onSubmit={handleSendMessage} className="flex gap-2 items-center">
+        {/* Input Area (Fully flex-fitted, never clips on mobile) */}
+        <div className="p-2.5 sm:p-4 border-t border-[var(--border)] bg-black/20 shrink-0">
+          <form onSubmit={handleSendMessage} className="flex gap-1.5 sm:gap-2 items-center">
             <input type="file" ref={fileInputRef} className="hidden" onChange={handleFileUpload} accept="image/*,video/*" />
             
-            <button type="button" onClick={() => fileInputRef.current?.click()} className="p-2 text-gray-400 hover:text-white hover:bg-white/10 rounded-full transition-colors" title="Attach Media">
-              <Paperclip className="w-5 h-5" />
-            </button>
-            <button type="button" onClick={handleLocationShare} className="p-2 text-gray-400 hover:text-white hover:bg-white/10 rounded-full transition-colors" title="Share Location">
-              <MapPin className="w-5 h-5" />
-            </button>
-            <button type="button" onClick={toggleRecording} className={`p-2 rounded-full transition-colors ${isRecording ? 'text-red-500 bg-red-500/20 animate-pulse' : 'text-gray-400 hover:text-white hover:bg-white/10'}`} title="Voice Note">
-              {isRecording ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
-            </button>
+            <div className="flex items-center gap-0.5 sm:gap-1 shrink-0">
+              <button 
+                type="button" 
+                onClick={() => fileInputRef.current?.click()} 
+                className="p-2 text-slate-400 hover:text-white hover:bg-white/10 rounded-full transition-colors cursor-pointer" 
+                title="Attach Media"
+              >
+                <Paperclip className="w-4 h-4 sm:w-5 sm:h-5" />
+              </button>
+              <button 
+                type="button" 
+                onClick={handleLocationShare} 
+                className="p-2 text-slate-400 hover:text-white hover:bg-white/10 rounded-full transition-colors cursor-pointer" 
+                title="Share Location"
+              >
+                <MapPin className="w-4 h-4 sm:w-5 sm:h-5" />
+              </button>
+              <button 
+                type="button" 
+                onClick={toggleRecording} 
+                className={`p-2 rounded-full transition-colors cursor-pointer ${isRecording ? 'text-red-500 bg-red-500/20 animate-pulse' : 'text-slate-400 hover:text-white hover:bg-white/10'}`} 
+                title="Voice Note"
+              >
+                {isRecording ? <MicOff className="w-4 h-4 sm:w-5 sm:h-5" /> : <Mic className="w-4 h-4 sm:w-5 sm:h-5" />}
+              </button>
+            </div>
 
             <input 
               type="text" 
               value={newMessage} 
               onChange={e => setNewMessage(e.target.value)}
               placeholder="Type a message..." 
-              className="flex-1 bg-black/40 border border-[var(--border)] rounded-full px-4 py-2 text-sm focus:outline-none focus:border-[var(--accent)]"
+              className="flex-1 min-w-0 bg-black/40 border border-[var(--border)] rounded-full px-3.5 sm:px-4 py-2 text-xs sm:text-sm text-white focus:outline-none focus:border-blue-500 placeholder:text-slate-500"
             />
             
-            <button type="submit" disabled={!newMessage.trim() && !pendingShare} className="p-2 bg-[var(--accent)] text-white rounded-full disabled:opacity-50 disabled:cursor-not-allowed hover:brightness-110 transition-colors">
-              <Send className="w-5 h-5" />
+            <button 
+              type="submit" 
+              disabled={!newMessage.trim() && !pendingShare} 
+              className="p-2 sm:p-2.5 bg-blue-600 text-white rounded-full disabled:opacity-40 disabled:cursor-not-allowed hover:bg-blue-500 transition-colors shrink-0 cursor-pointer shadow-md shadow-blue-500/20"
+            >
+              <Send className="w-4 h-4 sm:w-5 sm:h-5" />
             </button>
           </form>
         </div>

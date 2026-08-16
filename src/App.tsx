@@ -402,21 +402,21 @@ export default function App() {
               exit={{ opacity: 0, x: -20 }}
               drag="x"
               dragConstraints={{ left: 0, right: 0 }}
-              dragElastic={0.15}
+              dragElastic={0.08}
+              className="touch-pan-y"
               onDragEnd={(_: any, info: any) => {
                 const offsetX = info.offset.x;
                 const offsetY = info.offset.y;
                 const velocityX = info.velocity.x;
-                // Only switch tabs if horizontal intent dominates vertical scrolling
-                if (Math.abs(offsetX) > Math.abs(offsetY) * 1.5 && Math.abs(offsetX) > 75) {
+                // Strict threshold: only switch tabs if horizontal intent strongly dominates vertical scrolling (2.5x ratio) and exceeds deliberate drag threshold (110px or 500px/s flick)
+                if (Math.abs(offsetX) > Math.abs(offsetY) * 2.5 && (Math.abs(offsetX) > 110 || Math.abs(velocityX) > 500)) {
                   const currentIndex = PRIMARY_TABS.indexOf(activeTab as AppTab);
                   if (currentIndex !== -1) {
-
-                    if (offsetX < -75 || velocityX < -250) {
+                    if (offsetX < -110 || velocityX < -500) {
                       const nextIndex = (currentIndex + 1) % PRIMARY_TABS.length;
                       triggerHaptic(15);
                       setActiveTab(PRIMARY_TABS[nextIndex]);
-                    } else if (offsetX > 75 || velocityX > 250) {
+                    } else if (offsetX > 110 || velocityX > 500) {
                       const prevIndex = (currentIndex - 1 + PRIMARY_TABS.length) % PRIMARY_TABS.length;
                       triggerHaptic(15);
                       setActiveTab(PRIMARY_TABS[prevIndex]);
