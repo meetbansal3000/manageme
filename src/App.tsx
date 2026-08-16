@@ -21,6 +21,7 @@ import { GoogleSheetsSyncModal } from './components/GoogleSheetsSyncModal';
 import { AddApplicationModal } from './components/AddApplicationModal';
 import { SettingsDrawer } from './components/SettingsDrawer';
 import { InterviewSimulatorDrawer } from './components/InterviewSimulatorDrawer';
+import { ShareAppModal } from './components/ShareAppModal';
 
 import { DollarSign, Clock, CheckSquare, Sparkles, ChevronDown, ChevronUp, X, Terminal } from 'lucide-react';
 import { GeminiDrawer } from './components/GeminiDrawer';
@@ -80,6 +81,7 @@ export default function App() {
   const [outreachParams, setOutreachParams] = useState<{ company?: string; role?: string } | null>(null);
   const [isAiModelSelectorOpen, setIsAiModelSelectorOpen] = useState(false);
   const [isJobSyncOpen, setIsJobSyncOpen] = useState(false);
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
 
   const handleTabChange = (newTab: string) => {
     if (!newTab || newTab === activeTab) return;
@@ -143,13 +145,16 @@ export default function App() {
     const handleOpenAiSelector = () => setIsAiModelSelectorOpen(true);
     const handleOpenJobSync = () => setIsJobSyncOpen(true);
     const handleOpenCmdPalette = () => setIsCommandPaletteOpen(true);
+    const handleOpenShare = () => setIsShareModalOpen(true);
     window.addEventListener('openAiModelSelector', handleOpenAiSelector);
     window.addEventListener('openJobSyncHub', handleOpenJobSync);
     window.addEventListener('openCommandPalette', handleOpenCmdPalette);
+    window.addEventListener('openShareAppModal', handleOpenShare);
     return () => {
       window.removeEventListener('openAiModelSelector', handleOpenAiSelector);
       window.removeEventListener('openJobSyncHub', handleOpenJobSync);
       window.removeEventListener('openCommandPalette', handleOpenCmdPalette);
+      window.removeEventListener('openShareAppModal', handleOpenShare);
     };
   }, []);
 
@@ -257,6 +262,7 @@ export default function App() {
       setIsSmartImportOpen(false);
       setIsAiModelSelectorOpen(false);
       setIsJobSyncOpen(false);
+      setIsShareModalOpen(false);
       setQuickLog(null);
     },
     onSave: () => {
@@ -370,6 +376,7 @@ export default function App() {
           });
         }}
         onOpenSettings={() => setIsSettingsOpen(true)}
+        onOpenShare={() => setIsShareModalOpen(true)}
         onOpenSmartImport={() => {
           requireOwnerPermission('Smart AI Import & Data Ingestion', () => {
             setIsSmartImportOpen(true);
@@ -828,6 +835,11 @@ export default function App() {
         onClose={() => setIsJobSyncOpen(false)}
         userData={userData}
         updateData={updateData}
+      />
+
+      <ShareAppModal
+        isOpen={isShareModalOpen}
+        onClose={() => setIsShareModalOpen(false)}
       />
 
       <OwnerAuthModal />

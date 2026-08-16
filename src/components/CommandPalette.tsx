@@ -23,7 +23,8 @@ import {
   Layers,
   TrendingUp,
   BookOpen,
-  Timer
+  Timer,
+  Share2
 } from 'lucide-react';
 import { UserTrackerData } from '../hooks/useFirestoreData';
 import { AppTab } from './Header';
@@ -186,6 +187,22 @@ export const CommandPalette: React.FC<Props> = ({ isOpen, onClose, userData, set
         tab: tab.id,
         score: 3
       });
+    });
+
+    // Share & Invite App Action
+    items.push({
+      id: 'action-share-app',
+      title: 'Share App & Invite Friends',
+      subtitle: 'One-click link copy (manageme-three.vercel.app), native share & email invites',
+      type: 'Action',
+      icon: <Share2 className="w-4 h-4 text-blue-500" />,
+      tab: 'landing',
+      score: 4,
+      isAction: true,
+      actionHandler: () => {
+        window.dispatchEvent(new CustomEvent('openShareAppModal'));
+        onClose();
+      }
     });
 
     // 2. Study Documents & Notes

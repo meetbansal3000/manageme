@@ -8,7 +8,8 @@ import {
   BrainCircuit, 
   ArrowRight, 
   ChevronRight, 
-  DollarSign 
+  DollarSign,
+  Share2
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { TiltCard } from './TiltCard';
@@ -142,6 +143,17 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp }) => {
           >
             <Activity className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
             <span>Paper Trading Sandbox</span>
+          </motion.button>
+
+          <motion.button
+            whileHover={{ scale: 1.02, y: -1 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => window.dispatchEvent(new CustomEvent('openShareAppModal'))}
+            className="w-full sm:w-auto px-5 py-3.5 min-h-[44px] rounded-2xl bg-blue-500/10 hover:bg-blue-500/20 text-blue-700 dark:text-blue-300 font-semibold text-sm border border-blue-500/30 backdrop-blur-md flex items-center justify-center gap-2 cursor-pointer shadow-xs"
+            title="Share manageme link & invite colleagues"
+          >
+            <Share2 className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+            <span>Share & Invite</span>
           </motion.button>
         </motion.div>
 

@@ -39,7 +39,8 @@ import {
   Mail,
   Brain,
   Search,
-  Timer
+  Timer,
+  Share2
 } from 'lucide-react';
 import { GoogleSyncState } from '../types';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -68,6 +69,7 @@ interface HeaderProps {
   onOpenSettings: () => void;
   onOpenSmartImport?: () => void;
   onOpenActivityDrawer?: () => void;
+  onOpenShare?: () => void;
   googleSyncState: GoogleSyncState;
   userData: UserTrackerData;
   updateData?: (data: Partial<UserTrackerData>) => void;
@@ -83,6 +85,7 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenSettings,
   onOpenSmartImport,
   onOpenActivityDrawer,
+  onOpenShare,
   googleSyncState,
   userData
 }) => {
@@ -324,6 +327,23 @@ export const Header: React.FC<HeaderProps> = ({
                 <kbd className="hidden sm:inline text-[9px] font-mono bg-slate-200/80 dark:bg-zinc-800 text-slate-600 dark:text-zinc-300 px-1 py-0.5 rounded border border-slate-300/60 dark:border-zinc-700">
                   ⌘K
                 </kbd>
+              </button>
+
+              {/* Share App & Invite Friends Trigger */}
+              <button
+                onClick={() => {
+                  if (onOpenShare) {
+                    onOpenShare();
+                  } else {
+                    window.dispatchEvent(new CustomEvent('openShareAppModal'));
+                  }
+                }}
+                className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 min-h-[38px] sm:min-h-[40px] rounded-full bg-blue-500/10 dark:bg-blue-500/15 hover:bg-blue-500/25 border border-blue-500/30 text-blue-700 dark:text-blue-300 backdrop-blur-md transition-all cursor-pointer shadow-xs active:scale-95 group"
+                title="Share App & Invite Friends (Live Link & Native Share)"
+                aria-label="Share App & Invite Friends"
+              >
+                <Share2 className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400 group-hover:scale-110 transition-transform" />
+                <span className="hidden sm:inline text-xs font-semibold">Share</span>
               </button>
 
               {/* Header Quick Action Shortcuts */}
@@ -655,14 +675,28 @@ export const Header: React.FC<HeaderProps> = ({
                 </div>
               </div>
               
-              {/* Streamlined Footer (Subtle Settings Button Only) */}
-              <div className="p-3 border-t border-slate-200/50 dark:border-white/10 bg-transparent shrink-0 flex items-center justify-between px-4">
-                <span className="text-[11px] text-slate-500 dark:text-zinc-400 font-mono">manageme v2.5</span>
+              {/* Streamlined Footer (Share App & Settings Buttons) */}
+              <div className="p-3 border-t border-slate-200/50 dark:border-white/10 bg-transparent shrink-0 flex items-center justify-between px-3 gap-2">
+                <button 
+                  onClick={() => {
+                    if (onOpenShare) {
+                      onOpenShare();
+                    } else {
+                      window.dispatchEvent(new CustomEvent('openShareAppModal'));
+                    }
+                    setDrawerOpen(false);
+                  }}
+                  className="flex-1 flex items-center justify-center gap-2 text-xs font-bold text-blue-700 dark:text-blue-300 hover:bg-blue-500/20 px-3 py-2 rounded-xl border border-blue-500/30 bg-blue-500/10 backdrop-blur-md transition-colors cursor-pointer shadow-xs active:scale-95"
+                  title="Share App & Invite Friends"
+                >
+                  <Share2 className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                  <span>Share & Invite</span>
+                </button>
                 <button 
                   onClick={() => { onOpenSettings(); setDrawerOpen(false); }} 
-                  className="flex items-center gap-2 text-xs font-semibold text-slate-700 dark:text-zinc-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/80 dark:hover:bg-white/10 px-3.5 py-1.5 rounded-xl border border-slate-200/50 dark:border-white/10 bg-white/40 dark:bg-white/5 backdrop-blur-md transition-colors cursor-pointer"
+                  className="flex items-center gap-2 text-xs font-semibold text-slate-700 dark:text-zinc-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/80 dark:hover:bg-white/10 px-3.5 py-2 rounded-xl border border-slate-200/50 dark:border-white/10 bg-white/40 dark:bg-white/5 backdrop-blur-md transition-colors cursor-pointer active:scale-95"
                 >
-                  <Settings className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                  <Settings className="w-4 h-4 text-slate-600 dark:text-zinc-400" />
                   <span>Settings</span>
                 </button>
               </div>

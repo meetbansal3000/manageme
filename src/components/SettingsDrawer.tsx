@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, PanInfo } from 'framer-motion';
-import { X, Check, ShieldCheck, Lock, Unlock, KeyRound, Copy, ShieldAlert, CheckCircle2, Moon, Sun, Smartphone, Sparkles, Download, Upload, RotateCcw } from 'lucide-react';
+import { X, Check, ShieldCheck, Lock, Unlock, KeyRound, Copy, ShieldAlert, CheckCircle2, Moon, Sun, Smartphone, Sparkles, Download, Upload, RotateCcw, Share2 } from 'lucide-react';
 import { useSettings } from '../context/SettingsContext';
 import { useOwnerSecurity, MASTER_OWNER_EMAIL, MASTER_OWNER_NAME } from '../context/OwnerSecurityContext';
 import { UserTrackerData } from '../hooks/useFirestoreData';
@@ -395,6 +395,31 @@ export const SettingsDrawer: React.FC<SettingsDrawerProps> = ({ isOpen, onClose,
                 </button>
               </div>
 
+            </div>
+          </section>
+
+          {/* iOS Inset Grouped List - Share & Invite */}
+          <section className="space-y-2">
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-blue-600 dark:text-blue-400 px-1 flex items-center gap-1.5">
+              <Share2 className="w-3.5 h-3.5 stroke-[1.5]" />
+              Share & Invite
+            </h3>
+            <div className="bg-white/60 dark:bg-white/5 rounded-2xl border border-slate-200/50 dark:border-white/10 divide-y divide-slate-200/40 dark:divide-white/5 overflow-hidden">
+              <button
+                onClick={() => {
+                  window.dispatchEvent(new CustomEvent('openShareAppModal'));
+                  onClose();
+                }}
+                className="w-full p-3.5 text-left text-xs font-semibold text-slate-800 dark:text-neutral-200 hover:bg-slate-100/80 dark:hover:bg-white/5 flex items-center justify-between transition-colors cursor-pointer"
+              >
+                <div className="flex items-center gap-2.5">
+                  <Share2 className="w-4 h-4 text-blue-600 dark:text-blue-400 stroke-[1.5]" />
+                  <span>Share App & Invite Friends</span>
+                </div>
+                <span className="text-[10px] px-2 py-0.5 rounded-full bg-blue-500/15 text-blue-700 dark:text-blue-300 font-bold border border-blue-500/20">
+                  Invite
+                </span>
+              </button>
             </div>
           </section>
 
