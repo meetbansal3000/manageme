@@ -70,13 +70,14 @@ export interface MarketImpactAnalysis {
 }
 
 const CATEGORIES = [
-  'All',
+  'All News',
+  'Market Sentiment',
+  'Global Macro',
+  'Sectors & Equities',
   'US Equities',
-  'Global Indexes',
   'Forex & FX',
   'Commodities',
   'Crypto',
-  'Global Macro',
   'Central Banks',
   'Tech/AI Infrastructure',
   'M&A',
@@ -88,25 +89,27 @@ const FALLBACK_NEWS: LiveNewsItem[] = [
     id: 'macro-1',
     title: 'Federal Reserve Signals Potential Rate Easing as Core PCE Inflation Moderates to 2.4%',
     source: 'Bloomberg Markets',
-    category: 'Macroeconomics',
+    category: 'Global Macro',
     sentiment: 'Bullish',
     date: new Date().toISOString(),
     readTime: '3 min read',
     url: 'https://bloomberg.com/markets',
     summary: 'FOMC minutes reveal broad consensus among governors toward calibrating the benchmark rate lower as consumer pricing pressures normalize and employment metrics stabilize.',
-    sectorTags: ['Global Macro', 'Central Banks', 'Fixed Income', 'Banking & Policy']
+    sectorTags: ['Global Macro', 'Central Banks', 'Fixed Income', 'Banking & Policy', 'Market Sentiment'],
+    provider: 'Bloomberg'
   },
   {
     id: 'ma-1',
     title: 'Private Equity Syndicate Closes $18.5B Take-Private of High-Throughput Semiconductor Fab',
     source: 'Financial Times',
-    category: 'M&A Deals & LBOs',
+    category: 'M&A',
     sentiment: 'Bullish',
     date: new Date(Date.now() - 1800000).toISOString(),
     readTime: '4 min read',
     url: 'https://ft.com/mergers-acquisitions',
     summary: 'The landmark leveraged buyout values the foundry operator at 14.8x LTM EBITDA, underscoring resilient sponsor appetite for strategic domestic microchip supply chains.',
-    sectorTags: ['M&A', 'Private Equity', 'Semiconductors', 'Sectors']
+    sectorTags: ['M&A', 'Private Equity', 'Semiconductors', 'Sectors & Equities'],
+    provider: 'Financial Times'
   },
   {
     id: 'tech-1',
@@ -118,49 +121,53 @@ const FALLBACK_NEWS: LiveNewsItem[] = [
     readTime: '5 min read',
     url: 'https://wsj.com/tech',
     summary: 'Cloud titans accelerate CapEx cycles into custom Blackwell accelerator clusters, liquid cooling facilities, and nuclear power purchase agreements to power frontier LLMs.',
-    sectorTags: ['Tech/AI Infrastructure', 'Cloud Computing', 'Datacenters', 'Market Movers']
+    sectorTags: ['Tech/AI Infrastructure', 'Cloud Computing', 'Datacenters', 'Market Movers', 'Sectors & Equities'],
+    provider: 'Wall Street Journal'
   },
   {
     id: 'bank-1',
     title: 'European Central Bank & Bank of England Coordinate Framework on Cross-Border Liquidity Rails',
     source: 'Reuters Finance',
-    category: 'Banking & Policy (Fed, ECB, BOE)',
+    category: 'Central Banks',
     sentiment: 'Neutral',
     date: new Date(Date.now() - 5400000).toISOString(),
     readTime: '3 min read',
     url: 'https://reuters.com/business/finance',
     summary: 'ECB President and BoE Governor outline unified capital reserve mandates and wholesale digital ledger settlement rails to fortify Tier-1 banking stability.',
-    sectorTags: ['Central Banks', 'Banking & Policy', 'Global Macro', 'Sectors']
+    sectorTags: ['Central Banks', 'Banking & Policy', 'Global Macro', 'Forex & FX'],
+    provider: 'Reuters'
   },
   {
     id: 'comm-1',
     title: 'Gold Touches Record High as Sovereign Reserve Allocations Surge; Brent Steady at $74/bbl',
     source: 'CNBC Markets',
-    category: 'Commodity Trends',
+    category: 'Commodities',
     sentiment: 'Bullish',
     date: new Date(Date.now() - 7200000).toISOString(),
     readTime: '3 min read',
     url: 'https://cnbc.com/commodities',
     summary: 'Central bank physical bullion buying and reserve diversification offset Treasury yield firming, while OPEC+ supply adherence anchors global crude benchmark pricing.',
-    sectorTags: ['Commodity Trends', 'Precious Metals', 'Crude Oil', 'Market Movers']
+    sectorTags: ['Commodities', 'Precious Metals', 'Crude Oil', 'Market Movers', 'Market Sentiment'],
+    provider: 'CNBC'
   },
   {
     id: 'market-1',
     title: 'Tokyo Nikkei & Hang Seng Rebound on Resilient APAC Manufacturing Output and Tech Inflows',
     source: 'Nikkei Asia',
-    category: 'Global Markets (US, EU, APAC)',
+    category: 'Sectors & Equities',
     sentiment: 'Bullish',
     date: new Date(Date.now() - 9000000).toISOString(),
     readTime: '4 min read',
     url: 'https://asia.nikkei.com',
     summary: 'Asian equities register strong weekly gains led by electronics exporters and AI supply chain vendors, supported by domestic consumption expansion across East Asia.',
-    sectorTags: ['Global Markets (US, EU, APAC)', 'Equities', 'Sectors']
+    sectorTags: ['Sectors & Equities', 'US Equities', 'Global Indexes', 'Market Sentiment'],
+    provider: 'Curated'
   }
 ];
 
 export const FinancialNewsTab: React.FC<Props> = ({ userData, updateData }) => {
   const [newsArticles, setNewsArticles] = useState<LiveNewsItem[]>(FALLBACK_NEWS);
-  const [selectedCategory, setSelectedCategory] = useState<string>('All');
+  const [selectedCategory, setSelectedCategory] = useState<string>('All News');
   const [searchQuery, setSearchQuery] = useState('');
   const [isLoadingNews, setIsLoadingNews] = useState(false);
   const [showSavedOnly, setShowSavedOnly] = useState(false);
@@ -353,8 +360,12 @@ export const FinancialNewsTab: React.FC<Props> = ({ userData, updateData }) => {
   const savedArticles = userData.savedArticles || [];
 
   const filteredNews = newsArticles.filter(article => {
-    const matchesCategory = selectedCategory === 'All' || 
+    const isAll = selectedCategory === 'All' || selectedCategory === 'All News';
+    const matchesCategory = isAll || 
       article.category === selectedCategory ||
+      (selectedCategory === 'Market Sentiment' && (article.category === 'Market Sentiment' || article.sentiment === 'Bullish' || article.sentiment === 'Bearish' || (article.sectorTags && article.sectorTags.includes('Market Sentiment')))) ||
+      (selectedCategory === 'Global Macro' && (article.category === 'Global Macro' || article.category === 'Macroeconomics' || (article.sectorTags && article.sectorTags.includes('Global Macro')))) ||
+      (selectedCategory === 'Sectors & Equities' && (article.category === 'Sectors & Equities' || article.category.includes('Equities') || (article.sectorTags && article.sectorTags.some(t => t.includes('Equities') || t.includes('Sectors'))))) ||
       (article.sectorTags && article.sectorTags.some(t => 
         t.toLowerCase() === selectedCategory.toLowerCase() ||
         selectedCategory.toLowerCase().includes(t.toLowerCase()) ||
@@ -477,6 +488,9 @@ export const FinancialNewsTab: React.FC<Props> = ({ userData, updateData }) => {
                     <div className="flex items-start justify-between gap-2">
                       <div className="flex items-center gap-2 flex-wrap">
                         <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase border ${
+                          article.source.toLowerCase().includes('marketaux') ? 'bg-teal-500/20 text-teal-300 border-teal-500/40' :
+                          article.source.toLowerCase().includes('alpha vantage') || article.source.toLowerCase().includes('alphavantage') ? 'bg-violet-500/20 text-violet-300 border-violet-500/40' :
+                          article.source.toLowerCase().includes('guardian') ? 'bg-sky-500/20 text-sky-300 border-sky-500/40' :
                           article.source.toLowerCase().includes('yahoo') ? 'bg-purple-500/20 text-purple-300 border-purple-500/40' :
                           article.source.toLowerCase().includes('finnhub') ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40' :
                           article.source.toLowerCase().includes('bloomberg') ? 'bg-blue-500/20 text-blue-300 border-blue-500/40' :
@@ -492,12 +506,12 @@ export const FinancialNewsTab: React.FC<Props> = ({ userData, updateData }) => {
                           {article.category}
                         </span>
                         {article.sentiment && (
-                          <span className={`px-2 py-0.5 rounded-full text-[10px] font-mono font-bold ${
-                            isBullish ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' :
-                            isBearish ? 'bg-rose-500/20 text-rose-300 border border-rose-500/30' :
-                            'bg-neutral-500/20 text-neutral-300 border border-neutral-500/30'
+                          <span className={`px-2 py-0.5 rounded-full text-[10px] font-mono font-bold border ${
+                            isBullish ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40' :
+                            isBearish ? 'bg-rose-500/20 text-rose-300 border-rose-500/40' :
+                            'bg-neutral-500/20 text-neutral-300 border-neutral-500/40'
                           }`}>
-                            {article.sentiment}
+                            [{article.sentiment}]
                           </span>
                         )}
                       </div>

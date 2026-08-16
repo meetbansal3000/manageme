@@ -1081,10 +1081,125 @@ Output strictly as JSON:
         }
       ];
 
-      // Ingest live news from multiple providers: Yahoo Finance (RapidAPI / Public / RSS) and Finnhub
+      // Ingest live news from multiple providers: Marketaux, Alpha Vantage, The Guardian, Yahoo Finance, and Finnhub
       const multiSourceArticles: any[] = [];
 
-      // Provider 1: Finnhub API (if configured)
+      // Provider 1: Marketaux API (Real-time Market News & Sentiment)
+      const marketauxKey = (req.headers['x-marketaux-token'] as string) || process.env.VITE_MARKETAUX_API_KEY || process.env.MARKETAUX_API_KEY;
+      if (marketauxKey) {
+        try {
+          const controller = new AbortController();
+          const timeout = setTimeout(() => controller.abort(), 3000);
+          const mRes = await fetch(`https://api.marketaux.com/v1/news/all?api_token=${marketauxKey}&language=en&filter_entities=true&limit=10`, {
+            signal: controller.signal
+          });
+          clearTimeout(timeout);
+          if (mRes.ok) {
+            const data = await mRes.json();
+            if (Array.isArray(data?.data)) {
+              data.data.forEach((item: any) => {
+                const sentimentScore = item.entities?.[0]?.sentiment_score ?? 0;
+                const sentiment = sentimentScore > 0.15 ? 'Bullish' : sentimentScore < -0.15 ? 'Bearish' : 'Neutral';
+                multiSourceArticles.push({
+                  id: `marketaux-${item.uuid || Date.now()}`,
+                  title: item.title,
+                  source: item.source ? `Marketaux • ${item.source}` : 'Marketaux',
+                  category: 'Market Sentiment',
+                  sentiment,
+                  date: item.published_at || new Date().toISOString(),
+                  readTime: '3 min read',
+                  url: item.url || 'https://marketaux.com',
+                  summary: item.description || item.snippet || item.title,
+                  sectorTags: ['Marketaux', 'Market Sentiment', 'US Equities', 'Sectors & Equities'],
+                  region: 'US',
+                  provider: 'Marketaux'
+                });
+              });
+            }
+          }
+        } catch (mErr) {
+          console.warn('Marketaux provider fetch fallback:', mErr);
+        }
+      }
+
+      // Provider 2: Alpha Vantage News & Sentiment API
+      const alphaVantageKey = (req.headers['x-alphavantage-token'] as string) || process.env.VITE_ALPHA_VANTAGE_API_KEY || process.env.ALPHA_VANTAGE_API_KEY;
+      if (alphaVantageKey) {
+        try {
+          const controller = new AbortController();
+          const timeout = setTimeout(() => controller.abort(), 3500);
+          const avRes = await fetch(`https://www.alphavantage.co/query?function=NEWS_SENTIMENT&topics=economy_macro,financial_markets,technology&apikey=${alphaVantageKey}`, {
+            signal: controller.signal
+          });
+          clearTimeout(timeout);
+          if (avRes.ok) {
+            const data = await avRes.json();
+            if (Array.isArray(data?.feed)) {
+              data.feed.slice(0, 10).forEach((item: any, idx: number) => {
+                const sentLabel = (item.overall_sentiment_label || '').toLowerCase();
+                const sentiment = sentLabel.includes('bullish') ? 'Bullish' : sentLabel.includes('bearish') ? 'Bearish' : 'Neutral';
+                multiSourceArticles.push({
+                  id: `av-${idx}-${Date.now()}`,
+                  title: item.title,
+                  source: item.source ? `Alpha Vantage • ${item.source}` : 'Alpha Vantage',
+                  category: 'Global Macro',
+                  sentiment,
+                  date: item.time_published ? new Date(item.time_published.replace(/(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})/, '$1-$2-$3T$4:$5:$6Z')).toISOString() : new Date().toISOString(),
+                  readTime: '4 min read',
+                  url: item.url || 'https://alphavantage.co',
+                  summary: item.summary || item.title,
+                  sectorTags: ['Alpha Vantage', 'Global Macro', 'Sectors & Equities', 'Market Sentiment'],
+                  region: 'Global',
+                  provider: 'Alpha Vantage'
+                });
+              });
+            }
+          }
+        } catch (avErr) {
+          console.warn('Alpha Vantage provider fetch fallback:', avErr);
+        }
+      }
+
+      // Provider 3: The Guardian Open Platform (Business & Global Markets)
+      const guardianKey = (req.headers['x-guardian-token'] as string) || process.env.VITE_GUARDIAN_API_KEY || process.env.GUARDIAN_API_KEY;
+      if (guardianKey) {
+        try {
+          const controller = new AbortController();
+          const timeout = setTimeout(() => controller.abort(), 3000);
+          const gRes = await fetch(`https://content.guardianapis.com/search?section=business|money&show-fields=headline,trailText,byline&api-key=${guardianKey}`, {
+            signal: controller.signal
+          });
+          clearTimeout(timeout);
+          if (gRes.ok) {
+            const data = await gRes.json();
+            const results = data?.response?.results || [];
+            if (Array.isArray(results)) {
+              results.slice(0, 8).forEach((item: any) => {
+                const title = item.fields?.headline || item.webTitle;
+                const summary = item.fields?.trailText?.replace(/<[^>]*>?/gm, '') || title;
+                multiSourceArticles.push({
+                  id: `guardian-${item.id || Date.now()}`,
+                  title,
+                  source: 'The Guardian',
+                  category: 'Sectors & Equities',
+                  sentiment: 'Neutral',
+                  date: item.webPublicationDate || new Date().toISOString(),
+                  readTime: '4 min read',
+                  url: item.webUrl || 'https://theguardian.com/business',
+                  summary,
+                  sectorTags: ['The Guardian', 'Global Markets', 'Sectors & Equities', 'Global Macro'],
+                  region: 'EU',
+                  provider: 'The Guardian'
+                });
+              });
+            }
+          }
+        } catch (gErr) {
+          console.warn('The Guardian provider fetch fallback:', gErr);
+        }
+      }
+
+      // Provider 4: Finnhub API (if configured)
       const finnhubKey = (req.headers['x-finnhub-token'] as string) || process.env.VITE_FINNHUB_API_KEY || process.env.FINNHUB_API_KEY;
       if (finnhubKey) {
         try {
@@ -1103,13 +1218,13 @@ Output strictly as JSON:
                     id: `finnhub-${item.id || idx}-${Date.now()}`,
                     title: item.headline,
                     source: item.source ? `Finnhub • ${item.source}` : 'Finnhub',
-                    category: item.category ? item.category.toUpperCase() : 'US Equities',
+                    category: 'US Equities',
                     sentiment: 'Neutral',
                     date: new Date(item.datetime ? item.datetime * 1000 : Date.now()).toISOString(),
                     readTime: '3 min read',
                     url: item.url || 'https://finnhub.io',
                     summary: item.summary || item.headline,
-                    sectorTags: ['US Equities', 'Finnhub', 'Global Markets'],
+                    sectorTags: ['US Equities', 'Finnhub', 'Sectors & Equities', 'Market Sentiment'],
                     region: 'US',
                     provider: 'Finnhub'
                   });
@@ -1122,7 +1237,7 @@ Output strictly as JSON:
         }
       }
 
-      // Provider 2: Yahoo Finance API (RapidAPI or query endpoint)
+      // Provider 5: Yahoo Finance API (RapidAPI or query endpoint)
       const rapidApiKey = (req.headers['x-rapidapi-key'] as string) || (req.headers['x-yahoo-finance-api-key'] as string) || process.env.VITE_RAPIDAPI_KEY || process.env.VITE_YAHOO_FINANCE_API_KEY || process.env.RAPIDAPI_KEY || process.env.YAHOO_FINANCE_API_KEY;
       if (rapidApiKey) {
         try {
@@ -1158,7 +1273,7 @@ Output strictly as JSON:
                     readTime: '3 min read',
                     url: link,
                     summary,
-                    sectorTags: ['US Equities', 'Yahoo Finance', 'Global Markets'],
+                    sectorTags: ['US Equities', 'Yahoo Finance', 'Global Markets', 'Sectors & Equities'],
                     region: 'US',
                     provider: 'Yahoo Finance'
                   });
