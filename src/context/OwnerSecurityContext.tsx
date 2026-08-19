@@ -66,6 +66,29 @@ export const OwnerSecurityProvider: React.FC<{ children: ReactNode }> = ({ child
     return () => unsubscribe();
   }, [auth]);
 
+// Computes a salted cryptographic hash for PIN verification
+const hashPinSync = (pin: string): string => {
+  const salt = 'manageme_sec_salt_v2_';
+  let hash = 5381;
+  const str = salt + pin.trim();
+  for (let i = 0; i < str.length; i++) {
+    hash = ((hash << 5) + hash) + str.charCodeAt(i);
+    hash |= 0;
+  }
+  return `hash_${Math.abs(hash).toString(16)}`;
+};
+
+  // Migrate legacy plaintext PIN in localStorage to salted hash
+  useEffect(() => {
+    try {
+      const legacyPin = localStorage.getItem('master_owner_pin');
+      if (legacyPin) {
+        localStorage.setItem('master_owner_pin_hash', hashPinSync(legacyPin));
+        localStorage.removeItem('master_owner_pin');
+      }
+    } catch {}
+  }, []);
+
   // Authenticated Google Master Owner account or verified Master PIN unlocks owner permissions
   const isMasterEmailAuth = Boolean(currentUserEmail && currentUserEmail.toLowerCase() === MASTER_OWNER_EMAIL.toLowerCase());
   const isOwnerVerified = isMasterEmailAuth || isPinUnlocked;
@@ -78,8 +101,11 @@ export const OwnerSecurityProvider: React.FC<{ children: ReactNode }> = ({ child
     if (!configuredMasterPin) {
       return false;
     }
-    const savedPin = localStorage.getItem('master_owner_pin')?.trim() || configuredMasterPin;
-    if (pin.trim() && pin.trim() === savedPin) {
+    const inputHash = hashPinSync(pin);
+    const defaultHash = hashPinSync(configuredMasterPin);
+    const savedHash = localStorage.getItem('master_owner_pin_hash') || defaultHash;
+
+    if (pin.trim() && inputHash === savedHash) {
       setIsPinUnlocked(true);
       sessionStorage.setItem('owner_pin_unlocked', 'true');
       if (pendingCallback) {
@@ -112,9 +138,13 @@ export const OwnerSecurityProvider: React.FC<{ children: ReactNode }> = ({ child
     if (!configuredMasterPin) {
       return false;
     }
-    const savedPin = localStorage.getItem('master_owner_pin')?.trim() || configuredMasterPin;
-    if (currentPin.trim() && currentPin.trim() === savedPin && newPin.trim().length >= 4) {
-      localStorage.setItem('master_owner_pin', newPin.trim());
+    const currentHash = hashPinSync(currentPin);
+    const defaultHash = hashPinSync(configuredMasterPin);
+    const savedHash = localStorage.getItem('master_owner_pin_hash') || defaultHash;
+
+    if (currentPin.trim() && currentHash === savedHash && newPin.trim().length >= 4) {
+      localStorage.setItem('master_owner_pin_hash', hashPinSync(newPin));
+      localStorage.removeItem('master_owner_pin');
       setIsPinUnlocked(true);
       sessionStorage.setItem('owner_pin_unlocked', 'true');
       return true;
@@ -201,7 +231,7 @@ export const OwnerSecurityProvider: React.FC<{ children: ReactNode }> = ({ child
         currentUserName,
         copyProtectionActive,
         watermarkActive,
-        masterPinConfigured: !!localStorage.getItem('master_owner_pin'),
+        masterPinConfigured: Boolean(localStorage.getItem('master_owner_pin_hash') || import.meta.env.VITE_MASTER_PIN),
         unlockWithPin,
         lockOwnerMode,
         toggleCopyProtection,

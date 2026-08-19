@@ -1,14 +1,16 @@
 import { createClient } from '@supabase/supabase-js';
 
-// Fallback configuration for production and local environments
-const DEFAULT_SUPABASE_URL = 'https://zdviizcyeyuoiakduyph.supabase.co';
-const DEFAULT_SUPABASE_ANON_KEY = 'sb_publishable_JkkaDBQFKLbKPmeRBzvbaA_P_pdZza8';
-
+// Supabase credentials loaded securely from environment variables
 const envUrl = typeof import.meta !== 'undefined' ? import.meta.env?.VITE_SUPABASE_URL : undefined;
 const envAnonKey = typeof import.meta !== 'undefined' ? import.meta.env?.VITE_SUPABASE_ANON_KEY : undefined;
 
-export const SUPABASE_URL = (envUrl && envUrl.trim() !== '') ? envUrl.trim() : DEFAULT_SUPABASE_URL;
-export const SUPABASE_ANON_KEY = (envAnonKey && envAnonKey.trim() !== '') ? envAnonKey.trim() : DEFAULT_SUPABASE_ANON_KEY;
+export const SUPABASE_URL = (envUrl && envUrl.trim() !== '') ? envUrl.trim() : 'https://placeholder.supabase.co';
+export const SUPABASE_ANON_KEY = (envAnonKey && envAnonKey.trim() !== '') ? envAnonKey.trim() : 'placeholder-anon-key';
+
+export const isSupabaseConfigured = Boolean(
+  envUrl && envUrl.trim() !== '' && !envUrl.includes('placeholder') &&
+  envAnonKey && envAnonKey.trim() !== '' && !envAnonKey.includes('placeholder')
+);
 
 // Create Supabase client with auto-refresh and persistent local storage
 export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {

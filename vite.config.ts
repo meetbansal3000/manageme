@@ -51,6 +51,13 @@ export default defineConfig(() => {
     server: {
       port: 3000,
       host: '0.0.0.0',
+      headers: {
+        'X-Content-Type-Options': 'nosniff',
+        'X-Frame-Options': 'DENY',
+        'Strict-Transport-Security': 'max-age=31536000; includeSubDomains; preload',
+        'X-XSS-Protection': '1; mode=block',
+        'Referrer-Policy': 'strict-origin-when-cross-origin'
+      },
       hmr: process.env.DISABLE_HMR === 'true' ? false : {
         overlay: false,
       },

@@ -26,9 +26,7 @@ const pickerFn = `
       
       const picker = new (window as any).google.picker.PickerBuilder()
         .addView((window as any).google.picker.ViewId.DOCS)
-        .setOAuthToken(token)
-        .setDeveloperKey("AIzaSyCQFn1om5lgSHFkBvM652I59AG2gI9nMNI") // Hardcoded API key for picker
-        .setCallback((data: any) => {
+        .setDeveloperKey(process.env.VITE_GOOGLE_MAPS_API_KEY || "") // Configured via VITE_GOOGLE_MAPS_API_KEY
           if (data.action === (window as any).google.picker.Action.PICKED) {
             const file = data.docs[0];
             alert(\`Selected file from Drive: \${file.name} (ID: \${file.id})\`);

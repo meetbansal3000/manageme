@@ -741,7 +741,9 @@ export default function App() {
           priorityTracker={userData.priorityItems}
           notesSections={userData.notesSections}
           googleSyncState={googleSyncState}
-          onConnectGoogle={() => console.log('Connect to Google')}
+          onConnectGoogle={async () => {
+            await googleSignIn();
+          }}
           onCreateGoogleSheet={async () => {
             try {
               let token = await getAccessToken();

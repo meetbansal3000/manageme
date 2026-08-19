@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { motion, PanInfo } from 'framer-motion';
-import { X, Check, ShieldCheck, Lock, Unlock, KeyRound, Copy, ShieldAlert, CheckCircle2, Moon, Sun, Smartphone, Sparkles, Download, Upload, RotateCcw, Share2 } from 'lucide-react';
+import { X, Check, ShieldCheck, Lock, Unlock, KeyRound, Copy, ShieldAlert, CheckCircle2, Moon, Sun, Smartphone, Sparkles, Download, Upload, RotateCcw, Share2, Trash2, FileText, Shield } from 'lucide-react';
 import { useSettings } from '../context/SettingsContext';
 import { useOwnerSecurity, MASTER_OWNER_EMAIL, MASTER_OWNER_NAME } from '../context/OwnerSecurityContext';
 import { UserTrackerData } from '../hooks/useFirestoreData';
 import { useScrollLock } from '../hooks/useScrollLock';
 import { useToast } from '../context/ToastContext';
 import { triggerHaptic, IOS_SPRING } from '../utils/haptics';
+import { purgeAllUserData, exportPersonalDataArchive } from '../utils/dataPrivacy';
 
 interface SettingsDrawerProps {
   userData: UserTrackerData;
@@ -60,6 +61,36 @@ export const SettingsDrawer: React.FC<SettingsDrawerProps> = ({ isOpen, onClose,
       downloadAnchorNode.click();
       downloadAnchorNode.remove();
       showToast('Personal workspace exported as JSON', 'success');
+    });
+  };
+
+  const handleExportPersonalDataArchive = () => {
+    requireOwnerPermission('Export Full GDPR Data Archive', () => {
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(exportPersonalDataArchive());
+      const downloadAnchorNode = document.createElement('a');
+      downloadAnchorNode.setAttribute("href", dataStr);
+      downloadAnchorNode.setAttribute("download", `manageme_gdpr_archive_${new Date().toISOString().split('T')[0]}.json`);
+      document.body.appendChild(downloadAnchorNode);
+      downloadAnchorNode.click();
+      downloadAnchorNode.remove();
+      showToast('Full GDPR data archive exported as JSON', 'success');
+    });
+  };
+
+  const handlePurgeAllPersonalData = () => {
+    requireOwnerPermission('Delete All Personal Data & Account Records', async () => {
+      if (confirm('🚨 PERMANENT ACCOUNT & DATA DELETION\n\nThis will permanently erase all your job applications, financial logs, study notes, saved API keys, and session records from this device.\n\nAre you sure you want to proceed?')) {
+        const result = await purgeAllUserData();
+        if (result.success) {
+          showToast('All personal data and session records have been permanently erased.', 'success');
+          onClose();
+          setTimeout(() => {
+            window.location.reload();
+          }, 800);
+        } else {
+          showToast(`Data purge failed: ${result.error}`, 'warning');
+        }
+      }
     });
   };
 
@@ -425,7 +456,7 @@ export const SettingsDrawer: React.FC<SettingsDrawerProps> = ({ isOpen, onClose,
 
           {/* iOS Inset Grouped List - Data Backup & Management */}
           <section className="space-y-2">
-            <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-neutral-400 px-1">Workspace Data</h3>
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-neutral-400 px-1">Workspace Data & Backups</h3>
             <div className="bg-white/60 dark:bg-white/5 rounded-2xl border border-slate-200/50 dark:border-white/10 divide-y divide-slate-200/40 dark:divide-white/5 overflow-hidden">
               <button
                 onClick={handleDownloadBackup}
@@ -449,13 +480,48 @@ export const SettingsDrawer: React.FC<SettingsDrawerProps> = ({ isOpen, onClose,
 
               <button
                 onClick={handleResetDemo}
+                className="w-full p-3.5 text-left text-xs font-semibold text-amber-600 dark:text-amber-400 hover:bg-amber-500/10 flex items-center justify-between transition-colors cursor-pointer"
+              >
+                <div className="flex items-center gap-2.5">
+                  <RotateCcw className="w-4 h-4 text-amber-600 dark:text-amber-400 stroke-[1.5]" />
+                  <span>Reset Workspace to Demo Defaults</span>
+                </div>
+                <span className="text-[10px] text-amber-600/80 dark:text-amber-400/80">Reset</span>
+              </button>
+            </div>
+          </section>
+
+          {/* iOS Inset Grouped List - Data Privacy & GDPR Rights */}
+          <section className="space-y-2">
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 px-1 flex items-center gap-1.5">
+              <Shield className="w-3.5 h-3.5 stroke-[1.5]" />
+              Privacy, GDPR & Data Rights
+            </h3>
+            <div className="bg-white/60 dark:bg-white/5 rounded-2xl border border-slate-200/50 dark:border-white/10 divide-y divide-slate-200/40 dark:divide-white/5 overflow-hidden">
+              <button
+                onClick={handleExportPersonalDataArchive}
+                className="w-full p-3.5 text-left text-xs font-semibold text-slate-800 dark:text-neutral-200 hover:bg-slate-100/80 dark:hover:bg-white/5 flex items-center justify-between transition-colors cursor-pointer"
+              >
+                <div className="flex items-center gap-2.5">
+                  <FileText className="w-4 h-4 text-emerald-600 dark:text-emerald-400 stroke-[1.5]" />
+                  <span>Download GDPR Personal Data Archive</span>
+                </div>
+                <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 font-bold border border-emerald-500/20">
+                  Export
+                </span>
+              </button>
+
+              <button
+                onClick={handlePurgeAllPersonalData}
                 className="w-full p-3.5 text-left text-xs font-semibold text-rose-600 dark:text-rose-400 hover:bg-rose-500/10 flex items-center justify-between transition-colors cursor-pointer"
               >
                 <div className="flex items-center gap-2.5">
-                  <RotateCcw className="w-4 h-4 text-rose-600 dark:text-rose-400 stroke-[1.5]" />
-                  <span>Reset Workspace to Demo Defaults</span>
+                  <Trash2 className="w-4 h-4 text-rose-600 dark:text-rose-400 stroke-[1.5]" />
+                  <span>Delete All Personal Data & Clear Account</span>
                 </div>
-                <span className="text-[10px] text-rose-600/80 dark:text-rose-400/80">Reset</span>
+                <span className="text-[10px] px-2 py-0.5 rounded-full bg-rose-500/15 text-rose-700 dark:text-rose-300 font-bold border border-rose-500/20">
+                  Purge
+                </span>
               </button>
             </div>
           </section>

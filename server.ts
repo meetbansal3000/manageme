@@ -5,6 +5,16 @@ import { createServer as createViteServer } from 'vite';
 import multer from 'multer';
 import { GoogleGenAI, Type, ThinkingLevel, Modality } from '@google/genai';
 import { getProvidersStatus, executeMultiModelChat } from './server/aiService';
+import {
+  validateEnvironment,
+  securityHeadersMiddleware,
+  strictCorsMiddleware,
+  generalApiLimiter,
+  aiRateLimiter,
+  authRateLimiter,
+  safeErrorHandler,
+  sendSafeError
+} from './server/security';
 
 const upload = multer({ storage: multer.memoryStorage() });
 
@@ -39,10 +49,26 @@ async function callGeminiWithRetry(ai: any, params: any, retries = 3): Promise<a
 
 
 async function startServer() {
+  // Validate environment variables on startup
+  const envValidation = validateEnvironment();
+  if (envValidation.warnings.length > 0) {
+    envValidation.warnings.forEach(w => console.warn(`[Config Notice]: ${w}`));
+  }
+
   const app = express();
   const PORT = 3000;
   
+  // 1. Security Headers & Strict CORS
+  app.use(securityHeadersMiddleware);
+  app.use(strictCorsMiddleware);
+
+  // 2. Request body parsing
   app.use(express.json({ limit: '20mb' }));
+
+  // 3. Rate Limiters
+  app.use('/api', generalApiLimiter);
+  app.use('/api/ai', aiRateLimiter);
+  app.use('/api/chat-command', aiRateLimiter);
 
   // In-memory media store for chat attachments (ephemeral, for prototyping)
   const mediaStore = new Map<string, { buffer: Buffer, mimetype: string }>();
@@ -53,7 +79,7 @@ async function startServer() {
       const providers = getProvidersStatus();
       res.json({ success: true, providers });
     } catch (e: any) {
-      res.status(500).json({ error: e.message });
+      sendSafeError(res, 500, 'Unable to retrieve AI provider status.', e);
     }
   });
 
@@ -62,8 +88,7 @@ async function startServer() {
       const result = await executeMultiModelChat(req.body);
       res.json(result);
     } catch (error: any) {
-      console.error('Multi-model AI Chat Error:', error);
-      res.status(500).json({ error: error.message || 'Error processing AI chat request' });
+      sendSafeError(res, 500, 'Error processing AI chat request.', error);
     }
   });
 
@@ -2123,6 +2148,9 @@ Output strictly as JSON:
       res.sendFile(path.join(distPath, 'index.html'));
     });
   }
+
+  // Safe global error handler middleware
+  app.use(safeErrorHandler);
 
   app.listen(PORT, '0.0.0.0', () => {
     console.log(`Server running on http://localhost:${PORT}`);

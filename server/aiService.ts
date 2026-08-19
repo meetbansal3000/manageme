@@ -190,9 +190,42 @@ export function getProvidersStatus(): AIProviderStatus[] {
   ];
 }
 
+/**
+ * Strips sensitive PII, passwords, PINs, tokens, and credentials from trackerContext
+ * before passing to external AI LLM providers.
+ */
+function sanitizeTrackerContext(context: any): any {
+  if (!context || typeof context !== 'object') return context;
+  try {
+    const sanitized = JSON.parse(JSON.stringify(context));
+    const sensitiveKeys = ['email', 'password', 'pin', 'token', 'accesstoken', 'apikey', 'customapikey', 'cardnumber', 'cvv', 'phone', 'phonenumber', 'secret'];
+    
+    function clean(obj: any) {
+      if (!obj || typeof obj !== 'object') return;
+      if (Array.isArray(obj)) {
+        obj.forEach(item => clean(item));
+        return;
+      }
+      for (const key of Object.keys(obj)) {
+        const lowerKey = key.toLowerCase();
+        if (sensitiveKeys.some(s => lowerKey.includes(s))) {
+          delete obj[key];
+        } else if (typeof obj[key] === 'object') {
+          clean(obj[key]);
+        }
+      }
+    }
+    clean(sanitized);
+    return sanitized;
+  } catch {
+    return {};
+  }
+}
+
 function buildSystemPrompt(persona?: string, activeTab?: string, trackerContext?: any, override?: string): string {
+  const safeContext = sanitizeTrackerContext(trackerContext);
   if (override && override.trim()) {
-    return `${override}\n\nWorkspace Context (${activeTab || 'overview'}):\n${JSON.stringify(trackerContext || {}, null, 2)}`;
+    return `${override}\n\nWorkspace Context (${activeTab || 'overview'}):\n${JSON.stringify(safeContext || {}, null, 2)}`;
   }
 
   const personaDescriptions: Record<string, string> = {
@@ -210,7 +243,7 @@ function buildSystemPrompt(persona?: string, activeTab?: string, trackerContext?
 WORKSPACE CONTEXT:
 The user is currently focused on the "${activeTab || 'general'}" section of the tracker.
 Here is their real-time tracker data:
-${JSON.stringify(trackerContext || {}, null, 2)}
+${JSON.stringify(safeContext || {}, null, 2)}
 
 OPERATIONAL CAPABILITIES & STATE MUTATIONS:
 You have direct read and write permission on the user's workspace.
