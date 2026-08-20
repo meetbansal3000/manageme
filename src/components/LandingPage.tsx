@@ -22,6 +22,7 @@ import { motion, useScroll, useTransform, useSpring, MotionValue } from 'framer-
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { GoogleAuthButton } from './auth/GoogleAuthButton';
+import { InteractiveCursorGlow } from './canvas/InteractiveCursorGlow';
 
 interface LandingPageProps {
   onEnterApp: (tabId?: string) => void;
@@ -99,6 +100,9 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp }) => {
   return (
     <div className="relative min-h-screen bg-[#000000] text-[#FFFFFF] font-sans antialiased overflow-x-hidden selection:bg-[#0052FF] selection:text-white">
       
+      {/* Interactive Cursor Glow Layer */}
+      <InteractiveCursorGlow />
+
       {/* ========================================================================= */}
       {/* AMBIENT BACKGROUND SYSTEM */}
       {/* ========================================================================= */}
@@ -122,7 +126,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp }) => {
                 <Terminal className="w-4 h-4 text-white" />
               </div>
             </div>
-            <span className="font-bold tracking-tight text-base text-white">Optio<span className="text-[#0052FF]">.os</span></span>
+            <span className="font-bold tracking-tight text-base text-white">manageme</span>
           </div>
 
           {/* Center: Liquid Pill Navigation */}
@@ -311,7 +315,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp }) => {
                   <div className="flex items-center justify-between border-b border-white/10 pb-4 mb-4 font-mono">
                     <div className="flex items-center gap-2">
                       <span className="w-2.5 h-2.5 rounded-full bg-[#00FF66] animate-pulse"></span>
-                      <span className="text-xs font-bold text-white tracking-wider">OPTIO MARKET FEED</span>
+                      <span className="text-xs font-bold text-white tracking-wider">MANAGEME MARKET FEED</span>
                     </div>
                     <div className="flex items-center gap-2 text-[11px] text-[#8B95A5]">
                       <span>LATENCY: <strong className="text-[#00FF66]">12ms</strong></span>
@@ -409,7 +413,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp }) => {
                     <div className="relative z-10 w-20 h-20 rounded-2xl bg-gradient-to-tr from-[#0052FF] to-white p-0.5 shadow-lg shadow-[#0052FF]/30">
                       <div className="w-full h-full bg-black rounded-2xl flex flex-col items-center justify-center">
                         <Zap className="w-7 h-7 text-[#0052FF]" />
-                        <span className="text-[9px] font-mono font-bold text-white mt-1">OPTIO CRM</span>
+                        <span className="text-[9px] font-mono font-bold text-white mt-1">MANAGEME CRM</span>
                       </div>
                     </div>
 
@@ -477,7 +481,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp }) => {
                 </h3>
 
                 <p className="text-sm text-[#8B95A5] leading-relaxed">
-                  1-click pipeline bridge for job platforms. Never manually enter an application again. Clip job openings from LinkedIn, Indeed, and Handshake with one click. Optio extracts compensation data, sponsorship eligibility, and organizes your interview rounds automatically.
+                  1-click pipeline bridge for job platforms. Never manually enter an application again. Clip job openings from LinkedIn, Indeed, and Handshake with one click. manageme extracts compensation data, sponsorship eligibility, and organizes your interview rounds automatically.
                 </p>
 
                 <div className="space-y-2 pt-2 text-xs font-mono">
@@ -526,7 +530,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp }) => {
                 </h3>
 
                 <p className="text-sm text-[#8B95A5] leading-relaxed">
-                  Visa work-cap and shift wage tracking. Stay 100% compliant with student visa employment limits. Optio tracks your weekly work hours against Tier-4 caps, computes shift earnings in real time, and synchronizes lecture calendars with examination countdowns.
+                  Visa work-cap and shift wage tracking. Stay 100% compliant with student visa employment limits. manageme tracks your weekly work hours against Tier-4 caps, computes shift earnings in real time, and synchronizes lecture calendars with examination countdowns.
                 </p>
 
                 <div className="space-y-2 pt-2 text-xs font-mono">
@@ -637,7 +641,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp }) => {
               Ready to engineer your career?
             </h2>
             <p className="text-sm sm:text-base text-[#8B95A5]">
-              Launch Optio OS now to activate your personal multi-asset terminal, automated pipeline CRM, and academic ledger.
+              Launch manageme now to activate your personal multi-asset terminal, automated pipeline CRM, and academic ledger.
             </p>
           </div>
 
@@ -665,7 +669,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp }) => {
         <footer className="pt-10 pb-8 border-t border-[rgba(255,255,255,0.08)] flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#8B95A5] font-sans">
           <div className="flex items-center gap-2">
             <ShieldCheck className="w-4 h-4 text-[#00FF66]" />
-            <span>&copy; {new Date().getFullYear()} Optio &bull; Career Intelligence OS</span>
+            <span>&copy; {new Date().getFullYear()} manageme &bull; Career Intelligence OS</span>
           </div>
 
           <div className="flex items-center gap-6">

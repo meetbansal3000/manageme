@@ -16,9 +16,10 @@ import { AppTab } from './components/Header';
 import { GoogleSyncState, GraduateScheme, PartTimeRole, PriorityTrackerItem } from './types';
 import { exportMultiSheetWorkbook } from './utils/excelExporter';
 import { uploadMasterTrackerToGoogleDrive } from './utils/googleDriveUpload';
-import { useFirestoreData } from './hooks/useFirestoreData';
 import { useSettings } from './context/SettingsContext';
 import { useOwnerSecurity } from './context/OwnerSecurityContext';
+import { useAuth } from './context/AuthContext';
+import { InteractiveCursorGlow } from './components/canvas/InteractiveCursorGlow';
 import { useScrollLock } from './hooks/useScrollLock';
 import { useModalDismiss } from './hooks/useModalDismiss';
 import { useGlobalShortcuts } from './hooks/useGlobalShortcuts';
@@ -67,6 +68,7 @@ const ConflictModal = lazy(() => import('./components/ConflictModal').then(m => 
 const UserAuthModal = lazy(() => import('./components/auth/UserAuthModal'));
 
 export default function App() {
+  const { user, isGuest, isAuthenticated, isLoading } = useAuth();
   const { settings, updateSettings } = useSettings();
   const { requireOwnerPermission, isOwnerVerified } = useOwnerSecurity();
   
@@ -79,7 +81,18 @@ export default function App() {
       if (hash === 'privacy') return 'privacy';
       if (hash === 'terms') return 'terms';
       if (hash && PRIMARY_TABS.includes(hash as any)) return hash;
+
+      const isAuthedCached = localStorage.getItem('manageme_user_profile') || localStorage.getItem('manageme_guest_session') === 'true';
       const lastSaved = localStorage.getItem('manageme_last_active_tab');
+
+      // If user has cached auth session, default to their dashboard tab rather than the landing page
+      if (isAuthedCached) {
+        if (lastSaved && lastSaved !== 'landing' && PRIMARY_TABS.includes(lastSaved as any)) {
+          return lastSaved;
+        }
+        return 'news';
+      }
+
       if (lastSaved && PRIMARY_TABS.includes(lastSaved as any)) return lastSaved;
     }
     return 'landing';
@@ -97,6 +110,17 @@ export default function App() {
   const [isJobSyncOpen, setIsJobSyncOpen] = useState(false);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [isUserAuthModalOpen, setIsUserAuthModalOpen] = useState(false);
+
+  // Auto-redirect authenticated users directly into their dashboard
+  useEffect(() => {
+    if (!isLoading && (user || isGuest || isAuthenticated)) {
+      if (activeTab === 'landing') {
+        const lastSaved = localStorage.getItem('manageme_last_active_tab');
+        const target = (lastSaved && lastSaved !== 'landing' && PRIMARY_TABS.includes(lastSaved as any)) ? lastSaved : 'news';
+        handleTabChange(target);
+      }
+    }
+  }, [user, isGuest, isAuthenticated, isLoading, activeTab]);
 
   useEffect(() => {
     const handleUrlChange = () => {
@@ -379,13 +403,33 @@ export default function App() {
     return Array.from(allSectors).sort();
   }, [userData.gradSchemes, userData.partTimeRoles]);
 
-  return (
-    <div className="min-h-screen bg-[#0D0425] text-white flex flex-col font-sans selection:bg-[#C645F9] selection:text-white transition-colors duration-300 relative overflow-x-hidden">
+  // If user is unauthenticated and viewing public landing page, render dedicated LandingPage layout
+  if (activeTab === 'landing' && !user && !isGuest && !isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-[#000000] text-white flex flex-col font-sans relative overflow-x-hidden">
+        <InteractiveCursorGlow />
+        <LandingPage onEnterApp={(target) => handleTabChange(target || 'news')} />
+        <Suspense fallback={null}>
+          <UserAuthModal
+            isOpen={isUserAuthModalOpen}
+            onClose={() => setIsUserAuthModalOpen(false)}
+            onSuccess={() => {
+              setIsUserAuthModalOpen(false);
+              handleTabChange('news');
+            }}
+          />
+        </Suspense>
+        <SpeedInsights />
+        <Analytics />
+      </div>
+    );
+  }
 
-      {/* Ambient Radial FinTech Glows */}
-      <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[400px] bg-radial from-[#C645F9]/15 via-[#5E6CE7]/10 to-transparent blur-3xl pointer-events-none z-0" />
-      <div className="fixed top-1/3 -left-48 w-[600px] h-[600px] bg-radial from-[#5E6CE7]/10 to-transparent blur-3xl pointer-events-none z-0" />
-      <div className="fixed top-1/2 -right-48 w-[600px] h-[600px] bg-radial from-[#C645F9]/10 to-transparent blur-3xl pointer-events-none z-0" />
+  return (
+    <div className="min-h-screen bg-[#000000] text-white flex flex-col font-sans selection:bg-[#0052FF] selection:text-white transition-colors duration-300 relative overflow-x-hidden">
+
+      {/* Interactive Cursor Glow (Tracks mouse coordinates in soft electric blue/purple) */}
+      <InteractiveCursorGlow />
 
       {/* Clean Spatial Background Mesh (Lazy-loaded) */}
       <Suspense fallback={null}>

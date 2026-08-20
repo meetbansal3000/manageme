@@ -273,7 +273,7 @@ export const Header: React.FC<HeaderProps> = ({
                 <div className="flex flex-col min-w-0">
                   <div className="flex items-center gap-1 sm:gap-1.5">
                     <span className="font-extrabold text-base sm:text-lg md:text-xl text-white tracking-tightest group-hover/home:text-[#5E6CE7] transition-colors lowercase">
-                      optio
+                      manageme
                     </span>
                     <span className="text-[9px] sm:text-[10px] px-1.5 py-0.2 rounded-full bg-[#5E6CE7]/15 text-[#5E6CE7] font-mono font-bold tracking-wider hidden sm:inline-block border border-[#5E6CE7]/30">
                       OS
