@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useRef } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { 
   TrendingUp, 
   Briefcase, 
@@ -8,20 +8,20 @@ import {
   GraduationCap, 
   Sparkles, 
   ArrowRight, 
-  ChevronDown,
-  ShieldCheck,
-  Layers,
-  Globe,
-  Linkedin,
-  Zap,
-  Scale,
-  Terminal,
-  ChevronRight
+  ChevronDown, 
+  ShieldCheck, 
+  Layers, 
+  Globe, 
+  Linkedin, 
+  Zap, 
+  Scale, 
+  Terminal, 
+  ChevronRight 
 } from 'lucide-react';
 import { motion, useScroll, useTransform, useSpring } from 'framer-motion';
 import { InteractiveCursorGlow } from '../components/canvas/InteractiveCursorGlow';
 
-// 3D Physics Card Wrapper
+// 3D Physics Card Wrapper with SSR Hydration Protection
 interface ScrollCard3DProps {
   children: React.ReactNode;
   className?: string;
@@ -29,9 +29,14 @@ interface ScrollCard3DProps {
 
 const ScrollCard3D: React.FC<ScrollCard3DProps> = ({ children, className = '' }) => {
   const targetRef = useRef<HTMLDivElement>(null);
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const { scrollYProgress } = useScroll({
-    target: targetRef,
+    target: isMounted ? targetRef : undefined,
     offset: ['start end', 'center center']
   });
 
@@ -46,6 +51,10 @@ const ScrollCard3D: React.FC<ScrollCard3DProps> = ({ children, className = '' })
   const opacity = useTransform(smoothProgress, [0, 0.85], [0, 1]);
   const rotateX = useTransform(smoothProgress, [0, 1], [15, 0]);
   const y = useTransform(smoothProgress, [0, 1], [100, 0]);
+
+  if (!isMounted) {
+    return <div ref={targetRef} className={className}>{children}</div>;
+  }
 
   return (
     <div 
@@ -70,12 +79,28 @@ const ScrollCard3D: React.FC<ScrollCard3DProps> = ({ children, className = '' })
 };
 
 export default function Page() {
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
   const scrollToFeatures = () => {
+    if (typeof document === 'undefined') return;
     const el = document.getElementById('architecture-showcase');
     if (el) {
       el.scrollIntoView({ behavior: 'smooth' });
     }
   };
+
+  if (!isMounted) {
+    return (
+      <div className="min-h-screen bg-[#000000] text-white flex flex-col items-center justify-center space-y-4">
+        <div className="w-8 h-8 border-2 border-[#0052FF] border-t-transparent rounded-full animate-spin" />
+        <span className="text-xs font-mono text-[#8B95A5] tracking-widest uppercase">Initializing manageme...</span>
+      </div>
+    );
+  }
 
   return (
     <div className="relative min-h-screen bg-[#000000] text-[#FFFFFF] font-sans antialiased overflow-x-hidden selection:bg-[#0052FF] selection:text-white">

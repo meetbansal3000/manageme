@@ -1,26 +1,37 @@
-import React, { useEffect, useState } from 'react';
+'use client';
+
+import React, { useEffect, useState, useRef } from 'react';
 
 export const InteractiveCursorGlow: React.FC = () => {
-  const [mousePosition, setMousePosition] = useState<{ x: number; y: number }>({
-    x: typeof window !== 'undefined' ? window.innerWidth / 2 : 0,
-    y: typeof window !== 'undefined' ? window.innerHeight / 3 : 0,
-  });
+  const [isMounted, setIsMounted] = useState(false);
+  const [mousePosition, setMousePosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
   const [isVisible, setIsVisible] = useState(false);
+  const isVisibleRef = useRef(false);
 
   useEffect(() => {
+    setIsMounted(true);
+
+    if (typeof window === 'undefined') return;
+
     let animationFrameId: number;
     let targetX = window.innerWidth / 2;
     let targetY = window.innerHeight / 3;
     let currentX = targetX;
     let currentY = targetY;
 
+    setMousePosition({ x: targetX, y: targetY });
+
     const handleMouseMove = (e: MouseEvent) => {
       targetX = e.clientX;
       targetY = e.clientY;
-      if (!isVisible) setIsVisible(true);
+      if (!isVisibleRef.current) {
+        isVisibleRef.current = true;
+        setIsVisible(true);
+      }
     };
 
     const handleMouseLeave = () => {
+      isVisibleRef.current = false;
       setIsVisible(false);
     };
 
@@ -46,7 +57,9 @@ export const InteractiveCursorGlow: React.FC = () => {
       document.removeEventListener('mouseleave', handleMouseLeave);
       cancelAnimationFrame(animationFrameId);
     };
-  }, [isVisible]);
+  }, []);
+
+  if (!isMounted) return null;
 
   return (
     <div

@@ -370,30 +370,33 @@ export default function App() {
     window.addEventListener('keydown', handleKeyDown);
 
     // Slight delay to ensure DOM is ready
-
-    return () => window.removeEventListener("keydown", handleKeyDown);
     const timer = setTimeout(() => {
-      const cards = gsap.utils.toArray('.glass-panel');
-      cards.forEach((card: HTMLElement) => {
-        gsap.fromTo(card,
-          { y: 20, opacity: 0 },
-          {
-            scrollTrigger: {
-              trigger: card,
-              start: "top bottom-=50",
-              toggleActions: "play none none reverse"
-            },
-            y: 0,
-            opacity: 1,
-            duration: 0.6,
-            ease: "power3.out"
-          }
-        );
-      });
-      ScrollTrigger.refresh();
+      if (typeof window !== 'undefined' && gsap) {
+        const cards = gsap.utils.toArray('.glass-panel');
+        cards.forEach((card: any) => {
+          gsap.fromTo(card,
+            { y: 20, opacity: 0 },
+            {
+              scrollTrigger: {
+                trigger: card,
+                start: "top bottom-=50",
+                toggleActions: "play none none reverse"
+              },
+              y: 0,
+              opacity: 1,
+              duration: 0.6,
+              ease: "power3.out"
+            }
+          );
+        });
+        ScrollTrigger.refresh();
+      }
     }, 100);
     
-    return () => clearTimeout(timer);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      clearTimeout(timer);
+    };
   }, [loading, activeTab, userData]); // Re-run when tab changes
 
 
