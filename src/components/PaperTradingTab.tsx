@@ -477,33 +477,34 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
       )}
 
       {/* Header & Mode Switcher */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-[rgba(20,14,50,0.65)] backdrop-blur-xl border border-white/10 p-5 sm:p-6 rounded-3xl shadow-2xl hover:shadow-[0_0_25px_rgba(94,108,231,0.2)] transition-all">
+      {/* Top Banner / Header & View Switcher */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-surface border border-border p-5 sm:p-6 rounded-2xl shadow-card-base transition-all duration-300 ease-out">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <span className="p-2 rounded-2xl bg-[#C645F9]/15 text-[#C645F9] border border-[#C645F9]/30 shadow-[0_0_12px_rgba(198,69,249,0.25)]">
+            <span className="p-2 rounded-xl bg-actionBlue/10 text-actionBlue border border-actionBlue/20">
               <TrendingUp className="w-5 h-5" />
             </span>
-            <span className="text-xs font-mono font-bold tracking-widest text-[#C645F9] uppercase">
+            <span className="text-xs font-mono font-bold tracking-widest text-actionBlue uppercase">
               Global Multi-Asset Terminal
             </span>
           </div>
-          <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold tracking-tight text-white mt-1">
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold tracking-tight text-textPrimary mt-1">
             manageme Markets & Terminal
           </h1>
-          <p className="text-xs sm:text-sm text-[#9A9DBE] mt-1 max-w-xl">
+          <p className="text-xs sm:text-sm text-textMuted mt-1 max-w-xl">
             Real-time simulated multi-currency execution, live watchlist monitoring, portfolio risk analytics, and institutional trading tracks.
           </p>
         </div>
 
         {/* View Switcher Tabs */}
-        <div className="flex flex-wrap items-center bg-[#150F36] p-1.5 rounded-full border border-white/10 shadow-inner w-full md:w-auto">
+        <div className="flex flex-wrap items-center bg-surface-elevated p-1.5 rounded-xl border border-border w-full md:w-auto shadow-xs">
           <button 
             id="tab-terminal-view"
             onClick={() => setActiveSection('portfolio')}
-            className={`flex-1 sm:flex-initial px-4 py-2 min-h-[38px] rounded-full text-xs font-bold transition-all cursor-pointer text-center ${
+            className={`flex-1 sm:flex-initial px-4 py-2 min-h-[38px] rounded-lg text-xs font-bold transition-all duration-300 ease-out cursor-pointer text-center active:scale-95 ${
               activeSection === 'portfolio' 
-                ? 'bg-gradient-to-r from-[#5E6CE7] to-[#C645F9] text-white shadow-[0_0_16px_rgba(198,69,249,0.4)]' 
-                : 'text-[#9A9DBE] hover:text-white'
+                ? 'bg-accentPrimary text-background shadow-xs font-extrabold' 
+                : 'text-textMuted hover:text-textPrimary'
             }`}
           >
             Trading Terminal
@@ -511,10 +512,10 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
           <button 
             id="tab-analytics-view"
             onClick={() => setActiveSection('analytics')}
-            className={`flex-1 sm:flex-initial px-4 py-2 min-h-[38px] rounded-full text-xs font-bold transition-all cursor-pointer text-center ${
+            className={`flex-1 sm:flex-initial px-4 py-2 min-h-[38px] rounded-lg text-xs font-bold transition-all duration-300 ease-out cursor-pointer text-center active:scale-95 ${
               activeSection === 'analytics' 
-                ? 'bg-gradient-to-r from-[#5E6CE7] to-[#C645F9] text-white shadow-[0_0_16px_rgba(198,69,249,0.4)]' 
-                : 'text-[#9A9DBE] hover:text-white'
+                ? 'bg-accentPrimary text-background shadow-xs font-extrabold' 
+                : 'text-textMuted hover:text-textPrimary'
             }`}
           >
             Portfolio Analytics
@@ -522,10 +523,10 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
           <button 
             id="tab-academy-view"
             onClick={() => setActiveSection('academy')}
-            className={`flex-1 sm:flex-initial px-4 py-2 min-h-[38px] rounded-full text-xs font-bold transition-all cursor-pointer text-center ${
+            className={`flex-1 sm:flex-initial px-4 py-2 min-h-[38px] rounded-lg text-xs font-bold transition-all duration-300 ease-out cursor-pointer text-center active:scale-95 ${
               activeSection === 'academy' 
-                ? 'bg-gradient-to-r from-[#5E6CE7] to-[#C645F9] text-white shadow-[0_0_16px_rgba(198,69,249,0.4)]' 
-                : 'text-[#9A9DBE] hover:text-white'
+                ? 'bg-accentPrimary text-background shadow-xs font-extrabold' 
+                : 'text-textMuted hover:text-textPrimary'
             }`}
           >
             Finance Academy
@@ -542,23 +543,23 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
           {/* LEFT COLUMN: ORDER PANEL & ASSET DISCOVERY */}
           <div className="lg:col-span-4 space-y-6">
             
-            <div id="order-ticket-container" className="bg-surface backdrop-blur-md border border-white/10 rounded-2xl p-5 sm:p-6 shadow-2xl hover:shadow-[0_0_25px_rgba(94,108,231,0.2)] hover:border-white/15 transition-all relative">
+            <div id="order-ticket-container" className="bg-surface border border-border rounded-2xl p-5 sm:p-6 shadow-card-base hover:shadow-card-hover transition-all duration-300 ease-out relative">
               <div className="flex justify-between items-center mb-4">
-                <h2 className="text-sm font-bold flex items-center gap-2 text-white font-mono uppercase tracking-wider">
-                  <Search className="w-4 h-4 text-accentPurple" /> 
+                <h2 className="text-sm font-bold flex items-center gap-2 text-textPrimary font-mono uppercase tracking-wider">
+                  <Search className="w-4 h-4 text-actionBlue" /> 
                   <span>Asset Discovery & Order Ticket</span>
                 </h2>
                 {selectedAsset && (
                   <button
                     onClick={() => handleToggleWatchlist(selectedAsset)}
                     title={isMonitored(selectedAsset.symbol) ? "Remove from Watchlist" : "Add to Watchlist"}
-                    className={`flex items-center gap-1.5 px-3 py-1 rounded-xl text-[11px] font-bold transition-all cursor-pointer border ${
+                    className={`flex items-center gap-1.5 px-3 py-1 rounded-xl text-[11px] font-bold transition-all duration-300 ease-out cursor-pointer active:scale-95 border ${
                       isMonitored(selectedAsset.symbol)
-                        ? 'bg-accentPurple/20 text-accentPurple border-accentPurple/40 shadow-[0_0_12px_rgba(198,69,249,0.3)]'
-                        : 'bg-[#08021A] text-textMuted border-white/10 hover:text-white hover:border-white/20'
+                        ? 'bg-actionBlue/15 text-actionBlue border-actionBlue/30 shadow-xs'
+                        : 'bg-surface-elevated text-textMuted border-border hover:text-textPrimary hover:border-actionBlue/30'
                     }`}
                   >
-                    <Star className={`w-3.5 h-3.5 ${isMonitored(selectedAsset.symbol) ? 'fill-accentPurple text-accentPurple' : ''}`} />
+                    <Star className={`w-3.5 h-3.5 ${isMonitored(selectedAsset.symbol) ? 'fill-actionBlue text-actionBlue' : ''}`} />
                     <span>{isMonitored(selectedAsset.symbol) ? 'Monitored' : 'Monitor'}</span>
                   </button>
                 )}
@@ -568,13 +569,13 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
               <div className="mb-4">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-[10px] font-mono uppercase font-bold text-textMuted flex items-center gap-1">
-                    <Globe className="w-3 h-3 text-accentBlue" /> Market Region
+                    <Globe className="w-3 h-3 text-actionBlue" /> Market Region
                   </span>
-                  <span className="text-[10px] font-mono font-bold text-accentPurple bg-accentPurple/10 px-2.5 py-0.5 rounded-full border border-accentPurple/30">
+                  <span className="text-[10px] font-mono font-bold text-actionBlue bg-actionBlue/10 px-2.5 py-0.5 rounded-full border border-actionBlue/20">
                     {activeRegionConfig.currency} • {activeRegionConfig.exchanges.join(', ')}
                   </span>
                 </div>
-                <div className="grid grid-cols-5 gap-1 bg-[#150F36] p-1.5 rounded-2xl border border-white/10 shadow-inner">
+                <div className="grid grid-cols-5 gap-1 bg-surface-elevated p-1.5 rounded-xl border border-border shadow-xs">
                   {MARKET_REGIONS.map(region => (
                     <button
                       key={region.id}
@@ -584,10 +585,10 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
                         if (firstAsset) setSelectedAsset(firstAsset);
                         setSearchQuery('');
                       }}
-                      className={`py-1.5 px-1 rounded-xl text-center transition-all cursor-pointer flex flex-col items-center justify-center ${
+                      className={`py-1.5 px-1 rounded-lg text-center transition-all duration-300 ease-out cursor-pointer flex flex-col items-center justify-center active:scale-95 ${
                         activeRegion === region.id
-                          ? 'bg-gradient-to-r from-accentBlue to-accentPurple text-white shadow-[0_0_14px_rgba(198,69,249,0.35)] font-extrabold'
-                          : 'text-textMuted hover:text-white font-medium'
+                          ? 'bg-accentPrimary text-background shadow-xs font-extrabold'
+                          : 'text-textMuted hover:text-textPrimary font-medium'
                       }`}
                     >
                       <span className="text-sm leading-none">{region.flag}</span>
@@ -606,7 +607,7 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
                     value={searchQuery}
                     onChange={(e) => { setSearchQuery(e.target.value); setShowDropdown(true); }}
                     onFocus={() => setShowDropdown(true)}
-                    className="w-full bg-[#08021A] border border-white/10 rounded-xl pl-9 pr-4 py-2.5 text-xs text-white placeholder-textMuted/60 focus:outline-none focus:border-accentPurple focus:ring-1 focus:ring-accentPurple/50 transition-all font-sans"
+                    className="w-full bg-surface-elevated border border-border rounded-xl pl-9 pr-4 py-2.5 text-xs text-textPrimary placeholder-textMuted/60 focus:outline-none focus:border-actionBlue focus:ring-1 focus:ring-actionBlue/50 transition-all font-sans"
                   />
                   <Search className="w-4 h-4 text-textMuted absolute left-3 top-3" />
                 </div>
@@ -614,8 +615,8 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
                 <AnimatePresence>
                   {showDropdown && searchQuery && (
                     <motion.div 
-                      initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}
-                      className="absolute top-full left-0 right-0 mt-2 bg-surface border border-white/15 rounded-2xl shadow-2xl z-50 max-h-72 overflow-y-auto divide-y divide-white/5 backdrop-blur-md"
+                      initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}
+                      className="absolute top-full left-0 right-0 mt-2 bg-surface border border-border rounded-xl shadow-card-hover z-50 max-h-72 overflow-y-auto divide-y divide-border"
                     >
                       {filteredAssets.length === 0 ? (
                         <div className="p-4 text-center text-xs text-textMuted">
@@ -626,31 +627,31 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
                           <div 
                             key={asset.symbol} 
                             onClick={() => { setSelectedAsset(asset); setActiveRegion(asset.region); setShowDropdown(false); setSearchQuery(''); }}
-                            className="p-3 hover:bg-[#08021A]/80 cursor-pointer flex items-center justify-between transition-colors"
+                            className="p-3 hover:bg-surface-elevated cursor-pointer flex items-center justify-between transition-colors"
                           >
                             <div className="flex items-center gap-3">
-                              <div className="w-8 h-8 rounded-xl bg-accentBlue/20 text-accentBlue border border-accentBlue/30 flex items-center justify-center font-bold text-xs">
+                              <div className="w-8 h-8 rounded-xl bg-actionBlue/10 text-actionBlue border border-actionBlue/20 flex items-center justify-center font-bold text-xs">
                                 {asset.logo}
                               </div>
                               <div>
-                                <div className="font-bold text-white text-xs flex items-center gap-1.5">
+                                <div className="font-bold text-textPrimary text-xs flex items-center gap-1.5">
                                   <span>{asset.symbol}</span>
-                                  <span className="text-[9px] px-1.5 py-0.5 rounded bg-white/10 text-textMuted">{asset.exchange}</span>
+                                  <span className="text-[9px] px-1.5 py-0.5 rounded bg-surface-elevated border border-border text-textMuted">{asset.exchange}</span>
                                 </div>
                                 <div className="text-[10px] text-textMuted">{asset.name}</div>
                               </div>
                             </div>
                             <div className="flex items-center gap-3">
                               <div className="text-right font-mono tabular-nums">
-                                <div className="font-semibold text-white text-xs">{asset.currency}{asset.price.toFixed(2)}</div>
+                                <div className="font-semibold text-textPrimary text-xs">{asset.currency}{asset.price.toFixed(2)}</div>
                                 <div className={`text-[10px] font-bold ${asset.isUp ? 'text-profitGreen' : 'text-lossRed'}`}>{asset.change}</div>
                               </div>
                               <button
                                 type="button"
                                 onClick={(e) => { e.stopPropagation(); handleToggleWatchlist(asset); }}
-                                className="p-1.5 rounded-lg hover:bg-white/10 text-textMuted hover:text-accentPurple transition-colors"
+                                className="p-1.5 rounded-lg hover:bg-surface-elevated text-textMuted hover:text-actionBlue transition-colors active:scale-95"
                               >
-                                <Star className={`w-3.5 h-3.5 ${isMonitored(asset.symbol) ? 'fill-accentPurple text-accentPurple' : ''}`} />
+                                <Star className={`w-3.5 h-3.5 ${isMonitored(asset.symbol) ? 'fill-actionBlue text-actionBlue' : ''}`} />
                               </button>
                             </div>
                           </div>
@@ -668,10 +669,10 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
                   <button
                     key={asset.symbol}
                     onClick={() => { setSelectedAsset(asset); }}
-                    className={`px-3 py-1 rounded-xl text-[11px] font-mono tabular-nums font-bold shrink-0 transition-all cursor-pointer flex items-center gap-1.5 border ${
+                    className={`px-3 py-1 rounded-xl text-[11px] font-mono tabular-nums font-bold shrink-0 transition-all duration-300 ease-out cursor-pointer flex items-center gap-1.5 active:scale-95 border ${
                       selectedAsset?.symbol === asset.symbol
-                        ? 'bg-gradient-to-r from-accentBlue to-accentPurple text-white border-transparent shadow-[0_0_12px_rgba(198,69,249,0.3)]'
-                        : 'bg-[#08021A] border-white/10 text-white hover:border-accentPurple/40'
+                        ? 'bg-accentPrimary text-background border-transparent shadow-xs'
+                        : 'bg-surface-elevated border-border text-textPrimary hover:border-actionBlue/40'
                     }`}
                   >
                     <span>{asset.symbol}</span>
@@ -682,19 +683,19 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
 
               {/* ORDER EXECUTION TICKET */}
               {selectedAsset && (
-                <form onSubmit={handleExecuteTrade} className="space-y-4 border-t border-white/10 pt-4">
-                  <div className="flex justify-between items-center bg-[#08021A] p-3.5 rounded-2xl border border-white/10 font-mono tabular-nums">
+                <form onSubmit={handleExecuteTrade} className="space-y-4 border-t border-border pt-4">
+                  <div className="flex justify-between items-center bg-surface-elevated p-3.5 rounded-xl border border-border font-mono tabular-nums">
                     <div>
                       <div className="flex items-center gap-2">
-                        <span className="font-bold text-sm text-white">{selectedAsset.symbol}</span>
-                        <span className="text-[10px] px-2 py-0.5 rounded-full bg-accentBlue/20 text-accentBlue border border-accentBlue/30">
+                        <span className="font-bold text-sm text-textPrimary">{selectedAsset.symbol}</span>
+                        <span className="text-[10px] px-2 py-0.5 rounded-full bg-actionBlue/10 text-actionBlue border border-actionBlue/20">
                           {selectedAsset.exchange}
                         </span>
                       </div>
                       <span className="text-[11px] text-textMuted block mt-0.5 font-sans">{selectedAsset.name}</span>
                     </div>
                     <div className="text-right">
-                      <span className={`text-sm font-bold ${marketData.isUp ? 'text-profitGreen' : 'text-lossRed'}`}>
+                      <span className={`text-sm font-extrabold ${marketData.isUp ? 'text-profitGreen' : 'text-lossRed'}`}>
                         {currentCurrency}{marketData.currentPrice.toFixed(2)}
                       </span>
                       <span className="text-[10px] text-textMuted block font-sans">Live LTP</span>
@@ -702,14 +703,14 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
                   </div>
 
                   {/* Order Type Toggle */}
-                  <div className="flex bg-[#08021A] rounded-xl p-1 border border-white/10">
+                  <div className="flex bg-surface-elevated rounded-xl p-1 border border-border">
                     {['Delivery', 'Intraday'].map(t => (
                       <button 
                         key={t} type="button" onClick={() => setOrderType(t as any)}
-                        className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition-all cursor-pointer ${
+                        className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition-all duration-300 ease-out cursor-pointer active:scale-95 ${
                           orderType === t 
-                            ? 'bg-[#150F36] text-white shadow-[0_0_10px_rgba(94,108,231,0.3)] border border-white/15' 
-                            : 'text-textMuted hover:text-white'
+                            ? 'bg-surface text-textPrimary shadow-xs border border-border' 
+                            : 'text-textMuted hover:text-textPrimary'
                         }`}
                       >
                         {t}
@@ -722,10 +723,10 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
                     {['Market', 'Limit', 'SL'].map(m => (
                       <button 
                         key={m} type="button" onClick={() => setOrderMode(m as any)}
-                        className={`flex-1 py-1.5 text-xs font-bold rounded-lg border transition-all cursor-pointer ${
+                        className={`flex-1 py-1.5 text-xs font-bold rounded-lg border transition-all duration-300 ease-out cursor-pointer active:scale-95 ${
                           orderMode === m 
-                            ? 'border-accentPurple text-white bg-accentPurple/20 shadow-[0_0_12px_rgba(198,69,249,0.3)]' 
-                            : 'border-white/10 text-textMuted bg-[#08021A] hover:text-white'
+                            ? 'border-actionBlue text-actionBlue bg-actionBlue/10 shadow-xs' 
+                            : 'border-border text-textMuted bg-surface-elevated hover:text-textPrimary'
                         }`}
                       >
                         {m}
@@ -739,7 +740,7 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
                       <label className="block text-textMuted mb-1 font-sans">Quantity</label>
                       <input 
                         type="number" required min="1" value={quantity} onChange={e => setQuantity(Number(e.target.value))}
-                        className="w-full bg-[#08021A] border border-white/10 rounded-xl p-2.5 text-white font-bold focus:border-accentPurple focus:outline-none" 
+                        className="w-full bg-surface-elevated border border-border rounded-xl p-2.5 text-textPrimary font-bold focus:border-actionBlue focus:outline-none" 
                       />
                     </div>
                     <div>
@@ -748,20 +749,20 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
                         type="number" disabled={orderMode === 'Market'} 
                         value={orderMode === 'Market' ? Number(marketData.currentPrice.toFixed(2)) : limitPrice} 
                         onChange={e => setLimitPrice(Number(e.target.value))}
-                        className="w-full bg-[#08021A] border border-white/10 rounded-xl p-2.5 text-white font-bold disabled:opacity-50 focus:border-accentPurple focus:outline-none" 
+                        className="w-full bg-surface-elevated border border-border rounded-xl p-2.5 text-textPrimary font-bold disabled:opacity-50 focus:border-actionBlue focus:outline-none" 
                       />
                     </div>
                   </div>
 
                   {/* Summary Bar */}
-                  <div className="bg-[#08021A] rounded-xl p-3.5 space-y-1.5 font-mono tabular-nums text-xs border border-white/10">
+                  <div className="bg-surface-elevated rounded-xl p-3.5 space-y-1.5 font-mono tabular-nums text-xs border border-border">
                     <div className="flex justify-between text-textMuted">
                       <span className="font-sans">Margin Required</span>
-                      <span className="text-white font-bold">{currentCurrency}{marginRequired.toFixed(2)}</span>
+                      <span className="text-textPrimary font-bold">{currentCurrency}{marginRequired.toFixed(2)}</span>
                     </div>
                     <div className="flex justify-between text-textMuted">
                       <span className="font-sans">Brokerage Charges (0.10%)</span>
-                      <span className="text-white font-bold">{currentCurrency}{estimatedCharges.toFixed(2)}</span>
+                      <span className="text-textPrimary font-bold">{currentCurrency}{estimatedCharges.toFixed(2)}</span>
                     </div>
                   </div>
 
@@ -770,14 +771,14 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
                     <button 
                       type="submit" 
                       onClick={() => setOrderSide('Buy')} 
-                      className="flex-1 py-3 bg-profitGreen hover:bg-profitGreen/90 text-[#08021A] font-extrabold text-xs rounded-xl transition-all cursor-pointer shadow-[0_0_18px_rgba(0,255,102,0.3)] hover:scale-[1.02] active:scale-[0.98]"
+                      className="flex-1 py-3 bg-profitGreen hover:bg-profitGreen/90 text-black font-extrabold text-xs rounded-xl transition-all duration-300 ease-out cursor-pointer shadow-xs active:scale-95 hover:-translate-y-0.5"
                     >
                       BUY {selectedAsset.symbol}
                     </button>
                     <button 
                       type="submit" 
                       onClick={() => setOrderSide('Sell')} 
-                      className="flex-1 py-3 bg-lossRed hover:bg-lossRed/90 text-white font-extrabold text-xs rounded-xl transition-all cursor-pointer shadow-[0_0_18px_rgba(255,59,48,0.3)] hover:scale-[1.02] active:scale-[0.98]"
+                      className="flex-1 py-3 bg-lossRed hover:bg-lossRed/90 text-white font-extrabold text-xs rounded-xl transition-all duration-300 ease-out cursor-pointer shadow-xs active:scale-95 hover:-translate-y-0.5"
                     >
                       SELL {selectedAsset.symbol}
                     </button>
@@ -787,14 +788,14 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
             </div>
 
             {/* MONITORED STOCKS / MY WATCHLIST SECTION (BENTO GRID) */}
-            <div className="bg-surface backdrop-blur-md border border-white/10 rounded-2xl p-5 shadow-2xl space-y-4 font-mono">
-              <div className="flex items-center justify-between border-b border-white/10 pb-3">
+            <div className="bg-surface border border-border rounded-2xl p-5 shadow-card-base hover:shadow-card-hover transition-all duration-300 ease-out space-y-4 font-mono">
+              <div className="flex items-center justify-between border-b border-border pb-3">
                 <div className="flex items-center gap-2">
-                  <span className="p-1.5 rounded-xl bg-accentPurple/15 text-accentPurple border border-accentPurple/30 shadow-[0_0_10px_rgba(198,69,249,0.25)]">
-                    <Star className="w-4 h-4 fill-accentPurple" />
+                  <span className="p-1.5 rounded-xl bg-actionBlue/10 text-actionBlue border border-actionBlue/20">
+                    <Star className="w-4 h-4 fill-actionBlue" />
                   </span>
                   <div>
-                    <h3 className="text-xs font-bold text-white uppercase tracking-wider font-sans">
+                    <h3 className="text-xs font-bold text-textPrimary uppercase tracking-wider font-sans">
                       My Monitored Stocks
                     </h3>
                     <span className="text-[10px] text-textMuted font-sans">
@@ -809,10 +810,10 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
                     <button
                       key={f}
                       onClick={() => setWatchlistFilter(f)}
-                      className={`px-2.5 py-1 rounded-full text-[10px] transition-all cursor-pointer font-bold ${
+                      className={`px-2.5 py-1 rounded-lg text-[10px] transition-all duration-300 ease-out cursor-pointer font-bold active:scale-95 ${
                         watchlistFilter === f
-                          ? 'bg-gradient-to-r from-accentBlue to-accentPurple text-white shadow-[0_0_10px_rgba(198,69,249,0.35)]'
-                          : 'bg-[#08021A] text-textMuted hover:text-white border border-white/5'
+                          ? 'bg-accentPrimary text-background shadow-xs'
+                          : 'bg-surface-elevated text-textMuted hover:text-textPrimary border border-border'
                       }`}
                     >
                       {f === 'All' ? 'All' : f === 'US' ? '🇺🇸' : f === 'India' ? '🇮🇳' : f === 'UK' ? '🇬🇧' : f === 'EU' ? '🇪🇺' : '🇸🇬'}
@@ -823,7 +824,7 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
 
               {/* Monitored Items List (Bento Grid) */}
               {filteredWatchlist.length === 0 ? (
-                <div className="text-center py-6 px-4 bg-[#08021A] rounded-2xl border border-dashed border-white/10 space-y-2">
+                <div className="text-center py-6 px-4 bg-surface-elevated rounded-xl border border-dashed border-border space-y-2">
                   <Eye className="w-6 h-6 text-textMuted mx-auto opacity-70" />
                   <p className="text-xs text-textMuted font-sans">
                     No stocks monitored in {watchlistFilter === 'All' ? 'any region' : watchlistFilter}.
@@ -846,7 +847,7 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
                         }
                       });
                     }}
-                    className="text-[11px] text-accentPurple hover:underline font-bold font-sans cursor-pointer"
+                    className="text-[11px] text-actionBlue hover:underline font-bold font-sans cursor-pointer"
                   >
                     + Add Top Global Bluechips
                   </button>
@@ -863,15 +864,15 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
                     return (
                       <div 
                         key={item.id}
-                        className="p-3 bg-[#08021A]/80 hover:bg-[#150F36]/90 border border-white/10 hover:border-accentPurple/40 rounded-2xl flex items-center justify-between transition-all group hover:shadow-[0_0_20px_rgba(94,108,231,0.2)]"
+                        className="p-3 bg-surface-elevated hover:bg-surface border border-border hover:border-actionBlue/40 rounded-xl flex items-center justify-between transition-all duration-300 ease-out group hover:-translate-y-0.5 shadow-card-base hover:shadow-card-hover"
                       >
                         {/* Symbol & Name */}
                         <div className="min-w-0 pr-2">
                           <div className="flex items-center gap-1.5">
-                            <span className="font-bold text-xs text-white truncate">
+                            <span className="font-bold text-xs text-textPrimary truncate">
                               {item.symbol}
                             </span>
-                            <span className="text-[9px] px-1.5 py-0.2 rounded-full bg-white/10 text-textMuted uppercase font-sans">
+                            <span className="text-[9px] px-1.5 py-0.2 rounded-full bg-surface border border-border text-textMuted uppercase font-sans">
                               {item.region || 'US'}
                             </span>
                           </div>
@@ -888,7 +889,7 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
                         {/* Price & Actions */}
                         <div className="flex items-center gap-2 shrink-0">
                           <div className="text-right font-mono tabular-nums">
-                            <div className="font-bold text-xs text-white">
+                            <div className="font-bold text-xs text-textPrimary">
                               {itemCurrency}{price.toFixed(2)}
                             </div>
                             <div className={`text-[10px] font-bold ${isPositive ? 'text-profitGreen' : 'text-lossRed'}`}>
@@ -900,7 +901,7 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
                           <button
                             onClick={() => handleLoadIntoTicket(item)}
                             title="Load into Order Ticket"
-                            className="p-1.5 rounded-xl bg-gradient-to-r from-accentBlue to-accentPurple text-white hover:scale-105 transition-all cursor-pointer shadow-[0_0_10px_rgba(198,69,249,0.3)]"
+                            className="p-1.5 rounded-lg bg-actionBlue text-white hover:bg-actionBlue/90 transition-all duration-300 ease-out cursor-pointer active:scale-95 shadow-xs"
                           >
                             <Zap className="w-3.5 h-3.5" />
                           </button>
@@ -909,7 +910,7 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
                           <button
                             onClick={() => removeFromWatchlist(item.id)}
                             title="Remove from Watchlist"
-                            className="p-1.5 rounded-xl text-textMuted hover:text-lossRed hover:bg-lossRed/10 transition-colors cursor-pointer"
+                            className="p-1.5 rounded-lg text-textMuted hover:text-lossRed hover:bg-lossRed/10 transition-colors cursor-pointer active:scale-95"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
                           </button>
@@ -922,17 +923,17 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
             </div>
 
             {/* Quick Balance Stats */}
-            <div className="bg-surface backdrop-blur-md border border-white/10 rounded-2xl p-5 shadow-2xl space-y-3 font-mono tabular-nums">
+            <div className="bg-surface border border-border rounded-2xl p-5 shadow-card-base hover:shadow-card-hover transition-all duration-300 ease-out space-y-3 font-mono tabular-nums">
                <div className="flex justify-between items-center text-xs">
-                 <span className="text-[#9A9DBE] font-sans">Available Cash Balance</span>
-                 <span className="text-white font-bold tracking-tighter">{currentCurrency}{tradingData.cashBalance.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+                 <span className="text-textMuted font-sans">Available Cash Balance</span>
+                 <span className="text-textPrimary font-bold tracking-tighter">{currentCurrency}{tradingData.cashBalance.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
                </div>
                <div className="flex justify-between items-center text-xs">
-                 <span className="text-[#9A9DBE] font-sans">Total Portfolio Net Worth</span>
-                 <span className="text-white font-bold tracking-tighter">{currentCurrency}{totalValue.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+                 <span className="text-textMuted font-sans">Total Portfolio Net Worth</span>
+                 <span className="text-textPrimary font-bold tracking-tighter">{currentCurrency}{totalValue.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
                </div>
-               <div className="w-full h-2 bg-[#08021A] rounded-full overflow-hidden border border-white/10">
-                 <div className="h-full bg-gradient-to-r from-[#5E6CE7] to-[#00FF66] rounded-full transition-all shadow-[0_0_10px_rgba(0,255,102,0.4)]" style={{ width: `${Math.min(100, (tradingData.cashBalance / (totalValue || 1)) * 100)}%` }}></div>
+               <div className="w-full h-2 bg-surface-elevated rounded-full overflow-hidden border border-border">
+                 <div className="h-full bg-gradient-to-r from-actionBlue to-profitGreen rounded-full transition-all shadow-xs" style={{ width: `${Math.min(100, (tradingData.cashBalance / (totalValue || 1)) * 100)}%` }}></div>
                </div>
             </div>
 
@@ -951,20 +952,20 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
             )}
 
             {/* Holdings & Positions Switcher */}
-            <div className="bg-white dark:bg-neutral-900/70 border border-slate-200 dark:border-white/10 rounded-3xl p-5 sm:p-6 shadow-sm">
-              <div className="flex gap-4 border-b border-slate-200 dark:border-white/10 mb-4">
+            <div className="bg-surface border border-border rounded-2xl p-5 sm:p-6 shadow-card-base transition-all duration-300 ease-out">
+              <div className="flex gap-4 border-b border-border mb-4">
                 <button 
                   onClick={() => setPortfolioTab('holdings')}
-                  className={`pb-3 text-xs sm:text-sm font-bold border-b-2 transition-colors cursor-pointer ${
-                    portfolioTab === 'holdings' ? 'border-blue-600 text-blue-600 dark:text-blue-400' : 'border-transparent text-slate-500 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-white'
+                  className={`pb-3 text-xs sm:text-sm font-bold border-b-2 transition-all duration-300 ease-out cursor-pointer active:scale-95 ${
+                    portfolioTab === 'holdings' ? 'border-actionBlue text-actionBlue' : 'border-transparent text-textMuted hover:text-textPrimary'
                   }`}
                 >
                   Holdings Portfolio ({tradingData.positions.length})
                 </button>
                 <button 
                   onClick={() => setPortfolioTab('positions')}
-                  className={`pb-3 text-xs sm:text-sm font-bold border-b-2 transition-colors cursor-pointer ${
-                    portfolioTab === 'positions' ? 'border-blue-600 text-blue-600 dark:text-blue-400' : 'border-transparent text-slate-500 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-white'
+                  className={`pb-3 text-xs sm:text-sm font-bold border-b-2 transition-all duration-300 ease-out cursor-pointer active:scale-95 ${
+                    portfolioTab === 'positions' ? 'border-actionBlue text-actionBlue' : 'border-transparent text-textMuted hover:text-textPrimary'
                   }`}
                 >
                   Active Intraday Orders (0)
@@ -975,9 +976,9 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
                 <div>
                   {tradingData.positions.length === 0 ? (
                      <div className="text-center py-12 space-y-3">
-                       <Briefcase className="w-10 h-10 text-slate-400 dark:text-neutral-600 mx-auto" />
-                       <h4 className="text-slate-900 dark:text-white font-bold text-sm">No Active Holdings</h4>
-                       <p className="text-slate-500 dark:text-neutral-400 text-xs max-w-sm mx-auto">
+                       <Briefcase className="w-10 h-10 text-textMuted mx-auto opacity-50" />
+                       <h4 className="text-textPrimary font-bold text-sm">No Active Holdings</h4>
+                       <p className="text-textMuted text-xs max-w-sm mx-auto">
                          Execute orders from the ticket panel to build your multi-asset portfolio.
                        </p>
                      </div>
@@ -985,7 +986,7 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
                     <div className="overflow-x-auto custom-scrollbar">
                       <table className="w-full text-left text-xs font-mono">
                         <thead>
-                          <tr className="text-[10px] text-slate-500 dark:text-neutral-400 uppercase tracking-wider border-b border-slate-200 dark:border-white/10">
+                          <tr className="text-[10px] text-textMuted uppercase tracking-wider border-b border-border">
                             <th className="pb-3 px-2">Instrument</th>
                             <th className="pb-3 px-2 text-right">Qty</th>
                             <th className="pb-3 px-2 text-right">Avg Cost</th>
@@ -993,22 +994,22 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
                             <th className="pb-3 px-2 text-right">Unrealized P&L</th>
                           </tr>
                         </thead>
-                        <tbody className="divide-y divide-slate-100 dark:divide-white/5">
+                        <tbody className="divide-y divide-border">
                           {tradingData.positions.map((pos) => {
                             const invested = pos.quantity * pos.averageEntryPrice;
                             const current = pos.quantity * pos.currentPrice;
                             const pnl = current - invested;
                             const pnlPct = (pnl / invested) * 100;
                             return (
-                              <tr key={pos.id} className="hover:bg-slate-50 dark:hover:bg-white/5">
+                              <tr key={pos.id} className="hover:bg-surface-elevated transition-colors">
                                 <td className="py-3 px-2">
-                                  <div className="font-bold text-slate-900 dark:text-white">{pos.symbol}</div>
-                                  <div className="text-[10px] text-slate-500 dark:text-neutral-400">{pos.name} • {pos.assetClass}</div>
+                                  <div className="font-bold text-textPrimary">{pos.symbol}</div>
+                                  <div className="text-[10px] text-textMuted">{pos.name} • {pos.assetClass}</div>
                                 </td>
-                                <td className="py-3 px-2 text-right text-slate-700 dark:text-neutral-300">{pos.quantity}</td>
-                                <td className="py-3 px-2 text-right text-slate-700 dark:text-neutral-300">${(pos.averageEntryPrice || 0).toFixed(2)}</td>
-                                <td className="py-3 px-2 text-right text-slate-700 dark:text-neutral-300 font-bold">${(pos.currentPrice || 0).toFixed(2)}</td>
-                                <td className={`py-3 px-2 text-right font-bold ${pnl >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`}>
+                                <td className="py-3 px-2 text-right text-textPrimary">{pos.quantity}</td>
+                                <td className="py-3 px-2 text-right text-textMuted">${(pos.averageEntryPrice || 0).toFixed(2)}</td>
+                                <td className="py-3 px-2 text-right text-textPrimary font-bold">${(pos.currentPrice || 0).toFixed(2)}</td>
+                                <td className={`py-3 px-2 text-right font-bold ${pnl >= 0 ? 'text-profitGreen' : 'text-lossRed'}`}>
                                   {pnl >= 0 ? '+' : ''}${pnl.toFixed(2)}
                                   <span className="text-[10px] font-normal block">({pnl >= 0 ? '+' : ''}{pnlPct.toFixed(2)}%)</span>
                                 </td>
@@ -1021,9 +1022,9 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
                   )}
                 </div>
               ) : (
-                <div className="text-center py-12 space-y-2 text-xs text-slate-500 dark:text-neutral-400">
-                   <Activity className="w-10 h-10 text-slate-400 dark:text-neutral-600 mx-auto mb-2" />
-                   <h4 className="text-slate-900 dark:text-white font-bold">No Active Intraday Positions</h4>
+                <div className="text-center py-12 space-y-2 text-xs text-textMuted">
+                   <Activity className="w-10 h-10 text-textMuted mx-auto mb-2 opacity-50" />
+                   <h4 className="text-textPrimary font-bold">No Active Intraday Positions</h4>
                    <p>Intraday and F&O trades settle automatically at market close.</p>
                 </div>
               )}
@@ -1042,66 +1043,66 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             
             {/* Total Net Worth */}
-            <div className="p-5 rounded-3xl bg-white dark:bg-neutral-900/70 border border-slate-200 dark:border-white/10 shadow-sm space-y-2">
+            <div className="p-5 rounded-2xl bg-surface border border-border shadow-card-base hover:shadow-card-hover hover:-translate-y-0.5 transition-all duration-300 ease-out space-y-2">
               <div className="flex justify-between items-start">
-                <span className="text-[11px] font-mono uppercase text-slate-500 dark:text-neutral-400 font-bold">Portfolio Net Worth</span>
-                <div className="p-1.5 rounded-xl bg-blue-50 dark:bg-blue-600/20 text-blue-600 dark:text-blue-400">
+                <span className="text-[11px] font-mono uppercase text-textMuted font-bold">Portfolio Net Worth</span>
+                <div className="p-1.5 rounded-xl bg-actionBlue/10 text-actionBlue">
                   <DollarSign className="w-4 h-4" />
                 </div>
               </div>
-              <div className="text-2xl font-extrabold font-mono tracking-tighter text-slate-900 dark:text-white">
+              <div className="text-2xl font-extrabold font-mono tracking-tighter text-textPrimary">
                 ${totalValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </div>
-              <div className="flex items-center gap-1 text-xs font-mono text-emerald-600 dark:text-emerald-400">
+              <div className="flex items-center gap-1 text-xs font-mono text-profitGreen">
                 <ArrowUpRight className="w-3.5 h-3.5" />
                 <span>Total Return: {totalReturn >= 0 ? '+' : ''}{totalReturn.toFixed(2)}%</span>
               </div>
             </div>
 
             {/* Unrealized P&L */}
-            <div className="p-5 rounded-3xl bg-white dark:bg-neutral-900/70 border border-slate-200 dark:border-white/10 shadow-sm space-y-2">
+            <div className="p-5 rounded-2xl bg-surface border border-border shadow-card-base hover:shadow-card-hover hover:-translate-y-0.5 transition-all duration-300 ease-out space-y-2">
               <div className="flex justify-between items-start">
-                <span className="text-[11px] font-mono uppercase text-slate-500 dark:text-neutral-400 font-bold">Unrealized P&L</span>
-                <div className={`p-1.5 rounded-xl ${unrealizedPnL >= 0 ? 'bg-emerald-50 dark:bg-emerald-600/20 text-emerald-600 dark:text-emerald-400' : 'bg-rose-50 dark:bg-rose-600/20 text-rose-600 dark:text-rose-400'}`}>
+                <span className="text-[11px] font-mono uppercase text-textMuted font-bold">Unrealized P&L</span>
+                <div className={`p-1.5 rounded-xl ${unrealizedPnL >= 0 ? 'bg-profitGreen/10 text-profitGreen' : 'bg-lossRed/10 text-lossRed'}`}>
                   <TrendingUp className="w-4 h-4" />
                 </div>
               </div>
-              <div className={`text-2xl font-extrabold font-mono tracking-tighter ${unrealizedPnL >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`}>
+              <div className={`text-2xl font-extrabold font-mono tracking-tighter ${unrealizedPnL >= 0 ? 'text-profitGreen' : 'text-lossRed'}`}>
                 {unrealizedPnL >= 0 ? '+' : ''}${unrealizedPnL.toFixed(2)}
               </div>
-              <span className="text-xs text-slate-500 dark:text-neutral-400 block font-mono">
+              <span className="text-xs text-textMuted block font-mono">
                 Across {tradingData.positions.length} active positions
               </span>
             </div>
 
             {/* Sharpe Ratio & Risk/Reward */}
-            <div className="p-5 rounded-3xl bg-white dark:bg-neutral-900/70 border border-slate-200 dark:border-white/10 shadow-sm space-y-2">
+            <div className="p-5 rounded-2xl bg-surface border border-border shadow-card-base hover:shadow-card-hover hover:-translate-y-0.5 transition-all duration-300 ease-out space-y-2">
               <div className="flex justify-between items-start">
-                <span className="text-[11px] font-mono uppercase text-slate-500 dark:text-neutral-400 font-bold">Sharpe & Risk Metrics</span>
-                <div className="p-1.5 rounded-xl bg-purple-50 dark:bg-purple-600/20 text-purple-600 dark:text-purple-400">
+                <span className="text-[11px] font-mono uppercase text-textMuted font-bold">Sharpe & Risk Metrics</span>
+                <div className="p-1.5 rounded-xl bg-actionBlue/10 text-actionBlue">
                   <Scale className="w-4 h-4" />
                 </div>
               </div>
-              <div className="text-2xl font-extrabold font-mono tracking-tighter text-slate-900 dark:text-white">
-                1.84 <span className="text-xs font-normal text-slate-500 font-sans">Sharpe</span>
+              <div className="text-2xl font-extrabold font-mono tracking-tighter text-textPrimary">
+                1.84 <span className="text-xs font-normal text-textMuted font-sans">Sharpe</span>
               </div>
-              <span className="text-xs text-purple-700 dark:text-purple-300 block font-mono">
+              <span className="text-xs text-actionBlue block font-mono">
                 R/R: 1:2.8 • Win Rate: 68.5%
               </span>
             </div>
 
             {/* Alpha & Beta */}
-            <div className="p-5 rounded-3xl bg-white dark:bg-neutral-900/70 border border-slate-200 dark:border-white/10 shadow-sm space-y-2">
+            <div className="p-5 rounded-2xl bg-surface border border-border shadow-card-base hover:shadow-card-hover hover:-translate-y-0.5 transition-all duration-300 ease-out space-y-2">
               <div className="flex justify-between items-start">
-                <span className="text-[11px] font-mono uppercase text-slate-500 dark:text-neutral-400 font-bold">Alpha vs. Benchmark</span>
-                <div className="p-1.5 rounded-xl bg-amber-50 dark:bg-amber-600/20 text-amber-600 dark:text-amber-400">
+                <span className="text-[11px] font-mono uppercase text-textMuted font-bold">Alpha vs. Benchmark</span>
+                <div className="p-1.5 rounded-xl bg-actionBlue/10 text-actionBlue">
                   <Zap className="w-4 h-4" />
                 </div>
               </div>
-              <div className="text-2xl font-extrabold font-mono tracking-tighter text-amber-600 dark:text-amber-400">
-                +3.4% <span className="text-xs font-normal text-slate-500 font-sans">Alpha</span>
+              <div className="text-2xl font-extrabold font-mono tracking-tighter text-actionBlue">
+                +3.4% <span className="text-xs font-normal text-textMuted font-sans">Alpha</span>
               </div>
-              <span className="text-xs text-slate-500 dark:text-neutral-400 block font-mono">
+              <span className="text-xs text-textMuted block font-mono">
                 Portfolio Beta: 1.05 (S&P 500)
               </span>
             </div>
@@ -1112,67 +1113,67 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
             
             {/* Asset Allocation Panel (5 Cols) */}
-            <div className="lg:col-span-5 p-6 rounded-3xl bg-white dark:bg-neutral-900/70 border border-slate-200 dark:border-white/10 shadow-sm space-y-5">
+            <div className="lg:col-span-5 p-6 rounded-2xl bg-surface border border-border shadow-card-base space-y-5 transition-all duration-300 ease-out">
               <div className="flex items-center justify-between">
-                <h3 className="text-sm font-bold text-slate-900 dark:text-white font-mono uppercase tracking-wider flex items-center gap-2">
-                  <PieChartIcon className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                <h3 className="text-sm font-bold text-textPrimary font-mono uppercase tracking-wider flex items-center gap-2">
+                  <PieChartIcon className="w-4 h-4 text-actionBlue" />
                   <span>Asset Allocation Breakdown</span>
                 </h3>
-                <span className="text-[10px] font-mono text-slate-500 dark:text-neutral-400">Multi-Asset</span>
+                <span className="text-[10px] font-mono text-textMuted">Multi-Asset</span>
               </div>
 
               {/* Progress Stacked Bar */}
-              <div className="w-full h-4 rounded-full overflow-hidden flex border border-slate-200 dark:border-white/10 shadow-xs">
-                <div style={{ width: `${allocation.equitiesPct}%` }} className="bg-blue-600" title={`Equities: ${allocation.equitiesPct}%`} />
+              <div className="w-full h-3 rounded-full overflow-hidden flex border border-border shadow-xs">
+                <div style={{ width: `${allocation.equitiesPct}%` }} className="bg-actionBlue" title={`Equities: ${allocation.equitiesPct}%`} />
                 <div style={{ width: `${allocation.etfPct}%` }} className="bg-purple-600" title={`ETFs: ${allocation.etfPct}%`} />
                 <div style={{ width: `${allocation.commodityPct}%` }} className="bg-amber-500" title={`Commodities: ${allocation.commodityPct}%`} />
-                <div style={{ width: `${allocation.cashPct}%` }} className="bg-emerald-500" title={`Cash: ${allocation.cashPct}%`} />
+                <div style={{ width: `${allocation.cashPct}%` }} className="bg-profitGreen" title={`Cash: ${allocation.cashPct}%`} />
               </div>
 
               {/* Allocation Legend */}
-              <div className="space-y-3 font-mono text-xs">
-                <div className="flex justify-between items-center p-2.5 rounded-xl bg-slate-50 dark:bg-neutral-950 border border-slate-200 dark:border-white/10">
+              <div className="space-y-2 font-mono text-xs">
+                <div className="flex justify-between items-center p-2.5 rounded-xl bg-surface-elevated border border-border">
                   <div className="flex items-center gap-2">
-                    <span className="w-3 h-3 rounded-full bg-blue-600" />
-                    <span className="text-slate-800 dark:text-neutral-200">Equities / Stocks</span>
+                    <span className="w-2.5 h-2.5 rounded-full bg-actionBlue" />
+                    <span className="text-textPrimary">Equities / Stocks</span>
                   </div>
-                  <span className="font-bold text-slate-900 dark:text-white">${allocation.equitiesVal.toFixed(2)} ({allocation.equitiesPct}%)</span>
+                  <span className="font-bold text-textPrimary">${allocation.equitiesVal.toFixed(2)} ({allocation.equitiesPct}%)</span>
                 </div>
 
-                <div className="flex justify-between items-center p-2.5 rounded-xl bg-slate-50 dark:bg-neutral-950 border border-slate-200 dark:border-white/10">
+                <div className="flex justify-between items-center p-2.5 rounded-xl bg-surface-elevated border border-border">
                   <div className="flex items-center gap-2">
-                    <span className="w-3 h-3 rounded-full bg-purple-600" />
-                    <span className="text-slate-800 dark:text-neutral-200">Index ETFs</span>
+                    <span className="w-2.5 h-2.5 rounded-full bg-purple-600" />
+                    <span className="text-textPrimary">Index ETFs</span>
                   </div>
-                  <span className="font-bold text-slate-900 dark:text-white">${allocation.etfVal.toFixed(2)} ({allocation.etfPct}%)</span>
+                  <span className="font-bold text-textPrimary">${allocation.etfVal.toFixed(2)} ({allocation.etfPct}%)</span>
                 </div>
 
-                <div className="flex justify-between items-center p-2.5 rounded-xl bg-slate-50 dark:bg-neutral-950 border border-slate-200 dark:border-white/10">
+                <div className="flex justify-between items-center p-2.5 rounded-xl bg-surface-elevated border border-border">
                   <div className="flex items-center gap-2">
-                    <span className="w-3 h-3 rounded-full bg-amber-500" />
-                    <span className="text-slate-800 dark:text-neutral-200">Commodities</span>
+                    <span className="w-2.5 h-2.5 rounded-full bg-amber-500" />
+                    <span className="text-textPrimary">Commodities</span>
                   </div>
-                  <span className="font-bold text-slate-900 dark:text-white">${allocation.commodityVal.toFixed(2)} ({allocation.commodityPct}%)</span>
+                  <span className="font-bold text-textPrimary">${allocation.commodityVal.toFixed(2)} ({allocation.commodityPct}%)</span>
                 </div>
 
-                <div className="flex justify-between items-center p-2.5 rounded-xl bg-slate-50 dark:bg-neutral-950 border border-slate-200 dark:border-white/10">
+                <div className="flex justify-between items-center p-2.5 rounded-xl bg-surface-elevated border border-border">
                   <div className="flex items-center gap-2">
-                    <span className="w-3 h-3 rounded-full bg-emerald-500" />
-                    <span className="text-slate-800 dark:text-neutral-200">Uninvested Cash</span>
+                    <span className="w-2.5 h-2.5 rounded-full bg-profitGreen" />
+                    <span className="text-textPrimary">Uninvested Cash</span>
                   </div>
-                  <span className="font-bold text-slate-900 dark:text-white">${allocation.cashVal.toFixed(2)} ({allocation.cashPct}%)</span>
+                  <span className="font-bold text-textPrimary">${allocation.cashVal.toFixed(2)} ({allocation.cashPct}%)</span>
                 </div>
               </div>
             </div>
 
             {/* Position Exposure Heatmap (7 Cols) */}
-            <div className="lg:col-span-7 p-6 rounded-3xl bg-white dark:bg-neutral-900/70 border border-slate-200 dark:border-white/10 shadow-sm space-y-5">
+            <div className="lg:col-span-7 p-6 rounded-2xl bg-surface border border-border shadow-card-base space-y-5 transition-all duration-300 ease-out">
               <div className="flex items-center justify-between">
-                <h3 className="text-sm font-bold text-slate-900 dark:text-white font-mono uppercase tracking-wider flex items-center gap-2">
-                  <BarChart2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                <h3 className="text-sm font-bold text-textPrimary font-mono uppercase tracking-wider flex items-center gap-2">
+                  <BarChart2 className="w-4 h-4 text-profitGreen" />
                   <span>Position Performance Heatmap</span>
                 </h3>
-                <span className="text-[10px] font-mono text-slate-500 dark:text-neutral-400">Live Mark-to-Market</span>
+                <span className="text-[10px] font-mono text-textMuted">Live Mark-to-Market</span>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -1186,25 +1187,25 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
                   return (
                     <div 
                       key={pos.id}
-                      className={`p-4 rounded-2xl border transition-all space-y-2 ${
+                      className={`p-4 rounded-xl border transition-all duration-300 ease-out space-y-2 shadow-card-base hover:shadow-card-hover hover:-translate-y-0.5 ${
                         isPositive 
-                          ? 'bg-emerald-50/60 dark:bg-emerald-600/10 border-emerald-300 dark:border-emerald-500/30' 
-                          : 'bg-rose-50/60 dark:bg-rose-600/10 border-rose-300 dark:border-rose-500/30'
+                          ? 'bg-profitGreen/5 border-profitGreen/30' 
+                          : 'bg-lossRed/5 border-lossRed/30'
                       }`}
                     >
                       <div className="flex justify-between items-start font-mono">
                         <div>
-                          <span className="font-extrabold text-sm text-slate-900 dark:text-white block">{pos.symbol}</span>
-                          <span className="text-[10px] text-slate-500 dark:text-neutral-400">{pos.quantity} units</span>
+                          <span className="font-extrabold text-sm text-textPrimary block">{pos.symbol}</span>
+                          <span className="text-[10px] text-textMuted">{pos.quantity} units</span>
                         </div>
-                        <span className={`text-xs font-bold ${isPositive ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`}>
+                        <span className={`text-xs font-bold ${isPositive ? 'text-profitGreen' : 'text-lossRed'}`}>
                           {isPositive ? '+' : ''}{pnlPct.toFixed(2)}%
                         </span>
                       </div>
 
-                      <div className="pt-2 border-t border-slate-200/60 dark:border-white/10 flex justify-between items-baseline font-mono text-xs">
-                        <span className="text-slate-500 text-[10px]">Position P&L:</span>
-                        <span className={`font-bold ${isPositive ? 'text-emerald-700 dark:text-emerald-300' : 'text-rose-700 dark:text-rose-300'}`}>
+                      <div className="pt-2 border-t border-border flex justify-between items-baseline font-mono text-xs">
+                        <span className="text-textMuted text-[10px]">Position P&L:</span>
+                        <span className={`font-bold ${isPositive ? 'text-profitGreen' : 'text-lossRed'}`}>
                           {isPositive ? '+' : ''}${pnl.toFixed(2)}
                         </span>
                       </div>
@@ -1217,11 +1218,11 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
           </div>
 
           {/* Trade Execution History Table */}
-          <div className="p-6 rounded-3xl bg-white dark:bg-neutral-900/70 border border-slate-200 dark:border-white/10 shadow-sm space-y-4">
+          <div className="p-6 rounded-2xl bg-surface border border-border shadow-card-base space-y-4 transition-all duration-300 ease-out">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2 font-mono">
-                <Clock className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-                <h3 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">
+                <Clock className="w-4 h-4 text-actionBlue" />
+                <h3 className="text-sm font-bold text-textPrimary uppercase tracking-wider">
                   Trade Execution Log ({tradingData.tradeHistory.length})
                 </h3>
               </div>
@@ -1229,7 +1230,7 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
               {tradingData.tradeHistory.length > 0 && (
                 <button
                   onClick={handleClearTradeHistory}
-                  className="px-3 py-1 rounded-xl bg-slate-100 dark:bg-neutral-800 hover:bg-rose-50 hover:text-rose-600 text-slate-600 dark:text-neutral-400 text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
+                  className="px-3 py-1 rounded-xl bg-surface-elevated hover:bg-lossRed/10 hover:text-lossRed text-textMuted text-xs font-semibold flex items-center gap-1.5 transition-all duration-300 ease-out cursor-pointer active:scale-95 border border-border"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
                   <span>Clear Log</span>
@@ -1238,14 +1239,14 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
             </div>
 
             {tradingData.tradeHistory.length === 0 ? (
-              <div className="text-center py-8 text-xs text-slate-500 dark:text-neutral-400 font-mono">
+              <div className="text-center py-8 text-xs text-textMuted font-mono">
                 No trades executed yet. Place an order in the Trading Terminal to populate this log.
               </div>
             ) : (
               <div className="overflow-x-auto custom-scrollbar">
                 <table className="w-full text-left text-xs font-mono">
                   <thead>
-                    <tr className="text-[10px] text-slate-500 dark:text-neutral-400 uppercase tracking-wider border-b border-slate-200 dark:border-white/10">
+                    <tr className="text-[10px] text-textMuted uppercase tracking-wider border-b border-border">
                       <th className="pb-3 px-2">Timestamp</th>
                       <th className="pb-3 px-2">Symbol</th>
                       <th className="pb-3 px-2">Side</th>
@@ -1256,26 +1257,26 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
                       <th className="pb-3 px-2 text-center">Status</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-100 dark:divide-white/5">
+                  <tbody className="divide-y divide-border">
                     {tradingData.tradeHistory.map((tr) => (
-                      <tr key={tr.id} className="hover:bg-slate-50 dark:hover:bg-white/5">
-                        <td className="py-3 px-2 text-slate-500 dark:text-neutral-400">
+                      <tr key={tr.id} className="hover:bg-surface-elevated transition-colors">
+                        <td className="py-3 px-2 text-textMuted">
                           {new Date(tr.timestamp).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' })}
                         </td>
-                        <td className="py-3 px-2 font-bold text-slate-900 dark:text-white">{tr.symbol}</td>
+                        <td className="py-3 px-2 font-bold text-textPrimary">{tr.symbol}</td>
                         <td className="py-3 px-2">
                           <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                            tr.side === 'Buy' ? 'bg-emerald-50 dark:bg-emerald-600/20 text-emerald-700 dark:text-emerald-400' : 'bg-rose-50 dark:bg-rose-600/20 text-rose-700 dark:text-rose-400'
+                            tr.side === 'Buy' ? 'bg-profitGreen/15 text-profitGreen' : 'bg-lossRed/15 text-lossRed'
                           }`}>
                             {tr.side.toUpperCase()}
                           </span>
                         </td>
-                        <td className="py-3 px-2 text-slate-600 dark:text-neutral-400">{tr.type}</td>
-                        <td className="py-3 px-2 text-right text-slate-900 dark:text-white font-bold">{tr.quantity}</td>
-                        <td className="py-3 px-2 text-right text-slate-700 dark:text-neutral-300">${tr.executionPrice.toFixed(2)}</td>
-                        <td className="py-3 px-2 text-right font-bold text-slate-900 dark:text-white">${(tr.executionPrice * tr.quantity).toFixed(2)}</td>
+                        <td className="py-3 px-2 text-textMuted">{tr.type}</td>
+                        <td className="py-3 px-2 text-right text-textPrimary font-bold">{tr.quantity}</td>
+                        <td className="py-3 px-2 text-right text-textMuted">${tr.executionPrice.toFixed(2)}</td>
+                        <td className="py-3 px-2 text-right font-bold text-textPrimary">${(tr.executionPrice * tr.quantity).toFixed(2)}</td>
                         <td className="py-3 px-2 text-center">
-                          <span className="px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-500/20 text-emerald-800 dark:text-emerald-300 text-[10px] font-bold">
+                          <span className="px-2 py-0.5 rounded-full bg-profitGreen/15 text-profitGreen text-[10px] font-bold">
                             {tr.status}
                           </span>
                         </td>
@@ -1295,24 +1296,24 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
       {/* ========================================================================= */}
       {activeSection === 'academy' && (
         <div className="space-y-6">
-          <div className="p-6 rounded-3xl bg-gradient-to-r from-blue-600/10 via-indigo-600/10 to-purple-600/10 border border-blue-200 dark:border-blue-500/20 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+          <div className="p-6 rounded-2xl bg-surface border border-border shadow-card-base flex flex-col md:flex-row items-start md:items-center justify-between gap-4 transition-all duration-300 ease-out">
             <div>
-              <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400 block mb-1">
+              <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-actionBlue block mb-1">
                 Institutional Finance Curriculum
               </span>
-              <h2 className="text-xl font-bold text-slate-900 dark:text-white">
+              <h2 className="text-xl font-bold text-textPrimary tracking-tight">
                 Interactive Core Concepts Academy
               </h2>
-              <p className="text-xs text-slate-600 dark:text-neutral-300 mt-1 max-w-xl">
+              <p className="text-xs text-textMuted mt-1 max-w-xl">
                 4 structured interactive tracks covering market theory, statement analysis, DCF modeling, and M&A/LBO transactions with live calculators.
               </p>
             </div>
 
-            <div className="flex items-center gap-3 font-mono text-xs bg-white dark:bg-neutral-900 p-3 rounded-2xl border border-slate-200 dark:border-white/10 shadow-sm shrink-0">
+            <div className="flex items-center gap-3 font-mono text-xs bg-surface-elevated p-3 rounded-xl border border-border shadow-xs shrink-0">
               <Award className="w-5 h-5 text-amber-500" />
               <div>
-                <span className="text-[10px] text-slate-500 block">Mastery Progress</span>
-                <strong className="text-slate-900 dark:text-white">
+                <span className="text-[10px] text-textMuted block">Mastery Progress</span>
+                <strong className="text-textPrimary">
                   {Object.values(tradingData.academyProgress).filter(Boolean).length} / 4 Tracks Completed
                 </strong>
               </div>
@@ -1322,26 +1323,26 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             
             {/* Track 1: Core Trading Theory */}
-            <div className="p-6 rounded-3xl bg-white dark:bg-neutral-900/70 border border-slate-200 dark:border-white/10 shadow-sm flex flex-col justify-between hover:border-blue-500/40 transition-all group space-y-4">
+            <div className="p-6 rounded-2xl bg-surface border border-border shadow-card-base hover:shadow-card-hover hover:-translate-y-0.5 flex flex-col justify-between transition-all duration-300 ease-out group space-y-4">
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <div className="w-12 h-12 rounded-2xl bg-blue-50 dark:bg-blue-600/20 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold">
+                  <div className="w-12 h-12 rounded-xl bg-actionBlue/10 text-actionBlue flex items-center justify-center font-bold">
                     <Book className="w-6 h-6" />
                   </div>
-                  <span className="px-2.5 py-1 rounded-full text-[10px] font-mono font-bold bg-blue-50 dark:bg-blue-500/20 text-blue-700 dark:text-blue-300 uppercase">
+                  <span className="px-2.5 py-1 rounded-full text-[10px] font-mono font-bold bg-actionBlue/10 text-actionBlue uppercase">
                     Track 1 • Theory
                   </span>
                 </div>
 
-                <h3 className="text-lg font-bold text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                <h3 className="text-lg font-bold text-textPrimary group-hover:text-actionBlue transition-colors tracking-tight">
                   Core Trading Theory & Market Mechanics
                 </h3>
-                <p className="text-xs text-slate-600 dark:text-neutral-400 leading-relaxed font-sans">
+                <p className="text-xs text-textMuted leading-relaxed font-sans">
                   Bid-Ask Spread & Order Books, Market vs. Limit Orders, Slippage & Execution Risk, CAPM & Beta Calculation, and Modern Portfolio Theory (MPT).
                 </p>
 
-                <div className="p-3 rounded-xl bg-slate-50 dark:bg-neutral-950 border border-slate-200 dark:border-white/10 text-xs text-slate-700 dark:text-neutral-300 font-mono space-y-1">
-                  <span className="font-bold text-[10px] uppercase text-blue-600 dark:text-blue-400 block">Includes:</span>
+                <div className="p-3 rounded-xl bg-surface-elevated border border-border text-xs text-textPrimary font-mono space-y-1">
+                  <span className="font-bold text-[10px] uppercase text-actionBlue block">Includes:</span>
                   <div>• Interactive CAPM Expected Return Calculator</div>
                   <div>• 3-Question Market Mechanics Mastery Check</div>
                 </div>
@@ -1349,38 +1350,38 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
 
               <button 
                 onClick={() => setActiveModule('theory')}
-                className={`w-full py-3 min-h-[44px] rounded-2xl text-xs font-bold transition-all cursor-pointer shadow-sm flex items-center justify-center gap-2 ${
+                className={`w-full py-3 min-h-[44px] rounded-xl text-xs font-bold transition-all duration-300 ease-out cursor-pointer shadow-xs flex items-center justify-center gap-2 active:scale-95 ${
                   tradingData.academyProgress['theory'] 
-                    ? 'bg-emerald-50 dark:bg-emerald-600/20 text-emerald-700 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-500/30' 
-                    : 'bg-blue-600 hover:bg-blue-500 text-white'
+                    ? 'bg-profitGreen/15 text-profitGreen border border-profitGreen/30' 
+                    : 'bg-accentPrimary text-background'
                 }`}
               >
-                {tradingData.academyProgress['theory'] ? <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" /> : <Sparkles className="w-4 h-4" />}
+                {tradingData.academyProgress['theory'] ? <CheckCircle2 className="w-4 h-4 text-profitGreen" /> : <Sparkles className="w-4 h-4" />}
                 <span>{tradingData.academyProgress['theory'] ? 'Completed • Review Track' : 'Start Theory Track'}</span>
               </button>
             </div>
             
             {/* Track 2: Financial Statement Analysis */}
-            <div className="p-6 rounded-3xl bg-white dark:bg-neutral-900/70 border border-slate-200 dark:border-white/10 shadow-sm flex flex-col justify-between hover:border-purple-500/40 transition-all group space-y-4">
+            <div className="p-6 rounded-2xl bg-surface border border-border shadow-card-base hover:shadow-card-hover hover:-translate-y-0.5 flex flex-col justify-between transition-all duration-300 ease-out group space-y-4">
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <div className="w-12 h-12 rounded-2xl bg-purple-50 dark:bg-purple-600/20 text-purple-600 dark:text-purple-400 flex items-center justify-center font-bold">
+                  <div className="w-12 h-12 rounded-xl bg-actionBlue/10 text-actionBlue flex items-center justify-center font-bold">
                     <BookOpen className="w-6 h-6" />
                   </div>
-                  <span className="px-2.5 py-1 rounded-full text-[10px] font-mono font-bold bg-purple-50 dark:bg-purple-500/20 text-purple-700 dark:text-purple-300 uppercase">
+                  <span className="px-2.5 py-1 rounded-full text-[10px] font-mono font-bold bg-actionBlue/10 text-actionBlue uppercase">
                     Track 2 • Accounting
                   </span>
                 </div>
 
-                <h3 className="text-lg font-bold text-slate-900 dark:text-white group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">
+                <h3 className="text-lg font-bold text-textPrimary group-hover:text-actionBlue transition-colors tracking-tight">
                   Financial Statement Analysis
                 </h3>
-                <p className="text-xs text-slate-600 dark:text-neutral-400 leading-relaxed font-sans">
+                <p className="text-xs text-textMuted leading-relaxed font-sans">
                   Income Statement (Revenue to Net Income), Balance Sheet Mechanics, Cash Flow Statement (CFO, CFI, CFF), and DuPont ROE / ROIC ratios.
                 </p>
 
-                <div className="p-3 rounded-xl bg-slate-50 dark:bg-neutral-950 border border-slate-200 dark:border-white/10 text-xs text-slate-700 dark:text-neutral-300 font-mono space-y-1">
-                  <span className="font-bold text-[10px] uppercase text-purple-600 dark:text-purple-400 block">Includes:</span>
+                <div className="p-3 rounded-xl bg-surface-elevated border border-border text-xs text-textPrimary font-mono space-y-1">
+                  <span className="font-bold text-[10px] uppercase text-actionBlue block">Includes:</span>
                   <div>• Interactive 3-Part DuPont ROE Breakdown Sandbox</div>
                   <div>• 3-Question Statement Accounting Quiz</div>
                 </div>
@@ -1388,38 +1389,38 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
 
               <button 
                 onClick={() => setActiveModule('statements')}
-                className={`w-full py-3 min-h-[44px] rounded-2xl text-xs font-bold transition-all cursor-pointer shadow-sm flex items-center justify-center gap-2 ${
+                className={`w-full py-3 min-h-[44px] rounded-xl text-xs font-bold transition-all duration-300 ease-out cursor-pointer shadow-xs flex items-center justify-center gap-2 active:scale-95 ${
                   tradingData.academyProgress['statements'] 
-                    ? 'bg-emerald-50 dark:bg-emerald-600/20 text-emerald-700 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-500/30' 
-                    : 'bg-purple-600 hover:bg-purple-500 text-white'
+                    ? 'bg-profitGreen/15 text-profitGreen border border-profitGreen/30' 
+                    : 'bg-accentPrimary text-background'
                 }`}
               >
-                {tradingData.academyProgress['statements'] ? <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" /> : <Sparkles className="w-4 h-4" />}
+                {tradingData.academyProgress['statements'] ? <CheckCircle2 className="w-4 h-4 text-profitGreen" /> : <Sparkles className="w-4 h-4" />}
                 <span>{tradingData.academyProgress['statements'] ? 'Completed • Review Track' : 'Start Statements Track'}</span>
               </button>
             </div>
             
             {/* Track 3: Corporate Valuation & DCF Modeling */}
-            <div className="p-6 rounded-3xl bg-white dark:bg-neutral-900/70 border border-slate-200 dark:border-white/10 shadow-sm flex flex-col justify-between hover:border-amber-500/40 transition-all group space-y-4">
+            <div className="p-6 rounded-2xl bg-surface border border-border shadow-card-base hover:shadow-card-hover hover:-translate-y-0.5 flex flex-col justify-between transition-all duration-300 ease-out group space-y-4">
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <div className="w-12 h-12 rounded-2xl bg-amber-50 dark:bg-amber-600/20 text-amber-600 dark:text-amber-400 flex items-center justify-center font-bold">
+                  <div className="w-12 h-12 rounded-xl bg-actionBlue/10 text-actionBlue flex items-center justify-center font-bold">
                     <Target className="w-6 h-6" />
                   </div>
-                  <span className="px-2.5 py-1 rounded-full text-[10px] font-mono font-bold bg-amber-50 dark:bg-amber-500/20 text-amber-700 dark:text-amber-300 uppercase">
+                  <span className="px-2.5 py-1 rounded-full text-[10px] font-mono font-bold bg-actionBlue/10 text-actionBlue uppercase">
                     Track 3 • Valuation
                   </span>
                 </div>
 
-                <h3 className="text-lg font-bold text-slate-900 dark:text-white group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">
+                <h3 className="text-lg font-bold text-textPrimary group-hover:text-actionBlue transition-colors tracking-tight">
                   Corporate Valuation & DCF Modeling
                 </h3>
-                <p className="text-xs text-slate-600 dark:text-neutral-400 leading-relaxed font-sans">
+                <p className="text-xs text-textMuted leading-relaxed font-sans">
                   Unlevered Free Cash Flow (FCFF), WACC & Cost of Capital, Terminal Value (Gordon Growth vs. Exit Multiples), and Enterprise Value vs. Equity Value.
                 </p>
 
-                <div className="p-3 rounded-xl bg-slate-50 dark:bg-neutral-950 border border-slate-200 dark:border-white/10 text-xs text-slate-700 dark:text-neutral-300 font-mono space-y-1">
-                  <span className="font-bold text-[10px] uppercase text-amber-600 dark:text-amber-400 block">Includes:</span>
+                <div className="p-3 rounded-xl bg-surface-elevated border border-border text-xs text-textPrimary font-mono space-y-1">
+                  <span className="font-bold text-[10px] uppercase text-actionBlue block">Includes:</span>
                   <div>• Interactive Gordon Growth Terminal Value Calculator</div>
                   <div>• 3-Question Valuation & WACC Assessment</div>
                 </div>
@@ -1427,38 +1428,38 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
 
               <button 
                 onClick={() => setActiveModule('valuation')}
-                className={`w-full py-3 min-h-[44px] rounded-2xl text-xs font-bold transition-all cursor-pointer shadow-sm flex items-center justify-center gap-2 ${
+                className={`w-full py-3 min-h-[44px] rounded-xl text-xs font-bold transition-all duration-300 ease-out cursor-pointer shadow-xs flex items-center justify-center gap-2 active:scale-95 ${
                   tradingData.academyProgress['valuation'] 
-                    ? 'bg-emerald-50 dark:bg-emerald-600/20 text-emerald-700 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-500/30' 
-                    : 'bg-amber-600 hover:bg-amber-500 text-white'
+                    ? 'bg-profitGreen/15 text-profitGreen border border-profitGreen/30' 
+                    : 'bg-accentPrimary text-background'
                 }`}
               >
-                {tradingData.academyProgress['valuation'] ? <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" /> : <Sparkles className="w-4 h-4" />}
+                {tradingData.academyProgress['valuation'] ? <CheckCircle2 className="w-4 h-4 text-profitGreen" /> : <Sparkles className="w-4 h-4" />}
                 <span>{tradingData.academyProgress['valuation'] ? 'Completed • Review Track' : 'Start DCF Track'}</span>
               </button>
             </div>
 
             {/* Track 4: Investment Banking & M&A / LBO */}
-            <div className="p-6 rounded-3xl bg-white dark:bg-neutral-900/70 border border-slate-200 dark:border-white/10 shadow-sm flex flex-col justify-between hover:border-emerald-500/40 transition-all group space-y-4">
+            <div className="p-6 rounded-2xl bg-surface border border-border shadow-card-base hover:shadow-card-hover hover:-translate-y-0.5 flex flex-col justify-between transition-all duration-300 ease-out group space-y-4">
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <div className="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-600/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold">
+                  <div className="w-12 h-12 rounded-xl bg-actionBlue/10 text-actionBlue flex items-center justify-center font-bold">
                     <ShieldCheck className="w-6 h-6" />
                   </div>
-                  <span className="px-2.5 py-1 rounded-full text-[10px] font-mono font-bold bg-emerald-50 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 uppercase">
+                  <span className="px-2.5 py-1 rounded-full text-[10px] font-mono font-bold bg-actionBlue/10 text-actionBlue uppercase">
                     Track 4 • M&A & LBO
                   </span>
                 </div>
 
-                <h3 className="text-lg font-bold text-slate-900 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
+                <h3 className="text-lg font-bold text-textPrimary group-hover:text-actionBlue transition-colors tracking-tight">
                   Investment Banking & M&A / LBO
                 </h3>
-                <p className="text-xs text-slate-600 dark:text-neutral-400 leading-relaxed font-sans">
+                <p className="text-xs text-textMuted leading-relaxed font-sans">
                   Accretion/Dilution Analysis, Comparable Companies (Comps), Precedent Transactions, LBO Returns (IRR & MoIC), and Debt Sizing.
                 </p>
 
-                <div className="p-3 rounded-xl bg-slate-50 dark:bg-neutral-950 border border-slate-200 dark:border-white/10 text-xs text-slate-700 dark:text-neutral-300 font-mono space-y-1">
-                  <span className="font-bold text-[10px] uppercase text-emerald-600 dark:text-emerald-400 block">Includes:</span>
+                <div className="p-3 rounded-xl bg-surface-elevated border border-border text-xs text-textPrimary font-mono space-y-1">
+                  <span className="font-bold text-[10px] uppercase text-actionBlue block">Includes:</span>
                   <div>• Interactive M&A Accretion/Dilution Evaluator</div>
                   <div>• 3-Question LBO Returns & Deal Mechanics Quiz</div>
                 </div>
@@ -1466,13 +1467,13 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
 
               <button 
                 onClick={() => setActiveModule('mna')}
-                className={`w-full py-3 min-h-[44px] rounded-2xl text-xs font-bold transition-all cursor-pointer shadow-sm flex items-center justify-center gap-2 ${
+                className={`w-full py-3 min-h-[44px] rounded-xl text-xs font-bold transition-all duration-300 ease-out cursor-pointer shadow-xs flex items-center justify-center gap-2 active:scale-95 ${
                   tradingData.academyProgress['mna'] 
-                    ? 'bg-emerald-50 dark:bg-emerald-600/20 text-emerald-700 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-500/30' 
-                    : 'bg-emerald-600 hover:bg-emerald-500 text-white'
+                    ? 'bg-profitGreen/15 text-profitGreen border border-profitGreen/30' 
+                    : 'bg-accentPrimary text-background'
                 }`}
               >
-                {tradingData.academyProgress['mna'] ? <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" /> : <Sparkles className="w-4 h-4" />}
+                {tradingData.academyProgress['mna'] ? <CheckCircle2 className="w-4 h-4 text-profitGreen" /> : <Sparkles className="w-4 h-4" />}
                 <span>{tradingData.academyProgress['mna'] ? 'Completed • Review Track' : 'Start M&A / LBO Track'}</span>
               </button>
             </div>
