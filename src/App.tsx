@@ -22,6 +22,7 @@ import { useSettings } from './context/SettingsContext';
 import { useOwnerSecurity } from './context/OwnerSecurityContext';
 import { useAuth } from './context/AuthContext';
 import { InteractiveCursorGlow } from './components/canvas/InteractiveCursorGlow';
+import { useFirestoreData } from './hooks/useFirestoreData';
 import { useScrollLock } from './hooks/useScrollLock';
 import { useModalDismiss } from './hooks/useModalDismiss';
 import { useGlobalShortcuts } from './hooks/useGlobalShortcuts';
