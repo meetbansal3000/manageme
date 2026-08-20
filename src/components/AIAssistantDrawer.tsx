@@ -199,22 +199,24 @@ export const AIAssistantDrawer: React.FC<AIAssistantDrawerProps> = ({
     let isMounted = true;
     const fetchProviders = async () => {
       try {
-        const res = await fetch('/api/ai/providers');
-        const contentType = res.headers.get('content-type') || '';
-        if (res.ok && contentType.includes('application/json')) {
-          const data = await res.json();
-          if (isMounted && data?.providers && Array.isArray(data.providers)) {
-            const map: Record<string, boolean> = {};
-            data.providers.forEach((p: any) => {
-              if (p?.id) {
-                map[p.id] = !!p.isConfigured;
-              }
-            });
-            setProviderStatuses(prev => ({ ...prev, ...map }));
+        const res = await fetch('/api/ai/providers').catch(() => null);
+        if (res && res.ok) {
+          const contentType = res.headers.get('content-type') || '';
+          if (contentType.includes('application/json')) {
+            const data = await res.json().catch(() => null);
+            if (isMounted && data?.providers && Array.isArray(data.providers)) {
+              const map: Record<string, boolean> = {};
+              data.providers.forEach((p: any) => {
+                if (p?.id) {
+                  map[p.id] = !!p.isConfigured;
+                }
+              });
+              setProviderStatuses(prev => ({ ...prev, ...map }));
+            }
           }
         }
-      } catch (err) {
-        console.warn('Provider check error:', err);
+      } catch {
+        // Silently fallback to default provider configuration
       }
     };
 

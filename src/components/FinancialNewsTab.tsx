@@ -246,33 +246,27 @@ export const FinancialNewsTab: React.FC<Props> = ({ userData, updateData }) => {
     setIsLoadingNews(true);
     try {
       const url = forceRefresh ? '/api/news/live?refresh=true' : '/api/news/live';
-      const res = await fetch(url);
-      const contentType = res.headers.get('content-type') || '';
-      if (res.ok && contentType.includes('application/json')) {
-        const data = await res.json();
-        if (Array.isArray(data?.articles) && data.articles.length > 0) {
-          setNewsArticles(data.articles);
-          setLastRefreshedAt(Date.now());
-          return;
+      const res = await fetch(url).catch(() => null);
+      if (res && res.ok) {
+        const contentType = res.headers.get('content-type') || '';
+        if (contentType.includes('application/json')) {
+          const data = await res.json().catch(() => null);
+          if (Array.isArray(data?.articles) && data.articles.length > 0) {
+            setNewsArticles(data.articles);
+            setLastRefreshedAt(Date.now());
+            setIsLoadingNews(false);
+            return;
+          }
         }
       }
-      // Direct provider fallback
-      const fallbackArticles = await fetchUnifiedFinancialNews(forceRefresh);
-      if (fallbackArticles.length > 0) {
+      // Direct provider fallback or fallback data
+      const fallbackArticles = await fetchUnifiedFinancialNews(forceRefresh).catch(() => []);
+      if (Array.isArray(fallbackArticles) && fallbackArticles.length > 0) {
         setNewsArticles(fallbackArticles as LiveNewsItem[]);
         setLastRefreshedAt(Date.now());
       }
-    } catch (e) {
-      console.warn('Failed to fetch live news from server, attempting client direct providers:', e);
-      try {
-        const fallbackArticles = await fetchUnifiedFinancialNews(forceRefresh);
-        if (fallbackArticles.length > 0) {
-          setNewsArticles(fallbackArticles as LiveNewsItem[]);
-          setLastRefreshedAt(Date.now());
-        }
-      } catch (fallbackErr) {
-        console.warn('Client provider fallback also unavailable, using cached news', fallbackErr);
-      }
+    } catch {
+      // Gracefully silent fallback to initial mock news items
     } finally {
       setIsLoadingNews(false);
     }

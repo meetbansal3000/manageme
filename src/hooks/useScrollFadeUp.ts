@@ -1,39 +1,49 @@
-import { useEffect } from 'react';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { useSettings } from '../context/SettingsContext';
+'use client';
 
-gsap.registerPlugin(ScrollTrigger);
+import { useEffect } from 'react';
+import { useSettings } from '../context/SettingsContext';
 
 export const useScrollFadeUp = (dependencies: any[] = []) => {
   const { settings } = useSettings();
 
   useEffect(() => {
+    if (typeof window === 'undefined' || typeof IntersectionObserver === 'undefined') return;
+
+    const elements = document.querySelectorAll('.gsap-fade-up');
     if (!settings?.animationsEnabled) {
-      gsap.set('.gsap-fade-up', { opacity: 1, y: 0, clearProps: 'all' });
+      elements.forEach((el) => {
+        (el as HTMLElement).style.opacity = '1';
+        (el as HTMLElement).style.transform = 'none';
+      });
       return;
     }
 
-    const ctx = gsap.context(() => {
-      // Hide initially for those outside viewport to avoid FOUC before ScrollTrigger starts
-      gsap.set('.gsap-fade-up', { opacity: 0, y: 30 });
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const el = entry.target as HTMLElement;
+            el.style.opacity = '1';
+            el.style.transform = 'translateY(0)';
+            el.style.transition = 'opacity 0.5s ease-out, transform 0.5s cubic-bezier(0.16, 1, 0.3, 1)';
+            observer.unobserve(el);
+          }
+        });
+      },
+      { rootMargin: '0px 0px -50px 0px', threshold: 0.1 }
+    );
 
-      ScrollTrigger.batch('.gsap-fade-up', {
-        onEnter: (batch) => {
-          gsap.to(batch, {
-            opacity: 1,
-            y: 0,
-            stagger: 0.05,
-            duration: 0.6,
-            ease: 'power3.out',
-            clearProps: 'transform' // leave opacity 1
-          });
-        },
-        start: 'top 95%', // Trigger just before they come into view
-        once: true // Animate only once when scrolling down
-      });
+    elements.forEach((el) => {
+      const htmlEl = el as HTMLElement;
+      htmlEl.style.opacity = '0';
+      htmlEl.style.transform = 'translateY(20px)';
+      observer.observe(htmlEl);
     });
 
-    return () => ctx.revert();
+    return () => {
+      observer.disconnect();
+    };
   }, [settings?.animationsEnabled, ...dependencies]);
 };
+
+export default useScrollFadeUp;

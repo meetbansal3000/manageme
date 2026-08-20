@@ -80,10 +80,14 @@ export default function App() {
       const pathname = window.location.pathname.replace(/^\/+/, '').toLowerCase();
       if (pathname === 'privacy') return 'privacy';
       if (pathname === 'terms') return 'terms';
+      if (pathname === 'workspace' || pathname === 'app') return 'news';
+
       const hash = window.location.hash.replace(/^#+/, '').toLowerCase();
       if (hash === 'privacy') return 'privacy';
       if (hash === 'terms') return 'terms';
-      if (hash && PRIMARY_TABS.includes(hash as any)) return hash;
+      if (hash === 'landing') return 'landing';
+      if (hash === 'workspace' || hash === 'app') return 'news';
+      if (hash && PRIMARY_TABS.includes(hash as any) && hash !== 'landing') return hash;
 
       const isAuthedCached = localStorage.getItem('manageme_user_profile') || localStorage.getItem('manageme_guest_session') === 'true';
       const lastSaved = localStorage.getItem('manageme_last_active_tab');
@@ -95,8 +99,6 @@ export default function App() {
         }
         return 'news';
       }
-
-      if (lastSaved && PRIMARY_TABS.includes(lastSaved as any)) return lastSaved;
     }
     return 'landing';
   };
@@ -117,7 +119,7 @@ export default function App() {
   // Auto-redirect authenticated users directly into their dashboard
   useEffect(() => {
     if (!isLoading && (user || isGuest || isAuthenticated)) {
-      if (activeTab === 'landing') {
+      if (activeTab === 'landing' && window.location.hash !== '#landing') {
         const lastSaved = localStorage.getItem('manageme_last_active_tab');
         const target = (lastSaved && lastSaved !== 'landing' && PRIMARY_TABS.includes(lastSaved as any)) ? lastSaved : 'news';
         handleTabChange(target);
@@ -370,33 +372,8 @@ export default function App() {
     };
     window.addEventListener('keydown', handleKeyDown);
 
-    // Slight delay to ensure DOM is ready
-    const timer = setTimeout(() => {
-      if (typeof window !== 'undefined' && gsap) {
-        const cards = gsap.utils.toArray('.glass-panel');
-        cards.forEach((card: any) => {
-          gsap.fromTo(card,
-            { y: 20, opacity: 0 },
-            {
-              scrollTrigger: {
-                trigger: card,
-                start: "top bottom-=50",
-                toggleActions: "play none none reverse"
-              },
-              y: 0,
-              opacity: 1,
-              duration: 0.6,
-              ease: "power3.out"
-            }
-          );
-        });
-        ScrollTrigger.refresh();
-      }
-    }, 100);
-    
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
-      clearTimeout(timer);
     };
   }, [loading, activeTab, userData]); // Re-run when tab changes
 
