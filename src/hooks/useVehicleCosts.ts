@@ -44,6 +44,7 @@ export function useVehicleCosts() {
         const { data, error } = await supabase
           .from('vehicle_costs')
           .select('*')
+          .eq('user_id', userId)
           .order('id', { ascending: false });
 
         if (!error && data && data.length > 0) {
@@ -162,7 +163,11 @@ export function useVehicleCosts() {
     try {
       const userId = await getSupabaseUserId();
       if (userId) {
-        await supabase.from('vehicle_costs').delete().eq('id', id);
+        await supabase
+          .from('vehicle_costs')
+          .delete()
+          .eq('id', id)
+          .eq('user_id', userId);
       }
     } catch (err) {
       console.warn('Failed to delete vehicle cost from Supabase:', err);

@@ -24,6 +24,7 @@ export function useJobs() {
         const { data, error } = await supabase
           .from('job_applications')
           .select('*')
+          .eq('user_id', userId)
           .order('date_added', { ascending: false });
 
         if (!error && data && data.length > 0) {
@@ -146,7 +147,11 @@ export function useJobs() {
     try {
       const userId = await getSupabaseUserId();
       if (userId) {
-        await supabase.from('job_applications').delete().eq('id', id);
+        await supabase
+          .from('job_applications')
+          .delete()
+          .eq('id', id)
+          .eq('user_id', userId);
       }
     } catch (err) {
       console.warn('Failed to delete job application from Supabase:', err);

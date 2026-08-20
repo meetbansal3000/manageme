@@ -11,7 +11,12 @@ import {
   strictCorsMiddleware,
   generalApiLimiter,
   aiRateLimiter,
+  marketApiLimiter,
   authRateLimiter,
+  requireAuthOrSession,
+  validateAndCalculatePaperTrade,
+  sanitizeString,
+  sanitizeSearchQuery,
   safeErrorHandler,
   sendSafeError
 } from './server/security';
@@ -69,6 +74,12 @@ async function startServer() {
   app.use('/api', generalApiLimiter);
   app.use('/api/ai', aiRateLimiter);
   app.use('/api/chat-command', aiRateLimiter);
+  app.use('/api/market', marketApiLimiter);
+  app.use('/api/news', marketApiLimiter);
+  app.use('/api/trade', generalApiLimiter);
+
+  // 4. Authentication / Session Verification Middleware
+  app.use('/api', requireAuthOrSession);
 
   // In-memory media store for chat attachments (ephemeral, for prototyping)
   const mediaStore = new Map<string, { buffer: Buffer, mimetype: string }>();
@@ -959,6 +970,68 @@ Output strictly as JSON:
   });
 
   // ==========================================
+  // PAPER TRADING & FINANCIAL VALIDATION API
+  // ==========================================
+
+  app.post('/api/trade/validate-order', (req, res) => {
+    try {
+      const { symbol, orderSide, orderMode, orderType, quantity, limitPrice, triggerPrice, cashBalance, positions } = req.body;
+      const result = validateAndCalculatePaperTrade({
+        symbol: sanitizeString(symbol, 20),
+        orderSide,
+        orderMode,
+        orderType,
+        quantity: Number(quantity),
+        limitPrice: limitPrice ? Number(limitPrice) : undefined,
+        triggerPrice: triggerPrice ? Number(triggerPrice) : undefined,
+        cashBalance: Number(cashBalance || 0),
+        positions: Array.isArray(positions) ? positions : []
+      });
+
+      if (!result.valid) {
+        return res.status(400).json({ success: false, error: result.error });
+      }
+
+      res.json({ success: true, ...result });
+    } catch (e: any) {
+      sendSafeError(res, 500, 'Unable to validate paper trade order.', e);
+    }
+  });
+
+  app.post('/api/trade/calculate-execution', (req, res) => {
+    try {
+      const { symbol, orderSide, orderMode, orderType, quantity, limitPrice, cashBalance, positions } = req.body;
+      const result = validateAndCalculatePaperTrade({
+        symbol: sanitizeString(symbol, 20),
+        orderSide,
+        orderMode,
+        orderType,
+        quantity: Number(quantity),
+        limitPrice: limitPrice ? Number(limitPrice) : undefined,
+        cashBalance: Number(cashBalance || 0),
+        positions: Array.isArray(positions) ? positions : []
+      });
+
+      if (!result.valid) {
+        return res.status(400).json({ success: false, error: result.error });
+      }
+
+      res.json({
+        success: true,
+        executionPrice: result.executionPrice,
+        brokerFee: result.brokerFee,
+        marginRequired: result.marginRequired,
+        totalCost: result.totalCost,
+        newCashBalance: result.newCashBalance,
+        newPositions: result.newPositions,
+        executedTrade: result.executedTrade
+      });
+    } catch (e: any) {
+      sendSafeError(res, 500, 'Unable to calculate trade execution.', e);
+    }
+  });
+
+  // ==========================================
   // LIVE MARKETS & FINANCIAL NEWS ENDPOINTS
   // ==========================================
 
@@ -981,7 +1054,7 @@ Output strictly as JSON:
       ];
       res.json({ success: true, timestamp: Date.now(), quotes });
     } catch (e: any) {
-      res.status(500).json({ error: e.message });
+      sendSafeError(res, 500, 'Unable to retrieve market quotes.', e);
     }
   });
 
@@ -994,8 +1067,9 @@ Output strictly as JSON:
       const now = Date.now();
       const forceRefresh = req.query.refresh === 'true';
 
-      // Return cached news if fresh (< 3 mins) and not forced
-      if (!forceRefresh && cachedNews.length > 0 && now - lastNewsFetchTime < 180000) {
+      // Anti-quota exhaustion: Enforce at least 30s cooldown between remote fetches even on forced refresh
+      const isCooldownActive = (now - lastNewsFetchTime) < 30000;
+      if (cachedNews.length > 0 && ((!forceRefresh && now - lastNewsFetchTime < 180000) || (forceRefresh && isCooldownActive))) {
         return res.json({ success: true, timestamp: lastNewsFetchTime, articles: cachedNews, fromCache: true });
       }
 

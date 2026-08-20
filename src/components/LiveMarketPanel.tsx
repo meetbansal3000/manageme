@@ -22,6 +22,8 @@ export const LiveMarketPanel: React.FC<Props> = ({ asset, marketData, volatility
     });
   }, [marketData.currentPrice]);
 
+  const currency = asset?.currency || '$';
+
   return (
     <div className="bg-[#111114] border border-[#2A2A2D] rounded-2xl p-6 shadow-xl space-y-6 animate-in fade-in duration-300">
       
@@ -30,14 +32,19 @@ export const LiveMarketPanel: React.FC<Props> = ({ asset, marketData, volatility
         <div>
           <div className="flex items-center gap-2">
             <h2 className="text-xl font-bold text-white">{asset.symbol} Live Market</h2>
+            {asset.region && (
+              <span className="px-2 py-0.5 bg-blue-500/20 text-blue-400 text-[10px] font-bold rounded border border-blue-500/30 uppercase">
+                {asset.region} • {asset.exchange || 'EXCHANGE'}
+              </span>
+            )}
             {marketData.volumeSpike && (
               <span className="px-2 py-0.5 bg-rose-500/20 text-rose-400 text-[10px] font-bold rounded animate-pulse uppercase">Vol Spike</span>
             )}
           </div>
-          <p className="text-gray-400 text-sm flex items-center gap-2">
+          <p className="text-gray-400 text-sm flex items-center gap-2 mt-1">
             <span>VIX Est: {marketData.vixEstimate.toFixed(1)}</span>
             <span>•</span>
-            <span>Spread: ${marketData.spread.toFixed(4)}</span>
+            <span>Spread: {currency}{marketData.spread.toFixed(4)}</span>
           </p>
         </div>
         
@@ -64,21 +71,21 @@ export const LiveMarketPanel: React.FC<Props> = ({ asset, marketData, volatility
         <div className="bg-[#18181B] p-4 rounded-xl border border-[#2A2A2D]">
           <div className="text-gray-400 text-[10px] font-bold uppercase tracking-wider mb-1">LTP</div>
           <div className={`text-lg font-bold flex items-center gap-1 ${marketData.isUp ? 'text-emerald-400' : 'text-rose-400'}`}>
-            ${marketData.currentPrice.toFixed(2)}
+            {currency}{marketData.currentPrice.toFixed(2)}
             {marketData.isUp ? <TrendingUp className="w-4 h-4"/> : <TrendingDown className="w-4 h-4"/>}
           </div>
         </div>
         <div className="bg-[#18181B] p-4 rounded-xl border border-[#2A2A2D]">
           <div className="text-gray-400 text-[10px] font-bold uppercase tracking-wider mb-1">24h High</div>
-          <div className="text-lg font-bold text-white">${marketData.high24h.toFixed(2)}</div>
+          <div className="text-lg font-bold text-white">{currency}{marketData.high24h.toFixed(2)}</div>
         </div>
         <div className="bg-[#18181B] p-4 rounded-xl border border-[#2A2A2D]">
           <div className="text-gray-400 text-[10px] font-bold uppercase tracking-wider mb-1">24h Low</div>
-          <div className="text-lg font-bold text-white">${marketData.low24h.toFixed(2)}</div>
+          <div className="text-lg font-bold text-white">{currency}{marketData.low24h.toFixed(2)}</div>
         </div>
         <div className="bg-[#18181B] p-4 rounded-xl border border-[#2A2A2D]">
           <div className="text-gray-400 text-[10px] font-bold uppercase tracking-wider mb-1">ATR</div>
-          <div className="text-lg font-bold text-white">${marketData.atr.toFixed(4)}</div>
+          <div className="text-lg font-bold text-white">{currency}{marketData.atr.toFixed(4)}</div>
         </div>
       </div>
 

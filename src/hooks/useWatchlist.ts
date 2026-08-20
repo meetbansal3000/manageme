@@ -9,16 +9,22 @@ export interface WatchlistItem {
   change?: number;
   changePercent?: number;
   assetClass?: string;
+  currency?: string;
+  region?: 'US' | 'India' | 'UK' | 'EU' | 'Singapore' | string;
+  exchange?: string;
+  volatility?: number;
   dateAdded?: string;
 }
 
 const STORAGE_KEY = 'manageme_watchlist';
 
 const DEFAULT_WATCHLIST: WatchlistItem[] = [
-  { id: 'w_1', symbol: 'AAPL', name: 'Apple Inc.', price: 232.50, change: +1.85, changePercent: 0.80, assetClass: 'Stock' },
-  { id: 'w_2', symbol: 'NVDA', name: 'NVIDIA Corp', price: 128.90, change: +3.40, changePercent: 2.71, assetClass: 'Stock' },
-  { id: 'w_3', symbol: 'SPY', name: 'SPDR S&P 500 ETF', price: 561.20, change: +0.45, changePercent: 0.08, assetClass: 'ETF' },
-  { id: 'w_4', symbol: 'BTC-USD', name: 'Bitcoin / USD', price: 62450, change: +1200, changePercent: 1.96, assetClass: 'Crypto' }
+  { id: 'w_1', symbol: 'AAPL', name: 'Apple Inc.', price: 232.80, change: +1.95, changePercent: 0.84, currency: '$', region: 'US', exchange: 'NASDAQ', assetClass: 'Stock' },
+  { id: 'w_2', symbol: 'NVDA', name: 'NVIDIA Corp', price: 138.45, change: +4.15, changePercent: 3.09, currency: '$', region: 'US', exchange: 'NASDAQ', assetClass: 'Stock' },
+  { id: 'w_3', symbol: 'RELIANCE.NS', name: 'Reliance Industries', price: 2980.50, change: +35.40, changePercent: 1.20, currency: '₹', region: 'India', exchange: 'NSE', assetClass: 'Stock' },
+  { id: 'w_4', symbol: 'HSBA.L', name: 'HSBC Holdings plc', price: 692.40, change: +4.20, changePercent: 0.61, currency: '£', region: 'UK', exchange: 'LSE', assetClass: 'Stock' },
+  { id: 'w_5', symbol: 'ASML.AS', name: 'ASML Holding NV', price: 792.60, change: +12.40, changePercent: 1.59, currency: '€', region: 'EU', exchange: 'Euronext', assetClass: 'Stock' },
+  { id: 'w_6', symbol: 'D05.SI', name: 'DBS Group Holdings', price: 38.60, change: +0.45, changePercent: 1.18, currency: 'S$', region: 'Singapore', exchange: 'SGX', assetClass: 'Stock' }
 ];
 
 export function useWatchlist() {
@@ -41,6 +47,7 @@ export function useWatchlist() {
         const { data, error } = await supabase
           .from('watchlists')
           .select('*')
+          .eq('user_id', userId)
           .order('id', { ascending: false });
 
         if (!error && data && data.length > 0) {
@@ -52,6 +59,9 @@ export function useWatchlist() {
             change: Number(w.change) || 0,
             changePercent: Number(w.change_percent || w.changePercent) || 0,
             assetClass: w.asset_class || w.assetClass || 'Stock',
+            currency: w.currency || '$',
+            region: w.region || 'US',
+            exchange: w.exchange || 'NASDAQ',
             dateAdded: w.created_at || w.dateAdded || new Date().toISOString(),
           }));
           setWatchlist(mapped);
@@ -71,14 +81,16 @@ export function useWatchlist() {
 
   // Add or update item
   const addToWatchlist = async (item: Omit<WatchlistItem, 'id'> & { id?: string }) => {
-    const itemId = item.id || `w_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
+    const itemId = item.id || `w_${item.symbol.replace(/[^a-zA-Z0-9]/g, '_')}_${Date.now()}`;
     const fullItem: WatchlistItem = {
       ...item,
       id: itemId,
+      currency: item.currency || '$',
+      region: item.region || 'US',
       dateAdded: item.dateAdded || new Date().toISOString(),
     };
 
-    const updated = [fullItem, ...watchlist.filter(w => w.id !== itemId)];
+    const updated = [fullItem, ...watchlist.filter(w => w.symbol !== item.symbol)];
     setWatchlist(updated);
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
@@ -98,6 +110,9 @@ export function useWatchlist() {
           change: fullItem.change || 0,
           change_percent: fullItem.changePercent || 0,
           asset_class: fullItem.assetClass || 'Stock',
+          currency: fullItem.currency || '$',
+          region: fullItem.region || 'US',
+          exchange: fullItem.exchange || 'NASDAQ',
           updated_at: new Date().toISOString(),
         });
       }
@@ -118,7 +133,11 @@ export function useWatchlist() {
     try {
       const userId = await getSupabaseUserId();
       if (userId) {
-        await supabase.from('watchlists').delete().eq('id', id);
+        await supabase
+          .from('watchlists')
+          .delete()
+          .eq('id', id)
+          .eq('user_id', userId);
       }
     } catch (err) {
       console.warn('Failed to remove item from Supabase watchlist:', err);

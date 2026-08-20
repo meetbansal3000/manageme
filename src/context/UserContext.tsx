@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { supabase } from '../lib/supabase';
+import { supabase, getSupabaseUserId } from '../lib/supabase';
 
 export interface UserProfile {
   id?: string;
@@ -112,7 +112,9 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   }, []);
 
   const updateUser = async (fields: Partial<UserProfile>) => {
-    const updated = { ...user, ...fields };
+    // Prevent client caller from overriding ID to another user's ID
+    const { id: _ignoredId, ...safeFields } = fields;
+    const updated = { ...user, ...safeFields };
     setUser(updated);
 
     try {
@@ -121,20 +123,21 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       console.warn('Failed to update user profile in localStorage:', err);
     }
 
-    // Direct Supabase sync if user is authenticated
-    if (updated.id) {
-      try {
+    // Direct Supabase sync if user is authenticated with verified session ID
+    try {
+      const activeUserId = await getSupabaseUserId();
+      if (activeUserId) {
         await supabase.from('profiles').upsert({
-          id: updated.id,
+          id: activeUserId,
           name: updated.name,
           university: updated.university,
           degree: updated.degree,
           role: updated.role,
           updated_at: new Date().toISOString(),
         });
-      } catch (err: any) {
-        console.error('[Supabase Error - Profile Sync]:', err?.message || err);
       }
+    } catch (err: any) {
+      console.error('[Supabase Error - Profile Sync]:', err?.message || err);
     }
   };
 

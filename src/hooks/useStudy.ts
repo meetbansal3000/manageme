@@ -55,6 +55,7 @@ export function useStudy() {
         const { data: docsData, error: docsErr } = await supabase
           .from('study_documents')
           .select('*')
+          .eq('user_id', userId)
           .order('id', { ascending: false });
 
         if (!docsErr && docsData && docsData.length > 0) {
@@ -74,6 +75,7 @@ export function useStudy() {
         const { data: cardsData, error: cardsErr } = await supabase
           .from('flashcards')
           .select('*')
+          .eq('user_id', userId)
           .order('id', { ascending: false });
 
         if (!cardsErr && cardsData && cardsData.length > 0) {
@@ -185,7 +187,11 @@ export function useStudy() {
     try {
       const userId = await getSupabaseUserId();
       if (userId) {
-        await supabase.from('study_documents').delete().eq('id', id);
+        await supabase
+          .from('study_documents')
+          .delete()
+          .eq('id', id)
+          .eq('user_id', userId);
       }
     } catch (err) {
       console.warn('Failed to delete study document from Supabase:', err);
@@ -278,7 +284,11 @@ export function useStudy() {
     try {
       const userId = await getSupabaseUserId();
       if (userId) {
-        await supabase.from('flashcards').delete().eq('id', id);
+        await supabase
+          .from('flashcards')
+          .delete()
+          .eq('id', id)
+          .eq('user_id', userId);
       }
     } catch (err) {
       console.warn('Failed to delete flashcard from Supabase:', err);

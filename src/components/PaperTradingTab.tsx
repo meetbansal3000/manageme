@@ -34,20 +34,120 @@ import { LiveMarketPanel } from './LiveMarketPanel';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useScrollLock } from '../hooks/useScrollLock';
 import { useMarketEngine } from '../hooks/useMarketEngine';
+import { useWatchlist, WatchlistItem } from '../hooks/useWatchlist';
+import { Star, Globe, Eye, Sparkles as SparklesIcon, Plus, Check } from 'lucide-react';
 
-// --- MOCK ASSET DIRECTORY ---
-const ASSET_DIRECTORY = [
-  { symbol: 'AAPL', name: 'Apple Inc.', type: 'STOCKS', exchange: 'NASDAQ', price: 232.80, change: '+1.1%', isUp: true, logo: 'A' },
-  { symbol: 'NVDA', name: 'NVIDIA Corp', type: 'STOCKS', exchange: 'NASDAQ', price: 138.45, change: '+4.5%', isUp: true, logo: 'N' },
-  { symbol: 'TSLA', name: 'Tesla Inc.', type: 'STOCKS', exchange: 'NASDAQ', price: 218.90, change: '-2.1%', isUp: false, logo: 'T' },
-  { symbol: 'MSFT', name: 'Microsoft Corp', type: 'STOCKS', exchange: 'NASDAQ', price: 448.60, change: '+0.8%', isUp: true, logo: 'M' },
-  { symbol: 'AMZN', name: 'Amazon.com', type: 'STOCKS', exchange: 'NASDAQ', price: 194.30, change: '+1.4%', isUp: true, logo: 'A' },
-  { symbol: 'GOOGL', name: 'Alphabet Inc.', type: 'STOCKS', exchange: 'NASDAQ', price: 182.40, change: '-0.4%', isUp: false, logo: 'G' },
-  { symbol: 'GOLD', name: 'Gold (XAU/USD)', type: 'COMMODITY', exchange: 'MCX', price: 2892.40, change: '+1.2%', isUp: true, logo: 'G' },
-  { symbol: 'BRENT', name: 'Brent Crude Oil', type: 'COMMODITY', exchange: 'NYMEX', price: 74.35, change: '-1.2%', isUp: false, logo: 'O' },
-  { symbol: 'SPY', name: 'SPDR S&P 500 ETF', type: 'ETF', exchange: 'NYSE', price: 598.40, change: '+0.7%', isUp: true, logo: 'S' },
-  { symbol: 'QQQ', name: 'Invesco QQQ Trust', type: 'ETF', exchange: 'NASDAQ', price: 518.20, change: '+0.9%', isUp: true, logo: 'Q' },
+// --- MULTI-REGION CONFIGURATION ---
+export type MarketRegion = 'US' | 'India' | 'UK' | 'EU' | 'Singapore';
+
+export interface MarketRegionConfig {
+  id: MarketRegion;
+  label: string;
+  name: string;
+  flag: string;
+  currency: string;
+  suffix: string;
+  exchanges: string[];
+  description: string;
+}
+
+export const MARKET_REGIONS: MarketRegionConfig[] = [
+  { id: 'US', label: 'US', name: 'United States', flag: '🇺🇸', currency: '$', suffix: '', exchanges: ['NASDAQ', 'NYSE'], description: 'Wall Street & Tech Leaders' },
+  { id: 'India', label: 'India', name: 'India', flag: '🇮🇳', currency: '₹', suffix: '.NS', exchanges: ['NSE', 'BSE'], description: 'Nifty & Dalal Street' },
+  { id: 'UK', label: 'UK', name: 'United Kingdom', flag: '🇬🇧', currency: '£', suffix: '.L', exchanges: ['LSE'], description: 'FTSE 100 & London' },
+  { id: 'EU', label: 'EU', name: 'European Union', flag: '🇪🇺', currency: '€', suffix: '.PA', exchanges: ['Euronext', 'XETRA'], description: 'Euro Stoxx & Pan-EU' },
+  { id: 'Singapore', label: 'Singapore', name: 'Singapore', flag: '🇸🇬', currency: 'S$', suffix: '.SI', exchanges: ['SGX'], description: 'Straits Times & SGX' }
 ];
+
+export interface MarketAsset {
+  symbol: string;
+  name: string;
+  type: 'STOCKS' | 'COMMODITY' | 'ETF';
+  exchange: string;
+  region: MarketRegion;
+  currency: string;
+  price: number;
+  change: string;
+  isUp: boolean;
+  logo: string;
+  sparkline: number[];
+}
+
+// --- CURATED GLOBAL ASSETS DIRECTORY ---
+export const GLOBAL_ASSETS: MarketAsset[] = [
+  // US
+  { symbol: 'AAPL', name: 'Apple Inc.', type: 'STOCKS', exchange: 'NASDAQ', region: 'US', currency: '$', price: 232.80, change: '+1.1%', isUp: true, logo: 'A', sparkline: [228, 229, 230, 231, 232.8] },
+  { symbol: 'NVDA', name: 'NVIDIA Corp', type: 'STOCKS', exchange: 'NASDAQ', region: 'US', currency: '$', price: 138.45, change: '+4.5%', isUp: true, logo: 'N', sparkline: [131, 133, 134, 136, 138.45] },
+  { symbol: 'TSLA', name: 'Tesla Inc.', type: 'STOCKS', exchange: 'NASDAQ', region: 'US', currency: '$', price: 218.90, change: '-2.1%', isUp: false, logo: 'T', sparkline: [224, 223, 220, 219, 218.9] },
+  { symbol: 'MSFT', name: 'Microsoft Corp', type: 'STOCKS', exchange: 'NASDAQ', region: 'US', currency: '$', price: 448.60, change: '+0.8%', isUp: true, logo: 'M', sparkline: [444, 445, 446, 447, 448.6] },
+  { symbol: 'AMZN', name: 'Amazon.com', type: 'STOCKS', exchange: 'NASDAQ', region: 'US', currency: '$', price: 194.30, change: '+1.4%', isUp: true, logo: 'A', sparkline: [191, 192, 193, 193.5, 194.3] },
+  { symbol: 'GOOGL', name: 'Alphabet Inc.', type: 'STOCKS', exchange: 'NASDAQ', region: 'US', currency: '$', price: 182.40, change: '-0.4%', isUp: false, logo: 'G', sparkline: [184, 183.5, 183, 182.8, 182.4] },
+  { symbol: 'SPY', name: 'SPDR S&P 500 ETF', type: 'ETF', exchange: 'NYSE', region: 'US', currency: '$', price: 598.40, change: '+0.7%', isUp: true, logo: 'S', sparkline: [594, 595, 596, 597, 598.4] },
+  { symbol: 'QQQ', name: 'Invesco QQQ Trust', type: 'ETF', exchange: 'NASDAQ', region: 'US', currency: '$', price: 518.20, change: '+0.9%', isUp: true, logo: 'Q', sparkline: [513, 514, 516, 517, 518.2] },
+  { symbol: 'GOLD', name: 'Gold (XAU/USD)', type: 'COMMODITY', exchange: 'MCX', region: 'US', currency: '$', price: 2892.40, change: '+1.2%', isUp: true, logo: 'G', sparkline: [2860, 2870, 2880, 2888, 2892.4] },
+  { symbol: 'BRENT', name: 'Brent Crude Oil', type: 'COMMODITY', exchange: 'NYMEX', region: 'US', currency: '$', price: 74.35, change: '-1.2%', isUp: false, logo: 'O', sparkline: [76, 75.5, 75, 74.6, 74.35] },
+
+  // India
+  { symbol: 'RELIANCE.NS', name: 'Reliance Industries', type: 'STOCKS', exchange: 'NSE', region: 'India', currency: '₹', price: 2980.50, change: '+1.2%', isUp: true, logo: 'R', sparkline: [2940, 2955, 2965, 2975, 2980.5] },
+  { symbol: 'TCS.NS', name: 'Tata Consultancy Services', type: 'STOCKS', exchange: 'NSE', region: 'India', currency: '₹', price: 4190.20, change: '+0.9%', isUp: true, logo: 'T', sparkline: [4150, 4165, 4175, 4180, 4190.2] },
+  { symbol: 'HDFCBANK.NS', name: 'HDFC Bank Ltd', type: 'STOCKS', exchange: 'NSE', region: 'India', currency: '₹', price: 1640.80, change: '+1.5%', isUp: true, logo: 'H', sparkline: [1615, 1625, 1630, 1638, 1640.8] },
+  { symbol: 'INFY.NS', name: 'Infosys Ltd', type: 'STOCKS', exchange: 'NSE', region: 'India', currency: '₹', price: 1875.40, change: '-0.3%', isUp: false, logo: 'I', sparkline: [1885, 1880, 1878, 1876, 1875.4] },
+  { symbol: 'ICICIBANK.NS', name: 'ICICI Bank Ltd', type: 'STOCKS', exchange: 'NSE', region: 'India', currency: '₹', price: 1210.60, change: '+2.1%', isUp: true, logo: 'I', sparkline: [1185, 1195, 1200, 1205, 1210.6] },
+  { symbol: 'TATAMOTORS.NS', name: 'Tata Motors Ltd', type: 'STOCKS', exchange: 'NSE', region: 'India', currency: '₹', price: 945.30, change: '+3.4%', isUp: true, logo: 'T', sparkline: [915, 925, 930, 938, 945.3] },
+  { symbol: 'NIFTY50', name: 'NIFTY 50 ETF', type: 'ETF', exchange: 'NSE', region: 'India', currency: '₹', price: 24850.00, change: '+0.8%', isUp: true, logo: 'N', sparkline: [24650, 24700, 24750, 24800, 24850] },
+
+  // UK
+  { symbol: 'HSBA.L', name: 'HSBC Holdings plc', type: 'STOCKS', exchange: 'LSE', region: 'UK', currency: '£', price: 692.40, change: '+0.6%', isUp: true, logo: 'H', sparkline: [688, 689, 690, 691, 692.4] },
+  { symbol: 'AZN.L', name: 'AstraZeneca plc', type: 'STOCKS', exchange: 'LSE', region: 'UK', currency: '£', price: 12450.00, change: '+1.1%', isUp: true, logo: 'A', sparkline: [12300, 12350, 12400, 12420, 12450] },
+  { symbol: 'SHEL.L', name: 'Shell plc', type: 'STOCKS', exchange: 'LSE', region: 'UK', currency: '£', price: 2680.00, change: '-0.5%', isUp: false, logo: 'S', sparkline: [2695, 2690, 2688, 2684, 2680] },
+  { symbol: 'BP.L', name: 'BP plc', type: 'STOCKS', exchange: 'LSE', region: 'UK', currency: '£', price: 425.80, change: '-0.8%', isUp: false, logo: 'B', sparkline: [430, 428, 427, 426, 425.8] },
+  { symbol: 'RIO.L', name: 'Rio Tinto Group', type: 'STOCKS', exchange: 'LSE', region: 'UK', currency: '£', price: 4920.00, change: '+1.8%', isUp: true, logo: 'R', sparkline: [4830, 4850, 4880, 4900, 4920] },
+  { symbol: 'FTSE100', name: 'iShares Core FTSE 100', type: 'ETF', exchange: 'LSE', region: 'UK', currency: '£', price: 842.80, change: '+0.5%', isUp: true, logo: 'F', sparkline: [838, 839, 840, 841.5, 842.8] },
+
+  // EU
+  { symbol: 'ASML.AS', name: 'ASML Holding NV', type: 'STOCKS', exchange: 'Euronext', region: 'EU', currency: '€', price: 792.60, change: '+1.6%', isUp: true, logo: 'A', sparkline: [780, 783, 786, 790, 792.6] },
+  { symbol: 'SAP.DE', name: 'SAP SE', type: 'STOCKS', exchange: 'XETRA', region: 'EU', currency: '€', price: 198.40, change: '+0.7%', isUp: true, logo: 'S', sparkline: [196, 197, 197.5, 198, 198.4] },
+  { symbol: 'MC.PA', name: 'LVMH Moët Hennessy', type: 'STOCKS', exchange: 'Euronext', region: 'EU', currency: '€', price: 685.20, change: '-0.9%', isUp: false, logo: 'L', sparkline: [692, 690, 688, 686, 685.2] },
+  { symbol: 'SIE.DE', name: 'Siemens AG', type: 'STOCKS', exchange: 'XETRA', region: 'EU', currency: '€', price: 178.90, change: '+1.3%', isUp: true, logo: 'S', sparkline: [176, 177, 177.5, 178.2, 178.9] },
+  { symbol: 'TTE.PA', name: 'TotalEnergies SE', type: 'STOCKS', exchange: 'Euronext', region: 'EU', currency: '€', price: 62.40, change: '+0.4%', isUp: true, logo: 'T', sparkline: [61.8, 62.0, 62.1, 62.2, 62.4] },
+  { symbol: 'STOXX50', name: 'EURO STOXX 50 ETF', type: 'ETF', exchange: 'XETRA', region: 'EU', currency: '€', price: 498.20, change: '+0.6%', isUp: true, logo: 'E', sparkline: [495, 496, 497, 497.8, 498.2] },
+
+  // Singapore
+  { symbol: 'D05.SI', name: 'DBS Group Holdings', type: 'STOCKS', exchange: 'SGX', region: 'Singapore', currency: 'S$', price: 38.60, change: '+1.2%', isUp: true, logo: 'D', sparkline: [38.1, 38.2, 38.3, 38.5, 38.6] },
+  { symbol: 'O39.SI', name: 'OCBC Bank', type: 'STOCKS', exchange: 'SGX', region: 'Singapore', currency: 'S$', price: 15.20, change: '+0.8%', isUp: true, logo: 'O', sparkline: [15.05, 15.1, 15.12, 15.18, 15.2] },
+  { symbol: 'U11.SI', name: 'United Overseas Bank', type: 'STOCKS', exchange: 'SGX', region: 'Singapore', currency: 'S$', price: 32.40, change: '+1.4%', isUp: true, logo: 'U', sparkline: [31.9, 32.0, 32.15, 32.3, 32.4] },
+  { symbol: 'Z74.SI', name: 'Singtel Ltd', type: 'STOCKS', exchange: 'SGX', region: 'Singapore', currency: 'S$', price: 3.12, change: '-0.3%', isUp: false, logo: 'S', sparkline: [3.15, 3.14, 3.13, 3.12, 3.12] },
+  { symbol: 'C6L.SI', name: 'Singapore Airlines', type: 'STOCKS', exchange: 'SGX', region: 'Singapore', currency: 'S$', price: 6.45, change: '+0.5%', isUp: true, logo: 'S', sparkline: [6.41, 6.42, 6.43, 6.44, 6.45] },
+  { symbol: 'STI', name: 'SPDR Straits Times Index ETF', type: 'ETF', exchange: 'SGX', region: 'Singapore', currency: 'S$', price: 35.80, change: '+0.4%', isUp: true, logo: 'S', sparkline: [35.6, 35.65, 35.7, 35.75, 35.8] }
+];
+
+// Mini SVG Sparkline Component
+const MiniSparkline: React.FC<{ points: number[]; isUp: boolean }> = ({ points, isUp }) => {
+  if (!points || points.length < 2) return null;
+  const min = Math.min(...points);
+  const max = Math.max(...points);
+  const range = max - min || 1;
+  const width = 68;
+  const height = 24;
+  const strokeColor = isUp ? '#10b981' : '#f43f5e';
+  const fillColor = isUp ? 'rgba(16, 185, 129, 0.15)' : 'rgba(244, 63, 94, 0.15)';
+
+  const coords = points.map((p, idx) => {
+    const x = (idx / (points.length - 1)) * width;
+    const y = height - ((p - min) / range) * (height - 6) - 3;
+    return `${x.toFixed(1)},${y.toFixed(1)}`;
+  });
+
+  const polylineStr = coords.join(' ');
+  const polygonStr = `0,${height} ${coords.join(' ')} ${width},${height}`;
+
+  return (
+    <svg width={width} height={height} className="overflow-visible inline-block">
+      <polygon points={polygonStr} fill={fillColor} />
+      <polyline points={polylineStr} fill="none" stroke={strokeColor} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+};
 
 interface PaperTradingTabProps {
   userData: UserTrackerData;
@@ -58,10 +158,19 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
   const [activeSection, setActiveSection] = useState<'portfolio' | 'analytics' | 'academy'>('portfolio');
   const [portfolioTab, setPortfolioTab] = useState<'holdings' | 'positions'>('holdings');
   
+  // Multi-Region Market Tab State
+  const [activeRegion, setActiveRegion] = useState<MarketRegion>('US');
+  const activeRegionConfig = useMemo(() => MARKET_REGIONS.find(r => r.id === activeRegion) || MARKET_REGIONS[0], [activeRegion]);
+
+  // Watchlist Hook
+  const { watchlist, addToWatchlist, removeFromWatchlist } = useWatchlist();
+  const [watchlistFilter, setWatchlistFilter] = useState<'All' | MarketRegion>('All');
+  const [showWatchlistSection, setShowWatchlistSection] = useState<boolean>(true);
+
   // Order Panel State
   const [searchQuery, setSearchQuery] = useState('');
   const [showDropdown, setShowDropdown] = useState(false);
-  const [selectedAsset, setSelectedAsset] = useState<any>(ASSET_DIRECTORY[0]);
+  const [selectedAsset, setSelectedAsset] = useState<MarketAsset>(GLOBAL_ASSETS[0]);
   
   const [orderType, setOrderType] = useState<'Delivery' | 'Intraday'>('Delivery');
   const [orderMode, setOrderMode] = useState<'Market' | 'Limit' | 'SL'>('Market');
@@ -75,6 +184,63 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
   useScrollLock(!!activeModule);
 
   const { marketData, volatility, setVolatility } = useMarketEngine(selectedAsset?.price || 100, selectedAsset?.symbol || 'AAPL');
+
+  // Helper to check if ticker is in watchlist
+  const isMonitored = (symbol: string) => watchlist.some(w => w.symbol === symbol);
+
+  // Toggle Watchlist Action
+  const handleToggleWatchlist = (asset: { symbol: string; name: string; price?: number; change?: string | number; type?: string; currency?: string; region?: string; exchange?: string }) => {
+    if (isMonitored(asset.symbol)) {
+      const existing = watchlist.find(w => w.symbol === asset.symbol);
+      if (existing) removeFromWatchlist(existing.id);
+    } else {
+      addToWatchlist({
+        symbol: asset.symbol,
+        name: asset.name,
+        price: asset.price || marketData.currentPrice,
+        change: typeof asset.change === 'string' ? parseFloat(asset.change) : (asset.change || 0),
+        changePercent: typeof asset.change === 'string' ? parseFloat(asset.change) : 0,
+        assetClass: asset.type === 'COMMODITY' ? 'Commodity' : asset.type === 'ETF' ? 'ETF' : 'Stock',
+        currency: asset.currency || activeRegionConfig.currency,
+        region: asset.region || activeRegion,
+        exchange: asset.exchange || activeRegionConfig.exchanges[0],
+        volatility: volatility
+      });
+    }
+  };
+
+  // Helper to load any stock into the Order Ticket
+  const handleLoadIntoTicket = (asset: MarketAsset | WatchlistItem | any) => {
+    // Find matching in GLOBAL_ASSETS or synthesize
+    const match = GLOBAL_ASSETS.find(a => a.symbol === asset.symbol);
+    if (match) {
+      setSelectedAsset(match);
+      if (match.region) setActiveRegion(match.region);
+    } else {
+      const regionMatch = (asset.region as MarketRegion) || activeRegion;
+      const currencyMatch = asset.currency || activeRegionConfig.currency;
+      const synthetic: MarketAsset = {
+        symbol: asset.symbol,
+        name: asset.name || asset.symbol,
+        type: (asset.assetClass?.toUpperCase() as any) || 'STOCKS',
+        exchange: asset.exchange || activeRegionConfig.exchanges[0],
+        region: regionMatch,
+        currency: currencyMatch,
+        price: Number(asset.price) || 100,
+        change: asset.changePercent ? `${asset.changePercent > 0 ? '+' : ''}${asset.changePercent}%` : '+0.0%',
+        isUp: (asset.change || 0) >= 0,
+        logo: asset.symbol.charAt(0).toUpperCase(),
+        sparkline: [Number(asset.price) * 0.98, Number(asset.price) * 0.99, Number(asset.price)]
+      };
+      setSelectedAsset(synthetic);
+      setActiveRegion(regionMatch);
+    }
+    // Scroll smoothly to ticket view
+    const ticketElem = document.getElementById('order-ticket-container');
+    if (ticketElem) {
+      ticketElem.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
 
   const tradingData = {
     cashBalance: userData?.paperTrading?.cashBalance ?? 100000,
@@ -122,90 +288,158 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
     };
   }, [tradingData.positions, tradingData.cashBalance, totalValue]);
 
-  const filteredAssets = ASSET_DIRECTORY.filter(a => 
-    a.symbol.toLowerCase().includes(searchQuery.toLowerCase()) || 
-    a.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  // Regional Filtered Assets
+  const regionalAssets = useMemo(() => {
+    return GLOBAL_ASSETS.filter(a => a.region === activeRegion);
+  }, [activeRegion]);
 
-  const handleExecuteTrade = (e: React.FormEvent) => {
+  const filteredAssets = useMemo(() => {
+    const query = searchQuery.trim().toLowerCase();
+    if (!query) return regionalAssets;
+    return GLOBAL_ASSETS.filter(a => 
+      a.symbol.toLowerCase().includes(query) || 
+      a.name.toLowerCase().includes(query) ||
+      a.region.toLowerCase().includes(query)
+    );
+  }, [searchQuery, regionalAssets]);
+
+  // Filtered Watchlist items
+  const filteredWatchlist = useMemo(() => {
+    if (watchlistFilter === 'All') return watchlist;
+    return watchlist.filter(w => (w.region || 'US') === watchlistFilter);
+  }, [watchlist, watchlistFilter]);
+
+  const handleExecuteTrade = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedAsset || !quantity) return;
 
-    const qty = Number(quantity);
-    const price = orderMode === 'Market' ? marketData.currentPrice : Number(limitPrice || marketData.currentPrice);
-    const totalCost = price * qty;
-
-    if (orderSide === 'Buy' && totalCost > tradingData.cashBalance) {
-      alert("Insufficient margin/cash balance for this order.");
+    const qty = Math.floor(Number(quantity));
+    if (isNaN(qty) || qty <= 0) {
+      alert("Order quantity must be a positive integer.");
       return;
     }
 
-    const newTrade: TradeOrder = {
-      id: Date.now().toString(),
-      symbol: selectedAsset.symbol,
-      type: orderMode as any,
-      side: orderSide,
-      quantity: qty,
-      executionPrice: price,
-      status: 'Executed',
-      timestamp: Date.now()
-    };
-
-    let newPositions = [...tradingData.positions];
-    const existingIdx = newPositions.findIndex(p => p.symbol === selectedAsset.symbol);
-
-    let newBalance = tradingData.cashBalance;
-
-    if (orderSide === 'Buy') {
-      newBalance -= totalCost;
-      if (existingIdx >= 0) {
-        const p = newPositions[existingIdx];
-        const newTotalCost = (p.averageEntryPrice * p.quantity) + totalCost;
-        const newQty = p.quantity + qty;
-        newPositions[existingIdx] = { ...p, quantity: newQty, averageEntryPrice: newTotalCost / newQty, currentPrice: price };
-      } else {
-        newPositions.push({
-          id: Date.now().toString(),
+    try {
+      // 1. Validate & calculate execution costs, margins, and fees server-side
+      const response = await fetch('/api/trade/validate-order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
           symbol: selectedAsset.symbol,
-          name: selectedAsset.name,
-          assetClass: selectedAsset.type === 'COMMODITY' ? 'Commodity' : selectedAsset.type === 'ETF' ? 'ETF' : 'Stock',
+          orderSide,
+          orderMode,
+          orderType,
           quantity: qty,
-          averageEntryPrice: price,
-          currentPrice: price
-        });
+          limitPrice: limitPrice ? Number(limitPrice) : undefined,
+          triggerPrice: triggerPrice ? Number(triggerPrice) : undefined,
+          cashBalance: tradingData.cashBalance,
+          positions: tradingData.positions
+        })
+      });
+
+      if (!response.ok) {
+        const errJson = await response.json().catch(() => ({}));
+        alert(errJson.error || "Order validation rejected by server.");
+        return;
       }
-    } else {
-      if (existingIdx >= 0) {
+
+      const resData = await response.json();
+      if (!resData.valid) {
+        alert(resData.error || "Invalid order parameters.");
+        return;
+      }
+
+      // 2. Commit server-validated balances, positions, and execution record
+      updateData({
+        paperTrading: {
+          ...tradingData,
+          cashBalance: resData.newCashBalance,
+          positions: resData.newPositions,
+          tradeHistory: [resData.executedTrade, ...tradingData.tradeHistory]
+        }
+      });
+
+      setQuantity(10);
+      setLimitPrice('');
+      setTriggerPrice('');
+      alert(`Order Executed (Server Verified): ${orderSide} ${qty} ${selectedAsset.symbol} @ ${selectedAsset.currency || activeRegionConfig.currency}${resData.executionPrice.toFixed(2)} | Fee: ${selectedAsset.currency || activeRegionConfig.currency}${resData.brokerFee.toFixed(2)}`);
+    } catch (netErr) {
+      // Offline fallback: enforce the same strict logic locally
+      const price = orderMode === 'Market' ? marketData.currentPrice : Number(limitPrice || marketData.currentPrice);
+      const gross = price * qty;
+      const fee = Number(Math.max(1.00, gross * 0.001).toFixed(2));
+      const totalCost = Number((gross + fee).toFixed(2));
+
+      if (orderSide === 'Buy' && totalCost > tradingData.cashBalance) {
+        alert(`Insufficient margin/cash balance. Required: ${selectedAsset.currency || activeRegionConfig.currency}${totalCost.toFixed(2)}, Available: ${selectedAsset.currency || activeRegionConfig.currency}${tradingData.cashBalance.toFixed(2)}`);
+        return;
+      }
+
+      const newTrade: TradeOrder = {
+        id: Date.now().toString(),
+        symbol: selectedAsset.symbol,
+        type: orderMode as any,
+        side: orderSide,
+        quantity: qty,
+        executionPrice: price,
+        status: 'Executed',
+        timestamp: Date.now()
+      };
+
+      let newPositions = [...tradingData.positions];
+      const existingIdx = newPositions.findIndex(p => p.symbol === selectedAsset.symbol);
+      let newBalance = tradingData.cashBalance;
+
+      if (orderSide === 'Buy') {
+        newBalance -= totalCost;
+        if (existingIdx >= 0) {
+          const p = newPositions[existingIdx];
+          const newTotalCost = (p.averageEntryPrice * p.quantity) + gross;
+          const newQty = p.quantity + qty;
+          newPositions[existingIdx] = { ...p, quantity: newQty, averageEntryPrice: newTotalCost / newQty, currentPrice: price };
+        } else {
+          newPositions.push({
+            id: Date.now().toString(),
+            symbol: selectedAsset.symbol,
+            name: selectedAsset.name,
+            assetClass: selectedAsset.type === 'COMMODITY' ? 'Commodity' : selectedAsset.type === 'ETF' ? 'ETF' : 'Stock',
+            quantity: qty,
+            averageEntryPrice: price,
+            currentPrice: price
+          });
+        }
+      } else {
+        if (existingIdx < 0) {
+          alert("You do not own this asset.");
+          return;
+        }
         const p = newPositions[existingIdx];
         if (p.quantity < qty) {
           alert("Insufficient quantity to sell.");
           return;
         }
-        newBalance += totalCost;
+        newBalance += (gross - fee);
         if (p.quantity === qty) {
           newPositions.splice(existingIdx, 1);
         } else {
           newPositions[existingIdx] = { ...p, quantity: p.quantity - qty, currentPrice: price };
         }
-      } else {
-        alert("You do not own this asset.");
-        return;
       }
+
+      updateData({
+        paperTrading: {
+          ...tradingData,
+          cashBalance: Number(newBalance.toFixed(2)),
+          positions: newPositions,
+          tradeHistory: [newTrade, ...tradingData.tradeHistory]
+        }
+      });
+
+      setQuantity(10);
+      setLimitPrice('');
+      setTriggerPrice('');
+      alert(`Order Executed (Local Offline): ${orderSide} ${qty} ${selectedAsset.symbol} @ ${selectedAsset.currency || activeRegionConfig.currency}${price.toFixed(2)}`);
     }
-
-    updateData({
-      paperTrading: {
-        ...tradingData,
-        cashBalance: newBalance,
-        positions: newPositions,
-        tradeHistory: [newTrade, ...tradingData.tradeHistory]
-      }
-    });
-
-    setQuantity(10);
-    setLimitPrice('');
-    setTriggerPrice('');
-    alert(`Order Executed: ${orderSide} ${qty} ${selectedAsset.symbol} @ $${price.toFixed(2)}`);
   };
 
   const handleClearTradeHistory = () => {
@@ -219,6 +453,7 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
     }
   };
 
+  const currentCurrency = selectedAsset?.currency || activeRegionConfig.currency;
   const estimatedCharges = quantity && selectedAsset ? (Number(quantity) * marketData.currentPrice * 0.001) : 0;
   const marginRequired = quantity && selectedAsset ? (Number(quantity) * (orderMode === 'Market' ? marketData.currentPrice : Number(limitPrice || marketData.currentPrice))) : 0;
 
@@ -249,14 +484,14 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
               <TrendingUp className="w-5 h-5" />
             </span>
             <span className="text-xs font-mono font-bold tracking-widest text-emerald-600 dark:text-emerald-400 uppercase">
-              Paper Trading Sandbox
+              Global Multi-Asset Terminal
             </span>
           </div>
           <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white mt-1">
             manageme Markets & Terminal
           </h1>
           <p className="text-xs sm:text-sm text-slate-600 dark:text-neutral-400 mt-1 max-w-xl">
-            Real-time simulated execution, portfolio risk analytics, and institutional finance learning tracks.
+            Real-time simulated multi-currency execution, live watchlist monitoring, portfolio risk analytics, and institutional trading tracks.
           </p>
         </div>
 
@@ -293,74 +528,169 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
       </div>
 
       {/* ========================================================================= */}
-      {/* 1. TERMINAL VIEW (Order Panel, Live Depth, Holdings) */}
+      {/* 1. TERMINAL VIEW (Order Panel, Unified Market Switcher, Live Depth, Watchlist) */}
       {/* ========================================================================= */}
       {activeSection === 'portfolio' && (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           
-          {/* LEFT COLUMN: ORDER PANEL */}
+          {/* LEFT COLUMN: ORDER PANEL & ASSET DISCOVERY */}
           <div className="lg:col-span-4 space-y-6">
             
-            <div className="bg-white dark:bg-neutral-900/70 border border-slate-200 dark:border-white/10 rounded-3xl p-5 sm:p-6 shadow-sm relative">
-              <h2 className="text-sm font-bold mb-4 flex items-center gap-2 text-slate-900 dark:text-white font-mono uppercase tracking-wider">
-                <Search className="w-4 h-4 text-emerald-600 dark:text-emerald-400" /> 
-                <span>Asset Discovery & Order Ticket</span>
-              </h2>
+            <div id="order-ticket-container" className="bg-white dark:bg-neutral-900/70 border border-slate-200 dark:border-white/10 rounded-3xl p-5 sm:p-6 shadow-sm relative">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-sm font-bold flex items-center gap-2 text-slate-900 dark:text-white font-mono uppercase tracking-wider">
+                  <Search className="w-4 h-4 text-emerald-600 dark:text-emerald-400" /> 
+                  <span>Asset Discovery & Order Ticket</span>
+                </h2>
+                {selectedAsset && (
+                  <button
+                    onClick={() => handleToggleWatchlist(selectedAsset)}
+                    title={isMonitored(selectedAsset.symbol) ? "Remove from Watchlist" : "Add to Watchlist"}
+                    className={`flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-[11px] font-bold transition-all cursor-pointer border ${
+                      isMonitored(selectedAsset.symbol)
+                        ? 'bg-amber-500/15 text-amber-600 dark:text-amber-400 border-amber-500/40 shadow-sm'
+                        : 'bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-neutral-400 border-slate-200 dark:border-white/10 hover:text-amber-500'
+                    }`}
+                  >
+                    <Star className={`w-3.5 h-3.5 ${isMonitored(selectedAsset.symbol) ? 'fill-amber-400 text-amber-500' : ''}`} />
+                    <span>{isMonitored(selectedAsset.symbol) ? 'Monitored' : 'Watchlist'}</span>
+                  </button>
+                )}
+              </div>
+
+              {/* UNIFIED TAB SWITCHER: US | India | UK | EU | Singapore */}
+              <div className="mb-4">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-[10px] font-mono uppercase font-bold text-slate-500 dark:text-neutral-400 flex items-center gap-1">
+                    <Globe className="w-3 h-3 text-blue-500" /> Market Region
+                  </span>
+                  <span className="text-[10px] font-mono font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-600/20 px-2 py-0.5 rounded-md border border-blue-200 dark:border-blue-500/20">
+                    {activeRegionConfig.currency} • {activeRegionConfig.exchanges.join(', ')}
+                  </span>
+                </div>
+                <div className="grid grid-cols-5 gap-1 bg-slate-100 dark:bg-neutral-950 p-1 rounded-2xl border border-slate-200 dark:border-white/10">
+                  {MARKET_REGIONS.map(region => (
+                    <button
+                      key={region.id}
+                      onClick={() => {
+                        setActiveRegion(region.id);
+                        // Auto-select first asset from this region if available
+                        const firstAsset = GLOBAL_ASSETS.find(a => a.region === region.id);
+                        if (firstAsset) setSelectedAsset(firstAsset);
+                        setSearchQuery('');
+                      }}
+                      className={`py-1.5 px-1 rounded-xl text-center transition-all cursor-pointer flex flex-col items-center justify-center ${
+                        activeRegion === region.id
+                          ? 'bg-white dark:bg-neutral-800 text-blue-600 dark:text-blue-400 shadow-sm font-bold border border-slate-200 dark:border-white/10'
+                          : 'text-slate-600 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-white font-medium'
+                      }`}
+                    >
+                      <span className="text-sm">{region.flag}</span>
+                      <span className="text-[10px] tracking-tight">{region.label}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
               
-              {/* SMART SEARCH */}
-              <div className="relative mb-5">
-                <input 
-                  type="text" 
-                  placeholder="Search AAPL, NVDA, Gold, SPY..."
-                  value={searchQuery}
-                  onChange={(e) => { setSearchQuery(e.target.value); setShowDropdown(true); }}
-                  onFocus={() => setShowDropdown(true)}
-                  className="w-full bg-slate-50 dark:bg-neutral-950 border border-slate-300 dark:border-white/10 rounded-xl px-4 py-2.5 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-blue-500 transition-colors"
-                />
+              {/* SMART SEARCH WITH REGIONAL SUFFIX HINT */}
+              <div className="relative mb-3">
+                <div className="relative">
+                  <input 
+                    type="text" 
+                    placeholder={`Search ${activeRegionConfig.name} tickers (${activeRegionConfig.suffix ? `${activeRegionConfig.suffix}` : 'AAPL, NVDA'})...`}
+                    value={searchQuery}
+                    onChange={(e) => { setSearchQuery(e.target.value); setShowDropdown(true); }}
+                    onFocus={() => setShowDropdown(true)}
+                    className="w-full bg-slate-50 dark:bg-neutral-950 border border-slate-300 dark:border-white/10 rounded-xl pl-9 pr-4 py-2.5 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-blue-500 transition-colors"
+                  />
+                  <Search className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
+                </div>
                 
                 <AnimatePresence>
                   {showDropdown && searchQuery && (
                     <motion.div 
                       initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}
-                      className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-neutral-950 border border-slate-200 dark:border-white/15 rounded-xl shadow-2xl z-50 max-h-64 overflow-y-auto"
+                      className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-neutral-950 border border-slate-200 dark:border-white/15 rounded-2xl shadow-2xl z-50 max-h-72 overflow-y-auto divide-y divide-slate-100 dark:divide-white/5"
                     >
-                      {filteredAssets.map(asset => (
-                        <div 
-                          key={asset.symbol} 
-                          onClick={() => { setSelectedAsset(asset); setShowDropdown(false); setSearchQuery(''); }}
-                          className="p-3 hover:bg-slate-100 dark:hover:bg-neutral-900 cursor-pointer border-b border-slate-100 dark:border-white/5 last:border-0 flex items-center justify-between"
-                        >
-                          <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-full bg-blue-50 dark:bg-blue-600/20 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold text-xs">
-                              {asset.logo}
-                            </div>
-                            <div>
-                              <div className="font-bold text-slate-900 dark:text-white text-xs">{asset.symbol}</div>
-                              <div className="text-[10px] text-slate-500 dark:text-neutral-400">{asset.name}</div>
-                            </div>
-                          </div>
-                          <div className="text-right font-mono">
-                            <div className="font-semibold text-slate-900 dark:text-white text-xs">${asset.price.toFixed(2)}</div>
-                            <div className={`text-[10px] font-bold ${asset.isUp ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`}>{asset.change}</div>
-                          </div>
+                      {filteredAssets.length === 0 ? (
+                        <div className="p-4 text-center text-xs text-slate-500 dark:text-neutral-400">
+                          No matching assets found for "{searchQuery}".
                         </div>
-                      ))}
+                      ) : (
+                        filteredAssets.map(asset => (
+                          <div 
+                            key={asset.symbol} 
+                            onClick={() => { setSelectedAsset(asset); setActiveRegion(asset.region); setShowDropdown(false); setSearchQuery(''); }}
+                            className="p-3 hover:bg-slate-50 dark:hover:bg-neutral-900 cursor-pointer flex items-center justify-between transition-colors"
+                          >
+                            <div className="flex items-center gap-3">
+                              <div className="w-8 h-8 rounded-xl bg-blue-50 dark:bg-blue-600/20 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold text-xs">
+                                {asset.logo}
+                              </div>
+                              <div>
+                                <div className="font-bold text-slate-900 dark:text-white text-xs flex items-center gap-1.5">
+                                  <span>{asset.symbol}</span>
+                                  <span className="text-[9px] px-1 py-0.2 rounded bg-slate-100 dark:bg-white/10 text-slate-500">{asset.exchange}</span>
+                                </div>
+                                <div className="text-[10px] text-slate-500 dark:text-neutral-400">{asset.name}</div>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-3">
+                              <div className="text-right font-mono">
+                                <div className="font-semibold text-slate-900 dark:text-white text-xs">{asset.currency}{asset.price.toFixed(2)}</div>
+                                <div className={`text-[10px] font-bold ${asset.isUp ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`}>{asset.change}</div>
+                              </div>
+                              <button
+                                type="button"
+                                onClick={(e) => { e.stopPropagation(); handleToggleWatchlist(asset); }}
+                                className="p-1.5 rounded-lg hover:bg-slate-200 dark:hover:bg-white/10 text-slate-400 hover:text-amber-400 transition-colors"
+                              >
+                                <Star className={`w-3.5 h-3.5 ${isMonitored(asset.symbol) ? 'fill-amber-400 text-amber-500' : ''}`} />
+                              </button>
+                            </div>
+                          </div>
+                        ))
+                      )}
                     </motion.div>
                   )}
                 </AnimatePresence>
               </div>
 
+              {/* QUICK ASSET CHIPS (Selected Region) */}
+              <div className="flex items-center gap-1.5 overflow-x-auto pb-3 mb-2 custom-scrollbar">
+                <span className="text-[10px] font-mono text-slate-400 uppercase font-bold shrink-0">Hot:</span>
+                {regionalAssets.slice(0, 5).map(asset => (
+                  <button
+                    key={asset.symbol}
+                    onClick={() => { setSelectedAsset(asset); }}
+                    className={`px-2.5 py-1 rounded-xl text-[11px] font-mono font-bold shrink-0 transition-all cursor-pointer flex items-center gap-1.5 border ${
+                      selectedAsset?.symbol === asset.symbol
+                        ? 'bg-blue-600 text-white border-blue-500 shadow-sm'
+                        : 'bg-slate-50 dark:bg-white/5 border-slate-200 dark:border-white/10 text-slate-700 dark:text-neutral-300 hover:border-blue-400'
+                    }`}
+                  >
+                    <span>{asset.symbol}</span>
+                    <span className="text-[9px] opacity-80">{asset.currency}{asset.price.toFixed(0)}</span>
+                  </button>
+                ))}
+              </div>
+
               {/* ORDER EXECUTION TICKET */}
               {selectedAsset && (
                 <form onSubmit={handleExecuteTrade} className="space-y-4 border-t border-slate-200 dark:border-white/10 pt-4">
-                  <div className="flex justify-between items-center bg-slate-50 dark:bg-neutral-950 p-3 rounded-2xl border border-slate-200 dark:border-white/10 font-mono">
+                  <div className="flex justify-between items-center bg-slate-50 dark:bg-neutral-950 p-3.5 rounded-2xl border border-slate-200 dark:border-white/10 font-mono">
                     <div>
-                      <span className="font-bold text-sm text-slate-900 dark:text-white block">{selectedAsset.symbol}</span>
-                      <span className="text-[10px] text-slate-500 dark:text-neutral-400">{selectedAsset.exchange}</span>
+                      <div className="flex items-center gap-2">
+                        <span className="font-bold text-sm text-slate-900 dark:text-white">{selectedAsset.symbol}</span>
+                        <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-blue-50 dark:bg-blue-600/20 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-500/20">
+                          {selectedAsset.exchange}
+                        </span>
+                      </div>
+                      <span className="text-[11px] text-slate-500 dark:text-neutral-400 block mt-0.5">{selectedAsset.name}</span>
                     </div>
                     <div className="text-right">
                       <span className={`text-sm font-bold ${marketData.isUp ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`}>
-                        ${marketData.currentPrice.toFixed(2)}
+                        {currentCurrency}{marketData.currentPrice.toFixed(2)}
                       </span>
                       <span className="text-[10px] text-slate-500 dark:text-neutral-400 block">Live Price</span>
                     </div>
@@ -406,7 +736,7 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
                       />
                     </div>
                     <div>
-                      <label className="block text-slate-500 dark:text-neutral-400 mb-1">Limit Price</label>
+                      <label className="block text-slate-500 dark:text-neutral-400 mb-1">Limit Price ({currentCurrency})</label>
                       <input 
                         type="number" disabled={orderMode === 'Market'} 
                         value={orderMode === 'Market' ? Number(marketData.currentPrice.toFixed(2)) : limitPrice} 
@@ -420,11 +750,11 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
                   <div className="bg-slate-50 dark:bg-neutral-950 rounded-xl p-3 space-y-1 font-mono text-xs border border-slate-200 dark:border-white/10">
                     <div className="flex justify-between text-slate-600 dark:text-neutral-400">
                       <span>Margin Required</span>
-                      <span className="text-slate-900 dark:text-white font-bold">${marginRequired.toFixed(2)}</span>
+                      <span className="text-slate-900 dark:text-white font-bold">{currentCurrency}{marginRequired.toFixed(2)}</span>
                     </div>
                     <div className="flex justify-between text-slate-600 dark:text-neutral-400">
-                      <span>Charges (Est)</span>
-                      <span className="text-slate-900 dark:text-white font-bold">${estimatedCharges.toFixed(2)}</span>
+                      <span>Brokerage Charges (Est 0.10%)</span>
+                      <span className="text-slate-900 dark:text-white font-bold">{currentCurrency}{estimatedCharges.toFixed(2)}</span>
                     </div>
                   </div>
 
@@ -441,15 +771,151 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
               )}
             </div>
 
+            {/* MONITORED STOCKS / MY WATCHLIST SECTION */}
+            <div className="bg-white dark:bg-neutral-900/70 border border-slate-200 dark:border-white/10 rounded-3xl p-5 shadow-sm space-y-4 font-mono">
+              <div className="flex items-center justify-between border-b border-slate-200 dark:border-white/10 pb-3">
+                <div className="flex items-center gap-2">
+                  <span className="p-1.5 rounded-xl bg-amber-500/10 text-amber-500">
+                    <Star className="w-4 h-4 fill-amber-400" />
+                  </span>
+                  <div>
+                    <h3 className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider">
+                      My Monitored Stocks
+                    </h3>
+                    <span className="text-[10px] text-slate-500 dark:text-neutral-400">
+                      {watchlist.length} securities tracked
+                    </span>
+                  </div>
+                </div>
+                
+                {/* Region Filter Chips */}
+                <div className="flex items-center gap-1 overflow-x-auto">
+                  {(['All', 'US', 'India', 'UK', 'EU', 'Singapore'] as const).map(f => (
+                    <button
+                      key={f}
+                      onClick={() => setWatchlistFilter(f)}
+                      className={`px-2 py-0.5 rounded-lg text-[10px] transition-all cursor-pointer font-bold ${
+                        watchlistFilter === f
+                          ? 'bg-blue-600 text-white'
+                          : 'bg-slate-100 dark:bg-white/5 text-slate-500 hover:text-slate-900 dark:hover:text-white'
+                      }`}
+                    >
+                      {f === 'All' ? 'All' : f === 'US' ? '🇺🇸' : f === 'India' ? '🇮🇳' : f === 'UK' ? '🇬🇧' : f === 'EU' ? '🇪🇺' : '🇸🇬'}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Monitored Items List */}
+              {filteredWatchlist.length === 0 ? (
+                <div className="text-center py-6 px-4 bg-slate-50 dark:bg-neutral-950 rounded-2xl border border-dashed border-slate-200 dark:border-white/10 space-y-2">
+                  <Eye className="w-6 h-6 text-slate-400 mx-auto opacity-70" />
+                  <p className="text-xs text-slate-600 dark:text-neutral-400 font-sans">
+                    No stocks monitored in {watchlistFilter === 'All' ? 'any region' : watchlistFilter}.
+                  </p>
+                  <button
+                    onClick={() => {
+                      // Bulk add top global assets
+                      GLOBAL_ASSETS.slice(0, 4).forEach(a => {
+                        if (!isMonitored(a.symbol)) {
+                          addToWatchlist({
+                            symbol: a.symbol,
+                            name: a.name,
+                            price: a.price,
+                            currency: a.currency,
+                            region: a.region,
+                            exchange: a.exchange,
+                            assetClass: 'Stock',
+                            change: parseFloat(a.change),
+                            changePercent: parseFloat(a.change)
+                          });
+                        }
+                      });
+                    }}
+                    className="text-[11px] text-blue-600 dark:text-blue-400 hover:underline font-bold font-sans cursor-pointer"
+                  >
+                    + Add Top Global Bluechips
+                  </button>
+                </div>
+              ) : (
+                <div className="space-y-2 max-h-72 overflow-y-auto custom-scrollbar pr-1">
+                  {filteredWatchlist.map((item) => {
+                    const price = item.price || 100;
+                    const change = item.changePercent || item.change || 0;
+                    const isPositive = change >= 0;
+                    const itemCurrency = item.currency || '$';
+                    const points = [price * 0.985, price * 0.99, price * (isPositive ? 1.01 : 0.995), price * (isPositive ? 1.02 : 0.98), price];
+
+                    return (
+                      <div 
+                        key={item.id}
+                        className="p-3 bg-slate-50 dark:bg-neutral-950/80 hover:bg-slate-100 dark:hover:bg-neutral-900 border border-slate-200 dark:border-white/10 rounded-2xl flex items-center justify-between transition-all group"
+                      >
+                        {/* Symbol & Name */}
+                        <div className="min-w-0 pr-2">
+                          <div className="flex items-center gap-1.5">
+                            <span className="font-bold text-xs text-slate-900 dark:text-white truncate">
+                              {item.symbol}
+                            </span>
+                            <span className="text-[9px] px-1 py-0.2 rounded bg-slate-200 dark:bg-white/10 text-slate-600 dark:text-neutral-400 uppercase font-sans">
+                              {item.region || 'US'}
+                            </span>
+                          </div>
+                          <div className="text-[10px] text-slate-500 dark:text-neutral-400 truncate max-w-[120px]">
+                            {item.name || item.symbol}
+                          </div>
+                        </div>
+
+                        {/* Mini Sparkline Chart */}
+                        <div className="hidden sm:block">
+                          <MiniSparkline points={points} isUp={isPositive} />
+                        </div>
+
+                        {/* Price & Actions */}
+                        <div className="flex items-center gap-2 shrink-0">
+                          <div className="text-right font-mono">
+                            <div className="font-bold text-xs text-slate-900 dark:text-white">
+                              {itemCurrency}{price.toFixed(2)}
+                            </div>
+                            <div className={`text-[10px] font-bold ${isPositive ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`}>
+                              {isPositive ? '+' : ''}{change.toFixed(2)}%
+                            </div>
+                          </div>
+
+                          {/* Quick Load into Ticket */}
+                          <button
+                            onClick={() => handleLoadIntoTicket(item)}
+                            title="Load into Order Ticket"
+                            className="p-1.5 rounded-xl bg-blue-50 dark:bg-blue-600/20 text-blue-600 dark:text-blue-400 hover:bg-blue-600 hover:text-white transition-all cursor-pointer"
+                          >
+                            <Zap className="w-3.5 h-3.5" />
+                          </button>
+
+                          {/* Remove from Watchlist */}
+                          <button
+                            onClick={() => removeFromWatchlist(item.id)}
+                            title="Remove from Watchlist"
+                            className="p-1.5 rounded-xl text-slate-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/10 transition-colors cursor-pointer"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+
             {/* Quick Balance Stats */}
             <div className="bg-white dark:bg-neutral-900/70 border border-slate-200 dark:border-white/10 rounded-3xl p-5 shadow-sm space-y-3 font-mono">
                <div className="flex justify-between items-center text-xs">
                  <span className="text-slate-500 dark:text-neutral-400">Available Cash Balance</span>
-                 <span className="text-slate-900 dark:text-white font-bold tracking-tighter tabular-nums">${tradingData.cashBalance.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+                 <span className="text-slate-900 dark:text-white font-bold tracking-tighter tabular-nums">{currentCurrency}{tradingData.cashBalance.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
                </div>
                <div className="flex justify-between items-center text-xs">
                  <span className="text-slate-500 dark:text-neutral-400">Total Portfolio Net Worth</span>
-                 <span className="text-slate-900 dark:text-white font-bold tracking-tighter tabular-nums">${totalValue.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+                 <span className="text-slate-900 dark:text-white font-bold tracking-tighter tabular-nums">{currentCurrency}{totalValue.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
                </div>
                <div className="w-full h-2 bg-slate-100 dark:bg-neutral-950 rounded-full overflow-hidden border border-slate-200 dark:border-white/10">
                  <div className="h-full bg-emerald-500 rounded-full transition-all" style={{ width: `${Math.min(100, (tradingData.cashBalance / (totalValue || 1)) * 100)}%` }}></div>

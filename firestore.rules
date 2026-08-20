@@ -28,8 +28,7 @@ service cloud.firestore {
     }
 
     match /users/{userId} {
-      allow read: if isSignedIn();
-      allow write: if isOwnerUser(userId);
+      allow read, write: if isOwnerUser(userId);
     }
 
     match /timeline/{documentId} {
@@ -75,16 +74,22 @@ service cloud.firestore {
     }
 
     match /channels/{channelId} {
-      allow read, write: if isSignedIn();
+      allow read: if isSignedIn();
+      allow create, update: if isSignedIn();
+      allow delete: if isSignedIn() && (request.auth.token.email.lower() == 'meetban123@gmail.com');
       match /messages/{documentId} {
-        allow read, write: if isSignedIn();
+        allow read: if isSignedIn();
+        allow create: if isNewDocOwner();
+        allow update, delete: if isDocOwner();
       }
     }
 
     match /dms/{dmId} {
-      allow read, write: if isSignedIn();
+      allow read, write: if isSignedIn() && (dmId.matches('.*' + request.auth.uid + '.*') || request.auth.token.email.lower() == 'meetban123@gmail.com');
       match /messages/{documentId} {
-        allow read, write: if isSignedIn();
+        allow read: if isSignedIn() && (dmId.matches('.*' + request.auth.uid + '.*') || request.auth.token.email.lower() == 'meetban123@gmail.com');
+        allow create: if isNewDocOwner();
+        allow update, delete: if isDocOwner();
       }
     }
   }

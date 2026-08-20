@@ -61,6 +61,7 @@ export function useSubscriptions() {
         const { data, error } = await supabase
           .from('subscriptions')
           .select('*')
+          .eq('user_id', userId)
           .order('id', { ascending: false });
 
         if (!error && data && data.length > 0) {
@@ -174,7 +175,11 @@ export function useSubscriptions() {
     try {
       const userId = await getSupabaseUserId();
       if (userId) {
-        await supabase.from('subscriptions').delete().eq('id', id);
+        await supabase
+          .from('subscriptions')
+          .delete()
+          .eq('id', id)
+          .eq('user_id', userId);
       }
     } catch (err) {
       console.warn('Failed to delete subscription from Supabase:', err);

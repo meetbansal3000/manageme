@@ -24,6 +24,7 @@ export function useTimetable() {
         const { data, error } = await supabase
           .from('timetables')
           .select('*')
+          .eq('user_id', userId)
           .order('id', { ascending: false });
 
         if (!error && data && data.length > 0) {
@@ -140,7 +141,11 @@ export function useTimetable() {
     try {
       const userId = await getSupabaseUserId();
       if (userId) {
-        await supabase.from('timetables').delete().eq('id', id);
+        await supabase
+          .from('timetables')
+          .delete()
+          .eq('id', id)
+          .eq('user_id', userId);
       }
     } catch (err) {
       console.warn('Failed to delete timetable class from Supabase:', err);
