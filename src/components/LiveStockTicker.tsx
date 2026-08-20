@@ -112,30 +112,30 @@ export const LiveStockTicker: React.FC = () => {
     : tickers.filter(t => t.category === filterCategory);
 
   return (
-    <div className="w-full bg-white/60 dark:bg-slate-950/60 backdrop-blur-md border-b border-slate-200/50 dark:border-white/10 z-30 select-none relative shadow-xs transition-colors">
+    <div className="w-full bg-[#000000]/80 backdrop-blur-xl border-b border-white/[0.08] z-30 select-none relative transition-colors">
       <div className="max-w-7xl mx-auto px-2 sm:px-4 flex items-center h-8 overflow-hidden text-xs">
         
         {/* Left Live Badge */}
-        <div className="flex items-center gap-1.5 pr-3 border-r border-slate-200/50 dark:border-white/10 shrink-0 z-10 bg-transparent">
+        <div className="flex items-center gap-1.5 pr-3 border-r border-white/[0.08] shrink-0 z-10 bg-transparent">
           <span className="relative flex h-1.5 w-1.5">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-600 dark:bg-[#10b981]"></span>
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#00FF66] opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-[#00FF66]"></span>
           </span>
-          <span className="font-mono font-bold text-[10px] text-slate-600 dark:text-neutral-400 tracking-wider uppercase hidden xs:inline">
+          <span className="font-mono font-bold text-[10px] text-[#8B95A5] tracking-wider uppercase hidden xs:inline">
             MARKETS
           </span>
         </div>
 
         {/* Quick Filter Chips */}
-        <div className="hidden lg:flex items-center gap-1 px-3 border-r border-slate-200/50 dark:border-white/10 shrink-0">
+        <div className="hidden lg:flex items-center gap-1 px-3 border-r border-white/[0.08] shrink-0">
           {(['all', 'indices', 'equities', 'crypto', 'commodities'] as const).map(cat => (
             <button
               key={cat}
               onClick={() => setFilterCategory(cat)}
               className={`px-2 py-0.5 rounded text-[10px] font-mono capitalize transition-all cursor-pointer ${
                 filterCategory === cat
-                  ? 'bg-slate-900/10 dark:bg-white/10 text-slate-900 dark:text-white font-bold'
-                  : 'text-slate-500 dark:text-neutral-500 hover:text-slate-800 dark:hover:text-neutral-300'
+                  ? 'bg-white/10 text-white font-bold'
+                  : 'text-[#8B95A5] hover:text-white'
               }`}
             >
               {cat}
@@ -152,8 +152,8 @@ export const LiveStockTicker: React.FC = () => {
           onMouseLeave={() => setIsPaused(false)}
         >
           {/* Edge Blur Gradients */}
-          <div className="absolute left-0 top-0 bottom-0 w-4 sm:w-6 bg-gradient-to-r from-white/60 dark:from-slate-950/60 to-transparent z-10 pointer-events-none" />
-          <div className="absolute right-0 top-0 bottom-0 w-4 sm:w-6 bg-gradient-to-l from-white/60 dark:from-slate-950/60 to-transparent z-10 pointer-events-none" />
+          <div className="absolute left-0 top-0 bottom-0 w-4 sm:w-6 bg-gradient-to-r from-black/90 to-transparent z-10 pointer-events-none" />
+          <div className="absolute right-0 top-0 bottom-0 w-4 sm:w-6 bg-gradient-to-l from-black/90 to-transparent z-10 pointer-events-none" />
 
           {/* Marquee Container */}
           <div 
@@ -167,19 +167,19 @@ export const LiveStockTicker: React.FC = () => {
                 <div
                   key={`${ticker.symbol}-${idx}`}
                   onClick={() => setSelectedTicker(ticker)}
-                  className="flex items-center gap-2 py-0.5 px-1 rounded transition-colors cursor-pointer hover:bg-slate-900/5 dark:hover:bg-white/[0.05] select-none"
+                  className="flex items-center gap-2 py-0.5 px-1.5 rounded transition-colors cursor-pointer hover:bg-white/[0.06] select-none"
                   title={`Click for ${ticker.name} Details`}
                 >
-                  <span className="font-mono tracking-tighter font-bold text-slate-700 dark:text-neutral-300 text-[11px]">
+                  <span className="font-mono tracking-tighter font-bold text-[#8B95A5] text-[11px]">
                     {ticker.symbol}
                   </span>
                   
-                  <span className="font-mono tracking-tighter tabular-nums text-slate-900 dark:text-white font-semibold text-[11px]">
+                  <span className="font-mono tracking-tighter tabular-nums text-white font-semibold text-[11px]">
                     {ticker.currency}{ticker.price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </span>
 
                   <span className={`font-mono tracking-tighter tabular-nums font-bold text-[11px] ${
-                    isPositive ? 'text-emerald-600 dark:text-[#10b981]' : 'text-rose-600 dark:text-[#f43f5e]'
+                    isPositive ? 'text-[#00FF66]' : 'text-[#FF3B30]'
                   }`}>
                     {isPositive ? '+' : ''}{ticker.changePercent.toFixed(2)}%
                   </span>
@@ -190,17 +190,17 @@ export const LiveStockTicker: React.FC = () => {
         </div>
 
         {/* Right Stream Toggle & Timestamp */}
-        <div className="flex items-center gap-2 pl-3 border-l border-slate-200/50 dark:border-white/10 shrink-0 z-10 bg-transparent">
+        <div className="flex items-center gap-2 pl-3 border-l border-white/[0.08] shrink-0 z-10 bg-transparent">
           <button
             onClick={() => setIsStreaming(!isStreaming)}
             className={`p-0.5 rounded transition-colors cursor-pointer ${
-              isStreaming ? 'text-emerald-600 dark:text-[#10b981] hover:bg-emerald-500/10' : 'text-slate-400 dark:text-neutral-500 hover:bg-black/5 dark:hover:bg-white/5'
+              isStreaming ? 'text-[#00FF66] hover:bg-[#00FF66]/10' : 'text-neutral-500 hover:bg-white/5'
             }`}
             title={isStreaming ? 'Live Market Streaming Active (Click to Pause)' : 'Streaming Paused (Click to Resume)'}
           >
             <Activity className="w-3 h-3" />
           </button>
-          <span className="text-[10px] font-mono tracking-tighter tabular-nums text-slate-500 dark:text-neutral-400 hidden md:inline">
+          <span className="text-[10px] font-mono tracking-tighter tabular-nums text-[#8B95A5] hidden md:inline">
             {lastUpdate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
           </span>
         </div>
