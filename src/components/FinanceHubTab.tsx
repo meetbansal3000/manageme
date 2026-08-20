@@ -1727,8 +1727,13 @@ export const FinanceHubTab: React.FC<Props> = ({ userData, updateData }) => {
                   description={userData.expenses?.length === 0 ? "Log your student budget, food, transport, and prep materials with multi-currency support." : "No expenses match your active search or category filter."}
                   actionLabel="+ Log Expense"
                   onAction={() => {
-                    setEditingExpense(null);
-                    setIsExpenseModalOpen(true);
+                    setEditingExpense({
+                      id: '',
+                      category: 'Food',
+                      amount: 0,
+                      date: new Date().toISOString().split('T')[0],
+                      description: ''
+                    } as Expense);
                   }}
                   className="py-8 bg-transparent border-dashed"
                 />

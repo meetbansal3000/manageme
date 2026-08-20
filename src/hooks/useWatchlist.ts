@@ -12,7 +12,7 @@ export interface WatchlistItem {
   currency?: string;
   region?: 'US' | 'India' | 'UK' | 'EU' | 'Singapore' | string;
   exchange?: string;
-  volatility?: number;
+  volatility?: number | string;
   dateAdded?: string;
 }
 
