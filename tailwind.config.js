@@ -9,6 +9,12 @@ export default {
   theme: {
     extend: {
       colors: {
+        appBg: '#0A051A',
+        appSurface: 'rgba(255, 255, 255, 0.03)',
+        accentGlow: '#5E6CE7',
+        accentProfit: '#00FF66',
+
+        // Theme tokens & aliases
         background: '#0A051A',
         surface: 'rgba(255, 255, 255, 0.03)',
         accentBlue: '#5E6CE7',
@@ -16,14 +22,11 @@ export default {
         profitGreen: '#00FF66',
         lossRed: '#FF3B30',
 
-        // Semantic & compatibility tokens
         bgApp: '#0A051A',
         bgSurface: 'rgba(255, 255, 255, 0.03)',
         borderSoft: 'rgba(255, 255, 255, 0.08)',
         textPrimary: '#FFFFFF',
         textMuted: '#8B95A5',
-        accentGlow: '#5E6CE7',
-        accentProfit: '#00FF66',
         accentLoss: '#FF3B30',
         'surface-elevated': 'rgba(255, 255, 255, 0.06)',
         border: 'rgba(255, 255, 255, 0.08)',

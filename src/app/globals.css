@@ -8,7 +8,12 @@
   --font-editorial: 'Instrument Serif', Georgia, serif;
   --font-mono: 'Space Mono', monospace;
 
-  /* Strict FinTech Theme Tokens */
+  /* Theme Tokens */
+  --color-appBg: #0A051A;
+  --color-appSurface: rgba(255, 255, 255, 0.03);
+  --color-accentGlow: #5E6CE7;
+  --color-accentProfit: #00FF66;
+
   --color-background: #0A051A;
   --color-surface: rgba(255, 255, 255, 0.03);
   --color-accentBlue: #5E6CE7;
@@ -21,8 +26,6 @@
   --color-border-soft: rgba(255, 255, 255, 0.08);
   --color-text-primary: #FFFFFF;
   --color-text-muted: #8B95A5;
-  --color-accent-glow: #5E6CE7;
-  --color-accent-profit: #00FF66;
   --color-accent-loss: #FF3B30;
 
   /* Shadows */
@@ -46,6 +49,11 @@
     --accent-glow: #5E6CE7;
     --accent-profit: #00FF66;
     --accent-loss: #FF3B30;
+
+    --color-appBg: #0A051A;
+    --color-appSurface: rgba(255, 255, 255, 0.03);
+    --color-accentGlow: #5E6CE7;
+    --color-accentProfit: #00FF66;
 
     --color-background: #0A051A;
     --color-surface: rgba(255, 255, 255, 0.03);
