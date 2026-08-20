@@ -1,3 +1,5 @@
+'use client';
+
 import { motion, AnimatePresence } from 'motion/react';
 import React, { useState, useMemo, useEffect, lazy, Suspense } from 'react';
 import { googleSignIn, getAccessToken } from './firebase';
@@ -403,8 +405,8 @@ export default function App() {
     return Array.from(allSectors).sort();
   }, [userData.gradSchemes, userData.partTimeRoles]);
 
-  // If user is unauthenticated and viewing public landing page, render dedicated LandingPage layout
-  if (activeTab === 'landing' && !user && !isGuest && !isAuthenticated) {
+  // Dedicated Landing Page View
+  if (activeTab === 'landing') {
     return (
       <div className="min-h-screen bg-[#000000] text-white flex flex-col font-sans relative overflow-x-hidden">
         <InteractiveCursorGlow />
@@ -421,6 +423,16 @@ export default function App() {
         </Suspense>
         <SpeedInsights />
         <Analytics />
+      </div>
+    );
+  }
+
+  // Safe Fallback while authenticating or loading workspace dataset during initial hydration
+  if ((isLoading || loading || !userData) && activeTab !== 'landing') {
+    return (
+      <div className="min-h-screen bg-[#0A051A] text-white flex flex-col items-center justify-center space-y-4">
+        <div className="w-8 h-8 border-2 border-[#0052FF] border-t-transparent rounded-full animate-spin" />
+        <span className="text-xs font-mono text-[#8B95A5] tracking-widest uppercase">Loading manageme...</span>
       </div>
     );
   }

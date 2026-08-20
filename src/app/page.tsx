@@ -14,9 +14,10 @@ import {
   Globe,
   Linkedin,
   Zap,
-  CheckCircle2,
   Scale,
   Terminal,
+  ChevronRight
+} from 'lucide-react';
 import { motion, useScroll, useTransform, useSpring } from 'framer-motion';
 import { InteractiveCursorGlow } from '../components/canvas/InteractiveCursorGlow';
 
@@ -211,51 +212,364 @@ export default function Page() {
         {/* Scroll-Sync Feature Section with 3D Physics */}
         <div id="architecture-showcase" className="py-24 space-y-36">
           
+          {/* Section Header */}
           <div className="text-center space-y-3 max-w-3xl mx-auto">
-            <div className="inline-flex items-center gap-2 px-3 py-1 liquid-pill text-xs font-mono font-bold text-[#0052FF]">
-              CORE ARCHITECTURE
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 liquid-pill text-xs font-mono font-bold text-[#0052FF]">
+              <Sparkles className="w-3.5 h-3.5 text-[#0052FF]" />
+              <span>COMPREHENSIVE PLATFORM ARCHITECTURE</span>
             </div>
             <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tightest text-white">
-              Engineered for precision execution
+              Every engine. Engineered for executive velocity.
             </h2>
-            <p className="text-sm sm:text-base text-[#8B95A5]">
-              Three high-performance modules engineered with spatial physics to accelerate executive career progression and multi-asset mastery.
+            <p className="text-sm sm:text-base text-[#8B95A5] leading-relaxed">
+              Explore the four core operational engines powering manageme. Each subsystem is built with 3D spatial synchronization, automated data bridges, and high-performance computation.
             </p>
           </div>
 
-          {/* Feature 1: Multi-Asset Terminal */}
+          {/* ----------------------------------------------------------------------- */}
+          {/* FEATURE 1: Universal AI Model Gateway (Text Left, Mockup Right) */}
+          {/* ----------------------------------------------------------------------- */}
           <ScrollCard3D>
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+              {/* Text Column (5 Cols) */}
               <div className="lg:col-span-5 space-y-5">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-[#00FF66]/10 border border-[#00FF66]/20 text-[#00FF66] text-xs font-mono font-bold">
-                  <Activity className="w-3.5 h-3.5" />
-                  <span>FINANCIAL ENGINE</span>
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-[#0052FF]/10 border border-[#0052FF]/20 text-[#0052FF] text-xs font-mono font-bold">
+                  <Zap className="w-3.5 h-3.5" />
+                  <span>UNIVERSAL AI ENGINE</span>
                 </div>
 
                 <h3 className="text-2xl sm:text-4xl font-extrabold tracking-tightest text-white leading-tight">
-                  Multi-Asset Terminal
+                  Universal AI Model Gateway
                 </h3>
 
-                <p className="text-sm text-[#8B95A5] leading-relaxed">
-                  Real-time execution and tabular-num data grids. Monitor live streaming ticks across NYSE, NASDAQ, LSE, and NSE with sub-second price updates, customizable watchlists, and portfolio allocation analytics.
-                </p>
+                {/* Purpose Block */}
+                <div className="p-4 rounded-xl bg-white/[0.03] border border-white/[0.08] space-y-1.5">
+                  <div className="flex items-center gap-1.5 text-[11px] font-mono font-bold text-[#0052FF] uppercase tracking-wider">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#0052FF]" />
+                    <span>Purpose & Why It Exists</span>
+                  </div>
+                  <p className="text-xs sm:text-sm text-[#F3F3F3] leading-relaxed">
+                    Route your intelligence. Instantly switch between AI backends (Gemini, Claude, DeepSeek) optimized for specific academic or career tasks.
+                  </p>
+                </div>
 
-                <div className="space-y-2 pt-2 text-xs font-mono">
-                  <div className="flex items-center gap-2 text-white">
-                    <CheckCircle2 className="w-4 h-4 text-[#00FF66]" />
-                    <span>Market, Limit, and Stop algorithmic order tickets</span>
+                {/* How to Use Block */}
+                <div className="p-4 rounded-xl bg-white/[0.03] border border-white/[0.08] space-y-1.5">
+                  <div className="flex items-center gap-1.5 text-[11px] font-mono font-bold text-[#00FF66] uppercase tracking-wider">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#00FF66]" />
+                    <span>How to Use</span>
                   </div>
-                  <div className="flex items-center gap-2 text-white">
-                    <CheckCircle2 className="w-4 h-4 text-[#00FF66]" />
-                    <span>Dynamic Sharpe ratio, Alpha & risk metrics calculation</span>
+                  <p className="text-xs sm:text-sm text-[#8B95A5] leading-relaxed">
+                    Open the API Vault, select your preferred model based on the required skill (e.g., Deep Reasoning, ATS Writing, Math & Logic), and route your queries instantly.
+                  </p>
+                </div>
+
+                {/* Feature Bullets */}
+                <div className="space-y-2 pt-1 text-xs font-mono text-white/90">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-[#0052FF] shrink-0" />
+                    <span>Zero-latency switching: Gemini 2.5 Flash, Claude 3.7 Sonnet & DeepSeek R1</span>
                   </div>
-                  <div className="flex items-center gap-2 text-white">
-                    <CheckCircle2 className="w-4 h-4 text-[#00FF66]" />
-                    <span>Multi-currency ledger (USD, GBP, EUR, INR, SGD)</span>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-[#0052FF] shrink-0" />
+                    <span>Adaptive personas: Senior M&A Quant, ATS Resume Architect & STEM Mentor</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-[#0052FF] shrink-0" />
+                    <span>Secure client-side encrypted BYOK key storage & token telemetry</span>
                   </div>
                 </div>
 
-                <div className="pt-3">
+                <div className="pt-2">
+                  <a
+                    href="/app?tab=chat"
+                    className="liquid-pill text-xs inline-flex items-center gap-2 text-white hover:border-[#0052FF]/50"
+                  >
+                    <span>Launch AI Workspace</span>
+                    <ChevronRight className="w-3.5 h-3.5 text-[#0052FF]" />
+                  </a>
+                </div>
+              </div>
+
+              {/* Visual Column (7 Cols): AI Gateway Switcher Mockup */}
+              <div className="lg:col-span-7">
+                <div className="glass-card p-6 sm:p-7 border-[rgba(255,255,255,0.12)] relative overflow-hidden bg-[#0A0A0A] shadow-2xl space-y-4">
+                  {/* HUD Bar */}
+                  <div className="flex items-center justify-between border-b border-white/10 pb-4 font-mono">
+                    <div className="flex items-center gap-2">
+                      <div className="w-2.5 h-2.5 rounded-full bg-[#0052FF] animate-ping" />
+                      <span className="text-xs font-bold text-white tracking-wider">MANAGEME AI GATEWAY HUD</span>
+                    </div>
+                    <span className="text-[11px] px-2 py-0.5 rounded bg-[#0052FF]/15 text-[#0052FF] font-bold border border-[#0052FF]/30">
+                      ACTIVE ROUTER
+                    </span>
+                  </div>
+
+                  {/* Active Engine Card */}
+                  <div className="p-4 rounded-xl bg-gradient-to-r from-[#0052FF]/15 via-black to-black border border-[#0052FF]/40 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="w-9 h-9 rounded-lg bg-[#0052FF] text-white flex items-center justify-center font-bold text-sm">
+                          ✦
+                        </div>
+                        <div>
+                          <div className="text-sm font-bold text-white flex items-center gap-2">
+                            <span>Gemini 2.5 Flash</span>
+                            <span className="text-[10px] px-1.5 py-0.2 rounded bg-[#00FF66]/20 text-[#00FF66] font-mono">PRIMARY</span>
+                          </div>
+                          <div className="text-[11px] text-[#8B95A5]">Google DeepMind &bull; Multi-Modal High-Speed Reasoning</div>
+                        </div>
+                      </div>
+                      <div className="text-right font-mono text-[11px]">
+                        <span className="text-[#00FF66] font-bold">14ms</span>
+                        <span className="text-[#8B95A5] block">Latency</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Model Selector Alternatives */}
+                  <div className="space-y-2.5 font-mono text-xs">
+                    <div className="p-3 rounded-lg bg-black border border-white/[0.08] hover:border-[#0052FF]/40 transition-all flex items-center justify-between cursor-pointer">
+                      <div className="flex items-center gap-3">
+                        <div className="w-7 h-7 rounded bg-amber-500/10 text-amber-400 flex items-center justify-center font-bold text-xs">
+                          C
+                        </div>
+                        <div>
+                          <div className="text-white font-semibold">Claude 3.7 Sonnet</div>
+                          <div className="text-[10px] text-[#8B95A5]">Anthropic &bull; ATS Polish & Nuanced Academic Prose</div>
+                        </div>
+                      </div>
+                      <span className="text-[10px] text-amber-400 font-bold px-2 py-0.5 rounded bg-amber-400/10">HYBRID THINKING</span>
+                    </div>
+
+                    <div className="p-3 rounded-lg bg-black border border-white/[0.08] hover:border-[#0052FF]/40 transition-all flex items-center justify-between cursor-pointer">
+                      <div className="flex items-center gap-3">
+                        <div className="w-7 h-7 rounded bg-blue-500/10 text-blue-400 flex items-center justify-center font-bold text-xs">
+                          R1
+                        </div>
+                        <div>
+                          <div className="text-white font-semibold">DeepSeek R1</div>
+                          <div className="text-[10px] text-[#8B95A5]">DeepSeek AI &bull; Open Logic, Math & Quantitative Algorithms</div>
+                        </div>
+                      </div>
+                      <span className="text-[10px] text-blue-400 font-bold px-2 py-0.5 rounded bg-blue-400/10">PURE REASONING</span>
+                    </div>
+                  </div>
+
+                  {/* Telemetry Footer */}
+                  <div className="pt-3 border-t border-white/10 flex items-center justify-between text-[11px] text-[#8B95A5] font-mono tabular-nums">
+                    <span>CONTEXT WINDOW: <strong className="text-white">1,000,000 Tokens</strong></span>
+                    <span>THINKING BUDGET: <strong className="text-[#00FF66]">Active</strong></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </ScrollCard3D>
+
+
+          {/* ----------------------------------------------------------------------- */}
+          {/* FEATURE 2: Financial & Job Hub (Visa & Wage Ledger) (Mockup Left, Text Right) */}
+          {/* ----------------------------------------------------------------------- */}
+          <ScrollCard3D>
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+              {/* Visual Column (7 Cols): Shift Wage & Visa Ledger */}
+              <div className="lg:col-span-7 order-2 lg:order-1">
+                <div className="glass-card p-6 sm:p-7 border-[rgba(255,255,255,0.12)] space-y-5 bg-[#0A0A0A] shadow-2xl">
+                  {/* Visa Cap Gauge */}
+                  <div className="space-y-2.5 font-mono">
+                    <div className="flex justify-between items-center text-xs">
+                      <span className="text-white font-bold flex items-center gap-1.5">
+                        <Scale className="w-4 h-4 text-amber-400" />
+                        ROLLING 7-DAY VISA WORK-CAP GAUGE
+                      </span>
+                      <span className="text-amber-400 font-bold tabular-nums">14.5 / 20.0 hrs</span>
+                    </div>
+
+                    <div className="w-full h-3 rounded-full bg-white/5 border border-white/10 overflow-hidden p-0.5">
+                      <div className="h-full rounded-full bg-gradient-to-r from-[#0052FF] via-[#5E6CE7] to-[#00FF66] transition-all" style={{ width: '72.5%' }} />
+                    </div>
+
+                    <div className="flex justify-between text-[10px] text-[#8B95A5]">
+                      <span>Remaining Allowance: <strong className="text-white tabular-nums">5.5 hrs</strong></span>
+                      <span className="text-[#00FF66] font-bold">Compliant &bull; 0 Overages</span>
+                    </div>
+                  </div>
+
+                  {/* 1-Click Shift Presets */}
+                  <div className="space-y-1.5">
+                    <span className="text-[10px] font-mono text-[#8B95A5] uppercase tracking-wider block">1-Click Shift Log Presets</span>
+                    <div className="grid grid-cols-3 gap-2 font-mono text-xs">
+                      <button className="py-2 px-3 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-white flex flex-col items-center transition-colors cursor-pointer">
+                        <span className="font-bold text-[#00FF66]">+ Morning</span>
+                        <span className="text-[10px] text-[#8B95A5]">4.0 hrs</span>
+                      </button>
+                      <button className="py-2 px-3 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-white flex flex-col items-center transition-colors cursor-pointer">
+                        <span className="font-bold text-[#0052FF]">+ Evening</span>
+                        <span className="text-[10px] text-[#8B95A5]">5.0 hrs</span>
+                      </button>
+                      <button className="py-2 px-3 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-white flex flex-col items-center transition-colors cursor-pointer">
+                        <span className="font-bold text-purple-400">+ Custom</span>
+                        <span className="text-[10px] text-[#8B95A5]">Modal</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Shift Wage Logs */}
+                  <div className="space-y-2 font-mono tabular-nums text-xs">
+                    <div className="p-3 rounded-lg bg-black border border-white/[0.08] flex items-center justify-between">
+                      <div>
+                        <div className="font-bold text-white">Economics Teaching Assistant</div>
+                        <div className="text-[10px] text-[#8B95A5]">Today &bull; 09:00 - 13:30 (4.5 hrs)</div>
+                      </div>
+                      <div className="text-right">
+                        <div className="font-bold text-[#00FF66] tabular-nums">+£56.25</div>
+                        <div className="text-[10px] text-[#8B95A5] tabular-nums">£12.50 / hr</div>
+                      </div>
+                    </div>
+
+                    <div className="p-3 rounded-lg bg-black border border-white/[0.08] flex items-center justify-between">
+                      <div>
+                        <div className="font-bold text-white">Campus IT Operations Analyst</div>
+                        <div className="text-[10px] text-[#8B95A5]">Yesterday &bull; 14:00 - 19:00 (5.0 hrs)</div>
+                      </div>
+                      <div className="text-right">
+                        <div className="font-bold text-[#00FF66] tabular-nums">+£62.50</div>
+                        <div className="text-[10px] text-[#8B95A5] tabular-nums">£12.50 / hr</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Summary Bar */}
+                  <div className="p-3.5 rounded-lg bg-white/[0.02] border border-white/[0.08] flex items-center justify-between font-mono">
+                    <div>
+                      <span className="text-[10px] text-[#8B95A5] block">TOTAL WEEKLY ACCRUED EARNINGS</span>
+                      <span className="text-lg font-extrabold text-white tabular-nums">£181.25</span>
+                    </div>
+                    <span className="text-[10px] px-2.5 py-1 rounded-full bg-[#00FF66]/15 border border-[#00FF66]/30 text-[#00FF66] font-bold">
+                      AUTOMATIC MULTIPLIER APPLIED
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Text Column (5 Cols) */}
+              <div className="lg:col-span-5 space-y-5 order-1 lg:order-2">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-amber-400/10 border border-amber-400/20 text-amber-400 text-xs font-mono font-bold">
+                  <Scale className="w-3.5 h-3.5" />
+                  <span>FINANCIAL & VISA COMPLIANCE</span>
+                </div>
+
+                <h3 className="text-2xl sm:text-4xl font-extrabold tracking-tightest text-white leading-tight">
+                  Financial & Job Hub (Visa & Wage Ledger)
+                </h3>
+
+                {/* Purpose Block */}
+                <div className="p-4 rounded-xl bg-white/[0.03] border border-white/[0.08] space-y-1.5">
+                  <div className="flex items-center gap-1.5 text-[11px] font-mono font-bold text-amber-400 uppercase tracking-wider">
+                    <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+                    <span>Purpose & Why It Exists</span>
+                  </div>
+                  <p className="text-xs sm:text-sm text-[#F3F3F3] leading-relaxed">
+                    Protect your visa status and optimize your cash flow. Strictly monitor international student work-caps while tracking live shift wages and category budgets.
+                  </p>
+                </div>
+
+                {/* How to Use Block */}
+                <div className="p-4 rounded-xl bg-white/[0.03] border border-white/[0.08] space-y-1.5">
+                  <div className="flex items-center gap-1.5 text-[11px] font-mono font-bold text-[#00FF66] uppercase tracking-wider">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#00FF66]" />
+                    <span>How to Use</span>
+                  </div>
+                  <p className="text-xs sm:text-sm text-[#8B95A5] leading-relaxed">
+                    Use 1-Click Presets (Morning 4h, Evening 5h) to log shifts. The engine automatically applies rate multipliers and deducts hours from your rolling Visa Work-Cap.
+                  </p>
+                </div>
+
+                {/* Feature Bullets */}
+                <div className="space-y-2 pt-1 text-xs font-mono text-white/90">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-amber-400 shrink-0" />
+                    <span>Real-time 20h/week visa work-cap compliance safeguard</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-amber-400 shrink-0" />
+                    <span>Multi-currency hourly wage converter (£/hr, $/hr, €/hr)</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-amber-400 shrink-0" />
+                    <span>Calendar sync integration for examination and lecture clashes</span>
+                  </div>
+                </div>
+
+                <div className="pt-2">
+                  <a
+                    href="/app?tab=work"
+                    className="liquid-pill text-xs inline-flex items-center gap-2 text-white hover:border-amber-400/50"
+                  >
+                    <span>View Shift & Visa Ledger</span>
+                    <ChevronRight className="w-3.5 h-3.5 text-amber-400" />
+                  </a>
+                </div>
+              </div>
+            </div>
+          </ScrollCard3D>
+
+
+          {/* ----------------------------------------------------------------------- */}
+          {/* FEATURE 3: Global Multi-Asset Terminal (Text Left, Mockup Right) */}
+          {/* ----------------------------------------------------------------------- */}
+          <ScrollCard3D>
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+              {/* Text Column (5 Cols) */}
+              <div className="lg:col-span-5 space-y-5">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-[#00FF66]/10 border border-[#00FF66]/20 text-[#00FF66] text-xs font-mono font-bold">
+                  <Activity className="w-3.5 h-3.5" />
+                  <span>INSTITUTIONAL MARKET ENGINE</span>
+                </div>
+
+                <h3 className="text-2xl sm:text-4xl font-extrabold tracking-tightest text-white leading-tight">
+                  Global Multi-Asset Terminal
+                </h3>
+
+                {/* Purpose Block */}
+                <div className="p-4 rounded-xl bg-white/[0.03] border border-white/[0.08] space-y-1.5">
+                  <div className="flex items-center gap-1.5 text-[11px] font-mono font-bold text-[#00FF66] uppercase tracking-wider">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#00FF66]" />
+                    <span>Purpose & Why It Exists</span>
+                  </div>
+                  <p className="text-xs sm:text-sm text-[#F3F3F3] leading-relaxed">
+                    Institutional-grade market discovery. Monitor multi-currency execution and portfolio risk analytics in real-time.
+                  </p>
+                </div>
+
+                {/* How to Use Block */}
+                <div className="p-4 rounded-xl bg-white/[0.03] border border-white/[0.08] space-y-1.5">
+                  <div className="flex items-center gap-1.5 text-[11px] font-mono font-bold text-[#5E6CE7] uppercase tracking-wider">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#5E6CE7]" />
+                    <span>How to Use</span>
+                  </div>
+                  <p className="text-xs sm:text-sm text-[#8B95A5] leading-relaxed">
+                    Toggle between global market regions (US, IN, GB, EU, SG). Search specific asset tickers to view live tick charts, volatility estimates, and market depth before executing simulated trades.
+                  </p>
+                </div>
+
+                {/* Feature Bullets */}
+                <div className="space-y-2 pt-1 text-xs font-mono text-white/90">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-[#00FF66] shrink-0" />
+                    <span>Global tickers: NYSE, NASDAQ, London Stock Exchange, NSE & SGX</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-[#00FF66] shrink-0" />
+                    <span>Market, Limit, and Stop orders with simulated slippage physics</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-[#00FF66] shrink-0" />
+                    <span>Portfolio Sharpe ratio, Alpha benchmarking & volatility modeling</span>
+                  </div>
+                </div>
+
+                <div className="pt-2">
                   <a
                     href="/app?tab=trading"
                     className="liquid-pill text-xs inline-flex items-center gap-2 text-white hover:border-[#00FF66]/50"
@@ -266,9 +580,11 @@ export default function Page() {
                 </div>
               </div>
 
+              {/* Visual Column (7 Cols): Multi-Asset Terminal Grid */}
               <div className="lg:col-span-7">
-                <div className="glass-card p-6 sm:p-7 border-[rgba(255,255,255,0.12)] relative overflow-hidden bg-[#0A0A0A] shadow-2xl">
-                  <div className="flex items-center justify-between border-b border-white/10 pb-4 mb-4 font-mono">
+                <div className="glass-card p-6 sm:p-7 border-[rgba(255,255,255,0.12)] relative overflow-hidden bg-[#0A0A0A] shadow-2xl space-y-4">
+                  {/* Terminal Header */}
+                  <div className="flex items-center justify-between border-b border-white/10 pb-4 font-mono">
                     <div className="flex items-center gap-2">
                       <span className="w-2.5 h-2.5 rounded-full bg-[#00FF66] animate-pulse"></span>
                       <span className="text-xs font-bold text-white tracking-wider">MANAGEME MARKET FEED</span>
@@ -280,7 +596,27 @@ export default function Page() {
                     </div>
                   </div>
 
-                  <div className="space-y-3 font-mono tabular-nums">
+                  {/* Market Region Filter Pills */}
+                  <div className="flex items-center gap-2 overflow-x-auto pb-1 font-mono text-[11px]">
+                    <span className="px-2.5 py-1 rounded bg-[#00FF66]/15 text-[#00FF66] font-bold border border-[#00FF66]/30 cursor-pointer">
+                      US / NASDAQ
+                    </span>
+                    <span className="px-2.5 py-1 rounded bg-white/5 text-[#8B95A5] hover:text-white border border-white/10 cursor-pointer">
+                      GB / LSE
+                    </span>
+                    <span className="px-2.5 py-1 rounded bg-white/5 text-[#8B95A5] hover:text-white border border-white/10 cursor-pointer">
+                      IN / NSE
+                    </span>
+                    <span className="px-2.5 py-1 rounded bg-white/5 text-[#8B95A5] hover:text-white border border-white/10 cursor-pointer">
+                      EU / Euronext
+                    </span>
+                    <span className="px-2.5 py-1 rounded bg-white/5 text-[#8B95A5] hover:text-white border border-white/10 cursor-pointer">
+                      SG / SGX
+                    </span>
+                  </div>
+
+                  {/* Tabular Nums Ticks */}
+                  <div className="space-y-2.5 font-mono tabular-nums">
                     <div className="p-3.5 rounded-lg bg-black border border-white/[0.08] hover:border-[#00FF66]/40 transition-all flex items-center justify-between">
                       <div className="flex items-center gap-3">
                         <div className="w-9 h-9 rounded bg-[#00FF66]/10 text-[#00FF66] flex items-center justify-center font-bold text-xs">
@@ -339,9 +675,12 @@ export default function Page() {
                     </div>
                   </div>
 
-                  <div className="mt-4 pt-3 border-t border-white/10 flex items-center justify-between text-xs text-[#8B95A5] font-mono">
+                  {/* Level 2 & Performance Footer */}
+                  <div className="pt-3 border-t border-white/10 flex items-center justify-between text-xs text-[#8B95A5] font-mono">
                     <span>UNREALIZED P&L: <strong className="text-[#00FF66] tabular-nums">+$1,420.50 (+1.42%)</strong></span>
-                    <span className="text-[10px] px-2 py-0.5 rounded bg-white/5 border border-white/10 text-white font-semibold">TERMINAL ACTIVE</span>
+                    <span className="text-[10px] px-2 py-0.5 rounded bg-white/5 border border-white/10 text-white font-semibold">
+                      LEVEL 2 ACTIVE
+                    </span>
                   </div>
                 </div>
               </div>
@@ -349,16 +688,22 @@ export default function Page() {
           </ScrollCard3D>
 
 
-          {/* Feature 2: Auto-Sync CRM */}
+          {/* ----------------------------------------------------------------------- */}
+          {/* FEATURE 4: Job Platform Auto-Sync Hub (Mockup Left, Text Right) */}
+          {/* ----------------------------------------------------------------------- */}
           <ScrollCard3D>
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+              {/* Visual Column (7 Cols): Smart Sync Bridge Visual */}
               <div className="lg:col-span-7 order-2 lg:order-1">
-                <div className="glass-card p-8 border-[rgba(255,255,255,0.12)] relative overflow-hidden flex flex-col items-center justify-center text-center min-h-[340px] bg-[#0A0A0A] shadow-2xl">
+                <div className="glass-card p-7 border-[rgba(255,255,255,0.12)] relative overflow-hidden flex flex-col items-center justify-center text-center bg-[#0A0A0A] shadow-2xl space-y-6">
+                  
+                  {/* Concentric Node Network */}
                   <div className="relative flex items-center justify-center w-64 h-64">
                     <div className="absolute inset-0 rounded-full border border-white/5 animate-ping opacity-20 pointer-events-none" />
                     <div className="absolute inset-4 rounded-full border border-[#0052FF]/20 pointer-events-none" />
                     <div className="absolute inset-12 rounded-full border border-white/10 pointer-events-none" />
 
+                    {/* Center Core */}
                     <div className="relative z-10 w-20 h-20 rounded-2xl bg-gradient-to-tr from-[#0052FF] to-white p-0.5 shadow-lg shadow-[#0052FF]/30">
                       <div className="w-full h-full bg-black rounded-2xl flex flex-col items-center justify-center">
                         <Zap className="w-7 h-7 text-[#0052FF]" />
@@ -366,6 +711,7 @@ export default function Page() {
                       </div>
                     </div>
 
+                    {/* Brand 1: LinkedIn */}
                     <div className="absolute -top-1 left-4 liquid-pill p-2.5 flex items-center gap-2 bg-black shadow-md">
                       <div className="w-7 h-7 rounded bg-[#0a66c2] text-white flex items-center justify-center">
                         <Linkedin className="w-4 h-4" />
@@ -376,6 +722,7 @@ export default function Page() {
                       </div>
                     </div>
 
+                    {/* Brand 2: Indeed */}
                     <div className="absolute -top-1 right-4 liquid-pill p-2.5 flex items-center gap-2 bg-black shadow-md">
                       <div className="w-7 h-7 rounded bg-[#2164f3] text-white flex items-center justify-center">
                         <Briefcase className="w-4 h-4" />
@@ -386,6 +733,7 @@ export default function Page() {
                       </div>
                     </div>
 
+                    {/* Brand 3: Handshake */}
                     <div className="absolute -bottom-1 left-4 liquid-pill p-2.5 flex items-center gap-2 bg-black shadow-md">
                       <div className="w-7 h-7 rounded bg-[#d64000] text-white flex items-center justify-center">
                         <Globe className="w-4 h-4" />
@@ -396,6 +744,7 @@ export default function Page() {
                       </div>
                     </div>
 
+                    {/* Brand 4: Otta / Tech */}
                     <div className="absolute -bottom-1 right-4 liquid-pill p-2.5 flex items-center gap-2 bg-black shadow-md">
                       <div className="w-7 h-7 rounded bg-[#10b981] text-white flex items-center justify-center">
                         <Layers className="w-4 h-4" />
@@ -407,42 +756,72 @@ export default function Page() {
                     </div>
                   </div>
 
-                  <div className="mt-6 font-mono text-xs text-[#8B95A5]">
-                    <span>1-Click Pipeline Bridge &bull; Auto-Parses Salary, Firm & Deadline</span>
+                  {/* Parsed Metadata Card */}
+                  <div className="w-full p-3.5 rounded-xl bg-black border border-white/[0.08] text-left font-mono text-xs space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="font-bold text-white">Goldman Sachs &bull; Summer Analyst (M&A)</span>
+                      <span className="text-[10px] px-2 py-0.5 rounded bg-[#00FF66]/20 text-[#00FF66] font-bold">SYNCED</span>
+                    </div>
+                    <div className="grid grid-cols-3 gap-2 text-[11px] text-[#8B95A5]">
+                      <div>SALARY: <strong className="text-white">£55,000</strong></div>
+                      <div>VISA SPONSOR: <strong className="text-[#00FF66]">YES</strong></div>
+                      <div>ATS MATCH: <strong className="text-[#0052FF]">94%</strong></div>
+                    </div>
                   </div>
+
                 </div>
               </div>
 
+              {/* Text Column (5 Cols) */}
               <div className="lg:col-span-5 space-y-5 order-1 lg:order-2">
                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-[#0052FF]/10 border border-[#0052FF]/20 text-[#0052FF] text-xs font-mono font-bold">
                   <Briefcase className="w-3.5 h-3.5" />
-                  <span>CAREER CRM</span>
+                  <span>AUTOMATED CAREER CRM</span>
                 </div>
 
                 <h3 className="text-2xl sm:text-4xl font-extrabold tracking-tightest text-white leading-tight">
-                  Auto-Sync CRM
+                  Job Platform Auto-Sync Hub
                 </h3>
 
-                <p className="text-sm text-[#8B95A5] leading-relaxed">
-                  1-click pipeline bridge for job platforms. Never manually enter an application again. Clip job openings from LinkedIn, Indeed, and Handshake with one click. manageme extracts compensation data, sponsorship eligibility, and organizes your interview rounds automatically.
-                </p>
+                {/* Purpose Block */}
+                <div className="p-4 rounded-xl bg-white/[0.03] border border-white/[0.08] space-y-1.5">
+                  <div className="flex items-center gap-1.5 text-[11px] font-mono font-bold text-[#0052FF] uppercase tracking-wider">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#0052FF]" />
+                    <span>Purpose & Why It Exists</span>
+                  </div>
+                  <p className="text-xs sm:text-sm text-[#F3F3F3] leading-relaxed">
+                    Never manually enter a job application again. Seamlessly extract job metadata with one-click auto-capture.
+                  </p>
+                </div>
 
-                <div className="space-y-2 pt-2 text-xs font-mono">
-                  <div className="flex items-center gap-2 text-white">
-                    <CheckCircle2 className="w-4 h-4 text-[#0052FF]" />
-                    <span>AI extraction of company, title, salary & deadline</span>
+                {/* How to Use Block */}
+                <div className="p-4 rounded-xl bg-white/[0.03] border border-white/[0.08] space-y-1.5">
+                  <div className="flex items-center gap-1.5 text-[11px] font-mono font-bold text-[#00FF66] uppercase tracking-wider">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#00FF66]" />
+                    <span>How to Use</span>
                   </div>
-                  <div className="flex items-center gap-2 text-white">
-                    <CheckCircle2 className="w-4 h-4 text-[#0052FF]" />
-                    <span>Automated cold outreach generator tailored to HR recruiters</span>
+                  <p className="text-xs sm:text-sm text-[#8B95A5] leading-relaxed">
+                    Drag the Smart Sync bookmarklet to your browser. While viewing any opening on LinkedIn or Indeed, click the bookmark to automatically clip and sync the listing directly into your manageme pipeline.
+                  </p>
+                </div>
+
+                {/* Feature Bullets */}
+                <div className="space-y-2 pt-1 text-xs font-mono text-white/90">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-[#0052FF] shrink-0" />
+                    <span>1-Click Smart Bookmarklet for LinkedIn, Indeed, Handshake & Otta</span>
                   </div>
-                  <div className="flex items-center gap-2 text-white">
-                    <CheckCircle2 className="w-4 h-4 text-[#0052FF]" />
-                    <span>ATS resume scanner with keyword density optimization</span>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-[#0052FF] shrink-0" />
+                    <span>AI auto-parsing of base compensation, deadline & visa sponsorship</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-[#0052FF] shrink-0" />
+                    <span>ATS keyword density optimizer & cold recruiter message generator</span>
                   </div>
                 </div>
 
-                <div className="pt-3">
+                <div className="pt-2">
                   <a
                     href="/app?tab=jobs"
                     className="liquid-pill text-xs inline-flex items-center gap-2 text-white hover:border-[#0052FF]/50"
@@ -450,108 +829,6 @@ export default function Page() {
                     <span>Explore Pipeline CRM</span>
                     <ChevronRight className="w-3.5 h-3.5 text-[#0052FF]" />
                   </a>
-                </div>
-              </div>
-            </div>
-          </ScrollCard3D>
-
-
-          {/* Feature 3: Global Ledger */}
-          <ScrollCard3D>
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-              <div className="lg:col-span-5 space-y-5">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-purple-500/10 border border-purple-500/20 text-purple-400 text-xs font-mono font-bold">
-                  <GraduationCap className="w-3.5 h-3.5" />
-                  <span>ACADEMIC & LEGAL ENGINE</span>
-                </div>
-
-                <h3 className="text-2xl sm:text-4xl font-extrabold tracking-tightest text-white leading-tight">
-                  Global Ledger
-                </h3>
-
-                <p className="text-sm text-[#8B95A5] leading-relaxed">
-                  Visa work-cap and shift wage tracking. Stay 100% compliant with student visa employment limits. manageme tracks your weekly work hours against Tier-4 caps, computes shift earnings in real time, and synchronizes lecture calendars with examination countdowns.
-                </p>
-
-                <div className="space-y-2 pt-2 text-xs font-mono">
-                  <div className="flex items-center gap-2 text-white">
-                    <CheckCircle2 className="w-4 h-4 text-purple-400" />
-                    <span>Live 20h/week visa limit progress gauge</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-white">
-                    <CheckCircle2 className="w-4 h-4 text-purple-400" />
-                    <span>Precision hourly rate calculator (£/hr pro-rata)</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-white">
-                    <CheckCircle2 className="w-4 h-4 text-purple-400" />
-                    <span>Calendar export to Apple, Google & Outlook</span>
-                  </div>
-                </div>
-
-                <div className="pt-3">
-                  <a
-                    href="/app?tab=work"
-                    className="liquid-pill text-xs inline-flex items-center gap-2 text-white hover:border-purple-400/50"
-                  >
-                    <span>View Shift & Visa Ledger</span>
-                    <ChevronRight className="w-3.5 h-3.5 text-purple-400" />
-                  </a>
-                </div>
-              </div>
-
-              <div className="lg:col-span-7">
-                <div className="glass-card p-6 sm:p-7 border-[rgba(255,255,255,0.12)] space-y-5 bg-[#0A0A0A] shadow-2xl">
-                  <div className="space-y-2 font-mono">
-                    <div className="flex justify-between items-center text-xs">
-                      <span className="text-white font-bold flex items-center gap-1.5">
-                        <Scale className="w-3.5 h-3.5 text-amber-400" />
-                        WEEKLY STUDENT VISA CAP (TERM-TIME)
-                      </span>
-                      <span className="text-amber-400 font-bold tabular-nums">14.5 / 20.0 hrs</span>
-                    </div>
-
-                    <div className="w-full h-2.5 rounded-full bg-white/5 border border-white/10 overflow-hidden">
-                      <div className="h-full rounded-full bg-gradient-to-r from-[#0052FF] to-[#00FF66] transition-all" style={{ width: '72.5%' }} />
-                    </div>
-                    <div className="flex justify-between text-[10px] text-[#8B95A5]">
-                      <span>Remaining Allowance: <strong className="text-white tabular-nums">5.5 hrs</strong></span>
-                      <span className="text-[#00FF66]">Compliant &bull; 0 Overages</span>
-                    </div>
-                  </div>
-
-                  <div className="space-y-2.5 font-mono tabular-nums text-xs">
-                    <div className="p-3 rounded-lg bg-black border border-white/[0.08] flex items-center justify-between">
-                      <div>
-                        <div className="font-bold text-white">Economics Teaching Assistant</div>
-                        <div className="text-[10px] text-[#8B95A5]">Today &bull; 09:00 - 13:30 (4.5 hrs)</div>
-                      </div>
-                      <div className="text-right">
-                        <div className="font-bold text-[#00FF66] tabular-nums">+£56.25</div>
-                        <div className="text-[10px] text-[#8B95A5] tabular-nums">£12.50 / hr</div>
-                      </div>
-                    </div>
-
-                    <div className="p-3 rounded-lg bg-black border border-white/[0.08] flex items-center justify-between">
-                      <div>
-                        <div className="font-bold text-white">Campus IT Operations Analyst</div>
-                        <div className="text-[10px] text-[#8B95A5]">Yesterday &bull; 14:00 - 19:00 (5.0 hrs)</div>
-                      </div>
-                      <div className="text-right">
-                        <div className="font-bold text-[#00FF66] tabular-nums">+£62.50</div>
-                        <div className="text-[10px] text-[#8B95A5] tabular-nums">£12.50 / hr</div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="p-4 rounded-lg bg-white/[0.02] border border-white/[0.08] flex items-center justify-between font-mono">
-                    <div>
-                      <span className="text-[10px] text-[#8B95A5] block">TOTAL WEEKLY ACCRUED EARNINGS</span>
-                      <span className="text-xl font-extrabold text-white tabular-nums">£181.25</span>
-                    </div>
-                    <span className="text-[10px] px-2.5 py-1 rounded-full bg-[#00FF66]/15 border border-[#00FF66]/30 text-[#00FF66] font-bold">
-                      PAID BI-WEEKLY
-                    </span>
-                  </div>
                 </div>
               </div>
             </div>
