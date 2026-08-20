@@ -477,31 +477,33 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
       )}
 
       {/* Header & Mode Switcher */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white dark:bg-neutral-900/70 border border-slate-200 dark:border-white/10 p-5 sm:p-6 rounded-3xl shadow-sm">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-[rgba(20,14,50,0.65)] backdrop-blur-xl border border-white/10 p-5 sm:p-6 rounded-3xl shadow-2xl hover:shadow-[0_0_25px_rgba(94,108,231,0.2)] transition-all">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <span className="p-2 rounded-2xl bg-emerald-50 dark:bg-emerald-600/20 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-500/30">
+            <span className="p-2 rounded-2xl bg-[#C645F9]/15 text-[#C645F9] border border-[#C645F9]/30 shadow-[0_0_12px_rgba(198,69,249,0.25)]">
               <TrendingUp className="w-5 h-5" />
             </span>
-            <span className="text-xs font-mono font-bold tracking-widest text-emerald-600 dark:text-emerald-400 uppercase">
+            <span className="text-xs font-mono font-bold tracking-widest text-[#C645F9] uppercase">
               Global Multi-Asset Terminal
             </span>
           </div>
-          <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white mt-1">
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold tracking-tight text-white mt-1">
             manageme Markets & Terminal
           </h1>
-          <p className="text-xs sm:text-sm text-slate-600 dark:text-neutral-400 mt-1 max-w-xl">
+          <p className="text-xs sm:text-sm text-[#9A9DBE] mt-1 max-w-xl">
             Real-time simulated multi-currency execution, live watchlist monitoring, portfolio risk analytics, and institutional trading tracks.
           </p>
         </div>
 
         {/* View Switcher Tabs */}
-        <div className="flex flex-wrap items-center bg-slate-100 dark:bg-neutral-950/80 p-1.5 rounded-2xl border border-slate-200 dark:border-white/10 shadow-sm w-full md:w-auto">
+        <div className="flex flex-wrap items-center bg-[#150F36] p-1.5 rounded-full border border-white/10 shadow-inner w-full md:w-auto">
           <button 
             id="tab-terminal-view"
             onClick={() => setActiveSection('portfolio')}
-            className={`flex-1 sm:flex-initial px-4 py-2.5 min-h-[40px] rounded-xl text-xs font-bold transition-all cursor-pointer text-center ${
-              activeSection === 'portfolio' ? 'bg-blue-600 text-white shadow-md' : 'text-slate-600 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-white'
+            className={`flex-1 sm:flex-initial px-4 py-2 min-h-[38px] rounded-full text-xs font-bold transition-all cursor-pointer text-center ${
+              activeSection === 'portfolio' 
+                ? 'bg-gradient-to-r from-[#5E6CE7] to-[#C645F9] text-white shadow-[0_0_16px_rgba(198,69,249,0.4)]' 
+                : 'text-[#9A9DBE] hover:text-white'
             }`}
           >
             Trading Terminal
@@ -509,8 +511,10 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
           <button 
             id="tab-analytics-view"
             onClick={() => setActiveSection('analytics')}
-            className={`flex-1 sm:flex-initial px-4 py-2.5 min-h-[40px] rounded-xl text-xs font-bold transition-all cursor-pointer text-center ${
-              activeSection === 'analytics' ? 'bg-blue-600 text-white shadow-md' : 'text-slate-600 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-white'
+            className={`flex-1 sm:flex-initial px-4 py-2 min-h-[38px] rounded-full text-xs font-bold transition-all cursor-pointer text-center ${
+              activeSection === 'analytics' 
+                ? 'bg-gradient-to-r from-[#5E6CE7] to-[#C645F9] text-white shadow-[0_0_16px_rgba(198,69,249,0.4)]' 
+                : 'text-[#9A9DBE] hover:text-white'
             }`}
           >
             Portfolio Analytics
@@ -518,8 +522,10 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
           <button 
             id="tab-academy-view"
             onClick={() => setActiveSection('academy')}
-            className={`flex-1 sm:flex-initial px-4 py-2.5 min-h-[40px] rounded-xl text-xs font-bold transition-all cursor-pointer text-center ${
-              activeSection === 'academy' ? 'bg-blue-600 text-white shadow-md' : 'text-slate-600 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-white'
+            className={`flex-1 sm:flex-initial px-4 py-2 min-h-[38px] rounded-full text-xs font-bold transition-all cursor-pointer text-center ${
+              activeSection === 'academy' 
+                ? 'bg-gradient-to-r from-[#5E6CE7] to-[#C645F9] text-white shadow-[0_0_16px_rgba(198,69,249,0.4)]' 
+                : 'text-[#9A9DBE] hover:text-white'
             }`}
           >
             Finance Academy
@@ -536,24 +542,24 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
           {/* LEFT COLUMN: ORDER PANEL & ASSET DISCOVERY */}
           <div className="lg:col-span-4 space-y-6">
             
-            <div id="order-ticket-container" className="bg-white dark:bg-neutral-900/70 border border-slate-200 dark:border-white/10 rounded-3xl p-5 sm:p-6 shadow-sm relative">
+            <div id="order-ticket-container" className="bg-[rgba(20,14,50,0.65)] backdrop-blur-xl border border-white/10 rounded-3xl p-5 sm:p-6 shadow-2xl hover:shadow-[0_0_25px_rgba(94,108,231,0.2)] hover:border-white/15 transition-all relative">
               <div className="flex justify-between items-center mb-4">
-                <h2 className="text-sm font-bold flex items-center gap-2 text-slate-900 dark:text-white font-mono uppercase tracking-wider">
-                  <Search className="w-4 h-4 text-emerald-600 dark:text-emerald-400" /> 
+                <h2 className="text-sm font-bold flex items-center gap-2 text-white font-mono uppercase tracking-wider">
+                  <Search className="w-4 h-4 text-[#C645F9]" /> 
                   <span>Asset Discovery & Order Ticket</span>
                 </h2>
                 {selectedAsset && (
                   <button
                     onClick={() => handleToggleWatchlist(selectedAsset)}
                     title={isMonitored(selectedAsset.symbol) ? "Remove from Watchlist" : "Add to Watchlist"}
-                    className={`flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-[11px] font-bold transition-all cursor-pointer border ${
+                    className={`flex items-center gap-1.5 px-3 py-1 rounded-xl text-[11px] font-bold transition-all cursor-pointer border ${
                       isMonitored(selectedAsset.symbol)
-                        ? 'bg-amber-500/15 text-amber-600 dark:text-amber-400 border-amber-500/40 shadow-sm'
-                        : 'bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-neutral-400 border-slate-200 dark:border-white/10 hover:text-amber-500'
+                        ? 'bg-[#C645F9]/20 text-[#C645F9] border-[#C645F9]/40 shadow-[0_0_12px_rgba(198,69,249,0.3)]'
+                        : 'bg-[#08021A] text-[#9A9DBE] border-white/10 hover:text-white hover:border-white/20'
                     }`}
                   >
-                    <Star className={`w-3.5 h-3.5 ${isMonitored(selectedAsset.symbol) ? 'fill-amber-400 text-amber-500' : ''}`} />
-                    <span>{isMonitored(selectedAsset.symbol) ? 'Monitored' : 'Watchlist'}</span>
+                    <Star className={`w-3.5 h-3.5 ${isMonitored(selectedAsset.symbol) ? 'fill-[#C645F9] text-[#C645F9]' : ''}`} />
+                    <span>{isMonitored(selectedAsset.symbol) ? 'Monitored' : 'Monitor'}</span>
                   </button>
                 )}
               </div>
@@ -561,32 +567,31 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
               {/* UNIFIED TAB SWITCHER: US | India | UK | EU | Singapore */}
               <div className="mb-4">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-[10px] font-mono uppercase font-bold text-slate-500 dark:text-neutral-400 flex items-center gap-1">
-                    <Globe className="w-3 h-3 text-blue-500" /> Market Region
+                  <span className="text-[10px] font-mono uppercase font-bold text-[#9A9DBE] flex items-center gap-1">
+                    <Globe className="w-3 h-3 text-[#5E6CE7]" /> Market Region
                   </span>
-                  <span className="text-[10px] font-mono font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-600/20 px-2 py-0.5 rounded-md border border-blue-200 dark:border-blue-500/20">
+                  <span className="text-[10px] font-mono font-bold text-[#C645F9] bg-[#C645F9]/10 px-2.5 py-0.5 rounded-full border border-[#C645F9]/30">
                     {activeRegionConfig.currency} • {activeRegionConfig.exchanges.join(', ')}
                   </span>
                 </div>
-                <div className="grid grid-cols-5 gap-1 bg-slate-100 dark:bg-neutral-950 p-1 rounded-2xl border border-slate-200 dark:border-white/10">
+                <div className="grid grid-cols-5 gap-1 bg-[#150F36] p-1.5 rounded-full border border-white/10 shadow-inner">
                   {MARKET_REGIONS.map(region => (
                     <button
                       key={region.id}
                       onClick={() => {
                         setActiveRegion(region.id);
-                        // Auto-select first asset from this region if available
                         const firstAsset = GLOBAL_ASSETS.find(a => a.region === region.id);
                         if (firstAsset) setSelectedAsset(firstAsset);
                         setSearchQuery('');
                       }}
-                      className={`py-1.5 px-1 rounded-xl text-center transition-all cursor-pointer flex flex-col items-center justify-center ${
+                      className={`py-1.5 px-1 rounded-full text-center transition-all cursor-pointer flex flex-col items-center justify-center ${
                         activeRegion === region.id
-                          ? 'bg-white dark:bg-neutral-800 text-blue-600 dark:text-blue-400 shadow-sm font-bold border border-slate-200 dark:border-white/10'
-                          : 'text-slate-600 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-white font-medium'
+                          ? 'bg-gradient-to-r from-[#5E6CE7] to-[#C645F9] text-white shadow-[0_0_14px_rgba(198,69,249,0.35)] font-extrabold'
+                          : 'text-[#9A9DBE] hover:text-white font-medium'
                       }`}
                     >
-                      <span className="text-sm">{region.flag}</span>
-                      <span className="text-[10px] tracking-tight">{region.label}</span>
+                      <span className="text-sm leading-none">{region.flag}</span>
+                      <span className="text-[10px] tracking-tight mt-0.5">{region.label}</span>
                     </button>
                   ))}
                 </div>
@@ -601,19 +606,19 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
                     value={searchQuery}
                     onChange={(e) => { setSearchQuery(e.target.value); setShowDropdown(true); }}
                     onFocus={() => setShowDropdown(true)}
-                    className="w-full bg-slate-50 dark:bg-neutral-950 border border-slate-300 dark:border-white/10 rounded-xl pl-9 pr-4 py-2.5 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-blue-500 transition-colors"
+                    className="w-full bg-[#08021A] border border-white/10 rounded-xl pl-9 pr-4 py-2.5 text-xs text-white placeholder-[#9A9DBE]/60 focus:outline-none focus:border-[#C645F9] focus:ring-1 focus:ring-[#C645F9]/50 transition-all font-sans"
                   />
-                  <Search className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
+                  <Search className="w-4 h-4 text-[#9A9DBE] absolute left-3 top-3" />
                 </div>
                 
                 <AnimatePresence>
                   {showDropdown && searchQuery && (
                     <motion.div 
                       initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}
-                      className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-neutral-950 border border-slate-200 dark:border-white/15 rounded-2xl shadow-2xl z-50 max-h-72 overflow-y-auto divide-y divide-slate-100 dark:divide-white/5"
+                      className="absolute top-full left-0 right-0 mt-2 bg-[#150F36] border border-white/15 rounded-2xl shadow-2xl z-50 max-h-72 overflow-y-auto divide-y divide-white/5 backdrop-blur-2xl"
                     >
                       {filteredAssets.length === 0 ? (
-                        <div className="p-4 text-center text-xs text-slate-500 dark:text-neutral-400">
+                        <div className="p-4 text-center text-xs text-[#9A9DBE]">
                           No matching assets found for "{searchQuery}".
                         </div>
                       ) : (
@@ -621,31 +626,31 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
                           <div 
                             key={asset.symbol} 
                             onClick={() => { setSelectedAsset(asset); setActiveRegion(asset.region); setShowDropdown(false); setSearchQuery(''); }}
-                            className="p-3 hover:bg-slate-50 dark:hover:bg-neutral-900 cursor-pointer flex items-center justify-between transition-colors"
+                            className="p-3 hover:bg-[#08021A]/80 cursor-pointer flex items-center justify-between transition-colors"
                           >
                             <div className="flex items-center gap-3">
-                              <div className="w-8 h-8 rounded-xl bg-blue-50 dark:bg-blue-600/20 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold text-xs">
+                              <div className="w-8 h-8 rounded-xl bg-[#5E6CE7]/20 text-[#5E6CE7] border border-[#5E6CE7]/30 flex items-center justify-center font-bold text-xs">
                                 {asset.logo}
                               </div>
                               <div>
-                                <div className="font-bold text-slate-900 dark:text-white text-xs flex items-center gap-1.5">
+                                <div className="font-bold text-white text-xs flex items-center gap-1.5">
                                   <span>{asset.symbol}</span>
-                                  <span className="text-[9px] px-1 py-0.2 rounded bg-slate-100 dark:bg-white/10 text-slate-500">{asset.exchange}</span>
+                                  <span className="text-[9px] px-1.5 py-0.5 rounded bg-white/10 text-[#9A9DBE]">{asset.exchange}</span>
                                 </div>
-                                <div className="text-[10px] text-slate-500 dark:text-neutral-400">{asset.name}</div>
+                                <div className="text-[10px] text-[#9A9DBE]">{asset.name}</div>
                               </div>
                             </div>
                             <div className="flex items-center gap-3">
-                              <div className="text-right font-mono">
-                                <div className="font-semibold text-slate-900 dark:text-white text-xs">{asset.currency}{asset.price.toFixed(2)}</div>
-                                <div className={`text-[10px] font-bold ${asset.isUp ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`}>{asset.change}</div>
+                              <div className="text-right font-mono tabular-nums">
+                                <div className="font-semibold text-white text-xs">{asset.currency}{asset.price.toFixed(2)}</div>
+                                <div className={`text-[10px] font-bold ${asset.isUp ? 'text-[#00FF66]' : 'text-[#FF3B30]'}`}>{asset.change}</div>
                               </div>
                               <button
                                 type="button"
                                 onClick={(e) => { e.stopPropagation(); handleToggleWatchlist(asset); }}
-                                className="p-1.5 rounded-lg hover:bg-slate-200 dark:hover:bg-white/10 text-slate-400 hover:text-amber-400 transition-colors"
+                                className="p-1.5 rounded-lg hover:bg-white/10 text-[#9A9DBE] hover:text-[#C645F9] transition-colors"
                               >
-                                <Star className={`w-3.5 h-3.5 ${isMonitored(asset.symbol) ? 'fill-amber-400 text-amber-500' : ''}`} />
+                                <Star className={`w-3.5 h-3.5 ${isMonitored(asset.symbol) ? 'fill-[#C645F9] text-[#C645F9]' : ''}`} />
                               </button>
                             </div>
                           </div>
@@ -658,15 +663,15 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
 
               {/* QUICK ASSET CHIPS (Selected Region) */}
               <div className="flex items-center gap-1.5 overflow-x-auto pb-3 mb-2 custom-scrollbar">
-                <span className="text-[10px] font-mono text-slate-400 uppercase font-bold shrink-0">Hot:</span>
+                <span className="text-[10px] font-mono text-[#9A9DBE] uppercase font-bold shrink-0">Hot:</span>
                 {regionalAssets.slice(0, 5).map(asset => (
                   <button
                     key={asset.symbol}
                     onClick={() => { setSelectedAsset(asset); }}
-                    className={`px-2.5 py-1 rounded-xl text-[11px] font-mono font-bold shrink-0 transition-all cursor-pointer flex items-center gap-1.5 border ${
+                    className={`px-3 py-1 rounded-xl text-[11px] font-mono tabular-nums font-bold shrink-0 transition-all cursor-pointer flex items-center gap-1.5 border ${
                       selectedAsset?.symbol === asset.symbol
-                        ? 'bg-blue-600 text-white border-blue-500 shadow-sm'
-                        : 'bg-slate-50 dark:bg-white/5 border-slate-200 dark:border-white/10 text-slate-700 dark:text-neutral-300 hover:border-blue-400'
+                        ? 'bg-gradient-to-r from-[#5E6CE7] to-[#C645F9] text-white border-transparent shadow-[0_0_12px_rgba(198,69,249,0.3)]'
+                        : 'bg-[#08021A] border-white/10 text-white hover:border-[#C645F9]/40'
                     }`}
                   >
                     <span>{asset.symbol}</span>
@@ -677,32 +682,34 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
 
               {/* ORDER EXECUTION TICKET */}
               {selectedAsset && (
-                <form onSubmit={handleExecuteTrade} className="space-y-4 border-t border-slate-200 dark:border-white/10 pt-4">
-                  <div className="flex justify-between items-center bg-slate-50 dark:bg-neutral-950 p-3.5 rounded-2xl border border-slate-200 dark:border-white/10 font-mono">
+                <form onSubmit={handleExecuteTrade} className="space-y-4 border-t border-white/10 pt-4">
+                  <div className="flex justify-between items-center bg-[#08021A] p-3.5 rounded-2xl border border-white/10 font-mono tabular-nums">
                     <div>
                       <div className="flex items-center gap-2">
-                        <span className="font-bold text-sm text-slate-900 dark:text-white">{selectedAsset.symbol}</span>
-                        <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-blue-50 dark:bg-blue-600/20 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-500/20">
+                        <span className="font-bold text-sm text-white">{selectedAsset.symbol}</span>
+                        <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#5E6CE7]/20 text-[#5E6CE7] border border-[#5E6CE7]/30">
                           {selectedAsset.exchange}
                         </span>
                       </div>
-                      <span className="text-[11px] text-slate-500 dark:text-neutral-400 block mt-0.5">{selectedAsset.name}</span>
+                      <span className="text-[11px] text-[#9A9DBE] block mt-0.5 font-sans">{selectedAsset.name}</span>
                     </div>
                     <div className="text-right">
-                      <span className={`text-sm font-bold ${marketData.isUp ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`}>
+                      <span className={`text-sm font-bold ${marketData.isUp ? 'text-[#00FF66]' : 'text-[#FF3B30]'}`}>
                         {currentCurrency}{marketData.currentPrice.toFixed(2)}
                       </span>
-                      <span className="text-[10px] text-slate-500 dark:text-neutral-400 block">Live Price</span>
+                      <span className="text-[10px] text-[#9A9DBE] block font-sans">Live LTP</span>
                     </div>
                   </div>
 
                   {/* Order Type Toggle */}
-                  <div className="flex bg-slate-100 dark:bg-neutral-950 rounded-xl p-1 border border-slate-200 dark:border-white/10">
+                  <div className="flex bg-[#08021A] rounded-xl p-1 border border-white/10">
                     {['Delivery', 'Intraday'].map(t => (
                       <button 
                         key={t} type="button" onClick={() => setOrderType(t as any)}
                         className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition-all cursor-pointer ${
-                          orderType === t ? 'bg-white dark:bg-neutral-800 text-slate-900 dark:text-white shadow-sm' : 'text-slate-500 dark:text-neutral-400'
+                          orderType === t 
+                            ? 'bg-[#150F36] text-white shadow-[0_0_10px_rgba(94,108,231,0.3)] border border-white/15' 
+                            : 'text-[#9A9DBE] hover:text-white'
                         }`}
                       >
                         {t}
@@ -717,8 +724,8 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
                         key={m} type="button" onClick={() => setOrderMode(m as any)}
                         className={`flex-1 py-1.5 text-xs font-bold rounded-lg border transition-all cursor-pointer ${
                           orderMode === m 
-                            ? 'border-blue-500 text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-600/10' 
-                            : 'border-slate-200 dark:border-white/10 text-slate-600 dark:text-neutral-400 bg-slate-50 dark:bg-neutral-950'
+                            ? 'border-[#C645F9] text-white bg-[#C645F9]/20 shadow-[0_0_12px_rgba(198,69,249,0.3)]' 
+                            : 'border-white/10 text-[#9A9DBE] bg-[#08021A] hover:text-white'
                         }`}
                       >
                         {m}
@@ -727,43 +734,51 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
                   </div>
 
                   {/* Inputs */}
-                  <div className="grid grid-cols-2 gap-3 font-mono text-xs">
+                  <div className="grid grid-cols-2 gap-3 font-mono tabular-nums text-xs">
                     <div>
-                      <label className="block text-slate-500 dark:text-neutral-400 mb-1">Quantity</label>
+                      <label className="block text-[#9A9DBE] mb-1 font-sans">Quantity</label>
                       <input 
                         type="number" required min="1" value={quantity} onChange={e => setQuantity(Number(e.target.value))}
-                        className="w-full bg-slate-50 dark:bg-neutral-950 border border-slate-300 dark:border-white/10 rounded-xl p-2 text-slate-900 dark:text-white font-bold" 
+                        className="w-full bg-[#08021A] border border-white/10 rounded-xl p-2.5 text-white font-bold focus:border-[#C645F9] focus:outline-none" 
                       />
                     </div>
                     <div>
-                      <label className="block text-slate-500 dark:text-neutral-400 mb-1">Limit Price ({currentCurrency})</label>
+                      <label className="block text-[#9A9DBE] mb-1 font-sans">Limit Price ({currentCurrency})</label>
                       <input 
                         type="number" disabled={orderMode === 'Market'} 
                         value={orderMode === 'Market' ? Number(marketData.currentPrice.toFixed(2)) : limitPrice} 
                         onChange={e => setLimitPrice(Number(e.target.value))}
-                        className="w-full bg-slate-50 dark:bg-neutral-950 border border-slate-300 dark:border-white/10 rounded-xl p-2 text-slate-900 dark:text-white font-bold disabled:opacity-60" 
+                        className="w-full bg-[#08021A] border border-white/10 rounded-xl p-2.5 text-white font-bold disabled:opacity-50 focus:border-[#C645F9] focus:outline-none" 
                       />
                     </div>
                   </div>
 
                   {/* Summary Bar */}
-                  <div className="bg-slate-50 dark:bg-neutral-950 rounded-xl p-3 space-y-1 font-mono text-xs border border-slate-200 dark:border-white/10">
-                    <div className="flex justify-between text-slate-600 dark:text-neutral-400">
-                      <span>Margin Required</span>
-                      <span className="text-slate-900 dark:text-white font-bold">{currentCurrency}{marginRequired.toFixed(2)}</span>
+                  <div className="bg-[#08021A] rounded-xl p-3.5 space-y-1.5 font-mono tabular-nums text-xs border border-white/10">
+                    <div className="flex justify-between text-[#9A9DBE]">
+                      <span className="font-sans">Margin Required</span>
+                      <span className="text-white font-bold">{currentCurrency}{marginRequired.toFixed(2)}</span>
                     </div>
-                    <div className="flex justify-between text-slate-600 dark:text-neutral-400">
-                      <span>Brokerage Charges (Est 0.10%)</span>
-                      <span className="text-slate-900 dark:text-white font-bold">{currentCurrency}{estimatedCharges.toFixed(2)}</span>
+                    <div className="flex justify-between text-[#9A9DBE]">
+                      <span className="font-sans">Brokerage Charges (0.10%)</span>
+                      <span className="text-white font-bold">{currentCurrency}{estimatedCharges.toFixed(2)}</span>
                     </div>
                   </div>
 
                   {/* Action Buttons */}
                   <div className="flex gap-3 pt-2">
-                    <button type="submit" onClick={() => setOrderSide('Buy')} className="flex-1 py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl transition-all cursor-pointer shadow-md">
+                    <button 
+                      type="submit" 
+                      onClick={() => setOrderSide('Buy')} 
+                      className="flex-1 py-3 bg-[#00FF66] hover:bg-[#00FF66]/90 text-[#08021A] font-extrabold text-xs rounded-xl transition-all cursor-pointer shadow-[0_0_18px_rgba(0,255,102,0.3)] hover:scale-[1.02] active:scale-[0.98]"
+                    >
                       BUY {selectedAsset.symbol}
                     </button>
-                    <button type="submit" onClick={() => setOrderSide('Sell')} className="flex-1 py-3 bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs rounded-xl transition-all cursor-pointer shadow-md">
+                    <button 
+                      type="submit" 
+                      onClick={() => setOrderSide('Sell')} 
+                      className="flex-1 py-3 bg-[#FF3B30] hover:bg-[#FF3B30]/90 text-white font-extrabold text-xs rounded-xl transition-all cursor-pointer shadow-[0_0_18px_rgba(255,59,48,0.3)] hover:scale-[1.02] active:scale-[0.98]"
+                    >
                       SELL {selectedAsset.symbol}
                     </button>
                   </div>
@@ -771,18 +786,18 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
               )}
             </div>
 
-            {/* MONITORED STOCKS / MY WATCHLIST SECTION */}
-            <div className="bg-white dark:bg-neutral-900/70 border border-slate-200 dark:border-white/10 rounded-3xl p-5 shadow-sm space-y-4 font-mono">
-              <div className="flex items-center justify-between border-b border-slate-200 dark:border-white/10 pb-3">
+            {/* MONITORED STOCKS / MY WATCHLIST SECTION (BENTO GRID) */}
+            <div className="bg-[rgba(20,14,50,0.65)] backdrop-blur-xl border border-white/10 rounded-3xl p-5 shadow-2xl space-y-4 font-mono">
+              <div className="flex items-center justify-between border-b border-white/10 pb-3">
                 <div className="flex items-center gap-2">
-                  <span className="p-1.5 rounded-xl bg-amber-500/10 text-amber-500">
-                    <Star className="w-4 h-4 fill-amber-400" />
+                  <span className="p-1.5 rounded-xl bg-[#C645F9]/15 text-[#C645F9] border border-[#C645F9]/30 shadow-[0_0_10px_rgba(198,69,249,0.25)]">
+                    <Star className="w-4 h-4 fill-[#C645F9]" />
                   </span>
                   <div>
-                    <h3 className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider">
+                    <h3 className="text-xs font-bold text-white uppercase tracking-wider font-sans">
                       My Monitored Stocks
                     </h3>
-                    <span className="text-[10px] text-slate-500 dark:text-neutral-400">
+                    <span className="text-[10px] text-[#9A9DBE] font-sans">
                       {watchlist.length} securities tracked
                     </span>
                   </div>
@@ -794,10 +809,10 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
                     <button
                       key={f}
                       onClick={() => setWatchlistFilter(f)}
-                      className={`px-2 py-0.5 rounded-lg text-[10px] transition-all cursor-pointer font-bold ${
+                      className={`px-2.5 py-1 rounded-full text-[10px] transition-all cursor-pointer font-bold ${
                         watchlistFilter === f
-                          ? 'bg-blue-600 text-white'
-                          : 'bg-slate-100 dark:bg-white/5 text-slate-500 hover:text-slate-900 dark:hover:text-white'
+                          ? 'bg-gradient-to-r from-[#5E6CE7] to-[#C645F9] text-white shadow-[0_0_10px_rgba(198,69,249,0.35)]'
+                          : 'bg-[#08021A] text-[#9A9DBE] hover:text-white border border-white/5'
                       }`}
                     >
                       {f === 'All' ? 'All' : f === 'US' ? '🇺🇸' : f === 'India' ? '🇮🇳' : f === 'UK' ? '🇬🇧' : f === 'EU' ? '🇪🇺' : '🇸🇬'}
@@ -806,16 +821,15 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
                 </div>
               </div>
 
-              {/* Monitored Items List */}
+              {/* Monitored Items List (Bento Grid) */}
               {filteredWatchlist.length === 0 ? (
-                <div className="text-center py-6 px-4 bg-slate-50 dark:bg-neutral-950 rounded-2xl border border-dashed border-slate-200 dark:border-white/10 space-y-2">
-                  <Eye className="w-6 h-6 text-slate-400 mx-auto opacity-70" />
-                  <p className="text-xs text-slate-600 dark:text-neutral-400 font-sans">
+                <div className="text-center py-6 px-4 bg-[#08021A] rounded-2xl border border-dashed border-white/10 space-y-2">
+                  <Eye className="w-6 h-6 text-[#9A9DBE] mx-auto opacity-70" />
+                  <p className="text-xs text-[#9A9DBE] font-sans">
                     No stocks monitored in {watchlistFilter === 'All' ? 'any region' : watchlistFilter}.
                   </p>
                   <button
                     onClick={() => {
-                      // Bulk add top global assets
                       GLOBAL_ASSETS.slice(0, 4).forEach(a => {
                         if (!isMonitored(a.symbol)) {
                           addToWatchlist({
@@ -832,7 +846,7 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
                         }
                       });
                     }}
-                    className="text-[11px] text-blue-600 dark:text-blue-400 hover:underline font-bold font-sans cursor-pointer"
+                    className="text-[11px] text-[#C645F9] hover:underline font-bold font-sans cursor-pointer"
                   >
                     + Add Top Global Bluechips
                   </button>
@@ -849,19 +863,19 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
                     return (
                       <div 
                         key={item.id}
-                        className="p-3 bg-slate-50 dark:bg-neutral-950/80 hover:bg-slate-100 dark:hover:bg-neutral-900 border border-slate-200 dark:border-white/10 rounded-2xl flex items-center justify-between transition-all group"
+                        className="p-3 bg-[#08021A]/80 hover:bg-[#150F36]/90 border border-white/10 hover:border-[#C645F9]/40 rounded-2xl flex items-center justify-between transition-all group hover:shadow-[0_0_20px_rgba(94,108,231,0.2)]"
                       >
                         {/* Symbol & Name */}
                         <div className="min-w-0 pr-2">
                           <div className="flex items-center gap-1.5">
-                            <span className="font-bold text-xs text-slate-900 dark:text-white truncate">
+                            <span className="font-bold text-xs text-white truncate">
                               {item.symbol}
                             </span>
-                            <span className="text-[9px] px-1 py-0.2 rounded bg-slate-200 dark:bg-white/10 text-slate-600 dark:text-neutral-400 uppercase font-sans">
+                            <span className="text-[9px] px-1.5 py-0.2 rounded-full bg-white/10 text-[#9A9DBE] uppercase font-sans">
                               {item.region || 'US'}
                             </span>
                           </div>
-                          <div className="text-[10px] text-slate-500 dark:text-neutral-400 truncate max-w-[120px]">
+                          <div className="text-[10px] text-[#9A9DBE] truncate max-w-[120px] font-sans">
                             {item.name || item.symbol}
                           </div>
                         </div>
@@ -873,11 +887,11 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
 
                         {/* Price & Actions */}
                         <div className="flex items-center gap-2 shrink-0">
-                          <div className="text-right font-mono">
-                            <div className="font-bold text-xs text-slate-900 dark:text-white">
+                          <div className="text-right font-mono tabular-nums">
+                            <div className="font-bold text-xs text-white">
                               {itemCurrency}{price.toFixed(2)}
                             </div>
-                            <div className={`text-[10px] font-bold ${isPositive ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`}>
+                            <div className={`text-[10px] font-bold ${isPositive ? 'text-[#00FF66]' : 'text-[#FF3B30]'}`}>
                               {isPositive ? '+' : ''}{change.toFixed(2)}%
                             </div>
                           </div>
@@ -886,7 +900,7 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
                           <button
                             onClick={() => handleLoadIntoTicket(item)}
                             title="Load into Order Ticket"
-                            className="p-1.5 rounded-xl bg-blue-50 dark:bg-blue-600/20 text-blue-600 dark:text-blue-400 hover:bg-blue-600 hover:text-white transition-all cursor-pointer"
+                            className="p-1.5 rounded-xl bg-gradient-to-r from-[#5E6CE7] to-[#C645F9] text-white hover:scale-105 transition-all cursor-pointer shadow-[0_0_10px_rgba(198,69,249,0.3)]"
                           >
                             <Zap className="w-3.5 h-3.5" />
                           </button>
@@ -895,7 +909,7 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
                           <button
                             onClick={() => removeFromWatchlist(item.id)}
                             title="Remove from Watchlist"
-                            className="p-1.5 rounded-xl text-slate-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/10 transition-colors cursor-pointer"
+                            className="p-1.5 rounded-xl text-[#9A9DBE] hover:text-[#FF3B30] hover:bg-[#FF3B30]/10 transition-colors cursor-pointer"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
                           </button>
@@ -908,17 +922,17 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
             </div>
 
             {/* Quick Balance Stats */}
-            <div className="bg-white dark:bg-neutral-900/70 border border-slate-200 dark:border-white/10 rounded-3xl p-5 shadow-sm space-y-3 font-mono">
+            <div className="bg-[rgba(20,14,50,0.65)] backdrop-blur-xl border border-white/10 rounded-3xl p-5 shadow-2xl space-y-3 font-mono tabular-nums">
                <div className="flex justify-between items-center text-xs">
-                 <span className="text-slate-500 dark:text-neutral-400">Available Cash Balance</span>
-                 <span className="text-slate-900 dark:text-white font-bold tracking-tighter tabular-nums">{currentCurrency}{tradingData.cashBalance.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+                 <span className="text-[#9A9DBE] font-sans">Available Cash Balance</span>
+                 <span className="text-white font-bold tracking-tighter">{currentCurrency}{tradingData.cashBalance.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
                </div>
                <div className="flex justify-between items-center text-xs">
-                 <span className="text-slate-500 dark:text-neutral-400">Total Portfolio Net Worth</span>
-                 <span className="text-slate-900 dark:text-white font-bold tracking-tighter tabular-nums">{currentCurrency}{totalValue.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+                 <span className="text-[#9A9DBE] font-sans">Total Portfolio Net Worth</span>
+                 <span className="text-white font-bold tracking-tighter">{currentCurrency}{totalValue.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
                </div>
-               <div className="w-full h-2 bg-slate-100 dark:bg-neutral-950 rounded-full overflow-hidden border border-slate-200 dark:border-white/10">
-                 <div className="h-full bg-emerald-500 rounded-full transition-all" style={{ width: `${Math.min(100, (tradingData.cashBalance / (totalValue || 1)) * 100)}%` }}></div>
+               <div className="w-full h-2 bg-[#08021A] rounded-full overflow-hidden border border-white/10">
+                 <div className="h-full bg-gradient-to-r from-[#5E6CE7] to-[#00FF66] rounded-full transition-all shadow-[0_0_10px_rgba(0,255,102,0.4)]" style={{ width: `${Math.min(100, (tradingData.cashBalance / (totalValue || 1)) * 100)}%` }}></div>
                </div>
             </div>
 

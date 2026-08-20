@@ -339,13 +339,17 @@ export default function App() {
   }, [userData.gradSchemes, userData.partTimeRoles]);
 
   return (
-    <div className="min-h-screen bg-transparent text-[var(--text-primary)] flex flex-col font-sans selection:bg-[var(--accent)] selection:text-white transition-colors duration-300 relative overflow-x-hidden">
+    <div className="min-h-screen bg-[#0D0425] text-white flex flex-col font-sans selection:bg-[#C645F9] selection:text-white transition-colors duration-300 relative overflow-x-hidden">
+
+      {/* Ambient Radial FinTech Glows */}
+      <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[400px] bg-radial from-[#C645F9]/15 via-[#5E6CE7]/10 to-transparent blur-3xl pointer-events-none z-0" />
+      <div className="fixed top-1/3 -left-48 w-[600px] h-[600px] bg-radial from-[#5E6CE7]/10 to-transparent blur-3xl pointer-events-none z-0" />
+      <div className="fixed top-1/2 -right-48 w-[600px] h-[600px] bg-radial from-[#C645F9]/10 to-transparent blur-3xl pointer-events-none z-0" />
 
       {/* Clean Spatial Background Mesh (Lazy-loaded) */}
       <Suspense fallback={null}>
         <Spatial3DCanvas />
       </Suspense>
-
 
       <Header 
         activeTab={activeTab} 
