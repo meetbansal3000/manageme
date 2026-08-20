@@ -1,60 +1,127 @@
-@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Manrope:wght@400;500;600;700;800&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap');
 @import "tailwindcss";
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
   --font-sans: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-serif: 'Instrument Serif', Georgia, serif;
+  --font-editorial: 'Instrument Serif', Georgia, serif;
   --font-mono: 'Space Mono', monospace;
 
-  /* Theme Tokens */
-  --color-background: var(--color-bg);
-  --color-surface: var(--color-surface);
+  /* Strict FinTech Theme Tokens */
+  --color-bg-app: var(--bg-app);
+  --color-bg-surface: var(--bg-surface);
+  --color-border-soft: var(--border-soft);
+  --color-text-primary: var(--text-primary);
+  --color-text-muted: var(--text-muted);
+  --color-accent-glow: var(--accent-glow);
+  --color-accent-profit: var(--accent-profit);
+  --color-accent-loss: var(--accent-loss);
+
+  /* Legacy & Theme Aliases */
+  --color-background: var(--bg-app);
+  --color-surface: var(--bg-surface);
   --color-surface-elevated: var(--color-surface-elevated);
-  --color-border: var(--color-border);
-  --color-text-primary: var(--color-text-primary);
-  --color-text-muted: var(--color-text-muted);
-  --color-textPrimary: var(--color-text-primary);
-  --color-textMuted: var(--color-text-muted);
-  --color-accent-primary: var(--color-accent-primary);
-  --color-accentPrimary: var(--color-accent-primary);
-  --color-action-blue: var(--color-action-blue);
-  --color-actionBlue: var(--color-action-blue);
-  --color-profit-green: var(--color-profit-green);
-  --color-profitGreen: var(--color-profit-green);
-  --color-loss-red: var(--color-loss-red);
-  --color-lossRed: var(--color-loss-red);
-  --color-accentBlue: var(--color-action-blue);
+  --color-border: var(--border-soft);
+  --color-textPrimary: var(--text-primary);
+  --color-textMuted: var(--text-muted);
+  --color-accent-primary: var(--accent-glow);
+  --color-accentPrimary: var(--accent-glow);
+  --color-action-blue: var(--accent-glow);
+  --color-actionBlue: var(--accent-glow);
+  --color-profit-green: var(--accent-profit);
+  --color-profitGreen: var(--accent-profit);
+  --color-loss-red: var(--accent-loss);
+  --color-lossRed: var(--accent-loss);
+  --color-accentBlue: var(--accent-glow);
   --color-accentPurple: #C645F9;
 
   /* Shadows */
-  --shadow-theme-soft: 0 10px 40px -10px rgba(0, 0, 0, 0.04);
-  --shadow-theme-glow: 0 0 20px rgba(0, 255, 102, 0.1);
+  --shadow-liquid-glow: 0 0 15px rgba(94, 108, 231, 0.2);
+  --shadow-glass-hover: 0 8px 30px rgba(0, 0, 0, 0.4);
+  --shadow-btn-glow: 0 0 25px rgba(94, 108, 231, 0.35);
   --shadow-card-base: var(--theme-card-shadow);
   --shadow-card-hover: var(--theme-card-hover-shadow);
 }
 
 @layer base {
   :root,
+  .dark,
+  html.dark,
+  [data-theme="dark"] {
+    /* Strict FinTech Midnight Theme Tokens */
+    --bg-app: #0A051A;
+    --bg-surface: rgba(255, 255, 255, 0.03);
+    --border-soft: rgba(255, 255, 255, 0.08);
+    --text-primary: #FFFFFF;
+    --text-muted: #8B95A5;
+    --accent-glow: #5E6CE7;
+    --accent-profit: #00FF66;
+    --accent-loss: #FF3B30;
+
+    /* Elevated Surfaces & Component Aliases */
+    --color-bg: #0A051A;
+    --color-surface: rgba(255, 255, 255, 0.03);
+    --color-surface-elevated: rgba(255, 255, 255, 0.06);
+    --color-border: rgba(255, 255, 255, 0.08);
+    --color-text-primary: #FFFFFF;
+    --color-text-muted: #8B95A5;
+    --color-accent-primary: #5E6CE7;
+    --color-action-blue: #5E6CE7;
+    --color-profit-green: #00FF66;
+    --color-loss-red: #FF3B30;
+
+    --theme-shadow: 0 0 20px rgba(94, 108, 231, 0.15);
+    --theme-card-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.6);
+    --theme-card-hover-shadow: 0 8px 30px rgba(0, 0, 0, 0.8), 0 0 25px rgba(94, 108, 231, 0.15);
+
+    /* Legacy compatibility tokens */
+    --bg: #0A051A;
+    --surface: rgba(255, 255, 255, 0.03);
+    --surface-solid: #120A2E;
+    --surface-border: rgba(255, 255, 255, 0.08);
+    --border: rgba(255, 255, 255, 0.08);
+    --text-primary: #FFFFFF;
+    --text-secondary: #8B95A5;
+    --card-bg: rgba(255, 255, 255, 0.03);
+    --accent: #5E6CE7;
+    --accent-purple: #C645F9;
+    --profit-green: #00FF66;
+    --loss-red: #FF3B30;
+    --bg-canvas: #0A051A;
+    --ink-main: #FFFFFF;
+    --accent-emerald: #00FF66;
+    --accent-amber: #F59E0B;
+    --ink-faint: rgba(255, 255, 255, 0.08);
+    --ink-muted: #8B95A5;
+  }
+
   html.light,
   [data-theme="light"] {
-    /* Light Mode Tokens (ChronoTask/Finpay Style) */
+    --bg-app: #FAFAFA;
+    --bg-surface: #FFFFFF;
+    --border-soft: #E5E7EB;
+    --text-primary: #111827;
+    --text-muted: #6B7280;
+    --accent-glow: #2563EB;
+    --accent-profit: #059669;
+    --accent-loss: #DC2626;
+
     --color-bg: #FAFAFA;
     --color-surface: #FFFFFF;
     --color-surface-elevated: #F4F4F5;
     --color-border: #E5E7EB;
     --color-text-primary: #111827;
     --color-text-muted: #6B7280;
-    --color-accent-primary: #000000;
+    --color-accent-primary: #111827;
     --color-action-blue: #2563EB;
-    --color-profit-green: #00FF66;
-    --color-loss-red: #FF3B30;
+    --color-profit-green: #059669;
+    --color-loss-red: #DC2626;
 
     --theme-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.04);
     --theme-card-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 10px 40px -10px rgba(0, 0, 0, 0.04);
     --theme-card-hover-shadow: 0 12px 30px -10px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 
-    /* Legacy compatibility tokens */
     --bg: #FAFAFA;
     --surface: #FFFFFF;
     --surface-solid: #FFFFFF;
@@ -65,67 +132,27 @@
     --card-bg: #FFFFFF;
     --accent: #2563EB;
     --accent-purple: #C645F9;
-    --profit-green: #00FF66;
-    --loss-red: #FF3B30;
+    --profit-green: #059669;
+    --loss-red: #DC2626;
     --bg-canvas: #FAFAFA;
     --ink-main: #111827;
-    --accent-emerald: #00FF66;
+    --accent-emerald: #059669;
     --accent-amber: #F59E0B;
     --ink-faint: #E5E7EB;
     --ink-muted: #6B7280;
   }
 
-  .dark,
-  html.dark,
-  [data-theme="dark"] {
-    /* Dark Mode Tokens (Fxology Terminal Style) */
-    --color-bg: #050505;
-    --color-surface: #0A0A0A;
-    --color-surface-elevated: #141416;
-    --color-border: #1F1F22;
-    --color-text-primary: #FAFAFA;
-    --color-text-muted: #A1A1AA;
-    --color-accent-primary: #FAFAFA;
-    --color-action-blue: #5E6CE7;
-    --color-profit-green: #00FF66;
-    --color-loss-red: #FF3B30;
-
-    --theme-shadow: 0 0 20px rgba(0, 255, 102, 0.1);
-    --theme-card-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.7);
-    --theme-card-hover-shadow: 0 0 25px rgba(0, 255, 102, 0.12), 0 8px 30px rgba(0, 0, 0, 0.85);
-
-    /* Legacy compatibility tokens */
-    --bg: #050505;
-    --surface: #0A0A0A;
-    --surface-solid: #0A0A0A;
-    --surface-border: #1F1F22;
-    --border: #1F1F22;
-    --text-primary: #FAFAFA;
-    --text-secondary: #A1A1AA;
-    --card-bg: #0A0A0A;
-    --accent: #5E6CE7;
-    --accent-purple: #C645F9;
-    --profit-green: #00FF66;
-    --loss-red: #FF3B30;
-    --bg-canvas: #050505;
-    --ink-main: #FAFAFA;
-    --accent-emerald: #00FF66;
-    --accent-amber: #F59E0B;
-    --ink-faint: #1F1F22;
-    --ink-muted: #A1A1AA;
-  }
-
   html {
     font-family: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    color-scheme: light dark;
+    color-scheme: dark;
   }
 
   body {
     min-height: 100vh;
     overflow-x: hidden;
     max-width: 100vw;
-    background-color: var(--color-bg);
-    color: var(--color-text-primary);
+    background-color: var(--bg-app);
+    color: var(--text-primary);
     font-family: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -135,14 +162,21 @@
 
   /* Headings: tracking-tight (-0.02em) SaaS Typography */
   h1, h2, h3, h4, h5, h6 {
-    color: var(--color-text-primary);
+    color: var(--text-primary);
     font-family: 'Manrope', sans-serif;
     letter-spacing: -0.02em;
     font-weight: 700;
   }
 
   p {
-    color: var(--color-text-muted);
+    color: var(--text-muted);
+  }
+
+  /* Dual-Font Editorial Display Typography */
+  .font-editorial,
+  .font-serif {
+    font-family: 'Instrument Serif', Georgia, serif;
+    font-style: italic;
   }
 
   /* All numbers & monetary figures strictly use monospaced tabular digits */
@@ -152,7 +186,9 @@
   [data-num="true"],
   .price-val,
   .currency-val,
-  .ticker-val {
+  .ticker-val,
+  table td,
+  table th {
     font-variant-numeric: tabular-nums;
     font-feature-settings: "tnum" 1;
   }
@@ -163,9 +199,9 @@
   }
 
   input, textarea, select {
-    background-color: var(--color-surface);
-    color: var(--color-text-primary);
-    border: 1px solid var(--color-border);
+    background-color: var(--bg-surface);
+    color: var(--text-primary);
+    border: 1px solid var(--border-soft);
     border-radius: 12px;
     touch-action: manipulation;
     font-family: 'Manrope', sans-serif;
@@ -173,27 +209,102 @@
   }
 
   input:focus, textarea:focus, select:focus {
-    border-color: var(--color-action-blue);
+    border-color: var(--accent-glow);
     outline: none;
-    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
-  }
-
-  .dark input:focus, .dark textarea:focus, .dark select:focus {
-    border-color: var(--color-action-blue);
     box-shadow: 0 0 0 2px rgba(94, 108, 231, 0.3);
   }
 
   input::placeholder, textarea::placeholder {
-    color: var(--color-text-muted);
+    color: var(--text-muted);
     opacity: 0.7;
   }
 }
 
 @layer utilities {
-  /* High-End Micro-Interactions & Cards */
+  /* High-End Micro-Interactions & Core Global Design Classes */
+  
+  /* 1. Liquid Pill */
+  .liquid-pill {
+    background-color: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 9999px;
+    transition: all 300ms cubic-bezier(0.16, 1, 0.3, 1);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+
+  .liquid-pill:hover {
+    border-color: rgba(255, 255, 255, 0.4);
+    background-color: rgba(255, 255, 255, 0.05);
+    box-shadow: 0 0 15px rgba(94, 108, 231, 0.2);
+  }
+
+  /* 2. Glass Card */
+  .glass-card {
+    background-color: var(--bg-surface);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--border-soft);
+    border-radius: 1rem;
+    transition: transform 300ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 300ms cubic-bezier(0.16, 1, 0.3, 1), border-color 300ms ease-out;
+  }
+
+  .glass-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4), 0 0 20px rgba(94, 108, 231, 0.1);
+    border-color: rgba(255, 255, 255, 0.15);
+  }
+
+  /* 3. Primary Button with Tactile Physics */
+  .btn-primary {
+    background: linear-gradient(135deg, #5E6CE7 0%, #C645F9 100%);
+    color: #FFFFFF;
+    border-radius: 9999px;
+    font-weight: 700;
+    transition: all 300ms cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 0 20px rgba(94, 108, 231, 0.3);
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 0 25px rgba(198, 69, 249, 0.45);
+  }
+
+  .btn-primary:active {
+    transform: scale(0.95);
+  }
+
+  /* 4. Ghost Button */
+  .btn-ghost {
+    background-color: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: #FFFFFF;
+    border-radius: 9999px;
+    font-weight: 600;
+    transition: all 300ms cubic-bezier(0.16, 1, 0.3, 1);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    cursor: pointer;
+  }
+
+  .btn-ghost:hover {
+    background-color: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.3);
+    transform: translateY(-1px);
+  }
+
+  .btn-ghost:active {
+    transform: scale(0.95);
+  }
+
+  /* Cards & Bento */
   .saas-card {
-    background-color: var(--color-surface);
-    border: 1px solid var(--color-border);
+    background-color: var(--bg-surface);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--border-soft);
     box-shadow: var(--theme-card-shadow);
     border-radius: 1rem;
     transition: transform 300ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 300ms cubic-bezier(0.16, 1, 0.3, 1), border-color 300ms ease-out;
@@ -204,21 +315,11 @@
     box-shadow: var(--theme-card-hover-shadow);
   }
 
-  .btn-interactive {
-    transition: all 300ms cubic-bezier(0.16, 1, 0.3, 1);
-  }
-
-  .btn-interactive:hover {
-    transform: translateY(-1px);
-  }
-
-  .btn-interactive:active {
-    transform: scale(0.95);
-  }
-
   .fintech-card {
-    background-color: var(--color-surface);
-    border: 1px solid var(--color-border);
+    background-color: var(--bg-surface);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--border-soft);
     border-radius: 1.25rem;
     box-shadow: var(--theme-card-shadow);
     transition: transform 300ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 300ms cubic-bezier(0.16, 1, 0.3, 1), border-color 300ms ease-out;
@@ -227,12 +328,14 @@
   .fintech-card:hover {
     transform: translateY(-2px);
     box-shadow: var(--theme-card-hover-shadow);
-    border-color: var(--color-action-blue);
+    border-color: var(--accent-glow);
   }
 
   .bento-card {
-    background-color: var(--color-surface);
-    border: 1px solid var(--color-border);
+    background-color: var(--bg-surface);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--border-soft);
     border-radius: 1.25rem;
     box-shadow: var(--theme-card-shadow);
     transition: transform 300ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 300ms cubic-bezier(0.16, 1, 0.3, 1), border-color 300ms ease-out;
@@ -244,109 +347,29 @@
   }
 
   .glass-panel {
-    background-color: var(--color-surface);
-    border: 1px solid var(--color-border);
-    color: var(--color-text-primary);
+    background-color: var(--bg-surface);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--border-soft);
+    color: var(--text-primary);
   }
 
-  .ultra-glass {
-    background-color: var(--color-surface);
-    border: 1px solid var(--color-border);
-    box-shadow: var(--theme-card-shadow);
+  /* Custom Scrollbars */
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
   }
 
-  .glass-card-3d {
-    background-color: var(--color-surface);
-    border: 1px solid var(--color-border);
-    box-shadow: var(--theme-card-shadow);
-    transition: transform 300ms cubic-bezier(0.16, 1, 0.3, 1), border-color 300ms ease, box-shadow 300ms ease;
-    will-change: transform;
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
   }
 
-  .glass-card-3d:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--theme-card-hover-shadow);
-    border-color: var(--color-action-blue);
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 9999px;
   }
 
-  .apple-dock {
-    background-color: var(--color-surface);
-    border: 1px solid var(--color-border);
-    box-shadow: var(--theme-card-shadow);
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.25);
   }
-}
-
-/* Translucent scrollbars */
-::-webkit-scrollbar {
-  width: 5px;
-  height: 5px;
-}
-
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-  background: rgba(120, 120, 140, 0.25);
-  border-radius: 9999px;
-}
-
-.dark ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.15);
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(120, 120, 140, 0.45);
-}
-
-.dark ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.35);
-}
-
-.hide-scrollbar::-webkit-scrollbar {
-  display: none;
-}
-
-.hide-scrollbar {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-
-/* 3D Perspective & Flashcard flip utilities */
-.perspective-1000 {
-  perspective: 1000px;
-}
-
-.transform-style-3d {
-  transform-style: preserve-3d;
-}
-
-.backface-hidden {
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
-}
-
-.rotate-y-180 {
-  transform: rotateY(180deg);
-}
-
-/* Ticker Marquee Animation */
-@keyframes tickerMarquee {
-  0% {
-    transform: translateX(0%);
-  }
-  100% {
-    transform: translateX(-50%);
-  }
-}
-
-.animate-ticker-marquee {
-  display: flex;
-  white-space: nowrap;
-  animation: tickerMarquee 45s linear infinite;
-  will-change: transform;
-}
-
-.animate-ticker-marquee:hover {
-  animation-play-state: paused;
 }

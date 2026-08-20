@@ -272,15 +272,15 @@ export const Header: React.FC<HeaderProps> = ({
                 {/* Dashboard Title & Sub-Label */}
                 <div className="flex flex-col min-w-0">
                   <div className="flex items-center gap-1 sm:gap-1.5">
-                    <span className="font-extrabold text-base sm:text-lg md:text-xl text-slate-900 dark:text-white tracking-tight group-hover/home:text-blue-600 dark:group-hover:text-blue-400 transition-colors lowercase">
-                      manageme
+                    <span className="font-extrabold text-base sm:text-lg md:text-xl text-white tracking-tightest group-hover/home:text-[#5E6CE7] transition-colors lowercase">
+                      optio
                     </span>
-                    <span className="text-[9px] sm:text-[10px] px-1.5 py-0.2 rounded bg-blue-500/15 text-blue-600 dark:text-blue-400 font-mono font-bold tracking-wider hidden sm:inline-block">
-                      PRO
+                    <span className="text-[9px] sm:text-[10px] px-1.5 py-0.2 rounded-full bg-[#5E6CE7]/15 text-[#5E6CE7] font-mono font-bold tracking-wider hidden sm:inline-block border border-[#5E6CE7]/30">
+                      OS
                     </span>
                   </div>
-                  <span className="text-[10px] font-mono text-slate-500 dark:text-zinc-400 -mt-0.5 group-hover/home:text-slate-800 dark:group-hover/home:text-zinc-200 transition-colors hidden xs:block truncate">
-                    Executive Career Workspace
+                  <span className="text-[10px] font-mono text-[var(--text-muted)] -mt-0.5 group-hover/home:text-white transition-colors hidden xs:block truncate">
+                    Career Intelligence Hub
                   </span>
                 </div>
               </button>
