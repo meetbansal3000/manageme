@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../../context/AuthContext';
 import { InteractiveCursorGlow } from '../../components/canvas/InteractiveCursorGlow';
 import { FinancialNewsTab } from '../../components/FinancialNewsTab';
@@ -34,7 +35,13 @@ export default function WorkspacePage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#000000] text-white flex flex-col font-sans relative overflow-x-hidden">
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -10 }}
+      transition={{ duration: 0.4, ease: "easeOut" }}
+      className="min-h-screen bg-[#000000] text-white flex flex-col font-sans tracking-tight relative overflow-x-hidden"
+    >
       <InteractiveCursorGlow />
       <Header
         activeTab={activeTab as any}
@@ -61,11 +68,21 @@ export default function WorkspacePage() {
         updateData={updateData}
       />
       <main className="flex-1 pb-24 pt-20 sm:pt-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full">
-        {activeTab === 'news' && <FinancialNewsTab />}
-        {activeTab === 'trading' && <PaperTradingTab />}
-        {activeTab === 'jobs' && <JobSearchTab />}
-        {activeTab === 'finance' && <FinanceHubTab />}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeTab}
+            initial={{ opacity: 0, filter: "blur(4px)" }}
+            animate={{ opacity: 1, filter: "blur(0px)" }}
+            exit={{ opacity: 0, filter: "blur(4px)" }}
+            transition={{ duration: 0.2 }}
+          >
+            {activeTab === 'news' && <FinancialNewsTab />}
+            {activeTab === 'trading' && <PaperTradingTab />}
+            {activeTab === 'jobs' && <JobSearchTab />}
+            {activeTab === 'finance' && <FinanceHubTab />}
+          </motion.div>
+        </AnimatePresence>
       </main>
-    </div>
+    </motion.div>
   );
 }

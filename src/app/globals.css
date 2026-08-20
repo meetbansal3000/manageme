@@ -105,6 +105,10 @@ html, body {
     font-style: italic;
   }
 
+  .font-manrope {
+    font-family: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+
   /* Enforce font-variant-numeric: tabular-nums across all numbers and financial figures */
   .tabular-nums,
   .font-mono,
@@ -117,8 +121,9 @@ html, body {
   table th,
   span.number,
   .num {
-    font-variant-numeric: tabular-nums;
+    font-variant-numeric: tabular-nums lining-nums;
     font-feature-settings: "tnum" 1;
+    letter-spacing: -0.015em;
   }
 
   #root, #root > div, main {

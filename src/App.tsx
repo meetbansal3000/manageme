@@ -386,32 +386,10 @@ export default function App() {
     return Array.from(allSectors).sort();
   }, [userData.gradSchemes, userData.partTimeRoles]);
 
-  // Dedicated Landing Page View
-  if (activeTab === 'landing') {
-    return (
-      <div className="min-h-screen bg-[#000000] text-white flex flex-col font-sans relative overflow-x-hidden">
-        <InteractiveCursorGlow />
-        <LandingPage onEnterApp={(target) => handleTabChange(target || 'news')} />
-        <Suspense fallback={null}>
-          <UserAuthModal
-            isOpen={isUserAuthModalOpen}
-            onClose={() => setIsUserAuthModalOpen(false)}
-            onSuccess={() => {
-              setIsUserAuthModalOpen(false);
-              handleTabChange('news');
-            }}
-          />
-        </Suspense>
-        <SpeedInsights />
-        <Analytics />
-      </div>
-    );
-  }
-
   // Safe Fallback while authenticating or loading workspace dataset during initial hydration
   if ((isLoading || loading || !userData) && activeTab !== 'landing') {
     return (
-      <div className="min-h-screen bg-[#0A051A] text-white flex flex-col items-center justify-center space-y-4">
+      <div className="min-h-screen bg-[#0A051A] text-white flex flex-col items-center justify-center space-y-4 font-sans tracking-tight">
         <div className="w-8 h-8 border-2 border-[#0052FF] border-t-transparent rounded-full animate-spin" />
         <span className="text-xs font-mono text-[#8B95A5] tracking-widest uppercase">Loading manageme...</span>
       </div>
@@ -419,95 +397,103 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-[#000000] text-white flex flex-col font-sans selection:bg-[#0052FF] selection:text-white transition-colors duration-300 relative overflow-x-hidden">
-
-      {/* Interactive Cursor Glow (Tracks mouse coordinates in soft electric blue/purple) */}
-      <InteractiveCursorGlow />
-
-      {/* Clean Spatial Background Mesh (Lazy-loaded) */}
-      <Suspense fallback={null}>
-        <Spatial3DCanvas />
-      </Suspense>
-
-      <Header 
-        activeTab={activeTab} 
-        setActiveTab={handleTabChange}
-        onGoBack={handleGoBack}
-        onGoHome={handleGoHome}
-        onExportMultiSheet={() => {
-          requireOwnerPermission('Export Master Multi-Sheet Workbook', () => {
-            exportMultiSheetWorkbook(
-              userData.timeline,
-              userData.gradSchemes,
-              userData.partTimeRoles,
-              userData.priorityItems,
-              userData.notesSections
-            );
-          });
-        }}
-        onOpenGoogleSync={() => {
-          requireOwnerPermission('Google Drive / Sheets Synchronization', () => {
-            setIsGoogleModalOpen(true);
-          });
-        }}
-        onOpenSettings={() => setIsSettingsOpen(true)}
-        onOpenShare={() => setIsShareModalOpen(true)}
-        onOpenSmartImport={() => {
-          requireOwnerPermission('Smart AI Import & Data Ingestion', () => {
-            setIsSmartImportOpen(true);
-          });
-        }}
-        onOpenActivityDrawer={() => setIsActivityDrawerOpen(true)}
-        googleSyncState={googleSyncState}
-        userData={userData}
-        updateData={updateData}
-      />
-
-      <main className="flex-1 pb-24 pt-20 sm:pt-24 min-h-0 relative z-10">
-        {/* Dynamic Top-Bar Live Stock Ticker */}
-        <div className="mb-4">
-          <LiveStockTicker />
-        </div>
-
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
-          <Suspense fallback={
-            <div className="py-24 flex flex-col items-center justify-center space-y-3">
-              <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
-              <span className="text-xs text-slate-400 font-mono">Loading module...</span>
-            </div>
-          }>
-            <AnimatePresence mode="wait">
-            <motion.div
-              key={activeTab}
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              drag="x"
-              dragConstraints={{ left: 0, right: 0 }}
-              dragElastic={0.08}
-              className="touch-pan-y"
-              onDragEnd={(_: any, info: any) => {
-                const offsetX = info.offset.x;
-                const offsetY = info.offset.y;
-                const velocityX = info.velocity.x;
-                // Strict threshold: only switch tabs if horizontal intent strongly dominates vertical scrolling (2.5x ratio) and exceeds deliberate drag threshold (110px or 500px/s flick)
-                if (Math.abs(offsetX) > Math.abs(offsetY) * 2.5 && (Math.abs(offsetX) > 110 || Math.abs(velocityX) > 500)) {
-                  const currentIndex = PRIMARY_TABS.indexOf(activeTab as AppTab);
-                  if (currentIndex !== -1) {
-                    if (offsetX < -110 || velocityX < -500) {
-                      const nextIndex = (currentIndex + 1) % PRIMARY_TABS.length;
-                      triggerHaptic(15);
-                      setActiveTab(PRIMARY_TABS[nextIndex]);
-                    } else if (offsetX > 110 || velocityX > 500) {
-                      const prevIndex = (currentIndex - 1 + PRIMARY_TABS.length) % PRIMARY_TABS.length;
-                      triggerHaptic(15);
-                      setActiveTab(PRIMARY_TABS[prevIndex]);
-                    }
-                  }
-                }
+    <AnimatePresence mode="wait">
+      {activeTab === 'landing' ? (
+        <motion.div
+          key="landing-view"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -10 }}
+          transition={{ duration: 0.4, ease: "easeOut" }}
+          className="min-h-screen bg-[#000000] text-white flex flex-col font-sans tracking-tight relative overflow-x-hidden"
+        >
+          <InteractiveCursorGlow />
+          <LandingPage onEnterApp={(target) => handleTabChange(target || 'news')} />
+          <Suspense fallback={null}>
+            <UserAuthModal
+              isOpen={isUserAuthModalOpen}
+              onClose={() => setIsUserAuthModalOpen(false)}
+              onSuccess={() => {
+                setIsUserAuthModalOpen(false);
+                handleTabChange('news');
               }}
-              transition={IOS_SPRING}
-            >
+            />
+          </Suspense>
+          <SpeedInsights />
+          <Analytics />
+        </motion.div>
+      ) : (
+        <motion.div
+          key="workspace-view"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -10 }}
+          transition={{ duration: 0.4, ease: "easeOut" }}
+          className="min-h-screen bg-[#000000] text-white flex flex-col font-sans tracking-tight selection:bg-[#0052FF] selection:text-white transition-colors duration-300 relative overflow-x-hidden"
+        >
+          {/* Interactive Cursor Glow (Tracks mouse coordinates in soft electric blue/purple) */}
+          <InteractiveCursorGlow />
+
+          {/* Clean Spatial Background Mesh (Lazy-loaded) */}
+          <Suspense fallback={null}>
+            <Spatial3DCanvas />
+          </Suspense>
+
+          <Header 
+            activeTab={activeTab} 
+            setActiveTab={handleTabChange}
+            onGoBack={handleGoBack}
+            onGoHome={handleGoHome}
+            onExportMultiSheet={() => {
+              requireOwnerPermission('Export Master Multi-Sheet Workbook', () => {
+                exportMultiSheetWorkbook(
+                  userData.timeline,
+                  userData.gradSchemes,
+                  userData.partTimeRoles,
+                  userData.priorityItems,
+                  userData.notesSections
+                );
+              });
+            }}
+            onOpenGoogleSync={() => {
+              requireOwnerPermission('Google Drive / Sheets Synchronization', () => {
+                setIsGoogleModalOpen(true);
+              });
+            }}
+            onOpenSettings={() => setIsSettingsOpen(true)}
+            onOpenShare={() => setIsShareModalOpen(true)}
+            onOpenSmartImport={() => {
+              requireOwnerPermission('Smart AI Import & Data Ingestion', () => {
+                setIsSmartImportOpen(true);
+              });
+            }}
+            onOpenActivityDrawer={() => setIsActivityDrawerOpen(true)}
+            googleSyncState={googleSyncState}
+            userData={userData}
+            updateData={updateData}
+          />
+
+          <main className="flex-1 pb-24 pt-20 sm:pt-24 min-h-0 relative z-10">
+            {/* Dynamic Top-Bar Live Stock Ticker */}
+            <div className="mb-4">
+              <LiveStockTicker />
+            </div>
+
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
+              <Suspense fallback={
+                <div className="py-24 flex flex-col items-center justify-center space-y-3">
+                  <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+                  <span className="text-xs text-slate-400 font-mono">Loading module...</span>
+                </div>
+              }>
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={activeTab}
+                    initial={{ opacity: 0, filter: "blur(4px)" }}
+                    animate={{ opacity: 1, filter: "blur(0px)" }}
+                    exit={{ opacity: 0, filter: "blur(4px)" }}
+                    transition={{ duration: 0.2 }}
+                  >
               {activeTab === 'landing' && (
                 <LandingPage onEnterApp={(target) => handleTabChange(target || 'news')} />
               )}
@@ -969,6 +955,8 @@ export default function App() {
       <SpeedInsights />
       <Analytics />
 
-    </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }
