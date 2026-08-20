@@ -1,4 +1,3 @@
-import React from 'react';
 import { 
   TrendingUp, 
   Briefcase, 
@@ -9,12 +8,16 @@ import {
   ArrowRight, 
   ChevronRight, 
   DollarSign,
-  Share2
+  Share2,
+  ShieldCheck,
+  Lock,
+  Scale
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { TiltCard } from './TiltCard';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
+import { GoogleAuthButton } from './auth/GoogleAuthButton';
 
 interface LandingPageProps {
   onEnterApp: (tabId?: string) => void;
@@ -468,18 +471,70 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp }) => {
           </p>
         </div>
 
-        <div className="flex flex-wrap items-center justify-center gap-3 pt-2 w-full sm:w-auto">
+        <div className="flex flex-col sm:flex-row flex-wrap items-center justify-center gap-3 pt-2 w-full sm:w-auto max-w-md mx-auto">
+          <GoogleAuthButton
+            label="Continue with Google"
+            variant="glass"
+            onSuccess={() => handleLaunch('news')}
+            className="py-3 px-6 text-sm font-bold"
+          />
           <motion.button
             whileHover={{ scale: 1.02, y: -1 }}
             whileTap={{ scale: 0.98 }}
             onClick={() => handleLaunch('news')}
-            className="w-full sm:w-auto px-8 py-3.5 min-h-[44px] rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-extrabold text-sm shadow-xl shadow-blue-500/25 cursor-pointer flex items-center justify-center gap-2"
+            className="w-full sm:w-auto px-6 py-3 min-h-[44px] rounded-2xl bg-white/60 dark:bg-white/10 hover:bg-white/80 dark:hover:bg-white/15 text-slate-800 dark:text-white font-bold text-xs shadow-md border border-slate-200 dark:border-white/15 cursor-pointer flex items-center justify-center gap-2"
           >
-            <span>Enter manageme Workspace</span>
+            <span>Enter as Guest</span>
             <ArrowRight className="w-4 h-4" />
           </motion.button>
         </div>
       </motion.div>
+
+      {/* ========================================================================= */}
+      {/* 5. LEGAL & BRAND FOOTER */}
+      {/* ========================================================================= */}
+      <footer className="pt-8 pb-4 border-t border-slate-200/60 dark:border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500 dark:text-neutral-400 font-sans">
+        <div className="flex items-center gap-2">
+          <ShieldCheck className="w-4 h-4 text-emerald-500" />
+          <span>&copy; {new Date().getFullYear()} manageme Platform &bull; Executive Suite</span>
+        </div>
+
+        <div className="flex items-center gap-6">
+          <a
+            href="#privacy"
+            onClick={(e) => {
+              e.preventDefault();
+              window.location.hash = '#privacy';
+              window.dispatchEvent(new HashChangeEvent('hashchange'));
+            }}
+            className="hover:text-blue-600 dark:hover:text-blue-400 hover:underline transition-colors cursor-pointer"
+            id="landingFooterPrivacyLink"
+          >
+            Privacy Policy
+          </a>
+          <a
+            href="#terms"
+            onClick={(e) => {
+              e.preventDefault();
+              window.location.hash = '#terms';
+              window.dispatchEvent(new HashChangeEvent('hashchange'));
+            }}
+            className="hover:text-blue-600 dark:hover:text-blue-400 hover:underline transition-colors cursor-pointer"
+            id="landingFooterTermsLink"
+          >
+            Terms of Service
+          </a>
+          <a
+            href="https://developers.google.com/terms/api-services-user-data-policy"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hidden md:inline-flex items-center gap-1 hover:text-slate-800 dark:hover:text-neutral-200 transition-colors"
+          >
+            <Lock className="w-3 h-3 text-blue-500" />
+            <span>Google API Limited Use</span>
+          </a>
+        </div>
+      </footer>
 
     </motion.div>
   );

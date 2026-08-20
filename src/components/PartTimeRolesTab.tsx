@@ -3,6 +3,7 @@ import { Share2, ExternalLink, Clock, MapPin, Calendar as CalendarIcon, Briefcas
 import { PartTimeRole, WorkShift } from '../types';
 import { UserTrackerData } from '../hooks/useFirestoreData';
 import { AddToCalendar } from './AddToCalendar';
+import { AppleEmptyState } from './AppleEmptyState';
 
 interface Props {
   roles?: PartTimeRole[];
@@ -99,11 +100,20 @@ export const PartTimeRolesTab: React.FC<Props> = ({ roles = [], shifts = [], upd
 
             <div className="lg:col-span-2 space-y-4">
               {shifts.length === 0 ? (
-                <div className="text-center py-12 glass-panel rounded-2xl border border-[var(--border)]">
-                  <Briefcase className="w-10 h-10 text-[var(--text-secondary)] mx-auto mb-4" />
-                  <h4 className="text-[var(--text-primary)] font-semibold mb-2">No shifts logged yet</h4>
-                  <p className="text-[var(--text-secondary)] text-sm">Log your first shift to start tracking hours.</p>
-                </div>
+                <AppleEmptyState
+                  icon={Clock}
+                  title="No Shifts Logged Yet"
+                  description="Log your hourly work shifts to monitor weekly hours against your student visa limit and calculate total earnings."
+                  actionLabel="+ Add First Shift"
+                  onAction={() => {
+                    const descInput = document.querySelector('input[placeholder*="Job / Role"]') as HTMLInputElement;
+                    if (descInput) {
+                      descInput.focus();
+                      descInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                  }}
+                  className="py-12 glass-panel"
+                />
               ) : (
                 shifts.map(shift => (
                   <div key={shift.id} className="glass-panel p-5 rounded-2xl border border-[var(--border)] flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -132,28 +142,38 @@ export const PartTimeRolesTab: React.FC<Props> = ({ roles = [], shifts = [], upd
           </div>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {roles.map((role, idx) => (
-            <div key={idx} className="glass-panel p-6 rounded-2xl border border-[var(--border)] flex flex-col justify-between">
-              <div>
-                <h3 className="text-xl font-bold text-[var(--text-primary)] mb-1">{role.firm}</h3>
-                <p className="text-sm text-[var(--text-secondary)] font-medium mb-4">{role.roleTitle}</p>
-                
-                <div className="space-y-2 mb-6">
-                  <div className="flex items-center text-xs text-[var(--text-secondary)]">
-                    <MapPin className="w-3.5 h-3.5 mr-2 text-[var(--accent)]" /> {role.location}
-                  </div>
-                  <div className="flex items-center text-xs text-[var(--text-secondary)]">
-                    <Clock className="w-3.5 h-3.5 mr-2 text-[var(--accent)]" /> {role.ratePerHour}
+        roles.length === 0 ? (
+          <AppleEmptyState
+            icon={Briefcase}
+            title="No Part-Time Roles Found"
+            description="Explore flexible campus and local part-time opportunities matching your timetable."
+            actionLabel="Discover Roles"
+            className="py-16 glass-panel"
+          />
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {roles.map((role, idx) => (
+              <div key={idx} className="glass-panel p-6 rounded-2xl border border-[var(--border)] flex flex-col justify-between">
+                <div>
+                  <h3 className="text-xl font-bold text-[var(--text-primary)] mb-1">{role.firm}</h3>
+                  <p className="text-sm text-[var(--text-secondary)] font-medium mb-4">{role.roleTitle}</p>
+                  
+                  <div className="space-y-2 mb-6">
+                    <div className="flex items-center text-xs text-[var(--text-secondary)]">
+                      <MapPin className="w-3.5 h-3.5 mr-2 text-[var(--accent)]" /> {role.location}
+                    </div>
+                    <div className="flex items-center text-xs text-[var(--text-secondary)]">
+                      <Clock className="w-3.5 h-3.5 mr-2 text-[var(--accent)]" /> {role.ratePerHour}
+                    </div>
                   </div>
                 </div>
+                <a href={role.link} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-[rgba(255,255,255,0.05)] text-[var(--text-primary)] hover:bg-[rgba(255,255,255,0.1)] transition-colors text-sm font-semibold">
+                  View Role <ExternalLink className="w-4 h-4" />
+                </a>
               </div>
-              <a href={role.link} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-[rgba(255,255,255,0.05)] text-[var(--text-primary)] hover:bg-[rgba(255,255,255,0.1)] transition-colors text-sm font-semibold">
-                View Role <ExternalLink className="w-4 h-4" />
-              </a>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )
       )}
     </div>
   );

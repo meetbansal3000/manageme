@@ -14,6 +14,7 @@ import { useScrollLock } from '../hooks/useScrollLock';
 import { useToast } from '../context/ToastContext';
 import { SubscriptionManager } from './SubscriptionManager';
 import { VehicleCostCalculator } from './VehicleCostCalculator';
+import { AppleEmptyState } from './AppleEmptyState';
 
 import { EditShiftModal } from './finance/EditShiftModal';
 import { EditExpenseModal } from './finance/EditExpenseModal';
@@ -1720,9 +1721,17 @@ export const FinanceHubTab: React.FC<Props> = ({ userData, updateData }) => {
               </div>
 
               {filteredExpenses.length === 0 ? (
-                <div className="h-36 flex flex-col items-center justify-center text-[var(--text-secondary)] text-xs italic bg-[var(--surface-solid)] rounded-2xl border border-[var(--border)] p-4 text-center">
-                  No expenses match your search or filter.
-                </div>
+                <AppleEmptyState
+                  icon={Receipt}
+                  title="No Expenses Logged"
+                  description={userData.expenses?.length === 0 ? "Log your student budget, food, transport, and prep materials with multi-currency support." : "No expenses match your active search or category filter."}
+                  actionLabel="+ Log Expense"
+                  onAction={() => {
+                    setEditingExpense(null);
+                    setIsExpenseModalOpen(true);
+                  }}
+                  className="py-8 bg-transparent border-dashed"
+                />
               ) : (
                 <div className="flex-1">
                   <List
@@ -1782,18 +1791,17 @@ export const FinanceHubTab: React.FC<Props> = ({ userData, updateData }) => {
                 </h4>
 
                 {(!userData.creditCards || userData.creditCards.length === 0) ? (
-                  <div className="p-4 rounded-2xl bg-[var(--surface-solid)] border border-dashed border-[var(--border)] text-center text-xs text-[var(--text-secondary)] space-y-2">
-                    <p>No credit cards configured.</p>
-                    <button
-                      onClick={() => {
-                        setEditingCard(null);
-                        setIsCardModalOpen(true);
-                      }}
-                      className="text-xs text-purple-400 font-semibold hover:underline"
-                    >
-                      + Add Your First Card
-                    </button>
-                  </div>
+                  <AppleEmptyState
+                    icon={CardIcon}
+                    title="No Credit Cards Added"
+                    description="Track student credit cards, statement dates, and interest-free periods."
+                    actionLabel="+ Add Credit Card"
+                    onAction={() => {
+                      setEditingCard(null);
+                      setIsCardModalOpen(true);
+                    }}
+                    className="py-6 bg-[var(--surface-solid)]/30 border-dashed"
+                  />
                 ) : (
                   <div className="space-y-3">
                     {userData.creditCards.map(card => {

@@ -57,7 +57,7 @@ import { getExamDeadlines, getNextPriorityDeadline } from '../utils/deadlines';
 
 import { useTheme } from '../context/ThemeContext';
 
-export type AppTab = 'landing' | 'news' | 'study' | 'jobs' | 'outreach' | 'work' | 'trading' | 'travel' | 'transit' | 'finance' | 'tasks' | 'skills' | 'uni' | 'places' | 'chat' | 'resume' | 'metasuite';
+export type AppTab = 'landing' | 'news' | 'study' | 'jobs' | 'outreach' | 'work' | 'trading' | 'travel' | 'transit' | 'finance' | 'tasks' | 'skills' | 'uni' | 'places' | 'chat' | 'resume' | 'metasuite' | 'privacy' | 'terms';
 
 interface HeaderProps {
   activeTab: AppTab | string;
@@ -170,24 +170,14 @@ export const Header: React.FC<HeaderProps> = ({
   const handleLogin = async () => {
     try {
       if (!isAuthenticated || isGuest) {
-        showToast('Connecting to authentication service...', 'info', 2000);
-        const success = await signInWithGoogle();
-        if (success) {
-          showToast('Signed in successfully with Google!', 'success');
-        } else {
-          showToast(authError || 'Sign-in unavailable on this domain. Activated local Guest Demo session.', 'warning', 5000);
-        }
+        window.dispatchEvent(new CustomEvent('openUserAuthModal'));
       } else {
         await authSignOut();
         showToast('Signed out of session.', 'info');
       }
     } catch (err: any) {
       console.error('[Auth Error - Header Login]:', err);
-      const isUnauth = err?.code === 'auth/unauthorized-domain' || err?.message?.includes('unauthorized-domain');
-      const feedback = isUnauth 
-        ? 'Domain pending Firebase authorization. Switched to Guest Demo mode.'
-        : `Notice: ${err?.message || 'Offline mode active'}. Switched to Guest mode.`;
-      showToast(feedback, 'warning', 5000);
+      showToast('Authentication encountered a notice.', 'warning');
     }
   };
 
@@ -732,29 +722,60 @@ export const Header: React.FC<HeaderProps> = ({
               </div>
               
               {/* Streamlined Footer (Share App & Settings Buttons) */}
-              <div className="p-3 border-t border-slate-200/50 dark:border-white/10 bg-transparent shrink-0 flex items-center justify-between px-3 gap-2">
-                <button 
-                  onClick={() => {
-                    if (onOpenShare) {
-                      onOpenShare();
-                    } else {
-                      window.dispatchEvent(new CustomEvent('openShareAppModal'));
-                    }
-                    setDrawerOpen(false);
-                  }}
-                  className="flex-1 flex items-center justify-center gap-2 text-xs font-bold text-blue-700 dark:text-blue-300 hover:bg-blue-500/20 px-3 py-2 rounded-xl border border-blue-500/30 bg-blue-500/10 backdrop-blur-md transition-colors cursor-pointer shadow-xs active:scale-95"
-                  title="Share App & Invite Friends"
-                >
-                  <Share2 className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-                  <span>Share & Invite</span>
-                </button>
-                <button 
-                  onClick={() => { onOpenSettings(); setDrawerOpen(false); }} 
-                  className="flex items-center gap-2 text-xs font-semibold text-slate-700 dark:text-zinc-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/80 dark:hover:bg-white/10 px-3.5 py-2 rounded-xl border border-slate-200/50 dark:border-white/10 bg-white/40 dark:bg-white/5 backdrop-blur-md transition-colors cursor-pointer active:scale-95"
-                >
-                  <Settings className="w-4 h-4 text-slate-600 dark:text-zinc-400" />
-                  <span>Settings</span>
-                </button>
+              <div className="p-3 border-t border-slate-200/50 dark:border-white/10 bg-transparent shrink-0 space-y-2">
+                <div className="flex items-center justify-between gap-2">
+                  <button 
+                    onClick={() => {
+                      if (onOpenShare) {
+                        onOpenShare();
+                      } else {
+                        window.dispatchEvent(new CustomEvent('openShareAppModal'));
+                      }
+                      setDrawerOpen(false);
+                    }}
+                    className="flex-1 flex items-center justify-center gap-2 text-xs font-bold text-blue-700 dark:text-blue-300 hover:bg-blue-500/20 px-3 py-2 rounded-xl border border-blue-500/30 bg-blue-500/10 backdrop-blur-md transition-colors cursor-pointer shadow-xs active:scale-95"
+                    title="Share App & Invite Friends"
+                  >
+                    <Share2 className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                    <span>Share & Invite</span>
+                  </button>
+                  <button 
+                    onClick={() => { onOpenSettings(); setDrawerOpen(false); }} 
+                    className="flex items-center gap-2 text-xs font-semibold text-slate-700 dark:text-zinc-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/80 dark:hover:bg-white/10 px-3.5 py-2 rounded-xl border border-slate-200/50 dark:border-white/10 bg-white/40 dark:bg-white/5 backdrop-blur-md transition-colors cursor-pointer active:scale-95"
+                  >
+                    <Settings className="w-4 h-4 text-slate-600 dark:text-zinc-400" />
+                    <span>Settings</span>
+                  </button>
+                </div>
+                
+                {/* Legal & Compliance Footer Links */}
+                <div className="flex items-center justify-center gap-3 text-[10px] text-slate-400 dark:text-neutral-400 pt-1 font-sans">
+                  <a
+                    href="#privacy"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setDrawerOpen(false);
+                      setActiveTab('privacy');
+                      window.location.hash = '#privacy';
+                    }}
+                    className="hover:text-blue-500 hover:underline cursor-pointer"
+                  >
+                    Privacy Policy
+                  </a>
+                  <span>&bull;</span>
+                  <a
+                    href="#terms"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setDrawerOpen(false);
+                      setActiveTab('terms');
+                      window.location.hash = '#terms';
+                    }}
+                    className="hover:text-blue-500 hover:underline cursor-pointer"
+                  >
+                    Terms of Service
+                  </a>
+                </div>
               </div>
             </motion.div>
           </>

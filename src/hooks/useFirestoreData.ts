@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { doc, setDoc, onSnapshot } from 'firebase/firestore';
 import { db } from '../firebase';
+import { supabase, getSupabaseUserId } from '../lib/supabase';
 
 import { 
   TIMELINE_DATA, 
@@ -48,7 +49,7 @@ export interface ResumeVariant {
   id: string;
   name: string;
   targetRole: string;
-  content: string; // The markdown or raw text
+  content: string;
   dateCreated: string;
   matchScore?: number;
 }
@@ -102,10 +103,60 @@ export interface UserTrackerData {
 
 const DEFAULT_PROFILE = "manageme | Finance & Executive Career Management Suite";
 
-export const DEFAULT_TRACKER_DATA: UserTrackerData = {
-  userName: 'Guest',
-  degreeName: 'Degree Program',
-  universityName: 'University',
+// Clean Slate Template for Authenticated Real Users
+export const EMPTY_TRACKER_DATA: UserTrackerData = {
+  userName: 'User',
+  degreeName: '',
+  universityName: '',
+  targetSectors: [],
+  location: '',
+  paperTrading: {
+    cashBalance: 100000,
+    startingCapital: 100000,
+    positions: [],
+    tradeHistory: [],
+    academyProgress: {}
+  },
+  resumes: [],
+  newsPreferences: [],
+  savedArticles: [],
+  jobPreferences: { categories: [], locations: [], salaryRange: '', currency: '£', experienceLevel: 'Graduate / Entry' },
+  jobApplications: [],
+  trips: [],
+  tripExpenses: [],
+  transitRoutes: [],
+  places: [],
+  subscriptions: [],
+  techAssets: [],
+  vehicleCosts: [],
+  extraItems: [],
+  timeline: [],
+  gradSchemes: [],
+  partTimeRoles: [],
+  priorityItems: [],
+  notesSections: [],
+  skillsTracker: [],
+  courses: [],
+  universalTasks: [],
+  profileSummary: DEFAULT_PROFILE,
+  hourlyRate: 11.44,
+  workShifts: [],
+  expenses: [],
+  creditCards: [],
+  invoices: [],
+  uniClasses: [],
+  termStatus: 'Term Time',
+  currency: 'GBP',
+  gradeEntries: [],
+  notebooks: [],
+  studyDocs: []
+};
+
+// Pre-populated Demo Mock Data (For Guest Mode / Public Showcase ONLY)
+export const DEMO_TRACKER_DATA: UserTrackerData = {
+  userName: 'Guest Executive',
+  degreeName: 'BSc Economics & Finance',
+  universityName: 'Durham University',
   targetSectors: ['Asset Management', 'M&A Advisory', 'Corporate Finance'],
   location: 'London, UK',
   paperTrading: {
@@ -123,6 +174,7 @@ export const DEFAULT_TRACKER_DATA: UserTrackerData = {
   trips: [],
   tripExpenses: [],
   transitRoutes: [],
+  places: [],
   subscriptions: [],
   techAssets: [],
   vehicleCosts: [],
@@ -136,7 +188,7 @@ export const DEFAULT_TRACKER_DATA: UserTrackerData = {
   courses: COURSES_DATA,
   universalTasks: UNIVERSAL_TASKS_DATA,
   profileSummary: DEFAULT_PROFILE,
-  hourlyRate: 11.44, // Default UK minimum wage or typical part-time rate
+  hourlyRate: 12.50,
   workShifts: [],
   expenses: [],
   creditCards: [],
@@ -149,46 +201,61 @@ export const DEFAULT_TRACKER_DATA: UserTrackerData = {
   studyDocs: []
 };
 
-export const sanitizeUserData = (raw: any): UserTrackerData => {
+export const DEFAULT_TRACKER_DATA = EMPTY_TRACKER_DATA;
+
+// Helper to check if current mode is Guest / Demo
+export const isGuestOrDemoMode = (): boolean => {
+  try {
+    return localStorage.getItem('manageme_guest_session') === 'true';
+  } catch {
+    return false;
+  }
+};
+
+export const sanitizeUserData = (raw: any, forceDemo: boolean = false): UserTrackerData => {
   const source = raw || {};
+  const isDemo = forceDemo || isGuestOrDemoMode();
+  const base = isDemo ? DEMO_TRACKER_DATA : EMPTY_TRACKER_DATA;
+
   return {
-    ...DEFAULT_TRACKER_DATA,
+    ...base,
     ...source,
     paperTrading: {
-      cashBalance: source.paperTrading?.cashBalance ?? DEFAULT_TRACKER_DATA.paperTrading!.cashBalance,
-      startingCapital: source.paperTrading?.startingCapital ?? DEFAULT_TRACKER_DATA.paperTrading!.startingCapital,
-      positions: Array.isArray(source.paperTrading?.positions) ? source.paperTrading.positions : [],
-      tradeHistory: Array.isArray(source.paperTrading?.tradeHistory) ? source.paperTrading.tradeHistory : [],
+      cashBalance: source.paperTrading?.cashBalance ?? base.paperTrading!.cashBalance,
+      startingCapital: source.paperTrading?.startingCapital ?? base.paperTrading!.startingCapital,
+      positions: Array.isArray(source.paperTrading?.positions) ? source.paperTrading.positions : base.paperTrading!.positions,
+      tradeHistory: Array.isArray(source.paperTrading?.tradeHistory) ? source.paperTrading.tradeHistory : base.paperTrading!.tradeHistory,
       academyProgress: source.paperTrading?.academyProgress || {}
     },
-    resumes: Array.isArray(source.resumes) ? source.resumes : DEFAULT_TRACKER_DATA.resumes,
-    newsPreferences: Array.isArray(source.newsPreferences) ? source.newsPreferences : DEFAULT_TRACKER_DATA.newsPreferences,
-    savedArticles: Array.isArray(source.savedArticles) ? source.savedArticles : DEFAULT_TRACKER_DATA.savedArticles,
-    jobPreferences: source.jobPreferences || DEFAULT_TRACKER_DATA.jobPreferences,
-    jobApplications: Array.isArray(source.jobApplications) ? source.jobApplications : DEFAULT_TRACKER_DATA.jobApplications,
-    trips: Array.isArray(source.trips) ? source.trips : DEFAULT_TRACKER_DATA.trips,
-    tripExpenses: Array.isArray(source.tripExpenses) ? source.tripExpenses : DEFAULT_TRACKER_DATA.tripExpenses,
-    transitRoutes: Array.isArray(source.transitRoutes) ? source.transitRoutes : DEFAULT_TRACKER_DATA.transitRoutes,
-    subscriptions: Array.isArray(source.subscriptions) ? source.subscriptions : DEFAULT_TRACKER_DATA.subscriptions,
-    techAssets: Array.isArray(source.techAssets) ? source.techAssets : DEFAULT_TRACKER_DATA.techAssets,
-    vehicleCosts: Array.isArray(source.vehicleCosts) ? source.vehicleCosts : DEFAULT_TRACKER_DATA.vehicleCosts,
-    extraItems: Array.isArray(source.extraItems) ? source.extraItems : DEFAULT_TRACKER_DATA.extraItems,
-    timeline: (Array.isArray(source.timeline) && source.timeline.length > 0) ? source.timeline : DEFAULT_TRACKER_DATA.timeline,
-    gradSchemes: (Array.isArray(source.gradSchemes) && source.gradSchemes.length > 0) ? source.gradSchemes : DEFAULT_TRACKER_DATA.gradSchemes,
-    partTimeRoles: (Array.isArray(source.partTimeRoles) && source.partTimeRoles.length > 0) ? source.partTimeRoles : DEFAULT_TRACKER_DATA.partTimeRoles,
-    priorityItems: (Array.isArray(source.priorityItems) && source.priorityItems.length > 0) ? source.priorityItems : DEFAULT_TRACKER_DATA.priorityItems,
-    notesSections: (Array.isArray(source.notesSections) && source.notesSections.length > 0) ? source.notesSections : DEFAULT_TRACKER_DATA.notesSections,
-    skillsTracker: (Array.isArray(source.skillsTracker) && source.skillsTracker.length > 0) ? source.skillsTracker : DEFAULT_TRACKER_DATA.skillsTracker,
-    courses: (Array.isArray(source.courses) && source.courses.length > 0) ? source.courses : DEFAULT_TRACKER_DATA.courses,
-    universalTasks: (Array.isArray(source.universalTasks) && source.universalTasks.length > 0) ? source.universalTasks : DEFAULT_TRACKER_DATA.universalTasks,
-    workShifts: Array.isArray(source.workShifts) ? source.workShifts : DEFAULT_TRACKER_DATA.workShifts,
-    expenses: Array.isArray(source.expenses) ? source.expenses : DEFAULT_TRACKER_DATA.expenses,
-    creditCards: Array.isArray(source.creditCards) ? source.creditCards : DEFAULT_TRACKER_DATA.creditCards,
-    invoices: Array.isArray(source.invoices) ? source.invoices : DEFAULT_TRACKER_DATA.invoices,
-    uniClasses: Array.isArray(source.uniClasses) ? source.uniClasses : DEFAULT_TRACKER_DATA.uniClasses,
-    gradeEntries: Array.isArray(source.gradeEntries) ? source.gradeEntries : DEFAULT_TRACKER_DATA.gradeEntries,
-    notebooks: Array.isArray(source.notebooks) ? source.notebooks : DEFAULT_TRACKER_DATA.notebooks,
-    studyDocs: Array.isArray(source.studyDocs) ? source.studyDocs : DEFAULT_TRACKER_DATA.studyDocs,
+    resumes: Array.isArray(source.resumes) ? source.resumes : base.resumes,
+    newsPreferences: Array.isArray(source.newsPreferences) ? source.newsPreferences : base.newsPreferences,
+    savedArticles: Array.isArray(source.savedArticles) ? source.savedArticles : base.savedArticles,
+    jobPreferences: source.jobPreferences || base.jobPreferences,
+    jobApplications: Array.isArray(source.jobApplications) ? source.jobApplications : base.jobApplications,
+    trips: Array.isArray(source.trips) ? source.trips : base.trips,
+    tripExpenses: Array.isArray(source.tripExpenses) ? source.tripExpenses : base.tripExpenses,
+    transitRoutes: Array.isArray(source.transitRoutes) ? source.transitRoutes : base.transitRoutes,
+    places: Array.isArray(source.places) ? source.places : (base.places || []),
+    subscriptions: Array.isArray(source.subscriptions) ? source.subscriptions : base.subscriptions,
+    techAssets: Array.isArray(source.techAssets) ? source.techAssets : base.techAssets,
+    vehicleCosts: Array.isArray(source.vehicleCosts) ? source.vehicleCosts : base.vehicleCosts,
+    extraItems: Array.isArray(source.extraItems) ? source.extraItems : base.extraItems,
+    timeline: Array.isArray(source.timeline) ? source.timeline : base.timeline,
+    gradSchemes: Array.isArray(source.gradSchemes) ? source.gradSchemes : base.gradSchemes,
+    partTimeRoles: Array.isArray(source.partTimeRoles) ? source.partTimeRoles : base.partTimeRoles,
+    priorityItems: Array.isArray(source.priorityItems) ? source.priorityItems : base.priorityItems,
+    notesSections: Array.isArray(source.notesSections) ? source.notesSections : base.notesSections,
+    skillsTracker: Array.isArray(source.skillsTracker) ? source.skillsTracker : base.skillsTracker,
+    courses: Array.isArray(source.courses) ? source.courses : base.courses,
+    universalTasks: Array.isArray(source.universalTasks) ? source.universalTasks : base.universalTasks,
+    workShifts: Array.isArray(source.workShifts) ? source.workShifts : base.workShifts,
+    expenses: Array.isArray(source.expenses) ? source.expenses : base.expenses,
+    creditCards: Array.isArray(source.creditCards) ? source.creditCards : base.creditCards,
+    invoices: Array.isArray(source.invoices) ? source.invoices : base.invoices,
+    uniClasses: Array.isArray(source.uniClasses) ? source.uniClasses : base.uniClasses,
+    gradeEntries: Array.isArray(source.gradeEntries) ? source.gradeEntries : base.gradeEntries,
+    notebooks: Array.isArray(source.notebooks) ? source.notebooks : base.notebooks,
+    studyDocs: Array.isArray(source.studyDocs) ? source.studyDocs : base.studyDocs,
     activeNotebookId: source.activeNotebookId,
     activeGroundingDocId: source.activeGroundingDocId
   };
@@ -205,7 +272,7 @@ export function useFirestoreData() {
     } catch (e) {
       console.warn('Failed to parse local userTrackerData', e);
     }
-    return DEFAULT_TRACKER_DATA;
+    return isGuestOrDemoMode() ? DEMO_TRACKER_DATA : EMPTY_TRACKER_DATA;
   });
 
   const [loading, setLoading] = useState(false);
@@ -239,7 +306,6 @@ export function useFirestoreData() {
     setConflict(null);
   };
 
-  // Helper to get / save offline queue
   const getOfflineQueue = (): Partial<UserTrackerData>[] => {
     try {
       const q = localStorage.getItem('offlineMutationQueue');
@@ -258,7 +324,6 @@ export function useFirestoreData() {
     }
   };
 
-  // Flush offline queue to Firestore
   const flushOfflineQueue = async () => {
     const user = auth.currentUser;
     if (!user || !navigator.onLine) return;
@@ -269,11 +334,8 @@ export function useFirestoreData() {
     try {
       setSyncStatus('saving');
       const docRef = doc(db, 'users', user.uid);
-      // Merge all queued partial updates into a single payload
       const mergedPayload = queue.reduce((acc, item) => ({ ...acc, ...item }), {});
       await setDoc(docRef, mergedPayload, { merge: true });
-      
-      // Clear queue after successful flush
       saveOfflineQueue([]);
       setSyncStatus('saved');
     } catch (err) {
@@ -283,7 +345,6 @@ export function useFirestoreData() {
   };
 
   useEffect(() => {
-    // Initialize offline queue length counter
     setOfflineQueueLength(getOfflineQueue().length);
 
     const handleOnline = () => {
@@ -308,27 +369,47 @@ export function useFirestoreData() {
       window.removeEventListener('offline', handleOffline);
     };
   }, [auth]);
-  
-  // Fallback safety timer: ensure loading state is guaranteed to resolve within 2.5s
-  useEffect(() => {
-    const safetyTimer = setTimeout(() => {
-      setLoading(false);
-    }, 2500);
-    return () => clearTimeout(safetyTimer);
-  }, []);
 
+  // Sync with Supabase for logged in user session
+  useEffect(() => {
+    let isMounted = true;
+
+    const syncSupabaseUserData = async () => {
+      try {
+        const userId = await getSupabaseUserId();
+        const isGuest = isGuestOrDemoMode();
+        
+        if (userId && !isGuest) {
+          const { data: trackerRow, error } = await supabase
+            .from('user_trackers')
+            .select('data')
+            .eq('user_id', userId)
+            .single();
+
+          if (!error && trackerRow?.data && isMounted) {
+            const cleanUserSanitized = sanitizeUserData(trackerRow.data, false);
+            setData(cleanUserSanitized);
+            localStorage.setItem('userTrackerData', JSON.stringify(cleanUserSanitized));
+          }
+        }
+      } catch (err) {
+        console.warn('[Supabase User Tracker Data fetch notice]:', err);
+      }
+    };
+
+    syncSupabaseUserData();
+  }, []);
+  
   useEffect(() => {
     let currentUnsubDoc: (() => void) | null = null;
     let authSafetyTimer: any = null;
 
     const unsubscribeAuth = onAuthStateChanged(auth, async (user) => {
-      // Per-auth-change safety timeout to guarantee loading unblocks
       if (authSafetyTimer) clearTimeout(authSafetyTimer);
       authSafetyTimer = setTimeout(() => {
         setLoading(false);
-      }, 2500);
+      }, 2000);
 
-      // Clean up previous doc subscription if user changed
       if (currentUnsubDoc) {
         try {
           currentUnsubDoc();
@@ -348,7 +429,6 @@ export function useFirestoreData() {
         try {
           const docRef = doc(db, 'users', user.uid);
           
-          // Setup real-time listener with error callback
           currentUnsubDoc = onSnapshot(
             docRef, 
             (docSnap) => {
@@ -356,7 +436,7 @@ export function useFirestoreData() {
               try {
                 if (docSnap.exists()) {
                   const fbData = docSnap.data();
-                  const merged = sanitizeUserData(fbData);
+                  const merged = sanitizeUserData(fbData, false);
                   const queue = getOfflineQueue();
                   if (queue.length > 0 && !docSnap.metadata.hasPendingWrites && JSON.stringify(merged) !== JSON.stringify(data)) {
                     setConflict({ local: data, remote: merged });
@@ -371,24 +451,19 @@ export function useFirestoreData() {
                   setLoading(false);
                   if (navigator.onLine) setSyncStatus('saved');
                 } else {
-                  // Initialize with default data or migrate from local storage
-                  const localDataStr = localStorage.getItem('userTrackerData');
-                  let initialData = DEFAULT_TRACKER_DATA;
-                  try {
-                    if (localDataStr) initialData = sanitizeUserData(JSON.parse(localDataStr));
-                  } catch {}
-                  
-                  setDoc(docRef, initialData, { merge: true }).then(() => {
-                    setData(initialData);
+                  // Initialize clean slate for real authenticated user
+                  const cleanData = EMPTY_TRACKER_DATA;
+                  setDoc(docRef, cleanData, { merge: true }).then(() => {
+                    setData(cleanData);
                     try {
-                      localStorage.setItem('userTrackerData', JSON.stringify(initialData));
+                      localStorage.setItem('userTrackerData', JSON.stringify(cleanData));
                     } catch (e) {
                       console.warn('Could not save to localStorage:', e);
                     }
                     setLoading(false);
                     if (navigator.onLine) setSyncStatus('saved');
                   }).catch(err => {
-                    console.warn('Initial doc creation notice (falling back to local cache):', err?.message || err);
+                    console.warn('Initial clean slate doc notice:', err?.message || err);
                     setLoading(false);
                     setSyncStatus('saved');
                   });
@@ -402,36 +477,28 @@ export function useFirestoreData() {
               if (authSafetyTimer) clearTimeout(authSafetyTimer);
               console.warn('Firestore snapshot notice on user doc (handled):', error?.message || error);
               setLoading(false);
-              if (!navigator.onLine) {
-                setSyncStatus('offline');
-              } else {
-                setSyncStatus('saved');
-              }
             }
           );
         } catch (err) {
           if (authSafetyTimer) clearTimeout(authSafetyTimer);
-          console.warn('Failed to attach Firestore snapshot listener (handled):', err);
+          console.warn('Failed to attach Firestore snapshot listener:', err);
           setLoading(false);
         }
       } else {
         if (authSafetyTimer) clearTimeout(authSafetyTimer);
         setSyncStatus('offline');
+        const isGuest = isGuestOrDemoMode();
+        const fallback = isGuest ? DEMO_TRACKER_DATA : EMPTY_TRACKER_DATA;
         const localData = localStorage.getItem('userTrackerData');
         if (localData) {
           try {
             const parsed = JSON.parse(localData);
-            setData(sanitizeUserData(parsed));
+            setData(sanitizeUserData(parsed, isGuest));
           } catch {
-            setData(DEFAULT_TRACKER_DATA);
+            setData(fallback);
           }
         } else {
-          setData(DEFAULT_TRACKER_DATA);
-          try {
-            localStorage.setItem('userTrackerData', JSON.stringify(DEFAULT_TRACKER_DATA));
-          } catch (e) {
-            console.warn('Could not save to localStorage:', e);
-          }
+          setData(fallback);
         }
         setLoading(false);
       }
@@ -458,13 +525,12 @@ export function useFirestoreData() {
   dataRef.current = data;
   syncStatusRef.current = syncStatus;
 
-  // Periodic Auto-Save Heartbeat (every 30 seconds syncs full state to Firestore if online)
+  // Periodic Auto-Save Heartbeat
   useEffect(() => {
     const interval = setInterval(async () => {
       const user = auth.currentUser;
       if (user && navigator.onLine && syncStatusRef.current !== 'saving') {
         try {
-          // If there's an offline queue, flush it first
           const queue = getOfflineQueue();
           if (queue.length > 0) {
             await flushOfflineQueue();
@@ -475,21 +541,18 @@ export function useFirestoreData() {
             setSyncStatus('saved');
           }
         } catch (err) {
-          console.warn('Periodic auto-save sync failed:', err);
-          setSyncStatus('error');
+          console.warn('Periodic auto-save sync notice:', err);
         }
-      } else if (!navigator.onLine) {
-        setSyncStatus('offline');
       }
     }, 30000);
 
     return () => clearInterval(interval);
   }, [auth]);
 
-
   const updateData = async (partialData: Partial<UserTrackerData>) => {
     setData(prev => {
-      const newData = sanitizeUserData({ ...prev, ...partialData });
+      const isDemo = isGuestOrDemoMode();
+      const newData = sanitizeUserData({ ...prev, ...partialData }, isDemo);
       try {
         localStorage.setItem('userTrackerData', JSON.stringify(newData));
       } catch (err) {
@@ -498,10 +561,25 @@ export function useFirestoreData() {
       return newData;
     });
 
+    // Supabase sync
+    try {
+      const userId = await getSupabaseUserId();
+      if (userId && !isGuestOrDemoMode()) {
+        await supabase
+          .from('user_trackers')
+          .upsert({
+            user_id: userId,
+            data: { ...dataRef.current, ...partialData },
+            updated_at: new Date().toISOString()
+          });
+      }
+    } catch (sbErr) {
+      console.warn('[Supabase updateData sync notice]:', sbErr);
+    }
+
     const user = auth.currentUser;
     if (user) {
       if (!navigator.onLine) {
-        // Queue mutation offline
         const queue = getOfflineQueue();
         queue.push(partialData);
         saveOfflineQueue(queue);
@@ -514,13 +592,12 @@ export function useFirestoreData() {
         const docRef = doc(db, 'users', user.uid);
         await setDoc(docRef, partialData, { merge: true });
         setSyncStatus('saved');
-        // Check if any offline items remain and flush
         const queue = getOfflineQueue();
         if (queue.length > 0) {
           await flushOfflineQueue();
         }
       } catch (err) {
-        console.error('Failed to sync to Firestore, queueing offline', err);
+        console.warn('Failed to sync to Firestore, queueing offline:', err);
         const queue = getOfflineQueue();
         queue.push(partialData);
         saveOfflineQueue(queue);
@@ -531,14 +608,14 @@ export function useFirestoreData() {
 
   const resetToDemoData = async () => {
     try {
-      localStorage.setItem('userTrackerData', JSON.stringify(DEFAULT_TRACKER_DATA));
-      setData(DEFAULT_TRACKER_DATA);
+      localStorage.setItem('userTrackerData', JSON.stringify(DEMO_TRACKER_DATA));
+      setData(DEMO_TRACKER_DATA);
       saveOfflineQueue([]);
       const user = auth.currentUser;
       if (user && navigator.onLine) {
         setSyncStatus('saving');
         const docRef = doc(db, 'users', user.uid);
-        await setDoc(docRef, DEFAULT_TRACKER_DATA);
+        await setDoc(docRef, DEMO_TRACKER_DATA);
         setSyncStatus('saved');
       }
       return true;

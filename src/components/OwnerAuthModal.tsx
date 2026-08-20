@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useOwnerSecurity, MASTER_OWNER_EMAIL, MASTER_OWNER_NAME } from '../context/OwnerSecurityContext';
+import { GoogleLogoIcon } from './auth/GoogleAuthButton';
 
 export const OwnerAuthModal: React.FC = () => {
   const { 
@@ -184,18 +185,38 @@ export const OwnerAuthModal: React.FC = () => {
             type="button"
             onClick={handleGoogleOwnerLogin}
             disabled={isLoggingIn}
-            className="w-full py-2.5 px-4 rounded-xl bg-white/80 dark:bg-neutral-900/80 hover:bg-slate-50 dark:hover:bg-neutral-800 border border-slate-200 dark:border-neutral-700/60 text-slate-800 dark:text-white font-medium text-xs flex items-center justify-center gap-2.5 transition-all cursor-pointer disabled:opacity-50 shadow-md backdrop-blur-sm"
+            className="w-full py-3 px-4 rounded-2xl bg-white dark:bg-neutral-900 hover:bg-slate-50 dark:hover:bg-neutral-800 border border-slate-200 dark:border-neutral-700 text-slate-800 dark:text-white font-semibold text-xs flex items-center justify-center gap-3 transition-all cursor-pointer disabled:opacity-50 shadow-md backdrop-blur-sm"
           >
-            <LogIn className="w-4 h-4 text-sky-600 dark:text-sky-400" />
+            <GoogleLogoIcon className="w-4 h-4 shrink-0" />
             <span>{isLoggingIn ? 'Verifying Credentials...' : `Sign in with Google (${MASTER_OWNER_EMAIL})`}</span>
           </motion.button>
 
-          {/* Footer Security Badge */}
-          <div className="mt-5 pt-4 border-t border-slate-200/80 dark:border-neutral-800/80 flex items-center justify-between text-[11px] text-slate-500 dark:text-neutral-500">
-            <span className="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400 font-mono">
-              <ShieldCheck className="w-3.5 h-3.5" /> Zero-Trust Access Enforced
-            </span>
-            <span className="font-semibold text-slate-600 dark:text-neutral-400">manageme • Secure Workspace</span>
+          {/* Footer Legal & Security Badges */}
+          <div className="mt-5 pt-4 border-t border-slate-200/80 dark:border-neutral-800/80 space-y-2">
+            <div className="flex items-center justify-between text-[11px] text-slate-500 dark:text-neutral-500">
+              <span className="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400 font-mono">
+                <ShieldCheck className="w-3.5 h-3.5" /> Zero-Trust Access
+              </span>
+              <span className="font-semibold text-slate-600 dark:text-neutral-400">manageme Executive</span>
+            </div>
+            <div className="text-center text-[10px] text-slate-400 dark:text-neutral-500">
+              By authenticating, you agree to our{' '}
+              <a 
+                href="#terms" 
+                onClick={() => { closeAuthModal(); window.location.hash = '#terms'; }} 
+                className="text-blue-500 hover:underline"
+              >
+                Terms of Service
+              </a>{' '}
+              and{' '}
+              <a 
+                href="#privacy" 
+                onClick={() => { closeAuthModal(); window.location.hash = '#privacy'; }} 
+                className="text-blue-500 hover:underline"
+              >
+                Privacy Policy
+              </a>.
+            </div>
           </div>
         </motion.div>
       </div>

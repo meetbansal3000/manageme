@@ -27,10 +27,11 @@ import {
   Clock,
   ExternalLink
 } from 'lucide-react';
-import { UserTrackerData } from '../hooks/useFirestoreData';
+import { UserTrackerData, isGuestOrDemoMode } from '../hooks/useFirestoreData';
 import { PortfolioPosition, TradeOrder } from '../types';
 import { GrowwTradingAcademyModal } from './GrowwTradingAcademyModal';
 import { LiveMarketPanel } from './LiveMarketPanel';
+import { AppleEmptyState } from './AppleEmptyState';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useScrollLock } from '../hooks/useScrollLock';
 import { useMarketEngine } from '../hooks/useMarketEngine';
@@ -242,19 +243,20 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
     }
   };
 
+  const isDemo = isGuestOrDemoMode();
   const tradingData = {
     cashBalance: userData?.paperTrading?.cashBalance ?? 100000,
     startingCapital: userData?.paperTrading?.startingCapital ?? 100000,
-    positions: Array.isArray(userData?.paperTrading?.positions) ? userData.paperTrading.positions : [
+    positions: Array.isArray(userData?.paperTrading?.positions) ? userData.paperTrading.positions : (isDemo ? [
       { id: 'pos-1', symbol: 'AAPL', name: 'Apple Inc.', assetClass: 'Stock', quantity: 50, averageEntryPrice: 220.00, currentPrice: 232.80 },
       { id: 'pos-2', symbol: 'NVDA', name: 'NVIDIA Corp', assetClass: 'Stock', quantity: 20, averageEntryPrice: 125.00, currentPrice: 138.45 },
       { id: 'pos-3', symbol: 'SPY', name: 'SPDR S&P 500 ETF', assetClass: 'ETF', quantity: 15, averageEntryPrice: 580.00, currentPrice: 598.40 }
-    ],
-    tradeHistory: Array.isArray(userData?.paperTrading?.tradeHistory) ? userData.paperTrading.tradeHistory : [
+    ] : []),
+    tradeHistory: Array.isArray(userData?.paperTrading?.tradeHistory) ? userData.paperTrading.tradeHistory : (isDemo ? [
       { id: 'tr-1', symbol: 'AAPL', type: 'Market', side: 'Buy', quantity: 50, executionPrice: 220.00, status: 'Executed', timestamp: Date.now() - 86400000 * 3 },
       { id: 'tr-2', symbol: 'NVDA', type: 'Limit', side: 'Buy', quantity: 20, executionPrice: 125.00, status: 'Executed', timestamp: Date.now() - 86400000 * 2 },
       { id: 'tr-3', symbol: 'SPY', type: 'Market', side: 'Buy', quantity: 15, executionPrice: 580.00, status: 'Executed', timestamp: Date.now() - 86400000 * 1 }
-    ],
+    ] : []),
     academyProgress: userData?.paperTrading?.academyProgress || {}
   };
 
@@ -822,36 +824,31 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
                 </div>
               </div>
 
-              {/* Monitored Items List (Bento Grid) */}
               {filteredWatchlist.length === 0 ? (
-                <div className="text-center py-6 px-4 bg-surface-elevated rounded-xl border border-dashed border-border space-y-2">
-                  <Eye className="w-6 h-6 text-textMuted mx-auto opacity-70" />
-                  <p className="text-xs text-textMuted font-sans">
-                    No stocks monitored in {watchlistFilter === 'All' ? 'any region' : watchlistFilter}.
-                  </p>
-                  <button
-                    onClick={() => {
-                      GLOBAL_ASSETS.slice(0, 4).forEach(a => {
-                        if (!isMonitored(a.symbol)) {
-                          addToWatchlist({
-                            symbol: a.symbol,
-                            name: a.name,
-                            price: a.price,
-                            currency: a.currency,
-                            region: a.region,
-                            exchange: a.exchange,
-                            assetClass: 'Stock',
-                            change: parseFloat(a.change),
-                            changePercent: parseFloat(a.change)
-                          });
-                        }
-                      });
-                    }}
-                    className="text-[11px] text-actionBlue hover:underline font-bold font-sans cursor-pointer"
-                  >
-                    + Add Top Global Bluechips
-                  </button>
-                </div>
+                <AppleEmptyState
+                  icon={Eye}
+                  title="No Monitored Stocks"
+                  description={`You are not tracking any securities in ${watchlistFilter === 'All' ? 'any region' : watchlistFilter}. Add assets to monitor live ticks and prices.`}
+                  actionLabel="+ Add Global Bluechips"
+                  onAction={() => {
+                    GLOBAL_ASSETS.slice(0, 4).forEach(a => {
+                      if (!isMonitored(a.symbol)) {
+                        addToWatchlist({
+                          symbol: a.symbol,
+                          name: a.name,
+                          price: a.price,
+                          currency: a.currency,
+                          region: a.region,
+                          exchange: a.exchange,
+                          assetClass: 'Stock',
+                          change: parseFloat(a.change),
+                          changePercent: parseFloat(a.change)
+                        });
+                      }
+                    });
+                  }}
+                  className="py-6 bg-transparent border-dashed"
+                />
               ) : (
                 <div className="space-y-2 max-h-72 overflow-y-auto custom-scrollbar pr-1">
                   {filteredWatchlist.map((item) => {
@@ -975,13 +972,20 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
               {portfolioTab === 'holdings' ? (
                 <div>
                   {tradingData.positions.length === 0 ? (
-                     <div className="text-center py-12 space-y-3">
-                       <Briefcase className="w-10 h-10 text-textMuted mx-auto opacity-50" />
-                       <h4 className="text-textPrimary font-bold text-sm">No Active Holdings</h4>
-                       <p className="text-textMuted text-xs max-w-sm mx-auto">
-                         Execute orders from the ticket panel to build your multi-asset portfolio.
-                       </p>
-                     </div>
+                    <AppleEmptyState
+                      icon={Briefcase}
+                      title="No Active Holdings"
+                      description="Search for any global stock or ETF using the asset discovery terminal above to execute paper trades and build your simulated portfolio."
+                      actionLabel="Search & Trade Assets"
+                      onAction={() => {
+                        const searchInput = document.querySelector('input[placeholder*="Search"]') as HTMLInputElement;
+                        if (searchInput) {
+                          searchInput.focus();
+                          searchInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        }
+                      }}
+                      className="py-10 bg-transparent border-dashed"
+                    />
                   ) : (
                     <div className="overflow-x-auto custom-scrollbar">
                       <table className="w-full text-left text-xs font-mono">
@@ -1022,11 +1026,12 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
                   )}
                 </div>
               ) : (
-                <div className="text-center py-12 space-y-2 text-xs text-textMuted">
-                   <Activity className="w-10 h-10 text-textMuted mx-auto mb-2 opacity-50" />
-                   <h4 className="text-textPrimary font-bold">No Active Intraday Positions</h4>
-                   <p>Intraday and F&O trades settle automatically at market close.</p>
-                </div>
+                <AppleEmptyState
+                  icon={Activity}
+                  title="No Active Intraday Positions"
+                  description="Intraday equity orders and F&O positions settle automatically at market close."
+                  className="py-10 bg-transparent border-dashed"
+                />
               )}
             </div>
           </div>
@@ -1239,9 +1244,12 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
             </div>
 
             {tradingData.tradeHistory.length === 0 ? (
-              <div className="text-center py-8 text-xs text-textMuted font-mono">
-                No trades executed yet. Place an order in the Trading Terminal to populate this log.
-              </div>
+              <AppleEmptyState
+                icon={Clock}
+                title="No Trade History"
+                description="Your executed limit, market, and stop orders will appear in this real-time trade log."
+                className="py-8 bg-transparent border-dashed"
+              />
             ) : (
               <div className="overflow-x-auto custom-scrollbar">
                 <table className="w-full text-left text-xs font-mono">

@@ -18,7 +18,7 @@ export interface WatchlistItem {
 
 const STORAGE_KEY = 'manageme_watchlist';
 
-const DEFAULT_WATCHLIST: WatchlistItem[] = [
+export const DEMO_WATCHLIST: WatchlistItem[] = [
   { id: 'w_1', symbol: 'AAPL', name: 'Apple Inc.', price: 232.80, change: +1.95, changePercent: 0.84, currency: '$', region: 'US', exchange: 'NASDAQ', assetClass: 'Stock' },
   { id: 'w_2', symbol: 'NVDA', name: 'NVIDIA Corp', price: 138.45, change: +4.15, changePercent: 3.09, currency: '$', region: 'US', exchange: 'NASDAQ', assetClass: 'Stock' },
   { id: 'w_3', symbol: 'RELIANCE.NS', name: 'Reliance Industries', price: 2980.50, change: +35.40, changePercent: 1.20, currency: '₹', region: 'India', exchange: 'NSE', assetClass: 'Stock' },
@@ -30,28 +30,32 @@ const DEFAULT_WATCHLIST: WatchlistItem[] = [
 export function useWatchlist() {
   const [watchlist, setWatchlist] = useState<WatchlistItem[]>(() => {
     try {
+      const isGuest = localStorage.getItem('manageme_guest_session') === 'true';
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) return JSON.parse(saved);
+      if (isGuest) return DEMO_WATCHLIST;
     } catch (e) {
       console.warn('Failed to load watchlist from localStorage:', e);
     }
-    return DEFAULT_WATCHLIST;
+    return [];
   });
   const [loading, setLoading] = useState(true);
 
-  // Load from Supabase if authenticated, else fallback to localStorage
+  // Load from Supabase if authenticated, else fallback to localStorage or clean slate
   const loadWatchlist = useCallback(async () => {
     try {
+      const isGuest = localStorage.getItem('manageme_guest_session') === 'true';
       const userId = await getSupabaseUserId();
-      if (userId) {
+      
+      if (userId && !isGuest) {
         const { data, error } = await supabase
           .from('watchlists')
           .select('*')
           .eq('user_id', userId)
           .order('id', { ascending: false });
 
-        if (!error && data && data.length > 0) {
-          const mapped: WatchlistItem[] = data.map(w => ({
+        if (!error) {
+          const mapped: WatchlistItem[] = (data || []).map(w => ({
             id: String(w.id),
             symbol: w.symbol || '',
             name: w.name || w.symbol || '',
@@ -67,9 +71,11 @@ export function useWatchlist() {
           setWatchlist(mapped);
           localStorage.setItem(STORAGE_KEY, JSON.stringify(mapped));
         }
+      } else if (isGuest) {
+        setWatchlist(DEMO_WATCHLIST);
       }
     } catch (err) {
-      console.warn('Supabase watchlist load error, fallback to localStorage:', err);
+      console.warn('Supabase watchlist load notice:', err);
     } finally {
       setLoading(false);
     }

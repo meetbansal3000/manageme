@@ -25,8 +25,9 @@ import {
   Layers,
   ArrowRight
 } from 'lucide-react';
-import { UserTrackerData } from '../hooks/useFirestoreData';
+import { UserTrackerData, isGuestOrDemoMode } from '../hooks/useFirestoreData';
 import { useOwnerSecurity } from '../context/OwnerSecurityContext';
+import { AppleEmptyState } from './AppleEmptyState';
 
 interface JobSyncHubProps {
   isOpen: boolean;
@@ -76,52 +77,27 @@ export const JobSyncHub: React.FC<JobSyncHubProps> = ({
   const [successNotice, setSuccessNotice] = useState<string | null>(null);
 
   // Platform Connectors State
-  const [platforms, setPlatforms] = useState<PlatformConnector[]>([
-    {
-      id: 'linkedin',
-      name: 'LinkedIn Jobs & Easy Apply',
-      icon: Linkedin,
-      color: '#0a66c2',
-      bgColor: 'rgba(10, 102, 194, 0.15)',
-      status: 'connected',
-      lastSynced: '10 mins ago',
-      autoSync: true,
-      totalSynced: 14
-    },
-    {
-      id: 'indeed',
-      name: 'Indeed UK & Global',
-      icon: Briefcase,
-      color: '#2164f3',
-      bgColor: 'rgba(33, 100, 243, 0.15)',
-      status: 'connected',
-      lastSynced: '1 hour ago',
-      autoSync: true,
-      totalSynced: 8
-    },
-    {
-      id: 'handshake',
-      name: 'Handshake / Durham University Careers',
-      icon: Globe,
-      color: '#d64000',
-      bgColor: 'rgba(214, 64, 0, 0.15)',
-      status: 'connected',
-      lastSynced: 'Today, 09:30 AM',
-      autoSync: false,
-      totalSynced: 19
-    },
-    {
-      id: 'otta',
-      name: 'Otta & Glassdoor Tech/Finance',
-      icon: Layers,
-      color: '#10b981',
-      bgColor: 'rgba(16, 185, 129, 0.15)',
-      status: 'idle',
-      lastSynced: 'Yesterday',
-      autoSync: true,
-      totalSynced: 6
-    }
-  ]);
+  const [platforms, setPlatforms] = useState<PlatformConnector[]>(() => {
+    try {
+      const isDemo = isGuestOrDemoMode();
+      const saved = localStorage.getItem('manageme_connected_platforms');
+      if (saved) return JSON.parse(saved);
+      if (isDemo) {
+        return [
+          { id: 'linkedin', name: 'LinkedIn Jobs & Easy Apply', icon: Linkedin, color: '#0a66c2', bgColor: 'rgba(10, 102, 194, 0.15)', status: 'connected', lastSynced: '10 mins ago', autoSync: true, totalSynced: 14 },
+          { id: 'indeed', name: 'Indeed UK & Global', icon: Briefcase, color: '#2164f3', bgColor: 'rgba(33, 100, 243, 0.15)', status: 'connected', lastSynced: '1 hour ago', autoSync: true, totalSynced: 8 },
+          { id: 'handshake', name: 'Handshake / Durham University Careers', icon: Globe, color: '#d64000', bgColor: 'rgba(214, 64, 0, 0.15)', status: 'connected', lastSynced: 'Today, 09:30 AM', autoSync: false, totalSynced: 19 },
+          { id: 'otta', name: 'Otta & Glassdoor Tech/Finance', icon: Layers, color: '#10b981', bgColor: 'rgba(16, 185, 129, 0.15)', status: 'idle', lastSynced: 'Yesterday', autoSync: true, totalSynced: 6 }
+        ];
+      }
+    } catch {}
+    return [
+      { id: 'linkedin', name: 'LinkedIn Jobs & Easy Apply', icon: Linkedin, color: '#0a66c2', bgColor: 'rgba(10, 102, 194, 0.15)', status: 'idle', lastSynced: 'Not connected', autoSync: false, totalSynced: 0 },
+      { id: 'indeed', name: 'Indeed UK & Global', icon: Briefcase, color: '#2164f3', bgColor: 'rgba(33, 100, 243, 0.15)', status: 'idle', lastSynced: 'Not connected', autoSync: false, totalSynced: 0 },
+      { id: 'handshake', name: 'Handshake Careers', icon: Globe, color: '#d64000', bgColor: 'rgba(214, 64, 0, 0.15)', status: 'idle', lastSynced: 'Not connected', autoSync: false, totalSynced: 0 },
+      { id: 'otta', name: 'Otta & Glassdoor', icon: Layers, color: '#10b981', bgColor: 'rgba(16, 185, 129, 0.15)', status: 'idle', lastSynced: 'Not connected', autoSync: false, totalSynced: 0 }
+    ];
+  });
 
   const [isSyncingAll, setIsSyncingAll] = useState(false);
 
@@ -491,9 +467,27 @@ export const JobSyncHub: React.FC<JobSyncHubProps> = ({
         {/* Tab 2: Connected Platforms */}
         {activeTab === 'platforms' && (
           <div className="flex-1 overflow-y-auto custom-scrollbar pr-2 space-y-4">
+            {platforms.filter(p => p.status === 'connected').length === 0 && (
+              <AppleEmptyState
+                icon={Layers}
+                title="No Platforms Connected"
+                description="Connect your LinkedIn, Indeed, Handshake, or Otta accounts to automatically sync jobs and import applications."
+                actionLabel="+ Connect All Platforms"
+                onAction={() => {
+                  setPlatforms(prev => {
+                    const updated = prev.map(p => ({ ...p, status: 'connected' as const, lastSynced: 'Just now', totalSynced: 0, autoSync: true }));
+                    try { localStorage.setItem('manageme_connected_platforms', JSON.stringify(updated)); } catch {}
+                    return updated;
+                  });
+                }}
+                className="py-8 bg-black/20 border-dashed"
+              />
+            )}
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {platforms.map((platform) => {
                 const Icon = platform.icon;
+                const isConnected = platform.status === 'connected';
 
                 return (
                   <div
@@ -511,15 +505,39 @@ export const JobSyncHub: React.FC<JobSyncHubProps> = ({
                         <div>
                           <h3 className="font-bold text-sm text-white">{platform.name}</h3>
                           <div className="flex items-center gap-2 mt-0.5">
-                            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                            <span className="text-[11px] text-emerald-400 font-medium">Bridge Active</span>
+                            <span className={`w-2 h-2 rounded-full ${isConnected ? 'bg-emerald-400 animate-pulse' : 'bg-gray-500'}`}></span>
+                            <span className={`text-[11px] font-medium ${isConnected ? 'text-emerald-400' : 'text-gray-400'}`}>
+                              {isConnected ? 'Bridge Active' : 'Disconnected'}
+                            </span>
                           </div>
                         </div>
                       </div>
 
-                      <span className="px-2 py-0.5 bg-white/5 border border-white/10 rounded-md text-[10px] font-mono text-gray-400">
-                        {platform.totalSynced} roles synced
-                      </span>
+                      <button
+                        onClick={() => {
+                          setPlatforms(prev => {
+                            const updated = prev.map(p => {
+                              if (p.id === platform.id) {
+                                return {
+                                  ...p,
+                                  status: (isConnected ? 'idle' : 'connected') as 'idle' | 'connected',
+                                  lastSynced: isConnected ? 'Not connected' : 'Just now'
+                                };
+                              }
+                              return p;
+                            });
+                            try { localStorage.setItem('manageme_connected_platforms', JSON.stringify(updated)); } catch {}
+                            return updated;
+                          });
+                        }}
+                        className={`px-3 py-1 rounded-lg text-xs font-semibold border transition-all cursor-pointer ${
+                          isConnected 
+                            ? 'bg-emerald-500/15 border-emerald-500/30 text-emerald-300 hover:bg-red-500/15 hover:border-red-500/30 hover:text-red-300' 
+                            : 'bg-blue-600 border-blue-500 text-white hover:bg-blue-500'
+                        }`}
+                      >
+                        {isConnected ? 'Connected' : 'Connect'}
+                      </button>
                     </div>
 
                     <div className="flex items-center justify-between text-xs text-gray-400 pt-2 border-t border-[var(--border)]">
@@ -527,18 +545,24 @@ export const JobSyncHub: React.FC<JobSyncHubProps> = ({
                         <Clock className="w-3.5 h-3.5" /> Last sync: {platform.lastSynced}
                       </span>
 
-                      <label className="flex items-center gap-2 cursor-pointer">
-                        <span className="text-[11px] text-gray-300">Auto-Import</span>
-                        <input
-                          type="checkbox"
-                          checked={platform.autoSync}
-                          onChange={e => {
-                            const checked = e.target.checked;
-                            setPlatforms(prev => prev.map(p => p.id === platform.id ? { ...p, autoSync: checked } : p));
-                          }}
-                          className="rounded bg-black/40 border-[var(--border)] text-blue-600 focus:ring-0 w-3.5 h-3.5"
-                        />
-                      </label>
+                      {isConnected && (
+                        <label className="flex items-center gap-2 cursor-pointer">
+                          <span className="text-[11px] text-gray-300">Auto-Import</span>
+                          <input
+                            type="checkbox"
+                            checked={platform.autoSync}
+                            onChange={e => {
+                              const checked = e.target.checked;
+                              setPlatforms(prev => {
+                                const updated = prev.map(p => p.id === platform.id ? { ...p, autoSync: checked } : p);
+                                try { localStorage.setItem('manageme_connected_platforms', JSON.stringify(updated)); } catch {}
+                                return updated;
+                              });
+                            }}
+                            className="rounded bg-black/40 border-[var(--border)] text-blue-600 focus:ring-0 w-3.5 h-3.5"
+                          />
+                        </label>
+                      )}
                     </div>
                   </div>
                 );

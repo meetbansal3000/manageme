@@ -25,7 +25,7 @@ import { useGlobalShortcuts } from './hooks/useGlobalShortcuts';
 import { SpeedInsights } from '@vercel/speed-insights/react';
 import { Analytics } from '@vercel/analytics/react';
 
-const PRIMARY_TABS: AppTab[] = ['landing', 'news', 'study', 'metasuite', 'jobs', 'outreach', 'tasks', 'uni', 'finance', 'trading', 'work', 'skills', 'travel', 'transit', 'chat', 'resume'];
+const PRIMARY_TABS: AppTab[] = ['landing', 'news', 'study', 'metasuite', 'jobs', 'outreach', 'tasks', 'uni', 'finance', 'trading', 'work', 'skills', 'travel', 'transit', 'chat', 'resume', 'privacy', 'terms'];
 
 // Code-split tabs with React.lazy
 const TimelineTab = lazy(() => import('./components/TimelineTab').then(m => ({ default: m.TimelineTab })));
@@ -45,6 +45,8 @@ const ResumeVaultTab = lazy(() => import('./components/ResumeVaultTab'));
 const ExecutiveAiMetaSuiteTab = lazy(() => import('./components/ExecutiveAiMetaSuiteTab').then(m => ({ default: m.ExecutiveAiMetaSuiteTab })));
 const StudyIntelligenceEngineTab = lazy(() => import('./components/StudyIntelligenceEngineTab').then(m => ({ default: m.StudyIntelligenceEngineTab })));
 const OutreachHub = lazy(() => import('./components/OutreachHub').then(m => ({ default: m.OutreachHub })));
+const PrivacyPolicyTab = lazy(() => import('./components/legal/PrivacyPolicyTab'));
+const TermsOfServiceTab = lazy(() => import('./components/legal/TermsOfServiceTab'));
 
 // Code-split 3D background & modals
 const Spatial3DCanvas = lazy(() => import('./components/Spatial3DCanvas'));
@@ -62,19 +64,28 @@ const AiModelSelector = lazy(() => import('./components/AiModelSelector').then(m
 const JobSyncHub = lazy(() => import('./components/JobSyncHub').then(m => ({ default: m.JobSyncHub })));
 const ActivityDrawer = lazy(() => import('./components/ActivityDrawer').then(m => ({ default: m.ActivityDrawer })));
 const ConflictModal = lazy(() => import('./components/ConflictModal').then(m => ({ default: m.ConflictModal })));
+const UserAuthModal = lazy(() => import('./components/auth/UserAuthModal'));
 
 export default function App() {
   const { settings, updateSettings } = useSettings();
   const { requireOwnerPermission, isOwnerVerified } = useOwnerSecurity();
-  const initialTab = useMemo(() => {
+  
+  const resolveCurrentTab = (): string => {
     if (typeof window !== 'undefined') {
-      const hash = window.location.hash.replace('#', '');
+      const pathname = window.location.pathname.replace(/^\/+/, '').toLowerCase();
+      if (pathname === 'privacy') return 'privacy';
+      if (pathname === 'terms') return 'terms';
+      const hash = window.location.hash.replace(/^#+/, '').toLowerCase();
+      if (hash === 'privacy') return 'privacy';
+      if (hash === 'terms') return 'terms';
       if (hash && PRIMARY_TABS.includes(hash as any)) return hash;
       const lastSaved = localStorage.getItem('manageme_last_active_tab');
       if (lastSaved && PRIMARY_TABS.includes(lastSaved as any)) return lastSaved;
     }
     return 'landing';
-  }, []);
+  };
+
+  const initialTab = useMemo(() => resolveCurrentTab(), []);
   const [activeTab, setActiveTab] = useState<string>(initialTab);
   const [tabHistory, setTabHistory] = useState<string[]>([initialTab]);
   const [pendingShare, setPendingShare] = useState<any>(null);
@@ -85,6 +96,27 @@ export default function App() {
   const [isAiModelSelectorOpen, setIsAiModelSelectorOpen] = useState(false);
   const [isJobSyncOpen, setIsJobSyncOpen] = useState(false);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const [isUserAuthModalOpen, setIsUserAuthModalOpen] = useState(false);
+
+  useEffect(() => {
+    const handleUrlChange = () => {
+      const target = resolveCurrentTab();
+      if (target && target !== activeTab) {
+        setActiveTab(target);
+      }
+    };
+    const handleOpenAuth = () => setIsUserAuthModalOpen(true);
+
+    window.addEventListener('popstate', handleUrlChange);
+    window.addEventListener('hashchange', handleUrlChange);
+    window.addEventListener('openUserAuthModal', handleOpenAuth);
+
+    return () => {
+      window.removeEventListener('popstate', handleUrlChange);
+      window.removeEventListener('hashchange', handleUrlChange);
+      window.removeEventListener('openUserAuthModal', handleOpenAuth);
+    };
+  }, [activeTab]);
 
   const handleTabChange = (newTab: string) => {
     if (!newTab || newTab === activeTab) return;
@@ -571,6 +603,14 @@ export default function App() {
                   updateData={updateData}
                 />
               )}
+
+              {activeTab === 'privacy' && (
+                <PrivacyPolicyTab onBack={handleGoBack} />
+              )}
+
+              {activeTab === 'terms' && (
+                <TermsOfServiceTab onBack={handleGoBack} />
+              )}
               
             </motion.div>
           </AnimatePresence>
@@ -578,14 +618,28 @@ export default function App() {
         </div>
         </main>
 
-      <footer className="border-t border-[var(--border)] py-6 px-4 sm:px-6 lg:px-8 bg-[var(--bg)] text-xs">
+      <footer className="border-t border-[var(--border)] py-6 px-4 sm:px-6 lg:px-8 bg-[var(--bg)] text-xs font-sans">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="font-space-mono text-[var(--text-secondary)] flex items-center gap-2">
+          <div className="font-mono text-[var(--text-secondary)] flex items-center gap-2">
             <span className="font-bold text-[var(--text-primary)] text-sm tracking-tight font-sans">manageme</span>
             <span className="opacity-40">•</span>
-            <span>manageme • All Rights Reserved</span>
+            <span>&copy; {new Date().getFullYear()} All Rights Reserved</span>
           </div>
-          <div className="flex gap-4">
+          <div className="flex flex-wrap items-center gap-4">
+            <button 
+              onClick={() => handleTabChange('privacy')} 
+              className="text-[var(--text-secondary)] hover:text-blue-400 font-medium transition-colors cursor-pointer"
+            >
+              Privacy Policy
+            </button>
+            <span className="text-[var(--border)]">•</span>
+            <button 
+              onClick={() => handleTabChange('terms')} 
+              className="text-[var(--text-secondary)] hover:text-blue-400 font-medium transition-colors cursor-pointer"
+            >
+              Terms of Service
+            </button>
+            <span className="text-[var(--border)]">•</span>
             <button 
               onClick={() => {
                 requireOwnerPermission('Reset and Restore Demo Data', () => {
@@ -595,7 +649,7 @@ export default function App() {
                   }
                 });
               }} 
-              className="text-[var(--text-secondary)] hover:text-amber-400 font-medium transition-colors"
+              className="text-[var(--text-secondary)] hover:text-amber-400 font-medium transition-colors cursor-pointer"
             >
               Reset Demo Data
             </button>
@@ -605,7 +659,7 @@ export default function App() {
                   setIsAddModalOpen(true);
                 });
               }} 
-              className="text-[var(--text-primary)] hover:text-[var(--accent)] font-semibold uppercase tracking-widest transition-colors"
+              className="text-[var(--text-primary)] hover:text-[var(--accent)] font-semibold uppercase tracking-widest transition-colors cursor-pointer"
             >
               + Add App
             </button>
@@ -862,6 +916,12 @@ export default function App() {
           localData={conflict?.local || userData}
           remoteData={conflict?.remote || userData}
           onResolve={resolveConflict}
+        />
+
+        <UserAuthModal
+          isOpen={isUserAuthModalOpen}
+          onClose={() => setIsUserAuthModalOpen(false)}
+          onNavigateLegal={(page) => handleTabChange(page)}
         />
       </Suspense>
 
