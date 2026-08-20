@@ -1,36 +1,41 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { User, onAuthStateChanged } from 'firebase/auth';
+import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
+import { User } from 'firebase/auth';
 import { auth, googleSignIn, logout, db } from '../firebase';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { DeviceSession, getCurrentDeviceSession } from '../utils/deviceFingerprint';
-import { signOutSupabase } from '../lib/supabase';
+import { supabase, signOutSupabase, isSupabaseConfigured } from '../lib/supabase';
+import type { Session, User as SupabaseUser } from '@supabase/supabase-js';
 
 const MAX_ALLOWED_DEVICES = 2;
-const SESSION_EXPIRY_MS = 30 * 24 * 60 * 60 * 1000; // 30 Days
 
 export interface AuthContextUser {
   uid: string;
+  id?: string;
   displayName: string | null;
   email: string | null;
   photoURL: string | null;
   isAnonymous?: boolean;
   isGuest?: boolean;
   emailVerified?: boolean;
+  user_metadata?: Record<string, any>;
 }
 
 // Fallback Demo / Guest User for Offline / Local Testing
 export const DEMO_GUEST_USER: AuthContextUser = {
   uid: 'guest-demo-executive',
+  id: 'guest-demo-executive',
   displayName: 'Guest Executive',
   email: 'guest@manageme.internal',
   photoURL: null,
   isAnonymous: true,
   isGuest: true,
-  emailVerified: true
+  emailVerified: true,
+  user_metadata: { full_name: 'Guest Executive' }
 };
 
 interface AuthContextType {
   user: User | AuthContextUser | null;
+  session: Session | null;
   isAuthenticated: boolean;
   isGuest: boolean;
   isLoading: boolean;
@@ -39,6 +44,7 @@ interface AuthContextType {
   activeSessions: DeviceSession[];
   isDeviceBlocked: boolean;
   signInWithGoogle: () => Promise<boolean>;
+  signInWithSupabase: (provider?: 'google' | 'github') => Promise<void>;
   signInAsGuest: () => void;
   signOut: () => Promise<void>;
   revokeSession: (deviceId: string) => Promise<void>;
@@ -48,18 +54,34 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | AuthContextUser | null>(() => {
-    // Check if guest mode was previously active
+    // Initial synchronous read from localStorage for instant cache rehydration
     try {
       const isGuestSaved = localStorage.getItem('manageme_guest_session');
       if (isGuestSaved === 'true') {
         return DEMO_GUEST_USER;
       }
+      const savedProfile = localStorage.getItem('manageme_user_profile');
+      if (savedProfile) {
+        const parsed = JSON.parse(savedProfile);
+        if (parsed.id || parsed.uid) {
+          return {
+            uid: parsed.id || parsed.uid,
+            id: parsed.id || parsed.uid,
+            displayName: parsed.name || parsed.displayName || 'User',
+            email: parsed.email || null,
+            photoURL: parsed.avatar || parsed.photoURL || null,
+            isGuest: false,
+            emailVerified: true
+          };
+        }
+      }
     } catch {}
     return null;
   });
-  
+
   const [isGuest, setIsGuest] = useState<boolean>(() => {
     try {
       return localStorage.getItem('manageme_guest_session') === 'true';
@@ -68,7 +90,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   });
 
-  const [isLoading, setIsLoading] = useState(false);
+  // Start with isLoading = true while we verify persistent session with Supabase/Firebase
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [authError, setAuthError] = useState<string | null>(null);
   const [currentDevice, setCurrentDevice] = useState<DeviceSession>(() => getCurrentDeviceSession());
   const [activeSessions, setActiveSessions] = useState<DeviceSession[]>([]);
@@ -76,37 +99,29 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const getStorageKey = (uid: string) => `manageme_user_active_sessions_${uid}`;
 
-  // Clean expired sessions (> 30 days)
-  const cleanExpiredSessions = (sessions: DeviceSession[]): DeviceSession[] => {
-    const now = Date.now();
-    return sessions.filter(s => (now - s.lastActive) < SESSION_EXPIRY_MS);
-  };
-
-  // Sync sessions to persistent local storage & Firestore
+  // Keep all sessions intact indefinitely unless manually revoked (manual logout only, no auto-expiry)
   const persistSessions = useCallback(async (uid: string, sessions: DeviceSession[]) => {
-    if (uid === DEMO_GUEST_USER.uid) return; // Do not persist guest device limits to Firestore
-    const cleaned = cleanExpiredSessions(sessions);
+    if (uid === DEMO_GUEST_USER.uid) return;
     try {
-      localStorage.setItem(getStorageKey(uid), JSON.stringify(cleaned));
-      localStorage.setItem('user_active_sessions', JSON.stringify(cleaned));
+      localStorage.setItem(getStorageKey(uid), JSON.stringify(sessions));
+      localStorage.setItem('user_active_sessions', JSON.stringify(sessions));
       
       // Sync to Firestore if available
       try {
         const userDocRef = doc(db, 'users', uid);
         await setDoc(userDocRef, {
-          activeSessions: cleaned,
+          activeSessions: sessions,
           lastActiveDeviceId: currentDevice.deviceId,
           lastActiveTimestamp: Date.now()
         }, { merge: true });
       } catch (err: any) {
-        console.error('[Auth Error - Firestore Session Sync]:', err?.message || err);
+        console.warn('[Auth Notice - Firestore Session Sync]:', err?.message || err);
       }
     } catch (e: any) {
-      console.error('[Auth Error - Persisting Active Sessions]:', e?.message || e);
+      console.warn('[Auth Notice - Persisting Active Sessions]:', e?.message || e);
     }
   }, [currentDevice.deviceId]);
 
-  // Load sessions for user from LocalStorage / Firestore
   const loadSessions = useCallback(async (uid: string): Promise<DeviceSession[]> => {
     if (uid === DEMO_GUEST_USER.uid) return [];
     let list: DeviceSession[] = [];
@@ -116,25 +131,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         list = JSON.parse(local);
       }
     } catch (e: any) {
-      console.error('[Auth Error - Loading Local Sessions]:', e?.message || e);
+      console.warn('[Auth Notice - Loading Local Sessions]:', e?.message || e);
     }
 
-    // Try fetching from Firestore
     try {
       const snap = await getDoc(doc(db, 'users', uid));
       if (snap.exists() && Array.isArray(snap.data()?.activeSessions)) {
         list = snap.data()?.activeSessions;
       }
     } catch (err: any) {
-      console.warn('[Auth Warning - Firestore Load Sessions]:', err?.message || err);
+      console.warn('[Auth Notice - Firestore Load Sessions]:', err?.message || err);
     }
 
-    return cleanExpiredSessions(list);
+    return list;
   }, []);
 
-  // Register or Verify Current Device
-  const evaluateDeviceSession = useCallback(async (firebaseUser: User | AuthContextUser) => {
-    if (firebaseUser.uid === DEMO_GUEST_USER.uid) {
+  const evaluateDeviceSession = useCallback(async (authUser: User | AuthContextUser) => {
+    const uid = authUser.uid || (authUser as any).id;
+    if (!uid || uid === DEMO_GUEST_USER.uid) {
       setIsDeviceBlocked(false);
       return;
     }
@@ -142,103 +156,175 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const freshDevice = getCurrentDeviceSession();
     setCurrentDevice(freshDevice);
 
-    const existingSessions = await loadSessions(firebaseUser.uid);
+    const existingSessions = await loadSessions(uid);
     const isAlreadyRegistered = existingSessions.some(s => s.deviceId === freshDevice.deviceId);
 
     if (isAlreadyRegistered) {
-      // Update lastActive timestamp
       const updated = existingSessions.map(s => 
         s.deviceId === freshDevice.deviceId ? { ...s, lastActive: Date.now(), deviceName: freshDevice.deviceName } : s
       );
       setActiveSessions(updated);
       setIsDeviceBlocked(false);
-      await persistSessions(firebaseUser.uid, updated);
+      await persistSessions(uid, updated);
     } else {
-      // Check device count limit
       if (existingSessions.length >= MAX_ALLOWED_DEVICES) {
-        // Block this new device
         setActiveSessions(existingSessions);
         setIsDeviceBlocked(true);
       } else {
-        // Register this new device
         const updated = [freshDevice, ...existingSessions];
         setActiveSessions(updated);
         setIsDeviceBlocked(false);
-        await persistSessions(firebaseUser.uid, updated);
+        await persistSessions(uid, updated);
       }
     }
   }, [loadSessions, persistSessions]);
 
-  // Fallback safety timeout: ensure auth loading state never hangs past 2.5s
+  // Map Supabase User to AuthContextUser
+  const mapSupabaseUser = (sbUser: SupabaseUser): AuthContextUser => {
+    return {
+      uid: sbUser.id,
+      id: sbUser.id,
+      email: sbUser.email ?? null,
+      displayName: sbUser.user_metadata?.full_name || sbUser.user_metadata?.name || sbUser.email?.split('@')[0] || 'User',
+      photoURL: sbUser.user_metadata?.avatar_url || sbUser.user_metadata?.picture || null,
+      isGuest: false,
+      user_metadata: sbUser.user_metadata,
+      emailVerified: Boolean(sbUser.email_confirmed_at)
+    };
+  };
+
+  // Primary Session Rehydration & Listener Setup
   useEffect(() => {
-    const safetyTimer = setTimeout(() => {
-      setIsLoading(false);
-    }, 2500);
-    return () => clearTimeout(safetyTimer);
-  }, []);
+    let isMounted = true;
 
-  useEffect(() => {
-    let isSubscribed = true;
-
-    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-      if (!isSubscribed) return;
-
+    const initializeAuth = async () => {
       try {
-        if (currentUser) {
-          setUser(currentUser);
+        // 1. Check Supabase Persistent Session
+        const { data: { session: initialSession }, error: sbError } = await supabase.auth.getSession();
+        
+        if (sbError) {
+          console.warn('[Supabase Auth Rehydrate]: getSession error:', sbError.message);
+        }
+
+        if (initialSession?.user && isMounted) {
+          console.info('[Supabase Auth Rehydrate]: Found persistent session for user:', initialSession.user.id);
+          const mapped = mapSupabaseUser(initialSession.user);
+          setSession(initialSession);
+          setUser(mapped);
           setIsGuest(false);
+          
           try {
             localStorage.removeItem('manageme_guest_session');
           } catch {}
-          
-          // Non-blocking device session evaluation
-          evaluateDeviceSession(currentUser).catch(err => {
-            console.warn('[Auth Warning - Device evaluation handled]:', err?.message || err);
-          });
-        } else {
-          // Check if guest mode is active
-          try {
-            const isGuestSaved = localStorage.getItem('manageme_guest_session') === 'true';
-            if (isGuestSaved) {
-              setUser(DEMO_GUEST_USER);
-              setIsGuest(true);
-              setIsDeviceBlocked(false);
-            } else {
-              setUser(null);
-              setIsGuest(false);
-              setActiveSessions([]);
-              setIsDeviceBlocked(false);
-            }
-          } catch {
-            setUser(null);
-            setIsGuest(false);
-          }
+
+          evaluateDeviceSession(mapped).catch(() => {});
+          if (isMounted) setIsLoading(false);
+          return;
         }
+
+        // 2. Check Firebase Session fallback
+        if (auth.currentUser && isMounted) {
+          setUser(auth.currentUser);
+          setIsGuest(false);
+          evaluateDeviceSession(auth.currentUser).catch(() => {});
+          if (isMounted) setIsLoading(false);
+          return;
+        }
+
+        // 3. Check Guest mode session
+        try {
+          const isGuestSaved = localStorage.getItem('manageme_guest_session') === 'true';
+          if (isGuestSaved && isMounted) {
+            setUser(DEMO_GUEST_USER);
+            setIsGuest(true);
+            setIsDeviceBlocked(false);
+          }
+        } catch {}
+
       } catch (err: any) {
-        console.warn('[Auth State Notice]:', err?.message || err);
+        console.warn('[Auth Initialization Notice]:', err?.message || err);
       } finally {
-        if (isSubscribed) {
+        if (isMounted) {
           setIsLoading(false);
         }
       }
-    }, (error) => {
-      console.warn('[Auth Notice - Firebase Auth State]:', error.message, error);
-      setAuthError(error.message);
-      if (isSubscribed) {
-        setIsLoading(false);
+    };
+
+    initializeAuth();
+
+    // 4. Supabase real-time auth state changes and automatic background token refreshes
+    const { data: authListener } = supabase.auth.onAuthStateChange(async (event, currentSession) => {
+      if (!isMounted) return;
+      console.info(`[Supabase Auth State Change]: ${event}`);
+
+      if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'USER_UPDATED') {
+        if (currentSession?.user) {
+          const mapped = mapSupabaseUser(currentSession.user);
+          setSession(currentSession);
+          setUser(mapped);
+          setIsGuest(false);
+          setAuthError(null);
+          try {
+            localStorage.removeItem('manageme_guest_session');
+          } catch {}
+          evaluateDeviceSession(mapped).catch(() => {});
+        }
+      } else if (event === 'SIGNED_OUT') {
+        setSession(null);
+        // Only clear user if not in guest mode
+        const isGuestSaved = localStorage.getItem('manageme_guest_session') === 'true';
+        if (isGuestSaved) {
+          setUser(DEMO_GUEST_USER);
+          setIsGuest(true);
+        } else {
+          setUser(null);
+          setIsGuest(false);
+          setActiveSessions([]);
+          setIsDeviceBlocked(false);
+        }
       }
+      setIsLoading(false);
     });
 
+    // 5. Firebase fallback listener
+    const unsubscribeFirebase = auth.onAuthStateChanged((firebaseUser) => {
+      if (!isMounted) return;
+      if (firebaseUser) {
+        // If we don't have a Supabase session, use Firebase user
+        setSession((prevSession) => {
+          if (!prevSession) {
+            setUser(firebaseUser);
+            setIsGuest(false);
+            try {
+              localStorage.removeItem('manageme_guest_session');
+            } catch {}
+            evaluateDeviceSession(firebaseUser).catch(() => {});
+          }
+          return prevSession;
+        });
+      }
+      setIsLoading(false);
+    });
+
+    // Safety timer: ensure loading state never hangs past 2 seconds
+    const safetyTimeout = setTimeout(() => {
+      if (isMounted) {
+        setIsLoading(false);
+      }
+    }, 2000);
+
     return () => {
-      isSubscribed = false;
-      unsubscribe();
+      isMounted = false;
+      clearTimeout(safetyTimeout);
+      authListener?.subscription.unsubscribe();
+      unsubscribeFirebase();
     };
   }, [evaluateDeviceSession]);
 
   // Cross-Tab Session Synchronization
   useEffect(() => {
     const handleStorage = (e: StorageEvent) => {
-      if (user && (e.key === getStorageKey(user.uid) || e.key === 'user_active_sessions')) {
+      if (user && (e.key === getStorageKey(user.uid || (user as any).id) || e.key === 'user_active_sessions')) {
         if (e.newValue) {
           try {
             const updatedSessions: DeviceSession[] = JSON.parse(e.newValue);
@@ -250,7 +336,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
               setIsDeviceBlocked(false);
             }
           } catch (err: any) {
-            console.error('[Auth Error - Storage Sync Parse]:', err?.message || err);
+            console.warn('[Auth Notice - Storage Sync Parse]:', err?.message || err);
           }
         }
       }
@@ -260,9 +346,28 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return () => window.removeEventListener('storage', handleStorage);
   }, [user, currentDevice.deviceId]);
 
+  const signInWithSupabase = async (provider: 'google' | 'github' = 'google'): Promise<void> => {
+    try {
+      setAuthError(null);
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider,
+        options: {
+          redirectTo: typeof window !== 'undefined' ? window.location.origin : undefined
+        }
+      });
+      if (error) throw error;
+    } catch (err: any) {
+      console.error('[Supabase OAuth Error]:', err?.message || err);
+      setAuthError(err?.message || 'OAuth sign-in failed');
+      throw err;
+    }
+  };
+
   const signInWithGoogle = async (): Promise<boolean> => {
     try {
       setAuthError(null);
+      
+      // If Supabase is fully configured, we can use Supabase OAuth or Firebase Google Sign-In
       const result = await googleSignIn();
       if (result?.user) {
         setUser(result.user);
@@ -292,7 +397,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         userFriendlyMsg = 'Only one sign-in window allowed at a time.';
       }
 
-      console.error('[Auth Error - Google Sign In]:', errorCode, error?.message || error);
+      console.warn('[Auth Notice - Google Sign In]:', errorCode, error?.message || error);
       setAuthError(userFriendlyMsg);
       return false;
     }
@@ -309,38 +414,52 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     console.info('[Auth]: Activated Guest / Demo Workspace Mode');
   };
 
+  // Manual Logout: ONLY called when user explicitly clicks "Sign Out" or "Log Out"
   const signOut = async (): Promise<void> => {
     try {
-      if (user && !isGuest) {
-        // Remove current device from registered sessions
+      setIsLoading(true);
+      const uid = user?.uid || (user as any)?.id;
+      if (uid && !isGuest) {
         const updated = activeSessions.filter(s => s.deviceId !== currentDevice.deviceId);
-        await persistSessions(user.uid, updated);
+        await persistSessions(uid, updated);
       }
       
       try {
         localStorage.removeItem('manageme_guest_session');
+        localStorage.removeItem('manageme_user_profile');
+        localStorage.removeItem('user_active_sessions');
       } catch {}
 
-      await logout();
       await signOutSupabase();
+      try {
+        await logout();
+      } catch {}
       
       setUser(null);
+      setSession(null);
       setIsGuest(false);
       setActiveSessions([]);
       setIsDeviceBlocked(false);
+
+      // Redirect to landing page on manual logout
+      if (typeof window !== 'undefined') {
+        try {
+          window.location.hash = 'landing';
+        } catch {}
+      }
     } catch (err: any) {
       console.error('[Auth Error - Sign Out]:', err?.message || err);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const revokeSession = async (targetDeviceId: string): Promise<void> => {
-    if (!user || isGuest) return;
+    const uid = user?.uid || (user as any)?.id;
+    if (!uid || isGuest) return;
 
     try {
-      // Filter out revoked device
       const remaining = activeSessions.filter(s => s.deviceId !== targetDeviceId);
-
-      // If current device was blocked, we now have a free slot -> register current device
       let updated = remaining;
       if (isDeviceBlocked && !remaining.some(s => s.deviceId === currentDevice.deviceId)) {
         const fresh = getCurrentDeviceSession();
@@ -349,20 +468,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
 
       setActiveSessions(updated);
-      await persistSessions(user.uid, updated);
+      await persistSessions(uid, updated);
     } catch (err: any) {
       console.error('[Auth Error - Revoke Session]:', err?.message || err);
     }
   };
 
   const revokeOtherSessions = async (): Promise<void> => {
-    if (!user || isGuest) return;
+    const uid = user?.uid || (user as any)?.id;
+    if (!uid || isGuest) return;
     try {
       const fresh = getCurrentDeviceSession();
       const updated = [fresh];
       setActiveSessions(updated);
       setIsDeviceBlocked(false);
-      await persistSessions(user.uid, updated);
+      await persistSessions(uid, updated);
     } catch (err: any) {
       console.error('[Auth Error - Revoke Other Sessions]:', err?.message || err);
     }
@@ -372,10 +492,44 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setIsDeviceBlocked(false);
   };
 
+  // Seamless Full-Screen Loading Screen while checking initial persistent session
+  if (isLoading) {
+    return (
+      <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-[#0D0425] text-white select-none">
+        {/* Ambient Radial FinTech Glows */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-gradient-to-tr from-[#C645F9]/20 via-[#5E6CE7]/15 to-transparent rounded-full blur-3xl pointer-events-none" />
+        
+        <div className="relative z-10 flex flex-col items-center space-y-5">
+          {/* Logo Badge */}
+          <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-[#5E6CE7] to-[#C645F9] p-[1.5px] shadow-2xl shadow-purple-500/20">
+            <div className="w-full h-full bg-[#0D0425] rounded-[14.5px] flex items-center justify-center">
+              <span className="font-extrabold text-2xl tracking-tighter bg-gradient-to-r from-blue-400 via-indigo-300 to-purple-400 bg-clip-text text-transparent font-sans">
+                m
+              </span>
+            </div>
+          </div>
+
+          <div className="flex flex-col items-center space-y-2">
+            <div className="flex items-center gap-2">
+              <div className="w-3.5 h-3.5 border-2 border-[#C645F9] border-t-transparent rounded-full animate-spin" />
+              <span className="font-sans font-bold text-sm tracking-tight text-white/90">
+                manageme
+              </span>
+            </div>
+            <p className="font-mono text-[11px] text-slate-400 tracking-wider uppercase">
+              Rehydrating Secure Session...
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <AuthContext.Provider
       value={{
         user,
+        session,
         isAuthenticated: !!user,
         isGuest,
         isLoading,
@@ -384,6 +538,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         activeSessions,
         isDeviceBlocked,
         signInWithGoogle,
+        signInWithSupabase,
         signInAsGuest,
         signOut,
         revokeSession,
@@ -403,4 +558,3 @@ export const useAuth = () => {
   }
   return context;
 };
-

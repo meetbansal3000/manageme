@@ -66,7 +66,15 @@ const ConflictModal = lazy(() => import('./components/ConflictModal').then(m => 
 export default function App() {
   const { settings, updateSettings } = useSettings();
   const { requireOwnerPermission, isOwnerVerified } = useOwnerSecurity();
-  const initialTab = (typeof window !== 'undefined' && window.location.hash.replace('#', '')) || 'landing';
+  const initialTab = useMemo(() => {
+    if (typeof window !== 'undefined') {
+      const hash = window.location.hash.replace('#', '');
+      if (hash && PRIMARY_TABS.includes(hash as any)) return hash;
+      const lastSaved = localStorage.getItem('manageme_last_active_tab');
+      if (lastSaved && PRIMARY_TABS.includes(lastSaved as any)) return lastSaved;
+    }
+    return 'landing';
+  }, []);
   const [activeTab, setActiveTab] = useState<string>(initialTab);
   const [tabHistory, setTabHistory] = useState<string[]>([initialTab]);
   const [pendingShare, setPendingShare] = useState<any>(null);
@@ -83,6 +91,7 @@ export default function App() {
     setTabHistory(prev => [...prev, newTab]);
     setActiveTab(newTab);
     try {
+      localStorage.setItem('manageme_last_active_tab', newTab);
       window.history.pushState({ tab: newTab }, '', `#${newTab}`);
     } catch {
       // safe fallback if sandbox restricts history

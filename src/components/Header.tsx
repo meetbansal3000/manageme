@@ -450,6 +450,27 @@ export const Header: React.FC<HeaderProps> = ({
                 </AnimatePresence>
               </motion.button>
               
+              {/* Quick Sign Out / Sign In Button (Desktop & Tablet) */}
+              <button
+                onClick={handleLogin}
+                className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 min-h-[38px] rounded-full bg-white/60 dark:bg-slate-950/60 border border-slate-200/50 dark:border-white/10 text-slate-700 dark:text-zinc-200 hover:bg-white/80 dark:hover:bg-slate-900/80 hover:border-slate-300 dark:hover:border-white/20 backdrop-blur-md transition-all cursor-pointer shadow-xs active:scale-95 text-xs font-semibold"
+                title={isAuthenticated && !isGuest ? "Sign Out of session" : isGuest ? "Exit Guest Demo & Sign In" : "Sign In to Workspace"}
+                aria-label={isAuthenticated && !isGuest ? "Sign Out" : "Sign In"}
+                id="headerQuickAuthBtn"
+              >
+                {isAuthenticated && !isGuest ? (
+                  <>
+                    <LogOut className="w-3.5 h-3.5 text-rose-500" />
+                    <span className="hidden lg:inline">Sign Out</span>
+                  </>
+                ) : (
+                  <>
+                    <LogIn className="w-3.5 h-3.5 text-blue-500" />
+                    <span className="hidden lg:inline">{isGuest ? 'Sign In' : 'Sign In'}</span>
+                  </>
+                )}
+              </button>
+
               {/* Navigation Drawer Menu Button (Always visible) */}
               <button
                 onClick={() => setDrawerOpen(true)}

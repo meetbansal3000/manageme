@@ -19,15 +19,15 @@ createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <ThemeProvider>
       <ToastProvider>
-        <UserProvider>
-          <AuthProvider>
+        <AuthProvider>
+          <UserProvider>
             <SettingsProvider>
               <OwnerSecurityProvider>
                 <App />
               </OwnerSecurityProvider>
             </SettingsProvider>
-          </AuthProvider>
-        </UserProvider>
+          </UserProvider>
+        </AuthProvider>
       </ToastProvider>
     </ThemeProvider>
   </StrictMode>,
