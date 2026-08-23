@@ -9,7 +9,9 @@ export type AppTab =
   | 'outreach'
   | 'tasks'
   | 'uni'
+  | 'calendar'
   | 'finance'
+  | 'ledger'
   | 'trading'
   | 'work'
   | 'skills'
@@ -39,7 +41,9 @@ export const PRIMARY_TABS: AppTab[] = [
   'outreach',
   'tasks',
   'uni',
+  'calendar',
   'finance',
+  'ledger',
   'trading',
   'work',
   'skills',

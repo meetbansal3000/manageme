@@ -145,6 +145,15 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
       onSelect: () => { setActiveTab('finance'); onClose(); }
     },
     {
+      id: 'nav-ledger',
+      title: 'Go to Financial Ledger & Visa Wage Hub',
+      subtitle: '20-Hour visa cap tracker, shift log & living expenses',
+      category: 'Navigation',
+      icon: <DollarSign className="w-4 h-4 text-emerald-400" />,
+      shortcut: '#ledger',
+      onSelect: () => { setActiveTab('ledger'); onClose(); }
+    },
+    {
       id: 'nav-uni',
       title: 'Go to Uni Timetable',
       subtitle: 'Lectures, seminars, exam countdowns & modules',
@@ -152,6 +161,15 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
       icon: <Calendar className="w-4 h-4 text-amber-400" />,
       shortcut: '#uni',
       onSelect: () => { setActiveTab('uni'); onClose(); }
+    },
+    {
+      id: 'nav-calendar',
+      title: 'Go to University Calendar',
+      subtitle: 'Monday-Friday lecture schedule & revision blocks',
+      category: 'Navigation',
+      icon: <Calendar className="w-4 h-4 text-blue-400" />,
+      shortcut: '#calendar',
+      onSelect: () => { setActiveTab('calendar'); onClose(); }
     },
     {
       id: 'nav-outreach',

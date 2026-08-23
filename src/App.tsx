@@ -51,7 +51,9 @@ const ResumeVaultTab = lazy(() => import('./components/ResumeVaultTab'));
 const ExecutiveAiMetaSuiteTab = lazy(() => import('./components/ExecutiveAiMetaSuiteTab').then(m => ({ default: m.ExecutiveAiMetaSuiteTab })));
 const ColdEmailSuite = lazy(() => import('./components/dashboard/outreach/ColdEmailSuite').then(m => ({ default: m.ColdEmailSuite })));
 const VisaWageLedger = lazy(() => import('./components/dashboard/ledger/VisaWageLedger').then(m => ({ default: m.VisaWageLedger })));
+const FinancialLedger = lazy(() => import('./components/dashboard/ledger/FinancialLedger').then(m => ({ default: m.FinancialLedger })));
 const StudyEngine = lazy(() => import('./components/dashboard/study/StudyEngine').then(m => ({ default: m.StudyEngine })));
+const UniversityCalendar = lazy(() => import('./components/dashboard/calendar/UniversityCalendar').then(m => ({ default: m.UniversityCalendar })));
 const ResumeBuilder = lazy(() => import('./components/dashboard/resume/ResumeBuilder').then(m => ({ default: m.ResumeBuilder })));
 const PrivacyPolicyTab = lazy(() => import('./components/legal/PrivacyPolicyTab'));
 const TermsOfServiceTab = lazy(() => import('./components/legal/TermsOfServiceTab'));
@@ -92,8 +94,10 @@ export default function App() {
       if (hash === 'landing') return 'landing';
       if (hash === 'workspace' || hash === 'app') return 'news';
       if (hash === 'outreach') return 'outreach';
-      if (hash === 'ledger' || hash === 'timesheet') return 'work';
-      if (hash === 'study' || hash === 'calendar') return 'study';
+      if (hash === 'ledger' || hash === 'timesheet') return 'ledger';
+      if (hash === 'calendar') return 'calendar';
+      if (hash === 'study') return 'study';
+      if (hash === 'work') return 'work';
       if (hash === 'resume' || hash === 'skills') return 'resume';
       if (hash && PRIMARY_TABS.includes(hash as any) && hash !== 'landing') return hash;
 
@@ -548,12 +552,12 @@ export default function App() {
                 </ErrorBoundary>
               )}
               
-              {activeTab === 'work' && (
+              {(activeTab === 'ledger' || activeTab === 'work') && (
                 <ErrorBoundary
-                  fallbackTitle="Visa & Wage Ledger Notice"
-                  fallbackMessage="The UK Visa & Wage Ledger Hub encountered an issue. Click retry to recover."
+                  fallbackTitle="Financial Ledger Notice"
+                  fallbackMessage="Unable to load Financial Ledger. Click retry to recover."
                 >
-                  <VisaWageLedger />
+                  <FinancialLedger userData={userData} updateData={updateData} />
                 </ErrorBoundary>
               )}
               
@@ -655,12 +659,12 @@ export default function App() {
                 </ErrorBoundary>
               )}
               
-              {activeTab === 'uni' && (
+              {(activeTab === 'calendar' || activeTab === 'uni') && (
                 <ErrorBoundary
-                  fallbackTitle="Timetable Notice"
-                  fallbackMessage="The University Timetable encountered an unexpected issue. Click retry to recover."
+                  fallbackTitle="University Calendar Notice"
+                  fallbackMessage="Unable to load University Calendar. Click retry to recover."
                 >
-                  <UniTimetableTab 
+                  <UniversityCalendar 
                     userData={userData}
                     updateData={updateData}
                   />
