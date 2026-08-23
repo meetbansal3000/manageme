@@ -140,7 +140,7 @@ export const UniTimetableTab: React.FC<Props> = ({ userData, updateData }) => {
       term: newClass.term as any
     };
     addClass(item);
-    updateData({ uniClasses: [...userData.uniClasses, item] });
+    updateData({ uniClasses: [...(userData.uniClasses || []), item] });
     setNewClass({ moduleName: '', type: 'Lecture', dayOfWeek: 'Monday', startTime: '', endTime: '', location: '', term: 'Michaelmas' });
   };
 
@@ -415,11 +415,23 @@ export const UniTimetableTab: React.FC<Props> = ({ userData, updateData }) => {
       </div>
 
       {/* Weekly Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-7 gap-4">
+      {(userData.uniClasses || []).length === 0 && (
+        <div className="p-6 rounded-2xl bg-[var(--surface-solid)] border border-[var(--border)] text-center space-y-2">
+          <Calendar className="w-8 h-8 text-blue-400 mx-auto opacity-60" />
+          <p className="text-sm font-semibold text-[var(--text-primary)]">
+            No lectures scheduled for this week. Click '+ Add Class' to set up your timetable.
+          </p>
+          <p className="text-xs text-[var(--text-secondary)]">
+            You can also drag-and-drop or upload a screenshot of your university schedule above.
+          </p>
+        </div>
+      )}
+
+      <div className="grid grid-cols-1 md:grid-cols-5 lg:grid-cols-7 gap-4">
         {DAYS_OF_WEEK.map(day => {
           const dayClasses = (userData.uniClasses || [])
-            .filter(c => c.dayOfWeek === day)
-            .sort((a, b) => a.startTime.localeCompare(b.startTime));
+            .filter(c => c && c.dayOfWeek === day)
+            .sort((a, b) => (a?.startTime || '').localeCompare(b?.startTime || ''));
             
           return (
             <div key={day} className="flex flex-col gap-3">
@@ -427,36 +439,39 @@ export const UniTimetableTab: React.FC<Props> = ({ userData, updateData }) => {
                 <span className="text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)]">{day.substring(0, 3)}</span>
               </div>
               
-              {dayClasses.map(c => (
-                <div key={c.id} className="relative glass-panel p-3 rounded-2xl border border-[var(--border)] group">
-                  <div className="flex justify-between items-start mb-1">
-                    <span className="text-xs font-bold text-blue-400 truncate pr-4">{c.moduleName}</span>
-                    <button 
-                      onClick={() => handleDeleteClass(c.id)}
-                      className="opacity-0 group-hover:opacity-100 absolute top-2 right-2 p-1 text-[var(--text-secondary)] hover:text-red-400 transition-all bg-[rgba(255,255,255,0.1)] rounded-md"
-                    >
-                      <Trash2 className="w-3 h-3" />
-                    </button>
+              {(dayClasses || []).map(c => {
+                if (!c) return null;
+                return (
+                  <div key={c.id} className="relative glass-panel p-3 rounded-2xl border border-[var(--border)] group">
+                    <div className="flex justify-between items-start mb-1">
+                      <span className="text-xs font-bold text-blue-400 truncate pr-4">{c.moduleName}</span>
+                      <button 
+                        onClick={() => handleDeleteClass(c.id)}
+                        className="opacity-0 group-hover:opacity-100 absolute top-2 right-2 p-1 text-[var(--text-secondary)] hover:text-red-400 transition-all bg-[rgba(255,255,255,0.1)] rounded-md"
+                      >
+                        <Trash2 className="w-3 h-3" />
+                      </button>
+                    </div>
+                    <div className="text-[10px] text-[var(--text-secondary)] flex items-center gap-1 mb-1">
+                      <Clock className="w-3 h-3" />
+                      {c.startTime} - {c.endTime}
+                    </div>
+                    <div className="mt-2 mb-2">
+                      <AddToCalendar title={c.moduleName} location={c.location} startDate={getNextDateForDay(c.dayOfWeek, c.startTime)} endDate={getNextDateForDay(c.dayOfWeek, c.endTime)} />
+                    </div>
+                    <div className="text-[10px] text-[var(--text-secondary)] flex items-center gap-1 mb-2">
+                      <MapPin className="w-3 h-3" />
+                      {c.location || 'TBA'}
+                    </div>
+                    <div className="inline-block px-1.5 py-0.5 rounded-md bg-[rgba(255,255,255,0.05)] text-[10px] font-medium text-[var(--text-primary)]">
+                      {c.type || 'Lecture'}
+                    </div>
                   </div>
-                  <div className="text-[10px] text-[var(--text-secondary)] flex items-center gap-1 mb-1">
-                    <Clock className="w-3 h-3" />
-                    {c.startTime} - {c.endTime}
-                  </div>
-                  <div className="mt-2 mb-2">
-                    <AddToCalendar title={c.moduleName} location={c.location} startDate={getNextDateForDay(c.dayOfWeek, c.startTime)} endDate={getNextDateForDay(c.dayOfWeek, c.endTime)} />
-                  </div>
-                  <div className="text-[10px] text-[var(--text-secondary)] flex items-center gap-1 mb-2">
-                    <MapPin className="w-3 h-3" />
-                    {c.location}
-                  </div>
-                  <div className="inline-block px-1.5 py-0.5 rounded-md bg-[rgba(255,255,255,0.05)] text-[10px] font-medium text-[var(--text-primary)]">
-                    {c.type}
-                  </div>
-                </div>
-              ))}
+                );
+              })}
               
               {dayClasses.length === 0 && (
-                <div className="text-center py-4 text-[10px] text-[var(--text-secondary)] opacity-50">
+                <div className="text-center py-4 text-[10px] text-[var(--text-secondary)] opacity-40">
                   No classes
                 </div>
               )}

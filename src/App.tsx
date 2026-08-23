@@ -566,7 +566,14 @@ export default function App() {
               {activeTab === 'resume' && <ResumeVaultTab />}
               {activeTab === 'metasuite' && <ExecutiveAiMetaSuiteTab />}
               
-              {activeTab === 'finance' && <FinanceHubTab userData={userData} updateData={updateData} />}
+              {activeTab === 'finance' && (
+                <ErrorBoundary
+                  fallbackTitle="Financial Ledger Notice"
+                  fallbackMessage="The Financial Ledger encountered a view reset. Click below to reload."
+                >
+                  <FinanceHubTab userData={userData} updateData={updateData} />
+                </ErrorBoundary>
+              )}
               
               {activeTab === 'tasks' && (
                 <div className="space-y-8">
@@ -629,10 +636,15 @@ export default function App() {
               )}
               
               {activeTab === 'uni' && (
-                <UniTimetableTab 
-                  userData={userData}
-                  updateData={updateData}
-                />
+                <ErrorBoundary
+                  fallbackTitle="Timetable Notice"
+                  fallbackMessage="The University Timetable encountered an unexpected issue. Click retry to recover."
+                >
+                  <UniTimetableTab 
+                    userData={userData}
+                    updateData={updateData}
+                  />
+                </ErrorBoundary>
               )}
 
               {activeTab === 'privacy' && (
