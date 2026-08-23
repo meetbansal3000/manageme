@@ -151,8 +151,8 @@ const MiniSparkline: React.FC<{ points: number[]; isUp: boolean }> = ({ points, 
 };
 
 interface PaperTradingTabProps {
-  userData: UserTrackerData;
-  updateData: (partial: Partial<UserTrackerData>) => void;
+  userData?: UserTrackerData;
+  updateData?: (partial: Partial<UserTrackerData>) => void;
 }
 
 export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, updateData }) => {
@@ -199,23 +199,23 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
   const { marketData, volatility, setVolatility } = useMarketEngine(selectedAsset?.price || 100, selectedAsset?.symbol || 'AAPL');
 
   // Helper to check if ticker is in watchlist
-  const isMonitored = (symbol: string) => watchlist.some(w => w.symbol === symbol);
+  const isMonitored = (symbol: string) => (watchlist || []).some(w => w.symbol === symbol);
 
   // Toggle Watchlist Action
   const handleToggleWatchlist = (asset: { symbol: string; name: string; price?: number; change?: string | number; type?: string; currency?: string; region?: string; exchange?: string }) => {
     if (isMonitored(asset.symbol)) {
-      const existing = watchlist.find(w => w.symbol === asset.symbol);
+      const existing = (watchlist || []).find(w => w.symbol === asset.symbol);
       if (existing) removeFromWatchlist(existing.id);
     } else {
       addToWatchlist({
         symbol: asset.symbol,
         name: asset.name,
         price: asset.price || marketData.currentPrice,
-        change: typeof asset.change === 'string' ? parseFloat(asset.change) : (asset.change || 0),
-        changePercent: typeof asset.change === 'string' ? parseFloat(asset.change) : 0,
+        change: typeof asset.change === 'string' ? parseFloat(asset.change) || 0 : (asset.change || 0),
+        changePercent: typeof asset.change === 'string' ? parseFloat(asset.change) || 0 : 0,
         assetClass: asset.type === 'COMMODITY' ? 'Commodity' : asset.type === 'ETF' ? 'ETF' : 'Stock',
         currency: asset.currency || activeRegionConfig.currency,
-        region: asset.region || activeRegion,
+        region: (asset.region as any) || activeRegion,
         exchange: asset.exchange || activeRegionConfig.exchanges[0],
         volatility: volatility
       });
@@ -242,8 +242,8 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
         price: Number(asset.price) || 100,
         change: asset.changePercent ? `${asset.changePercent > 0 ? '+' : ''}${asset.changePercent}%` : '+0.0%',
         isUp: (asset.change || 0) >= 0,
-        logo: asset.symbol.charAt(0).toUpperCase(),
-        sparkline: [Number(asset.price) * 0.98, Number(asset.price) * 0.99, Number(asset.price)]
+        logo: asset.symbol ? asset.symbol.charAt(0).toUpperCase() : 'A',
+        sparkline: [Number(asset.price || 100) * 0.98, Number(asset.price || 100) * 0.99, Number(asset.price || 100)]
       };
       setSelectedAsset(synthetic);
       setActiveRegion(regionMatch);
@@ -256,30 +256,38 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
   };
 
   const tradingData = {
-    cashBalance: userData?.paperTrading?.cashBalance ?? 100000,
-    startingCapital: userData?.paperTrading?.startingCapital ?? 100000,
+    cashBalance: Number(userData?.paperTrading?.cashBalance ?? 100000),
+    startingCapital: Number(userData?.paperTrading?.startingCapital ?? 100000),
     positions: Array.isArray(userData?.paperTrading?.positions) ? userData.paperTrading.positions : [],
     tradeHistory: Array.isArray(userData?.paperTrading?.tradeHistory) ? userData.paperTrading.tradeHistory : [],
     academyProgress: userData?.paperTrading?.academyProgress || {}
   };
 
   const calculatePortfolioValue = () => {
-    const positionsValue = (tradingData.positions || []).reduce((acc, pos) => acc + ((pos.currentPrice || 0) * (pos.quantity || 0)), 0);
+    const positionsValue = (tradingData.positions || []).reduce((acc, pos) => {
+      const p = Number(pos?.currentPrice ?? pos?.averageEntryPrice ?? 0);
+      const q = Number(pos?.quantity ?? 0);
+      return acc + (p * q);
+    }, 0);
     return tradingData.cashBalance + positionsValue;
   };
 
   const totalValue = calculatePortfolioValue();
-  const totalReturn = ((totalValue - tradingData.startingCapital) / tradingData.startingCapital) * 100;
+  const startingCap = tradingData.startingCapital || 100000;
+  const totalReturn = ((totalValue - startingCap) / startingCap) * 100;
   const unrealizedPnL = (tradingData.positions || []).reduce((acc, pos) => {
-    return acc + (((pos?.currentPrice ?? 0) - (pos?.averageEntryPrice ?? 0)) * (pos?.quantity ?? 0));
+    const curr = Number(pos?.currentPrice ?? pos?.averageEntryPrice ?? 0);
+    const avg = Number(pos?.averageEntryPrice ?? 0);
+    const q = Number(pos?.quantity ?? 0);
+    return acc + ((curr - avg) * q);
   }, 0);
 
   // Asset allocation breakdown
   const allocation = useMemo(() => {
     const validPositions = tradingData.positions || [];
-    const equitiesVal = validPositions.filter(p => p?.assetClass === 'Stock').reduce((acc, p) => acc + ((p?.currentPrice ?? 0) * (p?.quantity ?? 0)), 0);
-    const etfVal = validPositions.filter(p => p?.assetClass === 'ETF').reduce((acc, p) => acc + ((p?.currentPrice ?? 0) * (p?.quantity ?? 0)), 0);
-    const commodityVal = validPositions.filter(p => p?.assetClass === 'Commodity').reduce((acc, p) => acc + ((p?.currentPrice ?? 0) * (p?.quantity ?? 0)), 0);
+    const equitiesVal = validPositions.filter(p => p?.assetClass === 'Stock').reduce((acc, p) => acc + ((Number(p?.currentPrice) || Number(p?.averageEntryPrice) || 0) * (Number(p?.quantity) || 0)), 0);
+    const etfVal = validPositions.filter(p => p?.assetClass === 'ETF').reduce((acc, p) => acc + ((Number(p?.currentPrice) || Number(p?.averageEntryPrice) || 0) * (Number(p?.quantity) || 0)), 0);
+    const commodityVal = validPositions.filter(p => p?.assetClass === 'Commodity').reduce((acc, p) => acc + ((Number(p?.currentPrice) || Number(p?.averageEntryPrice) || 0) * (Number(p?.quantity) || 0)), 0);
     const cashVal = tradingData.cashBalance;
 
     return {
@@ -356,22 +364,26 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
       }
 
       // 2. Commit server-validated balances, positions, and execution record
-      updateData({
-        paperTrading: {
-          ...tradingData,
-          cashBalance: resData.newCashBalance,
-          positions: resData.newPositions,
-          tradeHistory: [resData.executedTrade, ...tradingData.tradeHistory]
-        }
-      });
+      if (updateData) {
+        updateData({
+          paperTrading: {
+            ...tradingData,
+            cashBalance: Number(resData.newCashBalance) || tradingData.cashBalance,
+            positions: Array.isArray(resData.newPositions) ? resData.newPositions : tradingData.positions,
+            tradeHistory: resData.executedTrade ? [resData.executedTrade, ...tradingData.tradeHistory] : tradingData.tradeHistory
+          }
+        });
+      }
 
       setQuantity(10);
       setLimitPrice('');
       setTriggerPrice('');
-      alert(`Order Executed (Server Verified): ${orderSide} ${qty} ${selectedAsset.symbol} @ ${selectedAsset.currency || activeRegionConfig.currency}${resData.executionPrice.toFixed(2)} | Fee: ${selectedAsset.currency || activeRegionConfig.currency}${resData.brokerFee.toFixed(2)}`);
+      const execP = Number(resData.executionPrice) || (Number(marketData?.currentPrice) || 100);
+      const bFee = Number(resData.brokerFee) || 1.0;
+      alert(`Order Executed (Server Verified): ${orderSide} ${qty} ${selectedAsset.symbol} @ ${selectedAsset.currency || activeRegionConfig.currency}${execP.toFixed(2)} | Fee: ${selectedAsset.currency || activeRegionConfig.currency}${bFee.toFixed(2)}`);
     } catch (netErr) {
       // Offline fallback: enforce the same strict logic locally
-      const price = orderMode === 'Market' ? marketData.currentPrice : Number(limitPrice || marketData.currentPrice);
+      const price = orderMode === 'Market' ? (Number(marketData?.currentPrice) || 100) : Number(limitPrice || marketData?.currentPrice || 100);
       const gross = price * qty;
       const fee = Number(Math.max(1.00, gross * 0.001).toFixed(2));
       const totalCost = Number((gross + fee).toFixed(2));
@@ -400,9 +412,9 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
         newBalance -= totalCost;
         if (existingIdx >= 0) {
           const p = newPositions[existingIdx];
-          const newTotalCost = (p.averageEntryPrice * p.quantity) + gross;
-          const newQty = p.quantity + qty;
-          newPositions[existingIdx] = { ...p, quantity: newQty, averageEntryPrice: newTotalCost / newQty, currentPrice: price };
+          const newTotalCost = ((Number(p.averageEntryPrice) || 0) * (Number(p.quantity) || 0)) + gross;
+          const newQty = (Number(p.quantity) || 0) + qty;
+          newPositions[existingIdx] = { ...p, quantity: newQty, averageEntryPrice: newTotalCost / (newQty || 1), currentPrice: price };
         } else {
           newPositions.push({
             id: Date.now().toString(),
@@ -432,14 +444,16 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
         }
       }
 
-      updateData({
-        paperTrading: {
-          ...tradingData,
-          cashBalance: Number(newBalance.toFixed(2)),
-          positions: newPositions,
-          tradeHistory: [newTrade, ...tradingData.tradeHistory]
-        }
-      });
+      if (updateData) {
+        updateData({
+          paperTrading: {
+            ...tradingData,
+            cashBalance: Number(newBalance.toFixed(2)),
+            positions: newPositions,
+            tradeHistory: [newTrade, ...tradingData.tradeHistory]
+          }
+        });
+      }
 
       setQuantity(10);
       setLimitPrice('');
@@ -450,18 +464,20 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
 
   const handleClearTradeHistory = () => {
     if (confirm("Are you sure you want to clear your trade execution log?")) {
-      updateData({
-        paperTrading: {
-          ...tradingData,
-          tradeHistory: []
-        }
-      });
+      if (updateData) {
+        updateData({
+          paperTrading: {
+            ...tradingData,
+            tradeHistory: []
+          }
+        });
+      }
     }
   };
 
   const currentCurrency = selectedAsset?.currency || activeRegionConfig.currency;
-  const estimatedCharges = quantity && selectedAsset ? (Number(quantity) * marketData.currentPrice * 0.001) : 0;
-  const marginRequired = quantity && selectedAsset ? (Number(quantity) * (orderMode === 'Market' ? marketData.currentPrice : Number(limitPrice || marketData.currentPrice))) : 0;
+  const estimatedCharges = quantity && selectedAsset ? (Number(quantity) * (Number(marketData?.currentPrice) || 100) * 0.001) : 0;
+  const marginRequired = quantity && selectedAsset ? (Number(quantity) * (orderMode === 'Market' ? (Number(marketData?.currentPrice) || 100) : Number(limitPrice || marketData?.currentPrice || 100))) : 0;
 
   return (
     <div className="space-y-6 max-w-7xl mx-auto px-2 sm:px-4 animate-in fade-in duration-500">
@@ -472,12 +488,14 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
           moduleId={activeModule}
           onClose={() => setActiveModule(null)}
           onComplete={() => {
-            updateData({
-              paperTrading: {
-                ...tradingData,
-                academyProgress: { ...tradingData.academyProgress, [activeModule]: true }
-              }
-            });
+            if (updateData) {
+              updateData({
+                paperTrading: {
+                  ...tradingData,
+                  academyProgress: { ...tradingData.academyProgress, [activeModule]: true }
+                }
+              });
+            }
           }}
         />
       )}
@@ -649,7 +667,7 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
                             </div>
                             <div className="flex items-center gap-3">
                               <div className="text-right font-mono tabular-nums">
-                                <div className="font-semibold text-textPrimary text-xs">{asset.currency}{asset.price.toFixed(2)}</div>
+                                <div className="font-semibold text-textPrimary text-xs">{asset.currency}{(Number(asset.price) || 0).toFixed(2)}</div>
                                 <div className={`text-[10px] font-bold ${asset.isUp ? 'text-profitGreen' : 'text-lossRed'}`}>{asset.change}</div>
                               </div>
                               <button
@@ -682,7 +700,7 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
                     }`}
                   >
                     <span>{asset.symbol}</span>
-                    <span className="text-[9px] opacity-80">{asset.currency}{asset.price.toFixed(0)}</span>
+                    <span className="text-[9px] opacity-80">{asset.currency}{(Number(asset.price) || 0).toFixed(0)}</span>
                   </button>
                 ))}
               </div>
@@ -701,8 +719,8 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
                       <span className="text-[11px] text-textMuted block mt-0.5 font-sans">{selectedAsset.name}</span>
                     </div>
                     <div className="text-right">
-                      <span className={`text-sm font-extrabold ${marketData.isUp ? 'text-profitGreen' : 'text-lossRed'}`}>
-                        {currentCurrency}{marketData.currentPrice.toFixed(2)}
+                      <span className={`text-sm font-extrabold ${marketData?.isUp ? 'text-profitGreen' : 'text-lossRed'}`}>
+                        {currentCurrency}{(Number(marketData?.currentPrice) || 100).toFixed(2)}
                       </span>
                       <span className="text-[10px] text-textMuted block font-sans">Live LTP</span>
                     </div>
@@ -753,7 +771,7 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
                       <label className="block text-textMuted mb-1 font-sans">Limit Price ({currentCurrency})</label>
                       <input 
                         type="number" disabled={orderMode === 'Market'} 
-                        value={orderMode === 'Market' ? Number(marketData.currentPrice.toFixed(2)) : limitPrice} 
+                        value={orderMode === 'Market' ? Number((Number(marketData?.currentPrice) || 100).toFixed(2)) : limitPrice} 
                         onChange={e => setLimitPrice(Number(e.target.value))}
                         className="w-full bg-surface-elevated border border-border rounded-xl p-2.5 text-textPrimary font-bold disabled:opacity-50 focus:border-actionBlue focus:outline-none" 
                       />
@@ -764,11 +782,11 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
                   <div className="bg-surface-elevated rounded-xl p-3.5 space-y-1.5 font-mono tabular-nums text-xs border border-border">
                     <div className="flex justify-between text-textMuted">
                       <span className="font-sans">Margin Required</span>
-                      <span className="text-textPrimary font-bold">{currentCurrency}{marginRequired.toFixed(2)}</span>
+                      <span className="text-textPrimary font-bold">{currentCurrency}{(Number(marginRequired) || 0).toFixed(2)}</span>
                     </div>
                     <div className="flex justify-between text-textMuted">
                       <span className="font-sans">Brokerage Charges (0.10%)</span>
-                      <span className="text-textPrimary font-bold">{currentCurrency}{estimatedCharges.toFixed(2)}</span>
+                      <span className="text-textPrimary font-bold">{currentCurrency}{(Number(estimatedCharges) || 0).toFixed(2)}</span>
                     </div>
                   </div>
 
@@ -840,13 +858,13 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
                         addToWatchlist({
                           symbol: a.symbol,
                           name: a.name,
-                          price: a.price,
+                          price: Number(a.price) || 100,
                           currency: a.currency,
                           region: a.region,
                           exchange: a.exchange,
                           assetClass: 'Stock',
-                          change: parseFloat(a.change),
-                          changePercent: parseFloat(a.change)
+                          change: parseFloat(a.change) || 0,
+                          changePercent: parseFloat(a.change) || 0
                         });
                       }
                     });
@@ -891,10 +909,10 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
                         <div className="flex items-center gap-2 shrink-0">
                           <div className="text-right font-mono tabular-nums">
                             <div className="font-bold text-xs text-textPrimary">
-                              {itemCurrency}{price.toFixed(2)}
+                              {itemCurrency}{(Number(price) || 0).toFixed(2)}
                             </div>
                             <div className={`text-[10px] font-bold ${isPositive ? 'text-profitGreen' : 'text-lossRed'}`}>
-                              {isPositive ? '+' : ''}{change.toFixed(2)}%
+                              {isPositive ? '+' : ''}{(Number(change) || 0).toFixed(2)}%
                             </div>
                           </div>
 
@@ -1004,19 +1022,22 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
                         </thead>
                         <tbody className="divide-y divide-border">
                           {tradingData.positions.map((pos) => {
-                            const invested = pos.quantity * pos.averageEntryPrice;
-                            const current = pos.quantity * pos.currentPrice;
+                            const qty = Number(pos?.quantity) || 0;
+                            const avgCost = Number(pos?.averageEntryPrice) || 0;
+                            const curPrice = Number(pos?.currentPrice) || avgCost;
+                            const invested = qty * avgCost;
+                            const current = qty * curPrice;
                             const pnl = current - invested;
-                            const pnlPct = (pnl / invested) * 100;
+                            const pnlPct = invested > 0 ? (pnl / invested) * 100 : 0;
                             return (
                               <tr key={pos.id} className="hover:bg-surface-elevated transition-colors">
                                 <td className="py-3 px-2">
                                   <div className="font-bold text-textPrimary">{pos.symbol}</div>
                                   <div className="text-[10px] text-textMuted">{pos.name} • {pos.assetClass}</div>
                                 </td>
-                                <td className="py-3 px-2 text-right text-textPrimary">{pos.quantity}</td>
-                                <td className="py-3 px-2 text-right text-textMuted">${(pos.averageEntryPrice || 0).toFixed(2)}</td>
-                                <td className="py-3 px-2 text-right text-textPrimary font-bold">${(pos.currentPrice || 0).toFixed(2)}</td>
+                                <td className="py-3 px-2 text-right text-textPrimary">{qty}</td>
+                                <td className="py-3 px-2 text-right text-textMuted">${avgCost.toFixed(2)}</td>
+                                <td className="py-3 px-2 text-right text-textPrimary font-bold">${curPrice.toFixed(2)}</td>
                                 <td className={`py-3 px-2 text-right font-bold ${pnl >= 0 ? 'text-profitGreen' : 'text-lossRed'}`}>
                                   {pnl >= 0 ? '+' : ''}${pnl.toFixed(2)}
                                   <span className="text-[10px] font-normal block">({pnl >= 0 ? '+' : ''}{pnlPct.toFixed(2)}%)</span>
@@ -1187,10 +1208,13 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 {tradingData.positions.map(pos => {
-                  const invested = pos.quantity * pos.averageEntryPrice;
-                  const current = pos.quantity * pos.currentPrice;
+                  const qty = Number(pos?.quantity) || 0;
+                  const avgCost = Number(pos?.averageEntryPrice) || 0;
+                  const curPrice = Number(pos?.currentPrice) || avgCost;
+                  const invested = qty * avgCost;
+                  const current = qty * curPrice;
                   const pnl = current - invested;
-                  const pnlPct = (pnl / invested) * 100;
+                  const pnlPct = invested > 0 ? (pnl / invested) * 100 : 0;
                   const isPositive = pnl >= 0;
 
                   return (
@@ -1205,7 +1229,7 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
                       <div className="flex justify-between items-start font-mono">
                         <div>
                           <span className="font-extrabold text-sm text-textPrimary block">{pos.symbol}</span>
-                          <span className="text-[10px] text-textMuted">{pos.quantity} units</span>
+                          <span className="text-[10px] text-textMuted">{qty} units</span>
                         </div>
                         <span className={`text-xs font-bold ${isPositive ? 'text-profitGreen' : 'text-lossRed'}`}>
                           {isPositive ? '+' : ''}{pnlPct.toFixed(2)}%
@@ -1285,8 +1309,8 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
                         </td>
                         <td className="py-3 px-2 text-textMuted">{tr.type}</td>
                         <td className="py-3 px-2 text-right text-textPrimary font-bold">{tr.quantity}</td>
-                        <td className="py-3 px-2 text-right text-textMuted">${tr.executionPrice.toFixed(2)}</td>
-                        <td className="py-3 px-2 text-right font-bold text-textPrimary">${(tr.executionPrice * tr.quantity).toFixed(2)}</td>
+                        <td className="py-3 px-2 text-right text-textMuted">${(Number(tr?.executionPrice) || 0).toFixed(2)}</td>
+                        <td className="py-3 px-2 text-right font-bold text-textPrimary">${((Number(tr?.executionPrice) || 0) * (Number(tr?.quantity) || 0)).toFixed(2)}</td>
                         <td className="py-3 px-2 text-center">
                           <span className="px-2 py-0.5 rounded-full bg-profitGreen/15 text-profitGreen text-[10px] font-bold">
                             {tr.status}

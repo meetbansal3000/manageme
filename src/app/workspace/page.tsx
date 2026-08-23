@@ -77,9 +77,9 @@ export default function WorkspacePage() {
             transition={{ duration: 0.2 }}
           >
             {activeTab === 'news' && <FinancialNewsTab />}
-            {activeTab === 'trading' && <PaperTradingTab />}
-            {activeTab === 'jobs' && <JobSearchTab />}
-            {activeTab === 'finance' && <FinanceHubTab />}
+            {activeTab === 'trading' && <PaperTradingTab userData={userData} updateData={updateData} />}
+            {activeTab === 'jobs' && <JobSearchTab userData={userData} updateData={updateData} />}
+            {activeTab === 'finance' && <FinanceHubTab userData={userData} updateData={updateData} />}
           </motion.div>
         </AnimatePresence>
       </main>

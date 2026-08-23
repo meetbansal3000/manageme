@@ -84,7 +84,8 @@ export const LiveStockTicker: React.FC = () => {
           const isUp = priceDiff >= 0;
 
           const updatedChange = Number((ticker.change + priceDiff).toFixed(2));
-          const updatedPercent = Number(((updatedChange / (newPrice - updatedChange)) * 100).toFixed(2));
+          const baseP = (newPrice - updatedChange) || newPrice || 1;
+          const updatedPercent = Number(((updatedChange / baseP) * 100).toFixed(2)) || 0;
 
           return {
             ...ticker,

@@ -96,7 +96,7 @@ export function useWatchlist() {
       dateAdded: item.dateAdded || new Date().toISOString(),
     };
 
-    const updated = [fullItem, ...watchlist.filter(w => w.symbol !== item.symbol)];
+    const updated = [fullItem, ...(watchlist || []).filter(w => w.symbol !== item.symbol)];
     setWatchlist(updated);
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
@@ -128,7 +128,7 @@ export function useWatchlist() {
   };
 
   const removeFromWatchlist = async (id: string) => {
-    const updated = watchlist.filter(w => w.id !== id);
+    const updated = (watchlist || []).filter(w => w.id !== id);
     setWatchlist(updated);
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
