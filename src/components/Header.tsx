@@ -380,16 +380,20 @@ export const Header: React.FC<HeaderProps> = ({
                 )}
               </button>
 
-              {/* Animated Day/Night Mode Switcher (Strict Dark Mode) */}
+              {/* Animated Day/Night Mode Switcher */}
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.92 }}
                 onClick={toggleTheme}
-                className="hidden sm:flex p-2 min-h-[38px] min-w-[38px] rounded-full bg-white/[0.04] border border-white/10 text-white hover:bg-white/10 backdrop-blur-md transition-colors items-center justify-center cursor-pointer active:scale-95"
-                title="Cinematic Dark Mode Active"
-                aria-label="Toggle Theme"
+                className="hidden sm:flex p-2 min-h-[38px] min-w-[38px] rounded-lg bg-neutral-800/20 dark:bg-neutral-800/40 border border-neutral-300/40 dark:border-white/10 text-neutral-800 dark:text-white hover:bg-neutral-200 dark:hover:bg-neutral-800/50 backdrop-blur-md transition-colors items-center justify-center cursor-pointer active:scale-95"
+                title={theme === 'dark' ? "Switch to Day Mode" : "Switch to Night Mode"}
+                aria-label={theme === 'dark' ? "Switch to Day Mode" : "Switch to Night Mode"}
               >
-                <Sun className="w-4 h-4 text-amber-400" />
+                {theme === 'dark' ? (
+                  <Sun className="w-4 h-4 text-amber-400 drop-shadow-[0_0_8px_rgba(251,191,36,0.6)]" />
+                ) : (
+                  <Moon className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                )}
               </motion.button>
               
               {/* Quick Sign Out / Sign In Button (Desktop & Tablet) */}

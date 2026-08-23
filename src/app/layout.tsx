@@ -51,7 +51,7 @@ export default function RootLayout({
           <UserProvider>
             <SettingsProvider>
               <OwnerSecurityProvider>
-                <div className="min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)] selection:bg-[var(--accent-primary)] selection:text-white font-sans antialiased">
+                <div className="min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)] selection:bg-[var(--accent-primary)] selection:text-white font-sans antialiased transition-colors duration-200">
                   {children}
                 </div>
               </OwnerSecurityProvider>

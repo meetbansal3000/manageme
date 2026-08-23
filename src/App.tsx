@@ -49,8 +49,10 @@ const TravelTripsTab = lazy(() => import('./components/TravelTripsTab').then(m =
 const PaperTradingTab = lazy(() => import('./components/PaperTradingTab').then(m => ({ default: m.PaperTradingTab })));
 const ResumeVaultTab = lazy(() => import('./components/ResumeVaultTab'));
 const ExecutiveAiMetaSuiteTab = lazy(() => import('./components/ExecutiveAiMetaSuiteTab').then(m => ({ default: m.ExecutiveAiMetaSuiteTab })));
-const StudyIntelligenceEngineTab = lazy(() => import('./components/StudyIntelligenceEngineTab').then(m => ({ default: m.StudyIntelligenceEngineTab })));
-const OutreachHub = lazy(() => import('./components/OutreachHub').then(m => ({ default: m.OutreachHub })));
+const ColdEmailSuite = lazy(() => import('./components/dashboard/outreach/ColdEmailSuite').then(m => ({ default: m.ColdEmailSuite })));
+const VisaWageLedger = lazy(() => import('./components/dashboard/ledger/VisaWageLedger').then(m => ({ default: m.VisaWageLedger })));
+const StudyEngine = lazy(() => import('./components/dashboard/study/StudyEngine').then(m => ({ default: m.StudyEngine })));
+const ResumeBuilder = lazy(() => import('./components/dashboard/resume/ResumeBuilder').then(m => ({ default: m.ResumeBuilder })));
 const PrivacyPolicyTab = lazy(() => import('./components/legal/PrivacyPolicyTab'));
 const TermsOfServiceTab = lazy(() => import('./components/legal/TermsOfServiceTab'));
 
@@ -89,6 +91,10 @@ export default function App() {
       if (hash === 'terms') return 'terms';
       if (hash === 'landing') return 'landing';
       if (hash === 'workspace' || hash === 'app') return 'news';
+      if (hash === 'outreach') return 'outreach';
+      if (hash === 'ledger' || hash === 'timesheet') return 'work';
+      if (hash === 'study' || hash === 'calendar') return 'study';
+      if (hash === 'resume' || hash === 'skills') return 'resume';
       if (hash && PRIMARY_TABS.includes(hash as any) && hash !== 'landing') return hash;
 
       const isAuthedCached = localStorage.getItem('manageme_user_profile') || localStorage.getItem('manageme_guest_session') === 'true';
@@ -429,8 +435,7 @@ export default function App() {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -10 }}
-          transition={{ duration: 0.4, ease: "easeOut" }}
-          className="min-h-screen bg-[#000000] text-white flex flex-col font-sans tracking-tight selection:bg-[#0052FF] selection:text-white transition-colors duration-300 relative overflow-x-hidden"
+          className="min-h-screen bg-[#FAF8F5] dark:bg-[#0B0F19] text-neutral-900 dark:text-neutral-100 flex flex-col font-sans tracking-tight selection:bg-[#0052FF] selection:text-white transition-colors duration-200 relative overflow-x-hidden"
         >
           {/* Interactive Cursor Glow (Tracks mouse coordinates in soft electric blue/purple) */}
           <InteractiveCursorGlow />
@@ -501,8 +506,6 @@ export default function App() {
 
               {activeTab === 'chat' && <ChatHubTab userData={userData} updateData={updateData} pendingShare={pendingShare} clearPendingShare={() => setPendingShare(null)} />}
               
-              {activeTab === 'study' && <StudyIntelligenceEngineTab userData={userData} updateData={updateData} />}
-
               {activeTab === 'news' && <FinancialNewsTab userData={userData} updateData={updateData} />}
               
               {activeTab === 'jobs' && (
@@ -532,18 +535,21 @@ export default function App() {
               )}
 
               {activeTab === 'outreach' && (
-                <OutreachHub
-                  initialCompany={outreachParams?.company || 'Goldman Sachs'}
-                  initialRole={outreachParams?.role || 'Summer Analyst - M&A Advisory'}
-                />
+                <ErrorBoundary
+                  fallbackTitle="Outreach CRM Notice"
+                  fallbackMessage="The Cold Email & Recruiter CRM Suite encountered an issue. Click retry to recover."
+                >
+                  <ColdEmailSuite />
+                </ErrorBoundary>
               )}
               
               {activeTab === 'work' && (
-                <PartTimeRolesTab 
-                  roles={userData.partTimeRoles}
-                  shifts={userData.workShifts}
-                  updateData={updateData}
-                />
+                <ErrorBoundary
+                  fallbackTitle="Visa & Wage Ledger Notice"
+                  fallbackMessage="The UK Visa & Wage Ledger Hub encountered an issue. Click retry to recover."
+                >
+                  <VisaWageLedger />
+                </ErrorBoundary>
               )}
               
               {activeTab === 'trading' && (
@@ -563,7 +569,15 @@ export default function App() {
                 />
               )}
               
-              {activeTab === 'resume' && <ResumeVaultTab />}
+              {activeTab === 'resume' && (
+                <ErrorBoundary
+                  fallbackTitle="Resume Builder Notice"
+                  fallbackMessage="The ATS Resume Builder & Skills Vault encountered an issue. Click retry to recover."
+                >
+                  <ResumeBuilder />
+                </ErrorBoundary>
+              )}
+              
               {activeTab === 'metasuite' && <ExecutiveAiMetaSuiteTab />}
               
               {activeTab === 'finance' && (
@@ -619,20 +633,21 @@ export default function App() {
               )}
               
               {activeTab === 'skills' && (
-                <SkillsTrackerTab 
-                  skills={userData.skillsTracker || []}
-                  setSkills={(newSkillsOrFn) => {
-                     const nextSkills = typeof newSkillsOrFn === 'function' ? newSkillsOrFn(userData.skillsTracker || []) : newSkillsOrFn;
-                     updateData({ skillsTracker: nextSkills });
-                  }}
-                  courses={userData.courses || []}
-                  setCourses={(newCoursesOrFn) => {
-                     const nextCourses = typeof newCoursesOrFn === 'function' ? newCoursesOrFn(userData.courses || []) : newCoursesOrFn;
-                     updateData({ courses: nextCourses });
-                  }}
-                  userData={userData}
-                  updateData={updateData}
-                />
+                <ErrorBoundary
+                  fallbackTitle="Skills Matrix Notice"
+                  fallbackMessage="The Skills Matrix & Competency Vault encountered an issue. Click retry to recover."
+                >
+                  <ResumeBuilder />
+                </ErrorBoundary>
+              )}
+
+              {activeTab === 'study' && (
+                <ErrorBoundary
+                  fallbackTitle="Study Engine Notice"
+                  fallbackMessage="The Study Engine, CFA Roadmap & Timetable encountered an issue. Click retry to recover."
+                >
+                  <StudyEngine />
+                </ErrorBoundary>
               )}
               
               {activeTab === 'uni' && (

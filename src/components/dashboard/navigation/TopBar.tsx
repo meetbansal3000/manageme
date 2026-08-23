@@ -120,10 +120,15 @@ export const TopBar: React.FC<TopBarProps> = ({
         {/* Theme Toggle */}
         <button
           onClick={toggleTheme}
-          className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
-          title="Toggle Theme"
+          className="cursor-pointer hover:bg-neutral-800/50 p-2 rounded-lg transition-colors text-neutral-400 hover:text-white"
+          title={isDark ? "Switch to Day Mode" : "Switch to Night Mode"}
+          aria-label={isDark ? "Switch to Day Mode" : "Switch to Night Mode"}
         >
-          {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+          {isDark ? (
+            <Sun className="w-4 h-4 text-amber-400 drop-shadow-[0_0_8px_rgba(251,191,36,0.6)]" />
+          ) : (
+            <Moon className="w-4 h-4 text-indigo-400" />
+          )}
         </button>
 
         {/* Owner Security Lock */}
