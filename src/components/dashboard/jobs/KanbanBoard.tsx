@@ -9,6 +9,7 @@ export interface KanbanBoardProps {
   onUpdateStatus?: (id: string, status: TrackerStatus) => void;
   onEdit?: (scheme: GraduateScheme) => void;
   onDelete?: (id: string) => void;
+  onQuickAi?: (scheme: GraduateScheme) => void;
 }
 
 const COLUMNS: { id: TrackerStatus; label: string; color: string }[] = [
@@ -24,7 +25,8 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
   schemes,
   onUpdateStatus,
   onEdit,
-  onDelete
+  onDelete,
+  onQuickAi
 }) => {
   const getColumnSchemes = (columnId: TrackerStatus) => {
     return schemes.filter((s) => {
@@ -66,6 +68,7 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
                   onUpdateStatus={onUpdateStatus}
                   onEdit={onEdit}
                   onDelete={onDelete}
+                  onQuickAi={onQuickAi}
                 />
               ))}
 

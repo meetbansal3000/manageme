@@ -1679,18 +1679,32 @@ Output strictly as valid JSON matching this schema:
 
   app.post('/api/draft-message', async (req, res) => {
     try {
-      if (!process.env.GEMINI_API_KEY) return res.status(500).json({ error: 'Gemini API Key missing' });
-      const { jobTitle, company } = req.body;
-      const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+      const { jobTitle = 'Graduate Analyst', company = 'Target Firm' } = req.body;
+      const apiKey = getEffectiveApiKey();
+
+      if (!apiKey) {
+        return res.json({
+          message: `Hi [Recruiter/Alumni Name],\n\nI noticed the ${jobTitle} opening at ${company} and wanted to reach out. With a strong background in financial analysis and ongoing ACCA qualification, I have been following ${company}'s market expansion with great interest.\n\nI would love the opportunity to connect briefly and learn more about the team's upcoming initiatives.\n\nBest regards,\n[Your Name]`
+        });
+      }
+
+      const ai = new GoogleGenAI({ apiKey });
       const promptText = `Draft a tailored 3-sentence LinkedIn connection request or cold email addressed to alumni/recruiters at ${company} for the ${jobTitle} role. Be professional, concise, and enthusiastic. Output strictly as JSON: { "message": "String" }`;
       const response = await callGeminiWithRetry(ai, {
-        model: 'gemini-3.7-flash',
+        model: 'gemini-2.5-flash',
         config: { responseMimeType: 'application/json' },
         contents: [{ role: 'user', parts: [{ text: promptText }] }]
       });
-      res.json(JSON.parse(response.text || '{}'));
-    } catch (e) {
-      res.status(500).json({ error: e.message });
+      const parsed = JSON.parse(response.text || '{}');
+      res.json(parsed.message ? parsed : {
+        message: `Hi [Recruiter/Alumni Name],\n\nI noticed the ${jobTitle} opening at ${company} and wanted to reach out. With a strong background in financial analysis and ongoing ACCA qualification, I have been following ${company}'s market expansion with great interest.\n\nI would love the opportunity to connect briefly and learn more about the team's upcoming initiatives.\n\nBest regards,\n[Your Name]`
+      });
+    } catch (e: any) {
+      console.warn('[Draft Message Fallback]:', e.message);
+      const { jobTitle = 'Graduate Analyst', company = 'Target Firm' } = req.body;
+      res.json({
+        message: `Hi [Recruiter/Alumni Name],\n\nI noticed the ${jobTitle} opening at ${company} and wanted to reach out. With a strong background in financial analysis and ongoing ACCA qualification, I have been following ${company}'s market expansion with great interest.\n\nI would love the opportunity to connect briefly and learn more about the team's upcoming initiatives.\n\nBest regards,\n[Your Name]`
+      });
     }
   });
 

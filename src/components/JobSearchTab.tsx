@@ -13,6 +13,7 @@ import { processAutoImport, ExtractedJobApplication } from '../utils/autoImportP
 import { ImportProgressBar } from './ImportProgressBar';
 import { ReviewJobImportModal } from './ReviewJobImportModal';
 import { OutreachHub } from './OutreachHub';
+import { QuickAiModal } from './dashboard/jobs/QuickAiModal';
 
 interface Props {
   userData: UserTrackerData;
@@ -199,23 +200,9 @@ export const JobSearchTab: React.FC<Props> = ({ userData, updateData }) => {
     });
   };
 
-  const draftMessage = async (job: any) => {
-    setIsDrafting(true);
-    setDraftModal({ job, message: null, loading: true });
-    try {
-      const res = await fetch('/api/draft-message', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ jobTitle: job.title, company: job.company })
-      });
-      const data = await res.json();
-      setDraftModal({ job, message: data.message, loading: false });
-    } catch (e) {
-      console.error(e);
-      setDraftModal(null);
-    } finally {
-      setIsDrafting(false);
-    }
+  const draftMessage = (job: any) => {
+    if (!job) return;
+    setDraftModal(job);
   };
 
   useEffect(() => {
@@ -636,33 +623,12 @@ export const JobSearchTab: React.FC<Props> = ({ userData, updateData }) => {
         )}
       </AnimatePresence>
 
-      {/* Draft Modal */}
-      <AnimatePresence>
-        {draftModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md" onClick={(e) => { if (e.target === e.currentTarget) setDraftModal(null); }}>
-            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className="w-full max-w-md glass-panel border border-[var(--border)] rounded-2xl p-6 relative max-h-[90vh] overflow-y-auto custom-scrollbar">
-              <button onClick={() => setDraftModal(null)} className="absolute top-4 right-4 p-1.5 bg-[var(--surface-solid)] border border-[var(--border)] shadow rounded-full text-gray-400 hover:text-white z-20"><X className="w-5 h-5"/></button>
-              
-              <h2 className="text-xl font-bold mb-4 flex items-center gap-2 pr-8"><Sparkles className="w-5 h-5 text-[var(--accent)]"/> Networking Draft</h2>
-              
-              {draftModal.loading ? (
-                <div className="py-8 flex justify-center"><div className="w-6 h-6 border-2 border-[var(--accent)] border-t-transparent rounded-full animate-spin"></div></div>
-              ) : (
-                <div className="space-y-4">
-                  <div className="bg-black/20 border border-[var(--border)] p-4 rounded-xl relative">
-                    <button 
-                      onClick={() => navigator.clipboard.writeText(draftModal.message)}
-                      className="absolute top-2 right-2 px-2 py-1 bg-white/10 text-xs rounded hover:bg-white/20 transition-colors"
-                    >Copy</button>
-                    <p className="text-sm text-gray-300 leading-relaxed pr-8">{draftModal.message}</p>
-                  </div>
-                  <p className="text-xs text-gray-500 text-center">Drafted by Gemini for {draftModal.job.company}</p>
-                </div>
-              )}
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
+      {/* Quick AI Career Copilot Modal with Error Boundary */}
+      <QuickAiModal
+        isOpen={!!draftModal}
+        onClose={() => setDraftModal(null)}
+        job={draftModal}
+      />
 
       {/* AI Smart Import Progress Bar Overlay */}
       <ImportProgressBar

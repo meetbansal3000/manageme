@@ -17,13 +17,16 @@ import {
   Edit2, 
   Trash2, 
   ChevronRight,
-  Eye
+  Eye,
+  MessageSquare,
+  Sparkles
 } from 'lucide-react';
 import { GraduateScheme, TrackerStatus } from '../../../types';
 import { KanbanBoard } from './KanbanBoard';
 import { JobDetailDrawer } from './JobDetailDrawer';
 import { JobFilters } from './JobFilters';
 import { AddJobModal } from './AddJobModal';
+import { QuickAiModal } from './QuickAiModal';
 import { Badge } from '../../ui/Badge';
 import { Button } from '../../ui/Button';
 
@@ -58,6 +61,8 @@ export const CareerPipeline: React.FC<CareerPipelineProps> = ({
   const [selectedJob, setSelectedJob] = useState<GraduateScheme | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [quickAiJob, setQuickAiJob] = useState<GraduateScheme | null>(null);
+  const [isQuickAiOpen, setIsQuickAiOpen] = useState(false);
 
   // Derive unique sectors for filter
   const availableSectors = useMemo(() => {
@@ -189,6 +194,10 @@ export const CareerPipeline: React.FC<CareerPipelineProps> = ({
           onUpdateStatus={onUpdateStatus}
           onEdit={openDetail}
           onDelete={onDeleteScheme}
+          onQuickAi={(scheme) => {
+            setQuickAiJob(scheme);
+            setIsQuickAiOpen(true);
+          }}
         />
       ) : (
         /* High-Density Spreadsheet Table View */
@@ -278,6 +287,16 @@ export const CareerPipeline: React.FC<CareerPipelineProps> = ({
                     <td className="p-3.5 text-right">
                       <div className="flex items-center justify-end gap-1.5" onClick={(e) => e.stopPropagation()}>
                         <button
+                          onClick={() => {
+                            setQuickAiJob(scheme);
+                            setIsQuickAiOpen(true);
+                          }}
+                          className="p-1.5 rounded-lg text-blue-400 hover:text-blue-300 hover:bg-blue-500/10 transition-colors"
+                          title="Quick AI Outreach & Prep"
+                        >
+                          <MessageSquare className="w-3.5 h-3.5" />
+                        </button>
+                        <button
                           onClick={() => openDetail(scheme)}
                           className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition-colors"
                           title="View Details"
@@ -343,6 +362,13 @@ export const CareerPipeline: React.FC<CareerPipelineProps> = ({
         onAdd={(newJob) => {
           if (onAddScheme) onAddScheme(newJob);
         }}
+      />
+
+      {/* Quick AI Career Copilot Modal with Error Boundary */}
+      <QuickAiModal
+        isOpen={isQuickAiOpen}
+        onClose={() => setIsQuickAiOpen(false)}
+        job={quickAiJob}
       />
     </div>
   );

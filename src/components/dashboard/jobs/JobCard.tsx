@@ -1,7 +1,5 @@
-// Component: Career Vault Application & Scheme Card
-
 import React from 'react';
-import { Briefcase, Building2, Calendar, DollarSign, ExternalLink, ChevronRight, MoreVertical, Edit2, Trash2 } from 'lucide-react';
+import { Briefcase, Building2, Calendar, DollarSign, ExternalLink, ChevronRight, MoreVertical, Edit2, Trash2, MessageSquare, Sparkles } from 'lucide-react';
 import { GraduateScheme, TrackerStatus } from '../../../types';
 import { Badge } from '../../ui/Badge';
 import { Card } from '../../ui/Card';
@@ -11,13 +9,15 @@ export interface JobCardProps {
   onUpdateStatus?: (id: string, status: TrackerStatus) => void;
   onEdit?: (scheme: GraduateScheme) => void;
   onDelete?: (id: string) => void;
+  onQuickAi?: (scheme: GraduateScheme) => void;
 }
 
 export const JobCard: React.FC<JobCardProps> = ({
   scheme,
   onUpdateStatus,
   onEdit,
-  onDelete
+  onDelete,
+  onQuickAi
 }) => {
   const getStatusVariant = (status: TrackerStatus): 'blue' | 'emerald' | 'amber' | 'rose' | 'purple' | 'slate' => {
     if (status.includes('Offer')) return 'emerald';
@@ -75,6 +75,15 @@ export const JobCard: React.FC<JobCardProps> = ({
         </span>
 
         <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
+          {onQuickAi && (
+            <button
+              onClick={() => onQuickAi(scheme)}
+              className="p-1 rounded text-blue-400 hover:text-blue-300 hover:bg-blue-500/10 transition-colors cursor-pointer"
+              title="Quick AI Outreach & Prep"
+            >
+              <MessageSquare className="w-3.5 h-3.5" />
+            </button>
+          )}
           {onEdit && (
             <button
               onClick={() => onEdit(scheme)}
