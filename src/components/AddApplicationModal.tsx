@@ -1,6 +1,6 @@
 import { SmartTextarea } from "./SmartTextarea";
 import React, { useState } from 'react';
-import { X, Plus } from 'lucide-react';
+import { X, Plus, Sparkles, Loader2, CheckCircle2 } from 'lucide-react';
 import { PriorityTrackerItem, TrackerStatus } from '../types';
 import { useScrollLock } from '../hooks/useScrollLock';
 import { useModalDismiss } from '../hooks/useModalDismiss';
@@ -29,7 +29,43 @@ export const AddApplicationModal: React.FC<AddApplicationModalProps> = ({
   const [nextAction, setNextAction] = useState('');
   const [notes, setNotes] = useState('');
 
+  // AI JD Extraction State
+  const [rawJd, setRawJd] = useState('');
+  const [showAiInput, setShowAiInput] = useState(false);
+  const [isParsing, setIsParsing] = useState(false);
+  const [parseSuccess, setParseSuccess] = useState(false);
+
   if (!isOpen) return null;
+
+  const handleAiExtract = async () => {
+    if (!rawJd.trim() || rawJd.trim().length < 15) return;
+    setIsParsing(true);
+    setParseSuccess(false);
+
+    try {
+      const res = await fetch('/api/parse-jd', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: rawJd })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.company) setFirm(data.company);
+        if (data.role) setRole(data.role);
+        if (data.deadline) setDeadline(data.deadline);
+        if (data.location) setNextAction(`Apply in ${data.location}`);
+        if (data.suggestedTalkingPoints) {
+          setNotes(`Talking Points: ${data.suggestedTalkingPoints.join('; ')}`);
+        }
+        setParseSuccess(true);
+        setShowAiInput(false);
+      }
+    } catch (e) {
+      console.warn('AI JD Parse failed:', e);
+    } finally {
+      setIsParsing(false);
+    }
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -53,6 +89,8 @@ export const AddApplicationModal: React.FC<AddApplicationModalProps> = ({
     setDeadline('');
     setNextAction('');
     setNotes('');
+    setRawJd('');
+    setShowAiInput(false);
     onClose();
   };
 
@@ -67,13 +105,54 @@ export const AddApplicationModal: React.FC<AddApplicationModalProps> = ({
         </button>
 
         <div className="border-b border-[var(--border)] pb-3 mt-0">
-          <div className="font-space-mono text-xs text-[var(--accent)] font-bold uppercase tracking-widest">
-            TARGET ENTRY
+          <div className="flex items-center justify-between">
+            <div className="font-space-mono text-xs text-[var(--accent)] font-bold uppercase tracking-widest">
+              TARGET ENTRY
+            </div>
+            <button
+              type="button"
+              onClick={() => setShowAiInput(!showAiInput)}
+              className="text-xs font-mono text-blue-400 hover:text-blue-300 flex items-center gap-1 cursor-pointer"
+            >
+              <Sparkles className="w-3.5 h-3.5" />
+              {showAiInput ? 'Hide AI Ingestion' : 'Ingest JD with AI'}
+            </button>
           </div>
           <h3 className="apple-headline text-3xl font-semibold text-[var(--text-primary)] mt-1">
             Add Target Application
           </h3>
         </div>
+
+        {showAiInput && (
+          <div className="p-4 rounded-xl bg-blue-500/10 border border-blue-500/20 space-y-2.5">
+            <label className="block text-xs font-mono text-blue-300 font-semibold">
+              Paste Raw Job Description / Posting
+            </label>
+            <textarea
+              rows={4}
+              value={rawJd}
+              onChange={(e) => setRawJd(e.target.value)}
+              placeholder="Paste job posting from LinkedIn, eFinancialCareers..."
+              className="w-full p-2.5 bg-black/40 border border-white/10 text-xs font-mono text-white rounded-lg focus:outline-none focus:border-blue-400"
+            />
+            <button
+              type="button"
+              onClick={handleAiExtract}
+              disabled={isParsing || rawJd.trim().length < 15}
+              className="px-4 py-2 bg-[#0052FF] hover:bg-[#0045D8] text-white text-xs font-mono rounded-lg flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+            >
+              {isParsing ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
+              <span>{isParsing ? 'Parsing with Gemini...' : 'Auto-Fill Form with AI'}</span>
+            </button>
+          </div>
+        )}
+
+        {parseSuccess && (
+          <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-xs flex items-center gap-2 font-mono">
+            <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+            <span>Form auto-populated from job description! Review details below.</span>
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>

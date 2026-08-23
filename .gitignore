@@ -8,3 +8,6 @@ coverage/
 !.env.example
 .vite/
 .vercel
+archive/
+*.cjs
+.antigravity-ide/

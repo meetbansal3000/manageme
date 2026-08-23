@@ -1,0 +1,6 @@
+# Ignore archive, loose scripts and IDE metadata from AI indexing
+archive/
+*.cjs
+.antigravity-ide/
+dist/
+node_modules/

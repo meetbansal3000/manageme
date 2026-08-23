@@ -23,6 +23,7 @@ import { GraduateScheme, TrackerStatus } from '../../../types';
 import { KanbanBoard } from './KanbanBoard';
 import { JobDetailDrawer } from './JobDetailDrawer';
 import { JobFilters } from './JobFilters';
+import { AddJobModal } from './AddJobModal';
 import { Badge } from '../../ui/Badge';
 import { Button } from '../../ui/Button';
 
@@ -56,6 +57,7 @@ export const CareerPipeline: React.FC<CareerPipelineProps> = ({
   const [sortOrder, setSortOrder] = useState<SortOrder>('asc');
   const [selectedJob, setSelectedJob] = useState<GraduateScheme | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
   // Derive unique sectors for filter
   const availableSectors = useMemo(() => {
@@ -176,6 +178,7 @@ export const CareerPipeline: React.FC<CareerPipelineProps> = ({
         selectedSector={sector}
         onSectorChange={setSector}
         sectors={availableSectors}
+        onAddNew={() => setIsAddModalOpen(true)}
         stats={stats}
       />
 
@@ -331,6 +334,15 @@ export const CareerPipeline: React.FC<CareerPipelineProps> = ({
           }
         }}
         onDeleteJob={onDeleteScheme}
+      />
+
+      {/* Add Application via AI Modal */}
+      <AddJobModal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        onAdd={(newJob) => {
+          if (onAddScheme) onAddScheme(newJob);
+        }}
       />
     </div>
   );
