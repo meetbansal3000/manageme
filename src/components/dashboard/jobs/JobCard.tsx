@@ -3,6 +3,7 @@ import { Briefcase, Building2, Calendar, DollarSign, ExternalLink, ChevronRight,
 import { GraduateScheme, TrackerStatus } from '../../../types';
 import { Badge } from '../../ui/Badge';
 import { Card } from '../../ui/Card';
+import { CalendarExportButton } from './CalendarExportButton';
 
 export interface JobCardProps {
   scheme: GraduateScheme;
@@ -10,6 +11,7 @@ export interface JobCardProps {
   onEdit?: (scheme: GraduateScheme) => void;
   onDelete?: (id: string) => void;
   onQuickAi?: (scheme: GraduateScheme) => void;
+  onTailor?: (scheme: GraduateScheme) => void;
 }
 
 export const JobCard: React.FC<JobCardProps> = ({
@@ -75,6 +77,15 @@ export const JobCard: React.FC<JobCardProps> = ({
         </span>
 
         <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
+          {onTailor && (
+            <button
+              onClick={() => onTailor(scheme)}
+              className="p-1 rounded text-purple-400 hover:text-purple-300 hover:bg-purple-500/10 transition-colors cursor-pointer"
+              title="Tailor Cover Letter & CV Bullets"
+            >
+              <Sparkles className="w-3.5 h-3.5" />
+            </button>
+          )}
           {onQuickAi && (
             <button
               onClick={() => onQuickAi(scheme)}
@@ -84,6 +95,15 @@ export const JobCard: React.FC<JobCardProps> = ({
               <MessageSquare className="w-3.5 h-3.5" />
             </button>
           )}
+          <CalendarExportButton
+            title={`[Deadline] ${scheme.firm} - ${scheme.roleTitle}`}
+            date={scheme.appCloses}
+            company={scheme.firm}
+            role={scheme.roleTitle}
+            portalUrl={scheme.applyVia}
+            notes={scheme.notes}
+            variant="icon"
+          />
           {onEdit && (
             <button
               onClick={() => onEdit(scheme)}

@@ -27,6 +27,8 @@ import { JobDetailDrawer } from './JobDetailDrawer';
 import { JobFilters } from './JobFilters';
 import { AddJobModal } from './AddJobModal';
 import { QuickAiModal } from './QuickAiModal';
+import { TailorModal } from './TailorModal';
+import { CalendarExportButton } from './CalendarExportButton';
 import { Badge } from '../../ui/Badge';
 import { Button } from '../../ui/Button';
 import { toast } from '../../ui/Toast';
@@ -64,6 +66,8 @@ export const CareerPipeline: React.FC<CareerPipelineProps> = ({
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [quickAiJob, setQuickAiJob] = useState<GraduateScheme | null>(null);
   const [isQuickAiOpen, setIsQuickAiOpen] = useState(false);
+  const [tailorJob, setTailorJob] = useState<GraduateScheme | null>(null);
+  const [isTailorOpen, setIsTailorOpen] = useState(false);
 
   // Derive unique sectors for filter
   const availableSectors = useMemo(() => {
@@ -206,6 +210,10 @@ export const CareerPipeline: React.FC<CareerPipelineProps> = ({
             setQuickAiJob(scheme);
             setIsQuickAiOpen(true);
           }}
+          onTailor={(scheme) => {
+            setTailorJob(scheme);
+            setIsTailorOpen(true);
+          }}
         />
       ) : (
         /* High-Density Spreadsheet Table View */
@@ -292,8 +300,18 @@ export const CareerPipeline: React.FC<CareerPipelineProps> = ({
                       {scheme.sector}
                     </td>
 
-                    <td className="p-3.5 min-w-[120px] text-right">
-                      <div className="flex items-center justify-end gap-1.5" onClick={(e) => e.stopPropagation()}>
+                    <td className="p-3.5 min-w-[140px] text-right">
+                      <div className="flex items-center justify-end gap-1" onClick={(e) => e.stopPropagation()}>
+                        <button
+                          onClick={() => {
+                            setTailorJob(scheme);
+                            setIsTailorOpen(true);
+                          }}
+                          className="p-1.5 rounded-lg text-purple-400 hover:text-purple-300 hover:bg-purple-500/10 transition-colors"
+                          title="Tailor Cover Letter & CV Bullets"
+                        >
+                          <Sparkles className="w-3.5 h-3.5" />
+                        </button>
                         <button
                           onClick={() => {
                             setQuickAiJob(scheme);
@@ -304,6 +322,15 @@ export const CareerPipeline: React.FC<CareerPipelineProps> = ({
                         >
                           <MessageSquare className="w-3.5 h-3.5" />
                         </button>
+                        <CalendarExportButton
+                          title={`[Deadline] ${scheme.firm} - ${scheme.roleTitle}`}
+                          date={scheme.appCloses}
+                          company={scheme.firm}
+                          role={scheme.roleTitle}
+                          portalUrl={scheme.applyVia}
+                          notes={scheme.notes}
+                          variant="icon"
+                        />
                         <button
                           onClick={() => openDetail(scheme)}
                           className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition-colors"
@@ -377,6 +404,13 @@ export const CareerPipeline: React.FC<CareerPipelineProps> = ({
         isOpen={isQuickAiOpen}
         onClose={() => setIsQuickAiOpen(false)}
         job={quickAiJob}
+      />
+
+      {/* AI Cover Letter & CV Tailor Modal */}
+      <TailorModal
+        isOpen={isTailorOpen}
+        onClose={() => setIsTailorOpen(false)}
+        job={tailorJob}
       />
     </div>
   );

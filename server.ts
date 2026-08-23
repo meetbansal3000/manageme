@@ -185,6 +185,283 @@ Extract:
     }
   });
 
+  // AI Interview Prep Copilot & Answer Grader Route
+  app.post('/api/interview-prep', async (req, res) => {
+    try {
+      const { 
+        mode = 'generate',
+        jobTitle = 'Graduate Analyst',
+        company = 'Target Firm',
+        sector = 'Investment Banking / Corporate Finance',
+        jobDescription = '',
+        question = '',
+        answer = ''
+      } = req.body;
+
+      const apiKey = getEffectiveApiKey();
+
+      if (mode === 'review') {
+        if (!apiKey) {
+          const wordCount = (answer || '').trim().split(/\s+/).filter(Boolean).length;
+          return res.json({
+            score: Math.min(95, Math.max(65, 70 + Math.min(20, Math.floor(wordCount / 10)))),
+            clarityVerdict: wordCount > 50 ? 'Strong structure with relevant contextual detail.' : 'Concise but would benefit from more concrete metric quantification.',
+            strengths: [
+              'Clear articulation of core concept and professional tone.',
+              'Direct alignment with role requirements and commercial context.'
+            ],
+            improvements: [
+              'Incorporate specific numerical metrics or percentage impacts to solidify your outcome.',
+              'Explicitly structure using Situation-Task-Action-Result (STAR) flow.'
+            ],
+            missingKeywords: ['DCF Sensitivity', 'EBITDA Multiple', 'IFRS 16 / Working Capital', 'Synergy Valuation']
+          });
+        }
+
+        const ai = new GoogleGenAI({ apiKey });
+        const prompt = `You are a Senior Managing Director & Lead Interviewer in ${sector} at ${company}.
+Review and grade this candidate's interview answer for the role of ${jobTitle}.
+
+QUESTION:
+${question}
+
+CANDIDATE'S ANSWER:
+${answer}
+
+Evaluate rigorously:
+1. score: Overall grade from 1 to 100.
+2. clarityVerdict: A concise 1-sentence verdict on communication clarity.
+3. strengths: 2-3 specific elements done well.
+4. improvements: 2-3 actionable ways to refine the response.
+5. missingKeywords: 3-4 advanced technical or industry keywords they should have mentioned.`;
+
+        const response = await ai.models.generateContent({
+          model: 'gemini-2.5-flash',
+          contents: prompt,
+          config: {
+            responseMimeType: 'application/json',
+            responseSchema: {
+              type: Type.OBJECT,
+              properties: {
+                score: { type: Type.INTEGER },
+                clarityVerdict: { type: Type.STRING },
+                strengths: { type: Type.ARRAY, items: { type: Type.STRING } },
+                improvements: { type: Type.ARRAY, items: { type: Type.STRING } },
+                missingKeywords: { type: Type.ARRAY, items: { type: Type.STRING } }
+              },
+              required: ['score', 'clarityVerdict', 'strengths', 'improvements', 'missingKeywords']
+            }
+          }
+        });
+
+        const parsed = JSON.parse(response.text || '{}');
+        return res.json(parsed);
+      }
+
+      // Generate Questions Mode
+      if (!apiKey) {
+        return res.json({
+          technicalQuestions: [
+            {
+              id: 't1',
+              topic: 'Valuation & Modeling',
+              question: `Walk me through a Discounted Cash Flow (DCF) model and explain how an increase in working capital impacts Unlevered Free Cash Flow.`,
+              keyTalkingPoints: [
+                'Start with EBIT(1 - t) to get EBIAT / NOPAT.',
+                'Add back Depreciation & Amortization (non-cash charge).',
+                'Subtract Capital Expenditures (CapEx) and subtract Increase in Net Working Capital (NWC).',
+                'An increase in NWC means cash is tied up in receivables/inventory, which directly reduces Unlevered Free Cash Flow.'
+              ]
+            },
+            {
+              id: 't2',
+              topic: 'Financial Statement Analysis & IFRS',
+              question: `If a company purchases £100m of equipment using 50% debt and 50% cash, how do the three financial statements change at year 0 and year 1 (assuming 10% straight-line depreciation, 5% interest rate, and 20% tax rate)?`,
+              keyTalkingPoints: [
+                'Year 0: Income statement unchanged. Cash decreases by £50m, PP&E increases by £100m (Net Assets +£50m). Debt increases by £50m on Balance Sheet.',
+                'Year 1: Depreciation is £10m; Interest expense is £2.5m (£50m * 5%). Pre-tax income down £12.5m. Net Income down £10m after 20% tax shield (£2.5m).',
+                'Cash Flow Statement: Net Income down £10m, add back non-cash £10m D&A, net cash flow from ops is £0m.'
+              ]
+            },
+            {
+              id: 't3',
+              topic: 'M&A & Strategic Rationale',
+              question: `Why might a company choose to acquire another firm using equity stock rather than cash or debt, and what makes a deal immediately accretive vs dilutive?`,
+              keyTalkingPoints: [
+                'Stock is preferred during high market uncertainty, preserving liquidity buffer, or when the acquirer’s stock is trading at a premium valuation.',
+                'In an all-stock deal, if the Acquirer P/E is higher than the Target P/E, the transaction is accretive to EPS.',
+                'Cost of debt after-tax vs cost of equity (inverse of P/E) dictates accretion/dilution threshold.'
+              ]
+            }
+          ],
+          behavioralQuestions: [
+            {
+              id: 'b1',
+              competency: 'Conflict Resolution & Client Delivery',
+              question: `Describe a scenario at university or in a professional team where you encountered conflicting priorities under a tight deadline. How did you manage stakeholders and ensure delivery?`,
+              starGuidance: 'Situation: Define the project context and conflicting stakeholder demands. Task: Quantify the deliverable requirement. Action: Detail how you prioritized tasks, communicated trade-offs, and executed. Result: Highlight on-time completion and measurable success.'
+            },
+            {
+              id: 'b2',
+              competency: 'Firm Fit & Commercial Awareness',
+              question: `Why ${company} specifically over our peer competitors in the UK market, and what macro trend currently presents both an opportunity and a risk for our ${sector} practice?`,
+              starGuidance: `Highlight specific culture pillars or landmark transactions at ${company}. Connect an actual macro event (e.g. Bank of England rate policy, ESG disclosure mandates, or AI-driven underwriting) to the firm's strategic positioning.`
+            }
+          ]
+        });
+      }
+
+      const ai = new GoogleGenAI({ apiKey });
+      const prompt = `You are a Technical Interview Lead for ${company} interviewing candidates for the role: "${jobTitle}" in the sector: "${sector}".
+${jobDescription ? `Job Posting Context:\n${jobDescription}\n` : ''}
+
+Generate structured interview preparation material:
+1. technicalQuestions: 3 rigorous, role-specific technical questions (e.g. financial statement adjustments, valuation, LBO/M&A mechanics, risk ratios, or audit procedures) each with 3-4 bulleted keyTalkingPoints and a short topic tag.
+2. behavioralQuestions: 2 company-specific competency questions with STAR Method Guidance (Situation, Task, Action, Result) and a competency tag.`;
+
+      const response = await ai.models.generateContent({
+        model: 'gemini-2.5-flash',
+        contents: prompt,
+        config: {
+          responseMimeType: 'application/json',
+          responseSchema: {
+            type: Type.OBJECT,
+            properties: {
+              technicalQuestions: {
+                type: Type.ARRAY,
+                items: {
+                  type: Type.OBJECT,
+                  properties: {
+                    id: { type: Type.STRING },
+                    topic: { type: Type.STRING },
+                    question: { type: Type.STRING },
+                    keyTalkingPoints: { type: Type.ARRAY, items: { type: Type.STRING } }
+                  },
+                  required: ['topic', 'question', 'keyTalkingPoints']
+                }
+              },
+              behavioralQuestions: {
+                type: Type.ARRAY,
+                items: {
+                  type: Type.OBJECT,
+                  properties: {
+                    id: { type: Type.STRING },
+                    competency: { type: Type.STRING },
+                    question: { type: Type.STRING },
+                    starGuidance: { type: Type.STRING }
+                  },
+                  required: ['competency', 'question', 'starGuidance']
+                }
+              }
+            },
+            required: ['technicalQuestions', 'behavioralQuestions']
+          }
+        }
+      });
+
+      const parsed = JSON.parse(response.text || '{}');
+      res.json(parsed);
+    } catch (error: any) {
+      console.error('[Interview Prep Server Error]:', error);
+      sendSafeError(res, 500, 'Error generating interview prep.', error);
+    }
+  });
+
+  // AI Cover Letter & CV Tailor Route
+  app.post('/api/tailor-application', async (req, res) => {
+    try {
+      const { 
+        role = 'Graduate Analyst',
+        company = 'Target Firm',
+        jobDescription = '',
+        candidateBackground = 'ACCA Affiliate, IFRS & UK GAAP reporting experience, Xero & advanced Excel financial modeling certification, CFA Level 1 candidate with a first-class BSc in Economics & Finance from Durham University.'
+      } = req.body;
+
+      const apiKey = getEffectiveApiKey();
+
+      if (!apiKey) {
+        return res.json({
+          coverLetter: `Dear Hiring Team at ${company},\n\nI am writing to express my enthusiastic application for the ${role} position. As an ACCA Affiliate and First-Class BSc Economics & Finance graduate from Durham University, I have developed rigorous expertise across IFRS accounting standards, discounted cash flow valuation, and financial statement modeling. Having closely followed ${company}’s recent market transactions and leadership in client execution, I am strongly motivated by your collaborative culture and analytical rigor.\n\nThroughout my academic and professional tenure, I have demonstrated measurable capability in synthesizing complex datasets to drive strategic decisions. In my recent valuation coursework and financial analysis projects, I built comprehensive 3-statement forecast models and sensitivity analyses, identifying key working capital drivers and margin risks. Furthermore, my proficiency across Xero, Bloomberg terminals, and advanced Excel automation enables me to contribute immediately to ${company}’s quantitative workflows from day one.\n\nI am particularly drawn to ${company}’s reputation for empowering junior analysts with high-conviction client deliverables. I welcome the opportunity to discuss how my technical acumen, commercial awareness, and dedication to excellence will add tangible value to your team. Thank you for your consideration.\n\nYours sincerely,\nMeet Bansal`,
+          cvBulletPoints: [
+            `Spearheaded comprehensive 3-statement financial models and DCF sensitivity matrices for target market acquisitions, delivering 99.4% variance reconciliation under IFRS guidelines.`,
+            `Synthesized quantitative macroeconomic datasets and earnings transcripts for FTSE 100 & S&P 500 equities, accelerating senior leadership investment reviews by 35%.`,
+            `Automated repetitive trial balance reconciliations and ledger auditing workflows using advanced Excel (VBA/Power Query) and Xero, saving 6+ hours weekly with zero compliance discrepancy.`
+          ],
+          atsKeywords: {
+            matchScore: 88,
+            matchedKeywords: [
+              'Financial Modeling',
+              'DCF Valuation',
+              'IFRS / UK GAAP',
+              'Data Analysis',
+              'Stakeholder Management',
+              'Excel & Automation'
+            ],
+            missingKeywords: [
+              'LBO Structuring',
+              'Merger Model Dilution',
+              'PowerBI Dashboarding'
+            ]
+          }
+        });
+      }
+
+      const ai = new GoogleGenAI({ apiKey });
+      const prompt = `You are an elite Executive Career Strategist and UK Head of Graduate Recruiting specializing in finance, banking, and consulting.
+Tailor an application for the following position:
+
+ROLE: ${role}
+COMPANY: ${company}
+JOB DESCRIPTION:
+${jobDescription || 'Graduate training scheme with focus on financial analysis, quantitative modeling, stakeholder delivery, and strategic advisory.'}
+
+CANDIDATE BACKGROUND:
+${candidateBackground}
+
+Generate structured application artifacts in JSON:
+1. coverLetter: A formal, high-impact 3-paragraph UK-standard cover letter tailored specifically to ${company} and ${role}.
+2. cvBulletPoints: 3 high-impact achievement bullet points written in the Google X-Y-Z formula ("Accomplished [X] as measured by [Y] by doing [Z]") matching key keywords from the job description.
+3. atsKeywords: An object containing:
+   - matchScore (number 1-100)
+   - matchedKeywords (string[] - 5 to 7 keywords the candidate background successfully matches)
+   - missingKeywords (string[] - 3 to 4 keywords from the JD that the candidate should brush up on)`;
+
+      const response = await ai.models.generateContent({
+        model: 'gemini-2.5-flash',
+        contents: prompt,
+        config: {
+          responseMimeType: 'application/json',
+          responseSchema: {
+            type: Type.OBJECT,
+            properties: {
+              coverLetter: { type: Type.STRING },
+              cvBulletPoints: {
+                type: Type.ARRAY,
+                items: { type: Type.STRING }
+              },
+              atsKeywords: {
+                type: Type.OBJECT,
+                properties: {
+                  matchScore: { type: Type.INTEGER },
+                  matchedKeywords: { type: Type.ARRAY, items: { type: Type.STRING } },
+                  missingKeywords: { type: Type.ARRAY, items: { type: Type.STRING } }
+                },
+                required: ['matchScore', 'matchedKeywords', 'missingKeywords']
+              }
+            },
+            required: ['coverLetter', 'cvBulletPoints', 'atsKeywords']
+          }
+        }
+      });
+
+      const parsed = JSON.parse(response.text || '{}');
+      res.json(parsed);
+    } catch (error: any) {
+      console.error('[Tailor Application Server Error]:', error);
+      sendSafeError(res, 500, 'Error tailoring application.', error);
+    }
+  });
+
   // Secure Server-Side Google Sheets / Database Sync
   app.post('/api/sync', async (req, res) => {
     try {

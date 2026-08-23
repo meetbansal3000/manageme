@@ -21,6 +21,7 @@ interface PriorityTrackerTabProps {
 import { useScrollFadeUp } from "../hooks/useScrollFadeUp";
 import { AppleEmptyState } from './AppleEmptyState';
 import { Target } from 'lucide-react';
+import { CalendarExportButton } from './dashboard/jobs/CalendarExportButton';
 
 export const PriorityTrackerTab: React.FC<PriorityTrackerTabProps> = ({
   priorityItems = [],
@@ -240,13 +241,23 @@ export const PriorityTrackerTab: React.FC<PriorityTrackerTabProps> = ({
                   </td>
                   <td className="py-3.5 px-3 text-center align-top">
                     {!isEditing && (
-                      <button
-                        onClick={() => startEdit(item)}
-                        className="p-1 text-[var(--text-primary)]/40 hover:text-[var(--accent)] transition-colors"
-                        title="Edit action/notes"
-                      >
-                        <Edit3 className="w-3.5 h-3.5" />
-                      </button>
+                      <div className="flex items-center justify-center gap-1">
+                        <CalendarExportButton
+                          title={`[Deadline] ${item.firm} - ${item.role}`}
+                          date={item.deadline}
+                          company={item.firm}
+                          role={item.role}
+                          notes={item.notes}
+                          variant="icon"
+                        />
+                        <button
+                          onClick={() => startEdit(item)}
+                          className="p-1 text-[var(--text-primary)]/40 hover:text-[var(--accent)] transition-colors cursor-pointer"
+                          title="Edit action/notes"
+                        >
+                          <Edit3 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
                     )}
                   </td>
                 </tr>
