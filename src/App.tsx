@@ -75,6 +75,9 @@ const JobSyncHub = lazy(() => import('./components/JobSyncHub').then(m => ({ def
 const ActivityDrawer = lazy(() => import('./components/ActivityDrawer').then(m => ({ default: m.ActivityDrawer })));
 const ConflictModal = lazy(() => import('./components/ConflictModal').then(m => ({ default: m.ConflictModal })));
 const UserAuthModal = lazy(() => import('./components/auth/UserAuthModal'));
+const ExecutiveSummaryModal = lazy(() => import('./components/dashboard/reports/ExecutiveSummaryModal').then(m => ({ default: m.ExecutiveSummaryModal })));
+const BookmarkletModal = lazy(() => import('./components/dashboard/jobs/BookmarkletModal').then(m => ({ default: m.BookmarkletModal })));
+const CookieBanner = lazy(() => import('./components/ui/CookieBanner').then(m => ({ default: m.CookieBanner })));
 
 export default function App() {
   const { user, isGuest, isAuthenticated, isLoading } = useAuth();
@@ -127,6 +130,9 @@ export default function App() {
   const [isJobSyncOpen, setIsJobSyncOpen] = useState(false);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [isUserAuthModalOpen, setIsUserAuthModalOpen] = useState(false);
+  const [isExecutiveSummaryOpen, setIsExecutiveSummaryOpen] = useState(false);
+  const [isBookmarkletModalOpen, setIsBookmarkletModalOpen] = useState(false);
+  const [initialImportData, setInitialImportData] = useState<{ text?: string; title?: string; url?: string; autoParse?: boolean } | null>(null);
 
   // Auto-redirect authenticated users directly into their dashboard
   useEffect(() => {
@@ -223,15 +229,58 @@ export default function App() {
     const handleOpenJobSync = () => setIsJobSyncOpen(true);
     const handleOpenCmdPalette = () => setIsCommandPaletteOpen(true);
     const handleOpenShare = () => setIsShareModalOpen(true);
+    const handleOpenExecSummary = () => setIsExecutiveSummaryOpen(true);
+    const handleOpenBookmarklet = () => setIsBookmarkletModalOpen(true);
+
+    const checkUrlImportParams = () => {
+      if (typeof window === 'undefined') return;
+
+      let params = new URLSearchParams(window.location.search);
+      if (window.location.hash.includes('?')) {
+        const hashQuery = window.location.hash.split('?')[1];
+        const hashParams = new URLSearchParams(hashQuery);
+        hashParams.forEach((val, key) => {
+          if (!params.has(key)) params.set(key, val);
+        });
+      }
+
+      const importText = params.get('importText');
+      const importTitle = params.get('importTitle');
+      const importUrl = params.get('importUrl');
+
+      if (importText || importTitle || importUrl) {
+        setInitialImportData({
+          text: importText ? decodeURIComponent(importText) : undefined,
+          title: importTitle ? decodeURIComponent(importTitle) : undefined,
+          url: importUrl ? decodeURIComponent(importUrl) : undefined,
+          autoParse: true
+        });
+        setActiveTab('jobs');
+        setIsAddModalOpen(true);
+        const cleanHash = window.location.hash.split('?')[0] || '#jobs';
+        window.history.replaceState({}, '', window.location.pathname + cleanHash);
+        toast.info('Bookmarklet Ingestion: Parsing job details with AI...');
+      }
+    };
+
+    checkUrlImportParams();
+
     window.addEventListener('openAiModelSelector', handleOpenAiSelector);
     window.addEventListener('openJobSyncHub', handleOpenJobSync);
     window.addEventListener('openCommandPalette', handleOpenCmdPalette);
     window.addEventListener('openShareAppModal', handleOpenShare);
+    window.addEventListener('openExecutiveSummary', handleOpenExecSummary);
+    window.addEventListener('openBookmarkletModal', handleOpenBookmarklet);
+    window.addEventListener('hashchange', checkUrlImportParams);
+
     return () => {
       window.removeEventListener('openAiModelSelector', handleOpenAiSelector);
       window.removeEventListener('openJobSyncHub', handleOpenJobSync);
       window.removeEventListener('openCommandPalette', handleOpenCmdPalette);
       window.removeEventListener('openShareAppModal', handleOpenShare);
+      window.removeEventListener('openExecutiveSummary', handleOpenExecSummary);
+      window.removeEventListener('openBookmarkletModal', handleOpenBookmarklet);
+      window.removeEventListener('hashchange', checkUrlImportParams);
     };
   }, []);
 
@@ -914,7 +963,11 @@ export default function App() {
         />
         <AddApplicationModal 
           isOpen={isAddModalOpen}
-          onClose={() => setIsAddModalOpen(false)}
+          onClose={() => {
+            setIsAddModalOpen(false);
+            setInitialImportData(null);
+          }}
+          initialImportData={initialImportData}
           onAdd={(newApp) => {
             const newItem: PriorityTrackerItem = {
               ...newApp,
@@ -923,6 +976,7 @@ export default function App() {
             };
             updateData({ priorityItems: [newItem, ...(userData.priorityItems || [])] });
             setIsAddModalOpen(false);
+            setInitialImportData(null);
           }}
         />
 
@@ -990,6 +1044,19 @@ export default function App() {
           onClose={() => setIsUserAuthModalOpen(false)}
           onNavigateLegal={(page) => handleTabChange(page)}
         />
+
+        <ExecutiveSummaryModal
+          isOpen={isExecutiveSummaryOpen}
+          onClose={() => setIsExecutiveSummaryOpen(false)}
+          userData={userData}
+        />
+
+        <BookmarkletModal
+          isOpen={isBookmarkletModalOpen}
+          onClose={() => setIsBookmarkletModalOpen(false)}
+        />
+
+        <CookieBanner />
       </Suspense>
 
       <OwnerAuthModal />

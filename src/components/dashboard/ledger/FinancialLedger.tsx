@@ -13,12 +13,16 @@ import {
   AlertTriangle,
   ArrowUpRight,
   ArrowDownRight,
-  Trash2
+  Trash2,
+  Download,
+  FileText
 } from 'lucide-react';
 import { Card } from '../../ui/Card';
 import { Button } from '../../ui/Button';
 import { Input } from '../../ui/Input';
 import { UserTrackerData } from '../../../hooks/useFirestoreData';
+import { exportVisaShiftsToCSV } from '../../../lib/export';
+import { trackShiftLogged } from '../../../lib/analytics';
 
 export interface FinancialLedgerProps {
   userData?: UserTrackerData;
@@ -102,6 +106,7 @@ export const FinancialLedger: React.FC<FinancialLedgerProps> = ({
     const updated = [item, ...shifts];
     setShifts(updated);
     if (updateData) updateData({ workShifts: updated });
+    trackShiftLogged(item.hours);
     setNewShift({ roleTitle: '', hours: '', hourlyRate: '15.50', date: new Date().toISOString().split('T')[0] });
   };
 
@@ -119,6 +124,43 @@ export const FinancialLedger: React.FC<FinancialLedgerProps> = ({
 
   return (
     <div className="space-y-6">
+      {/* Top Header & Actions */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h2 className="text-xl font-bold font-mono text-white flex items-center gap-2">
+            <DollarSign className="w-5 h-5 text-emerald-400" />
+            <span>Financial Ledger & Visa Wage Hub</span>
+          </h2>
+          <p className="text-xs text-slate-400 mt-1">
+            Track weekly 20-hour work limits, shift wages, and daily living expenses.
+          </p>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => exportVisaShiftsToCSV(shifts, Number(newShift.hourlyRate) || 15.50)}
+            className="text-xs"
+            title="Download CSV history of logged shifts"
+          >
+            <Download className="w-3.5 h-3.5 mr-1 text-emerald-400" />
+            Export Timesheet (CSV)
+          </Button>
+
+          <Button
+            variant="primary"
+            size="sm"
+            onClick={() => window.dispatchEvent(new CustomEvent('openExecutiveSummary'))}
+            className="text-xs font-bold"
+            title="Open Executive Printable PDF Summary"
+          >
+            <FileText className="w-3.5 h-3.5 mr-1" />
+            Executive Summary
+          </Button>
+        </div>
+      </div>
+
       {/* Metric Cards Summary */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card variant="glass" padding="md" className="border border-white/10">
@@ -288,7 +330,19 @@ export const FinancialLedger: React.FC<FinancialLedgerProps> = ({
           <Card variant="glass" padding="none" className="border border-white/10 overflow-hidden">
             <div className="p-3 border-b border-white/10 flex items-center justify-between">
               <span className="text-xs font-mono font-bold text-white uppercase">Logged Shifts</span>
-              <span className="text-[10px] font-mono text-slate-400">{shifts.length} shifts</span>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => exportVisaShiftsToCSV(shifts, Number(newShift.hourlyRate) || 15.50)}
+                  disabled={shifts.length === 0}
+                  className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20 disabled:opacity-40 transition-colors flex items-center gap-1 cursor-pointer"
+                  title="Export Timesheet (CSV)"
+                >
+                  <Download className="w-3 h-3" />
+                  <span>CSV</span>
+                </button>
+                <span className="text-[10px] font-mono text-slate-400">{shifts.length} shifts</span>
+              </div>
             </div>
 
             {shifts.length === 0 ? (

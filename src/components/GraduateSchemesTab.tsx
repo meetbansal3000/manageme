@@ -34,7 +34,10 @@ import {
   AlertCircle,
   Upload,
   Mail,
-  Link2
+  Link2,
+  Download,
+  FileText,
+  Bookmark
 } from 'lucide-react';
 import { GraduateScheme, TrackerStatus, FilterRisk, AccaAdvantage, DifficultyLevel } from '../types';
 import { useScrollFadeUp } from "../hooks/useScrollFadeUp";
@@ -43,6 +46,7 @@ import { SwipeableCard } from './SwipeableCard';
 import { useModalDismiss } from '../hooks/useModalDismiss';
 import { useOwnerSecurity } from '../context/OwnerSecurityContext';
 import { AppleEmptyState } from './AppleEmptyState';
+import { exportApplicationsToCSV } from '../lib/export';
 
 export type GradSchemeSortKey = 'default' | 'deadline-asc' | 'deadline-desc' | 'salary-desc' | 'salary-asc';
 
@@ -752,7 +756,34 @@ export const GraduateSchemesTab: React.FC<GraduateSchemesTabProps> = ({
             </button>
           </div>
 
-          <button onClick={handleShare} className="flex items-center gap-2 px-3 py-2 rounded-xl glass-panel border border-[var(--border)] text-xs font-semibold text-[var(--text-primary)] hover:bg-[rgba(255,255,255,0.05)] transition-colors">
+          <button
+            onClick={() => exportApplicationsToCSV(gradSchemes)}
+            className="flex items-center gap-1.5 px-3 py-2 rounded-xl glass-panel border border-[var(--border)] text-xs font-semibold text-[var(--text-primary)] hover:bg-[rgba(255,255,255,0.05)] transition-colors cursor-pointer"
+            title="Export applications pipeline to CSV"
+          >
+            <Download className="w-3.5 h-3.5 text-blue-400" />
+            <span className="hidden sm:inline">Export Pipeline (CSV)</span>
+          </button>
+
+          <button
+            onClick={() => window.dispatchEvent(new CustomEvent('openBookmarkletModal'))}
+            className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-indigo-600/20 border border-indigo-500/30 text-xs font-semibold text-indigo-300 hover:bg-indigo-600/30 transition-colors cursor-pointer"
+            title="1-Click Job Ingestion Bookmarklet for LinkedIn & Indeed"
+          >
+            <Bookmark className="w-3.5 h-3.5 text-indigo-400" />
+            <span className="hidden sm:inline">Bookmarklet</span>
+          </button>
+
+          <button
+            onClick={() => window.dispatchEvent(new CustomEvent('openExecutiveSummary'))}
+            className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-blue-600/20 border border-blue-500/30 text-xs font-semibold text-blue-300 hover:bg-blue-600/30 transition-colors cursor-pointer"
+            title="Open Executive Summary Printable Report"
+          >
+            <FileText className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">Executive PDF</span>
+          </button>
+
+          <button onClick={handleShare} className="flex items-center gap-2 px-3 py-2 rounded-xl glass-panel border border-[var(--border)] text-xs font-semibold text-[var(--text-primary)] hover:bg-[rgba(255,255,255,0.05)] transition-colors cursor-pointer">
             <Share2 className="w-3.5 h-3.5" /> Share
           </button>
         </div>

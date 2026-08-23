@@ -1,21 +1,31 @@
 import { SmartTextarea } from "./SmartTextarea";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X, Plus, Sparkles, Loader2, CheckCircle2 } from 'lucide-react';
 import { PriorityTrackerItem, TrackerStatus } from '../types';
 import { useScrollLock } from '../hooks/useScrollLock';
 import { useModalDismiss } from '../hooks/useModalDismiss';
 import { toast } from './ui/Toast';
+import { trackJobSaved, trackAiJdParsed } from '../lib/analytics';
+
+export interface InitialImportData {
+  text?: string;
+  title?: string;
+  url?: string;
+  autoParse?: boolean;
+}
 
 interface AddApplicationModalProps {
   isOpen: boolean;
   onClose: () => void;
   onAdd: (item: Omit<PriorityTrackerItem, 'id' | 'rank'>) => void;
+  initialImportData?: InitialImportData | null;
 }
 
 export const AddApplicationModal: React.FC<AddApplicationModalProps> = ({
   isOpen,
   onClose,
-  onAdd
+  onAdd,
+  initialImportData
 }) => {
   useScrollLock(isOpen);
   useModalDismiss(isOpen, onClose);
@@ -36,10 +46,8 @@ export const AddApplicationModal: React.FC<AddApplicationModalProps> = ({
   const [isParsing, setIsParsing] = useState(false);
   const [parseSuccess, setParseSuccess] = useState(false);
 
-  if (!isOpen) return null;
-
-  const handleAiExtract = async () => {
-    if (!rawJd.trim() || rawJd.trim().length < 15) return;
+  const extractJobDetails = async (textToExtract: string) => {
+    if (!textToExtract.trim() || textToExtract.trim().length < 15) return;
     setIsParsing(true);
     setParseSuccess(false);
 
@@ -47,25 +55,63 @@ export const AddApplicationModal: React.FC<AddApplicationModalProps> = ({
       const res = await fetch('/api/parse-jd', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: rawJd })
+        body: JSON.stringify({ text: textToExtract })
       });
+
       if (res.ok) {
         const data = await res.json();
         if (data.company) setFirm(data.company);
         if (data.role) setRole(data.role);
         if (data.deadline) setDeadline(data.deadline);
         if (data.location) setNextAction(`Apply in ${data.location}`);
-        if (data.suggestedTalkingPoints) {
-          setNotes(`Talking Points: ${data.suggestedTalkingPoints.join('; ')}`);
+        if (data.suggestedTalkingPoints && Array.isArray(data.suggestedTalkingPoints)) {
+          setNotes(prev => prev ? `${prev}\nTalking Points: ${data.suggestedTalkingPoints.join('; ')}` : `Talking Points: ${data.suggestedTalkingPoints.join('; ')}`);
         }
         setParseSuccess(true);
         setShowAiInput(false);
+        trackAiJdParsed(true);
+        toast.success(`AI Extracted: ${data.role || 'Role'} at ${data.company || 'Firm'}`);
+        return;
       }
     } catch (e) {
-      console.warn('AI JD Parse failed:', e);
+      console.warn('Backend AI JD Parse unavailable, using heuristic fallback:', e);
+    }
+
+    // Heuristic client fallback
+    try {
+      const firstLine = textToExtract.split('\n')[0] || '';
+      const companyMatch = textToExtract.match(/(?:at|company|firm|employer|about)\s+([A-Z][A-Za-z0-9\s&,.-]{2,30})/i);
+      const extractedFirm = companyMatch ? companyMatch[1].trim() : (firstLine.includes('-') ? firstLine.split('-')[1]?.trim() : '');
+      const extractedRole = firstLine.includes('-') ? firstLine.split('-')[0]?.trim() : firstLine.substring(0, 50).trim();
+
+      if (extractedFirm) setFirm(extractedFirm);
+      if (extractedRole) setRole(extractedRole);
+      setParseSuccess(true);
+      trackAiJdParsed(true);
+      toast.info('Extracted job details via heuristic parser');
     } finally {
       setIsParsing(false);
     }
+  };
+
+  useEffect(() => {
+    if (isOpen && initialImportData) {
+      if (initialImportData.title) setRole(initialImportData.title);
+      if (initialImportData.url) {
+        setNotes(prev => prev ? `${prev}\nSource URL: ${initialImportData.url}` : `Source URL: ${initialImportData.url}`);
+      }
+      if (initialImportData.text) {
+        setRawJd(initialImportData.text);
+        setShowAiInput(true);
+        extractJobDetails(initialImportData.text);
+      }
+    }
+  }, [isOpen, initialImportData]);
+
+  if (!isOpen) return null;
+
+  const handleAiExtract = () => {
+    extractJobDetails(rawJd);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -84,6 +130,7 @@ export const AddApplicationModal: React.FC<AddApplicationModalProps> = ({
       notes: notes || 'Target firm added to tracker'
     });
 
+    trackJobSaved(status);
     toast.success(`Saved ${role} at ${firm} to Potential Pipeline`);
 
     // reset

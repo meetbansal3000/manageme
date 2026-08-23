@@ -7,6 +7,8 @@ import { AuthProvider } from '../context/AuthContext';
 import { UserProvider } from '../context/UserContext';
 import { SettingsProvider } from '../context/SettingsContext';
 import { OwnerSecurityProvider } from '../context/OwnerSecurityContext';
+import { Analytics } from '@vercel/analytics/react';
+import { CookieBanner } from '../components/ui/CookieBanner';
 import './globals.css';
 
 export const metadata = {
@@ -54,6 +56,8 @@ export default function RootLayout({
                 <div className="min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)] selection:bg-[var(--accent-primary)] selection:text-white font-sans antialiased transition-colors duration-200">
                   {children}
                 </div>
+                <CookieBanner />
+                <Analytics />
               </OwnerSecurityProvider>
             </SettingsProvider>
           </UserProvider>

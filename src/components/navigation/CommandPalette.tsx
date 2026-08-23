@@ -27,15 +27,17 @@ import {
   FileText, 
   Compass, 
   Clock, 
-  Zap,
-  Globe,
-  Sliders
+  Sliders,
+  Printer,
+  Download,
+  Bookmark
 } from 'lucide-react';
 import { UserTrackerData } from '../../hooks/useFirestoreData';
 import { useScrollLock } from '../../hooks/useScrollLock';
 import { useTheme } from '../../context/ThemeContext';
 import { useSettings } from '../../context/SettingsContext';
 import { exportMultiSheetWorkbook } from '../../utils/excelExporter';
+import { exportApplicationsToCSV, exportVisaShiftsToCSV } from '../../lib/export';
 
 export interface CommandPaletteProps {
   isOpen: boolean;
@@ -327,6 +329,54 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
             userData.notesSections || []
           );
         }
+      }
+    },
+    {
+      id: 'act-export-csv-pipeline',
+      title: 'Export Applications Pipeline (CSV)',
+      subtitle: 'Download CSV file of all graduate schemes & tracked roles',
+      category: 'Quick Actions',
+      icon: <Download className="w-4 h-4 text-blue-400" />,
+      onSelect: () => {
+        onClose();
+        if (userData) {
+          exportApplicationsToCSV(userData.gradSchemes || []);
+        }
+      }
+    },
+    {
+      id: 'act-export-csv-shifts',
+      title: 'Export Visa Timesheet (CSV)',
+      subtitle: 'Download CSV audit of logged work hours and earnings',
+      category: 'Quick Actions',
+      icon: <Download className="w-4 h-4 text-emerald-400" />,
+      onSelect: () => {
+        onClose();
+        if (userData) {
+          exportVisaShiftsToCSV(userData.workShifts || []);
+        }
+      }
+    },
+    {
+      id: 'act-executive-summary',
+      title: 'Print Executive Summary Report (PDF)',
+      subtitle: 'Open clean, printable A4 career & visa compliance summary',
+      category: 'Quick Actions',
+      icon: <Printer className="w-4 h-4 text-purple-400" />,
+      onSelect: () => {
+        onClose();
+        window.dispatchEvent(new CustomEvent('openExecutiveSummary'));
+      }
+    },
+    {
+      id: 'act-open-bookmarklet',
+      title: 'Quick Ingest Bookmarklet Setup',
+      subtitle: '1-Click browser tool to capture jobs from LinkedIn and Indeed',
+      category: 'Quick Actions',
+      icon: <Bookmark className="w-4 h-4 text-indigo-400" />,
+      onSelect: () => {
+        onClose();
+        window.dispatchEvent(new CustomEvent('openBookmarkletModal'));
       }
     },
     {

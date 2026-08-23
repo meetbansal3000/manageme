@@ -12,17 +12,17 @@ import {
   TrendingUp, 
   AlertTriangle, 
   Receipt, 
-  Wallet, 
-  Building2, 
   FileText,
   Copy,
-  Info
+  Info,
+  Download
 } from 'lucide-react';
 import { Card } from '../../ui/Card';
 import { Button } from '../../ui/Button';
 import { Input } from '../../ui/Input';
 import { Badge } from '../../ui/Badge';
 import { toast } from '../../ui/Toast';
+import { exportVisaShiftsToCSV } from '../../../lib/export';
 
 export interface LedgerShift {
   id: string;
@@ -296,30 +296,55 @@ export const VisaWageLedger: React.FC = () => {
           </p>
         </div>
 
-        {/* Term Time vs Vacation Toggle */}
-        <div className="flex items-center gap-2 bg-white/5 p-1 rounded-xl border border-white/10 shrink-0">
-          <button
-            onClick={() => {
-              setIsTermTime(true);
-              toast.info('Switched to Term Time mode (20 hrs/wk limit)');
-            }}
-            className={`px-3 py-1.5 rounded-lg text-xs font-mono font-medium transition-all ${
-              isTermTime ? 'bg-blue-600 text-white shadow-md' : 'text-slate-400 hover:text-white'
-            }`}
+        {/* Actions & Term Toggle */}
+        <div className="flex flex-wrap items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => exportVisaShiftsToCSV(shifts)}
+            className="text-xs"
+            title="Download CSV history of logged shifts"
           >
-            Term Time (20h Max)
-          </button>
-          <button
-            onClick={() => {
-              setIsTermTime(false);
-              toast.info('Switched to Vacation mode (40 hrs/wk limit)');
-            }}
-            className={`px-3 py-1.5 rounded-lg text-xs font-mono font-medium transition-all ${
-              !isTermTime ? 'bg-amber-600 text-white shadow-md' : 'text-slate-400 hover:text-white'
-            }`}
+            <Download className="w-3.5 h-3.5 mr-1 text-emerald-400" />
+            Export Timesheet (CSV)
+          </Button>
+
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={() => window.dispatchEvent(new CustomEvent('openExecutiveSummary'))}
+            className="text-xs"
+            title="Print Executive Summary"
           >
-            Vacation / Break (40h)
-          </button>
+            <FileText className="w-3.5 h-3.5 mr-1" />
+            Executive PDF
+          </Button>
+
+          {/* Term Time vs Vacation Toggle */}
+          <div className="flex items-center gap-1 bg-white/5 p-1 rounded-xl border border-white/10 shrink-0">
+            <button
+              onClick={() => {
+                setIsTermTime(true);
+                toast.info('Switched to Term Time mode (20 hrs/wk limit)');
+              }}
+              className={`px-3 py-1.5 rounded-lg text-xs font-mono font-medium transition-all ${
+                isTermTime ? 'bg-blue-600 text-white shadow-md' : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              Term (20h)
+            </button>
+            <button
+              onClick={() => {
+                setIsTermTime(false);
+                toast.info('Switched to Vacation mode (40 hrs/wk limit)');
+              }}
+              className={`px-3 py-1.5 rounded-lg text-xs font-mono font-medium transition-all ${
+                !isTermTime ? 'bg-amber-600 text-white shadow-md' : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              Vacation (40h)
+            </button>
+          </div>
         </div>
       </div>
 
