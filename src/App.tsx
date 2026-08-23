@@ -30,6 +30,7 @@ import { SpeedInsights } from '@vercel/speed-insights/react';
 import { Analytics } from '@vercel/analytics/react';
 import { toast } from './components/ui/Toast';
 import { ErrorBoundary } from './components/ui/ErrorBoundary';
+import { SmoothScroll } from './components/ui/SmoothScroll';
 
 const PRIMARY_TABS: AppTab[] = ['landing', 'news', 'study', 'metasuite', 'jobs', 'outreach', 'tasks', 'uni', 'finance', 'trading', 'work', 'skills', 'travel', 'transit', 'chat', 'resume', 'privacy', 'terms'];
 
@@ -457,7 +458,8 @@ export default function App() {
   }
 
   return (
-    <AnimatePresence mode="wait">
+    <SmoothScroll>
+      <AnimatePresence mode="wait">
       {activeTab === 'landing' ? (
         <motion.div
           key="landing-view"
@@ -1069,5 +1071,6 @@ export default function App() {
         </motion.div>
       )}
     </AnimatePresence>
+    </SmoothScroll>
   );
 }

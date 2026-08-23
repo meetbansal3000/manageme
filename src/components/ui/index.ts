@@ -10,4 +10,6 @@ export * from './EmptyState';
 export * from './ErrorBoundary';
 export * from './Toast';
 export * from './CookieBanner';
+export * from './SmoothScroll';
 export { default as CookieBanner } from './CookieBanner';
+export { default as SmoothScroll } from './SmoothScroll';
