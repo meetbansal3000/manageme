@@ -9,32 +9,7 @@ export interface ExamDeadline {
 
 const STORAGE_KEY = 'manageme_exam_deadlines';
 
-export const DEFAULT_DEADLINES: ExamDeadline[] = [
-  {
-    id: 'dl-1',
-    title: 'Financial Statement Quiz',
-    date: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-    type: 'QUIZ',
-    module: 'FIN201 Financial Accounting',
-    notes: 'DuPont Analysis & Free Cash Flow statements'
-  },
-  {
-    id: 'dl-2',
-    title: 'Corporate Valuation Coursework',
-    date: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-    type: 'COURSEWORK',
-    module: 'FIN305 Corporate Finance',
-    notes: 'Complete 3-statement DCF model on Excel'
-  },
-  {
-    id: 'dl-3',
-    title: 'CFA Level 1 Exam',
-    date: new Date(Date.now() + 42 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-    type: 'CERTIFICATION',
-    module: 'CFA Institute',
-    notes: 'Ethics, Quantitative Methods & Financial Reporting'
-  }
-];
+export const DEFAULT_DEADLINES: ExamDeadline[] = [];
 
 export const getExamDeadlines = (): ExamDeadline[] => {
   try {

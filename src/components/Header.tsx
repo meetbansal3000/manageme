@@ -39,7 +39,6 @@ import {
   Mail,
   Brain,
   Search,
-  Timer,
   Share2
 } from 'lucide-react';
 import { GoogleSyncState } from '../types';
@@ -53,7 +52,6 @@ import { useScrollLock } from '../hooks/useScrollLock';
 import { useOwnerSecurity } from '../context/OwnerSecurityContext';
 import { triggerHaptic } from '../utils/haptics';
 import { getActiveAiConfig, SUPPORTED_AI_MODELS } from '../lib/aiGateway';
-import { getExamDeadlines, getNextPriorityDeadline } from '../utils/deadlines';
 
 import { useTheme } from '../context/ThemeContext';
 
@@ -141,23 +139,6 @@ export const Header: React.FC<HeaderProps> = ({
   } = useAuth();
   
   const userName = user?.displayName || user?.email?.split('@')[0] || (isGuest ? 'Guest Executive' : 'Meet');
-
-  // Next Priority Deadline / Exam Countdown
-  const [nextDeadline, setNextDeadline] = useState<{ deadline: any; daysRemaining: number } | null>(() => {
-    return getNextPriorityDeadline(getExamDeadlines());
-  });
-
-  useEffect(() => {
-    const updateCountdown = () => {
-      setNextDeadline(getNextPriorityDeadline(getExamDeadlines()));
-    };
-    window.addEventListener('deadlinesUpdated', updateCountdown);
-    window.addEventListener('storage', updateCountdown);
-    return () => {
-      window.removeEventListener('deadlinesUpdated', updateCountdown);
-      window.removeEventListener('storage', updateCountdown);
-    };
-  }, []);
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 10);
@@ -289,21 +270,6 @@ export const Header: React.FC<HeaderProps> = ({
 
             {/* Right: Essential Mobile Controls (Share, Menu) + Collapsible Desktop Controls */}
             <div className="flex items-center shrink-0 space-x-1 sm:space-x-2">
-
-              {/* Priority Deadline Countdown Widget (Desktop only) */}
-              {nextDeadline && (
-                <button
-                  onClick={() => setActiveTab('uni')}
-                  className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 min-h-[38px] rounded-full bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-amber-300 text-xs font-semibold backdrop-blur-md transition-all cursor-pointer shadow-xs active:scale-95 group"
-                  title={`Priority Deadline: ${nextDeadline.deadline.title} (${nextDeadline.deadline.date}) • Click to manage in Timetable`}
-                >
-                  <Timer className="w-3.5 h-3.5 text-amber-400 animate-pulse shrink-0" />
-                  <span className="truncate max-w-[110px] sm:max-w-[140px]">{nextDeadline.deadline.title}:</span>
-                  <span className="font-mono font-bold bg-amber-400/20 px-1.5 py-0.5 rounded text-[10px] text-amber-200">
-                    {nextDeadline.daysRemaining === 0 ? 'Today!' : `${nextDeadline.daysRemaining}d`}
-                  </span>
-                </button>
-              )}
 
               {/* Global Command Palette (⌘K) Trigger (Desktop/Tablet) */}
               <button

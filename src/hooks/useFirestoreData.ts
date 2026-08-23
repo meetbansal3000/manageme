@@ -214,6 +214,7 @@ if (typeof window !== 'undefined') {
       localStorage.removeItem('manageme_trades_data');
       localStorage.removeItem('manageme_portfolio_data');
       localStorage.removeItem('manageme_outreach_history');
+      localStorage.removeItem('manageme_exam_deadlines');
       localStorage.setItem(CLEAN_WORKSPACE_KEY, 'true');
     }
   } catch (e) {
