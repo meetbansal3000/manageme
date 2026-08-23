@@ -56,27 +56,27 @@ interface OutreachHubProps {
 }
 
 export const OutreachHub: React.FC<OutreachHubProps> = ({
-  initialCompany = 'Goldman Sachs',
-  initialRole = 'Summer Analyst - M&A Advisory',
+  initialCompany = '',
+  initialRole = '',
   onClose
 }) => {
   // Form State
   const [companyName, setCompanyName] = useState(initialCompany);
   const [targetRole, setTargetRole] = useState(initialRole);
-  const [recipientName, setRecipientName] = useState('Sarah Jenkins');
-  const [recipientRole, setRecipientRole] = useState('VP / Hiring Manager');
+  const [recipientName, setRecipientName] = useState('');
+  const [recipientRole, setRecipientRole] = useState('Hiring Manager / Recruiter');
   const [tone, setTone] = useState<ColdEmailDraftParams['tone']>('high_impact');
-  const [customStrength, setCustomStrength] = useState('Top decile Durham Finance & Accounting, CFA L1 candidate, 3-statement modeling');
+  const [customStrength, setCustomStrength] = useState('');
   const [customNote, setCustomNote] = useState('');
 
   // Discovery & Generation State
-  const [hrDiscovery, setHrDiscovery] = useState<HrDiscoveryResult>(() => findCompanyHrIntelligence(initialCompany, 'Sarah Jenkins'));
+  const [hrDiscovery, setHrDiscovery] = useState<HrDiscoveryResult>(() => findCompanyHrIntelligence(initialCompany, ''));
   const [generatedDraft, setGeneratedDraft] = useState<GeneratedColdEmail>(() => 
     generateColdEmailDraft({
-      companyName: initialCompany,
-      targetRole: initialRole,
-      recipientName: 'Sarah Jenkins',
-      recipientRole: 'VP / Hiring Manager',
+      companyName: initialCompany || 'Target Firm',
+      targetRole: initialRole || 'Graduate Analyst',
+      recipientName: 'Hiring Manager',
+      recipientRole: 'Recruiter',
       tone: 'high_impact'
     })
   );
@@ -94,32 +94,7 @@ export const OutreachHub: React.FC<OutreachHubProps> = ({
     } catch (e) {
       console.warn('Failed to load outreach history', e);
     }
-    return [
-      {
-        id: 'outreach-1',
-        companyName: 'Goldman Sachs',
-        recipientName: 'Sarah Jenkins',
-        recipientEmail: 'sarah.jenkins@gs.com',
-        targetRole: 'Summer Analyst - M&A Advisory',
-        tone: 'high_impact',
-        subject: 'Quick Question & Value Pitch — Summer Analyst at Goldman Sachs',
-        body: 'Dear Sarah, ...',
-        status: 'Sent',
-        dateCreated: '2026-08-14'
-      },
-      {
-        id: 'outreach-2',
-        companyName: 'BlackRock',
-        recipientName: 'Campus Talent',
-        recipientEmail: 'emeacareers@blackrock.com',
-        targetRole: 'Asset Management Analyst',
-        tone: 'formal_corporate',
-        subject: 'Expression of Interest: Asset Management Analyst',
-        body: 'Dear BlackRock Talent Acquisition Team, ...',
-        status: 'Follow-up Due',
-        dateCreated: '2026-08-12'
-      }
-    ];
+    return [];
   });
 
   const showToast = (msg: string) => {

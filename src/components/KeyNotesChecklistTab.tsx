@@ -591,8 +591,16 @@ export const KeyNotesChecklistTab: React.FC<KeyNotesChecklistTabProps> = ({
             {filteredTasks.length === 0 && (
               <div className="p-8 text-center glass-panel border border-[var(--border)] rounded-2xl space-y-2">
                 <CheckCircle2 className="w-8 h-8 text-[var(--accent)] mx-auto opacity-60" />
-                <p className="text-sm font-semibold text-[var(--text-secondary)]">No tasks found in this view.</p>
-                <p className="text-xs text-[var(--text-secondary)]">Add a task above to keep your academic and career goals on track.</p>
+                <p className="text-sm font-semibold text-[var(--text-primary)]">
+                  {universalTasks.length === 0 
+                    ? "All clear! Add your first task above." 
+                    : "No tasks found in this view."}
+                </p>
+                <p className="text-xs text-[var(--text-secondary)]">
+                  {universalTasks.length === 0
+                    ? "Organize your finance, study, and application goals in one unified pipeline."
+                    : "Try adjusting your category or status filters to view other tasks."}
+                </p>
               </div>
             )}
           </div>

@@ -243,20 +243,11 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
     }
   };
 
-  const isDemo = isGuestOrDemoMode();
   const tradingData = {
     cashBalance: userData?.paperTrading?.cashBalance ?? 100000,
     startingCapital: userData?.paperTrading?.startingCapital ?? 100000,
-    positions: Array.isArray(userData?.paperTrading?.positions) ? userData.paperTrading.positions : (isDemo ? [
-      { id: 'pos-1', symbol: 'AAPL', name: 'Apple Inc.', assetClass: 'Stock', quantity: 50, averageEntryPrice: 220.00, currentPrice: 232.80 },
-      { id: 'pos-2', symbol: 'NVDA', name: 'NVIDIA Corp', assetClass: 'Stock', quantity: 20, averageEntryPrice: 125.00, currentPrice: 138.45 },
-      { id: 'pos-3', symbol: 'SPY', name: 'SPDR S&P 500 ETF', assetClass: 'ETF', quantity: 15, averageEntryPrice: 580.00, currentPrice: 598.40 }
-    ] : []),
-    tradeHistory: Array.isArray(userData?.paperTrading?.tradeHistory) ? userData.paperTrading.tradeHistory : (isDemo ? [
-      { id: 'tr-1', symbol: 'AAPL', type: 'Market', side: 'Buy', quantity: 50, executionPrice: 220.00, status: 'Executed', timestamp: Date.now() - 86400000 * 3 },
-      { id: 'tr-2', symbol: 'NVDA', type: 'Limit', side: 'Buy', quantity: 20, executionPrice: 125.00, status: 'Executed', timestamp: Date.now() - 86400000 * 2 },
-      { id: 'tr-3', symbol: 'SPY', type: 'Market', side: 'Buy', quantity: 15, executionPrice: 580.00, status: 'Executed', timestamp: Date.now() - 86400000 * 1 }
-    ] : []),
+    positions: Array.isArray(userData?.paperTrading?.positions) ? userData.paperTrading.positions : [],
+    tradeHistory: Array.isArray(userData?.paperTrading?.tradeHistory) ? userData.paperTrading.tradeHistory : [],
     academyProgress: userData?.paperTrading?.academyProgress || {}
   };
 

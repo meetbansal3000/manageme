@@ -152,13 +152,13 @@ export const EMPTY_TRACKER_DATA: UserTrackerData = {
   studyDocs: []
 };
 
-// Pre-populated Demo Mock Data (For Guest Mode / Public Showcase ONLY)
+// Clean Slate Template for All Users
 export const DEMO_TRACKER_DATA: UserTrackerData = {
-  userName: 'Guest Executive',
-  degreeName: 'BSc Economics & Finance',
-  universityName: 'Durham University',
-  targetSectors: ['Asset Management', 'M&A Advisory', 'Corporate Finance'],
-  location: 'London, UK',
+  userName: 'Executive User',
+  degreeName: '',
+  universityName: '',
+  targetSectors: [],
+  location: '',
   paperTrading: {
     cashBalance: 100000,
     startingCapital: 100000,
@@ -169,7 +169,7 @@ export const DEMO_TRACKER_DATA: UserTrackerData = {
   resumes: [],
   newsPreferences: [],
   savedArticles: [],
-  jobPreferences: { categories: ['Asset Management', 'M&A Advisory', 'Audit / Corporate Finance'], locations: ['On-site', 'Hybrid'], salaryRange: '£60,000 - £85,000', currency: '£', experienceLevel: 'Graduate / Entry' },
+  jobPreferences: { categories: [], locations: [], salaryRange: '', currency: '£', experienceLevel: 'Graduate / Entry' },
   jobApplications: [],
   trips: [],
   tripExpenses: [],
@@ -179,16 +179,16 @@ export const DEMO_TRACKER_DATA: UserTrackerData = {
   techAssets: [],
   vehicleCosts: [],
   extraItems: [],
-  timeline: TIMELINE_DATA,
-  gradSchemes: GRADUATE_SCHEMES_DATA,
-  partTimeRoles: PART_TIME_DATA,
-  priorityItems: PRIORITY_TRACKER_DATA,
-  notesSections: KEY_NOTES_SECTIONS,
-  skillsTracker: SKILLS_DATA,
-  courses: COURSES_DATA,
-  universalTasks: UNIVERSAL_TASKS_DATA,
+  timeline: [],
+  gradSchemes: [],
+  partTimeRoles: [],
+  priorityItems: [],
+  notesSections: [],
+  skillsTracker: [],
+  courses: [],
+  universalTasks: [],
   profileSummary: DEFAULT_PROFILE,
-  hourlyRate: 12.50,
+  hourlyRate: 11.44,
   workShifts: [],
   expenses: [],
   creditCards: [],
@@ -200,6 +200,26 @@ export const DEMO_TRACKER_DATA: UserTrackerData = {
   notebooks: [],
   studyDocs: []
 };
+
+// One-time clean workspace cache flush migration
+const CLEAN_WORKSPACE_KEY = 'manageme_clean_workspace_v2';
+if (typeof window !== 'undefined') {
+  try {
+    if (localStorage.getItem(CLEAN_WORKSPACE_KEY) !== 'true') {
+      localStorage.removeItem('userTrackerData');
+      localStorage.removeItem('manageme_jobs_data');
+      localStorage.removeItem('manageme_job_applications');
+      localStorage.removeItem('manageme_shifts_data');
+      localStorage.removeItem('manageme_tasks_data');
+      localStorage.removeItem('manageme_trades_data');
+      localStorage.removeItem('manageme_portfolio_data');
+      localStorage.removeItem('manageme_outreach_history');
+      localStorage.setItem(CLEAN_WORKSPACE_KEY, 'true');
+    }
+  } catch (e) {
+    console.warn('Clean workspace cache migration skipped', e);
+  }
+}
 
 export const DEFAULT_TRACKER_DATA = EMPTY_TRACKER_DATA;
 

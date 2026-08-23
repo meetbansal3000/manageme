@@ -72,10 +72,10 @@ export const GapAnalysisHeatmap: React.FC<GapAnalysisHeatmapProps> = ({
   const [hoveredCell, setHoveredCell] = useState<{ firm: string; skill: string } | null>(null);
   const [viewMode, setViewMode] = useState<'matrix' | 'cards'>('matrix');
 
-  // Fallback to default schemes if none provided
+  // Fallback to empty schemes if none provided
   const schemesList: GraduateScheme[] = useMemo(() => {
     if (gradSchemes && gradSchemes.length > 0) return gradSchemes;
-    return GRADUATE_SCHEMES_DATA;
+    return [];
   }, [gradSchemes]);
 
   // Extract all unique requirement keywords across all schemes

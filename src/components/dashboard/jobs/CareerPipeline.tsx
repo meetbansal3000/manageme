@@ -199,8 +199,29 @@ export const CareerPipeline: React.FC<CareerPipelineProps> = ({
         stats={stats}
       />
 
-      {/* Active View Container */}
-      {viewMode === 'kanban' ? (
+      {/* Active View Container or Clean Empty State */}
+      {schemes.length === 0 ? (
+        <div className="p-12 text-center rounded-3xl bg-[var(--card-bg)] border border-[var(--border-subtle)] shadow-card-base space-y-4 max-w-xl mx-auto my-8 animate-in fade-in duration-300">
+          <div className="w-14 h-14 rounded-2xl bg-[var(--accent-primary)]/10 border border-[var(--accent-primary)]/20 flex items-center justify-center text-[var(--accent-primary)] mx-auto">
+            <Building2 className="w-7 h-7" />
+          </div>
+          <div className="space-y-1.5">
+            <h3 className="text-base font-bold text-[var(--text-primary)]">No applications yet</h3>
+            <p className="text-xs text-[var(--text-secondary)] leading-relaxed max-w-md mx-auto">
+              No applications yet. Click &apos;+ Add Application&apos; or &apos;Ingest via AI&apos; to add your first role.
+            </p>
+          </div>
+          <div className="flex items-center justify-center gap-3 pt-2">
+            <button
+              onClick={() => setIsAddModalOpen(true)}
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[var(--accent-primary)] hover:opacity-90 text-white text-xs font-bold transition-all shadow-md cursor-pointer"
+            >
+              <Plus className="w-4 h-4" />
+              <span>+ Add Application</span>
+            </button>
+          </div>
+        </div>
+      ) : viewMode === 'kanban' ? (
         <KanbanBoard
           schemes={sortedSchemes}
           onUpdateStatus={handleUpdateStatus}

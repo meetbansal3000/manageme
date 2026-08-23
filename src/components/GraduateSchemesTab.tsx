@@ -1031,13 +1031,21 @@ export const GraduateSchemesTab: React.FC<GraduateSchemesTabProps> = ({
       {sortedSchemes.length === 0 ? (
         <AppleEmptyState
           icon={Award}
-          title="No Graduate Schemes Found"
-          description="Try adjusting your sector, status, or search filters to find matching schemes."
-          actionLabel="Reset Filters"
+          title={gradSchemes.length === 0 ? "No applications yet" : "No Graduate Schemes Found"}
+          description={gradSchemes.length === 0 
+            ? "No applications yet. Click '+ Add Application' or 'Ingest via AI' to add your first role."
+            : "Try adjusting your sector, status, or search filters to find matching schemes."}
+          actionLabel={gradSchemes.length === 0 ? "+ Add Application" : "Reset Filters"}
           onAction={() => {
-            setSelectedStageFilter('ALL');
-            setSelectedDifficulty('ALL');
-            setSelectedRisk('ALL');
+            if (gradSchemes.length === 0) {
+              setEditingScheme(null);
+              setFormData(INITIAL_FORM_STATE);
+              setIsModalOpen(true);
+            } else {
+              setSelectedStageFilter('ALL');
+              setSelectedDifficulty('ALL');
+              setSelectedRisk('ALL');
+            }
           }}
           className="my-8 py-16"
         />

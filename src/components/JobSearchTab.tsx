@@ -23,10 +23,7 @@ interface Props {
 const CATEGORIES = ['Asset Management', 'M&A Advisory', 'Audit', 'Tax', 'Corporate Finance'];
 const LOCATIONS = ['On-site', 'Hybrid', 'Remote'];
 
-const MOCK_FEED = [
-  { id: '1', title: 'M&A Analyst', company: 'Goldman Sachs', platform: 'LinkedIn', date: '2 hours ago', location: 'London (On-site)', salary: '£70k - £90k', urgent: true },
-  { id: '2', title: 'Asset Management Associate', company: 'BlackRock', platform: 'Indeed', date: '5 hours ago', location: 'Hybrid', salary: '£85k - £110k', urgent: false },
-];
+const MOCK_FEED: any[] = [];
 
 export const JobSearchTab: React.FC<Props> = ({ userData, updateData }) => {
   const { requireOwnerPermission } = useOwnerSecurity();
@@ -281,8 +278,8 @@ export const JobSearchTab: React.FC<Props> = ({ userData, updateData }) => {
       {/* Outreach Hub View */}
       {careerSubView === 'outreach' && (
         <OutreachHub
-          initialCompany={outreachTarget?.company || 'Goldman Sachs'}
-          initialRole={outreachTarget?.role || 'Summer Analyst - M&A Advisory'}
+          initialCompany={outreachTarget?.company || ''}
+          initialRole={outreachTarget?.role || ''}
         />
       )}
 
@@ -355,6 +352,13 @@ export const JobSearchTab: React.FC<Props> = ({ userData, updateData }) => {
                 </div>
               </div>
             ))}
+            {MOCK_FEED.length === 0 && (
+              <div className="p-6 text-center rounded-xl bg-white/[0.02] border border-white/10 text-xs text-slate-500 font-mono space-y-2">
+                <Search className="w-6 h-6 mx-auto opacity-40 text-blue-400" />
+                <p>No active feed postings.</p>
+                <p className="text-[10px]">Use Connected Platforms to auto-capture new jobs.</p>
+              </div>
+            )}
           </div>
         </div>
 

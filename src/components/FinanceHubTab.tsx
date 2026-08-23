@@ -1375,8 +1375,15 @@ export const FinanceHubTab: React.FC<Props> = ({ userData, updateData }) => {
               </div>
 
               {filteredShifts.length === 0 ? (
-                <div className="h-36 flex flex-col items-center justify-center text-[var(--text-secondary)] text-xs italic bg-[var(--surface-solid)] rounded-2xl border border-[var(--border)] p-4 text-center">
-                  No work shifts match your filter. Log a shift above.
+                <div className="h-36 flex flex-col items-center justify-center text-[var(--text-secondary)] text-xs bg-[var(--surface-solid)] rounded-2xl border border-[var(--border)] p-4 text-center space-y-1">
+                  <p className="font-medium text-[var(--text-primary)]">
+                    {(userData.workShifts || []).length === 0 
+                      ? "No shifts logged for this week (0/20 hrs used)."
+                      : "No work shifts match your filter. Log a shift above."}
+                  </p>
+                  <p className="text-[11px] text-[var(--text-secondary)]">
+                    Use the shift logger above to record your hours and track earnings.
+                  </p>
                 </div>
               ) : (
                 <div className="flex-1">

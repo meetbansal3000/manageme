@@ -141,8 +141,10 @@ export const PriorityTrackerTab: React.FC<PriorityTrackerTabProps> = ({
       {filtered.length === 0 ? (
         <AppleEmptyState
           icon={Target}
-          title="No Priority Applications Found"
-          description="Try clearing your search or sector filter to view target applications."
+          title={priorityItems.length === 0 ? "No applications yet" : "No Priority Applications Found"}
+          description={priorityItems.length === 0 
+            ? "No applications yet. Click '+ Add Application' or 'Ingest via AI' to add your first role."
+            : "Try clearing your search or sector filter to view target applications."}
           actionLabel="Add Target Application"
           onAction={onAddNewApplication}
           className="my-4 py-12"

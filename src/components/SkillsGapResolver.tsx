@@ -211,7 +211,7 @@ export const SkillsGapResolver: React.FC<SkillsGapResolverProps> = ({
 
   const schemesList: GraduateScheme[] = useMemo(() => {
     if (gradSchemes && gradSchemes.length > 0) return gradSchemes;
-    return GRADUATE_SCHEMES_DATA;
+    return [];
   }, [gradSchemes]);
 
   // Normalized user skill map
