@@ -1,3 +1,5 @@
+/* Styles: Global CSS Design Tokens & Tailwind Base */
+
 @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Manrope:wght@300;400;500;600;700;800&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap');
 @import "tailwindcss";
 @custom-variant dark (&:where(.dark, .dark *));
@@ -86,7 +88,6 @@ html, body {
     --ink-main: #FFFFFF;
   }
 
-  /* Headings: tracking-tight (-0.02em) SaaS Typography */
   h1, h2, h3, h4, h5, h6 {
     color: #FFFFFF;
     font-family: 'Manrope', sans-serif;
@@ -98,7 +99,6 @@ html, body {
     color: #8B95A5;
   }
 
-  /* Dual-Font Editorial Display Typography */
   .font-editorial,
   .font-serif {
     font-family: 'Instrument Serif', Georgia, serif;
@@ -109,240 +109,35 @@ html, body {
     font-family: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   }
 
-  /* Enforce font-variant-numeric: tabular-nums across all numbers and financial figures */
   .tabular-nums,
-  .font-mono,
-  [data-tabular="true"],
-  [data-num="true"],
-  .price-val,
-  .currency-val,
-  .ticker-val,
-  table td,
-  table th,
-  span.number,
-  .num {
-    font-variant-numeric: tabular-nums lining-nums;
-    font-feature-settings: "tnum" 1;
-    letter-spacing: -0.015em;
-  }
-
-  #root, #root > div, main {
-    background: transparent !important;
-    background-color: transparent !important;
-  }
-
-  input, textarea, select {
-    background-color: #0A0A0A;
-    color: #FFFFFF;
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    border-radius: 8px;
-    touch-action: manipulation;
-    font-family: 'Manrope', sans-serif;
-    transition: border-color 200ms ease, box-shadow 200ms ease;
-  }
-
-  input:focus, textarea:focus, select:focus {
-    border-color: #0052FF;
-    outline: none;
-    box-shadow: 0 0 0 2px rgba(0, 82, 255, 0.3);
-  }
-
-  input::placeholder, textarea::placeholder {
-    color: #8B95A5;
-    opacity: 0.7;
+  .font-mono {
+    font-variant-numeric: tabular-nums;
   }
 }
 
-@layer utilities {
-  /* ========================================================================= */
-  /* EXACT MICRO-INTERACTIONS & DESIGN MECHANICS */
-  /* ========================================================================= */
-  
-  /* 1. Liquid Pill */
-  .liquid-pill {
-    height: 40px;
-    padding: 0 18px;
-    border-radius: 999px;
-    border: 1px solid rgba(198, 198, 198, 0.3);
-    background: linear-gradient(105deg, #050505 0%, #1a1a1a 48%, #2a2a2a 100%);
-    color: #f3f3f3;
-    transition: all 0.35s ease;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    user-select: none;
-    text-decoration: none;
-  }
+/* Custom Scrollbar Styles */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
 
-  .liquid-pill:hover {
-    border-color: rgba(235, 235, 235, 0.8);
-    box-shadow: 0 0 18px rgba(200, 210, 230, 0.15);
-    color: #FFFFFF;
-  }
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+}
 
-  .liquid-pill:active {
-    transform: scale(0.97);
-  }
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 9999px;
+}
 
-  /* 2. Solid Button */
-  .btn-solid {
-    background: linear-gradient(180deg, #ffffff 0%, #e7e7e7 48%, #cfcfcf 100%);
-    color: #111111;
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.95);
-    border-radius: 6px;
-    transition: 0.35s;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 600;
-    cursor: pointer;
-    user-select: none;
-    border: none;
-    text-decoration: none;
-  }
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
 
-  .btn-solid:hover {
-    background: linear-gradient(180deg, #ffffff 0%, #f4f4f4 48%, #dedede 100%);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 1), 0 0 20px rgba(255, 255, 255, 0.2);
-  }
-
-  .btn-solid:active {
-    transform: scale(0.95);
-  }
-
-  /* 3. Type-Rise Kinetic Animation */
-  .type-rise {
-    animation: rise 0.85s cubic-bezier(0.16, 1, 0.3, 1) backwards;
-  }
-
-  .rise-delay-1 {
-    animation-delay: 0.12s;
-  }
-
-  .rise-delay-2 {
-    animation-delay: 0.28s;
-  }
-
-  .rise-delay-3 {
-    animation-delay: 0.44s;
-  }
-
-  /* 4. Glass & Dashboard Components */
-  .glass-card {
-    background-color: #0A0A0A;
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    border-radius: 0.75rem;
-    transition: transform 300ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 300ms cubic-bezier(0.16, 1, 0.3, 1), border-color 300ms ease-out;
-  }
-
-  .glass-card:hover {
-    border-color: rgba(255, 255, 255, 0.25);
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.9), 0 0 20px rgba(0, 82, 255, 0.15);
-  }
-
-  .btn-primary {
-    background: linear-gradient(180deg, #ffffff 0%, #e7e7e7 48%, #cfcfcf 100%);
-    color: #111111;
-    border-radius: 9999px;
-    font-weight: 700;
-    transition: all 300ms cubic-bezier(0.16, 1, 0.3, 1);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.95);
-    cursor: pointer;
-    user-select: none;
-  }
-
-  .btn-primary:hover {
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 1), 0 0 25px rgba(255, 255, 255, 0.25);
-    transform: translateY(-1px);
-  }
-
-  .btn-primary:active {
-    transform: scale(0.95);
-  }
-
-  .btn-ghost {
-    background-color: transparent;
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    color: #FFFFFF;
-    border-radius: 9999px;
-    font-weight: 600;
-    transition: all 300ms cubic-bezier(0.16, 1, 0.3, 1);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    cursor: pointer;
-  }
-
-  .btn-ghost:hover {
-    background-color: rgba(255, 255, 255, 0.06);
-    border-color: rgba(255, 255, 255, 0.3);
-    transform: translateY(-1px);
-  }
-
-  .btn-ghost:active {
-    transform: scale(0.95);
-  }
-
-  .saas-card {
-    background-color: #0A0A0A;
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    border-radius: 0.75rem;
-    box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.8);
-    transition: transform 300ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 300ms cubic-bezier(0.16, 1, 0.3, 1), border-color 300ms ease-out;
-  }
-
-  .saas-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.9), 0 0 25px rgba(0, 82, 255, 0.15);
-    border-color: rgba(255, 255, 255, 0.25);
-  }
-
-  .fintech-card {
-    background-color: #0A0A0A;
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    border-radius: 1rem;
-    box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.8);
-    transition: transform 300ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 300ms cubic-bezier(0.16, 1, 0.3, 1), border-color 300ms ease-out;
-  }
-
-  .fintech-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.9), 0 0 25px rgba(0, 82, 255, 0.15);
-    border-color: #0052FF;
-  }
-
-  .bento-card {
-    background-color: #0A0A0A;
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    border-radius: 1rem;
-    box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.8);
-    transition: transform 300ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 300ms cubic-bezier(0.16, 1, 0.3, 1), border-color 300ms ease-out;
-  }
-
-  .glass-panel {
-    background-color: #0A0A0A;
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    color: #FFFFFF;
-  }
-
-  /* Custom Scrollbars */
-  .custom-scrollbar::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
-  }
-
-  .custom-scrollbar::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  .custom-scrollbar::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.15);
-    border-radius: 9999px;
-  }
-
-  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.25);
-  }
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
