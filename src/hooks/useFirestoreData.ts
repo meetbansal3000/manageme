@@ -263,16 +263,49 @@ export const sanitizeUserData = (raw: any, forceDemo: boolean = false): UserTrac
 
 export function useFirestoreData() {
   const [data, setData] = useState<UserTrackerData>(() => {
+    let baseData = isGuestOrDemoMode() ? DEMO_TRACKER_DATA : EMPTY_TRACKER_DATA;
     try {
       const localDataStr = localStorage.getItem('userTrackerData');
       if (localDataStr) {
-        const parsed = JSON.parse(localDataStr);
-        return sanitizeUserData(parsed);
+        baseData = sanitizeUserData(JSON.parse(localDataStr));
       }
+
+      // Merge persisted visa & wage shifts data
+      const localShifts = localStorage.getItem('manageme_shifts_data');
+      if (localShifts) {
+        try {
+          const parsedShifts = JSON.parse(localShifts);
+          if (Array.isArray(parsedShifts)) {
+            baseData.workShifts = parsedShifts;
+          } else if (parsedShifts && Array.isArray(parsedShifts.workShifts)) {
+            baseData.workShifts = parsedShifts.workShifts;
+            if (typeof parsedShifts.hourlyRate === 'number') {
+              baseData.hourlyRate = parsedShifts.hourlyRate;
+            }
+          }
+        } catch (e) {
+          console.warn('Failed to parse manageme_shifts_data', e);
+        }
+      }
+
+      // Merge persisted priority tasks data
+      const localTasks = localStorage.getItem('manageme_tasks_data');
+      if (localTasks) {
+        try {
+          const parsedTasks = JSON.parse(localTasks);
+          if (Array.isArray(parsedTasks)) {
+            baseData.universalTasks = parsedTasks;
+          }
+        } catch (e) {
+          console.warn('Failed to parse manageme_tasks_data', e);
+        }
+      }
+
+      return baseData;
     } catch (e) {
       console.warn('Failed to parse local userTrackerData', e);
     }
-    return isGuestOrDemoMode() ? DEMO_TRACKER_DATA : EMPTY_TRACKER_DATA;
+    return baseData;
   });
 
   const [loading, setLoading] = useState(false);
@@ -555,11 +588,38 @@ export function useFirestoreData() {
       const newData = sanitizeUserData({ ...prev, ...partialData }, isDemo);
       try {
         localStorage.setItem('userTrackerData', JSON.stringify(newData));
+
+        // Persist dedicated shifts & wage data
+        if (partialData.workShifts !== undefined || partialData.hourlyRate !== undefined) {
+          localStorage.setItem('manageme_shifts_data', JSON.stringify({
+            workShifts: newData.workShifts || [],
+            hourlyRate: newData.hourlyRate || 11.44
+          }));
+        }
+
+        // Persist dedicated priority tasks data
+        if (partialData.universalTasks !== undefined) {
+          localStorage.setItem('manageme_tasks_data', JSON.stringify(newData.universalTasks || []));
+        }
       } catch (err) {
         console.warn('Could not save to localStorage', err);
       }
       return newData;
     });
+
+    // Owner Mode Backend & Sheets Sync
+    if (!isGuestOrDemoMode()) {
+      try {
+        fetch('/api/sync', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'persist_state',
+            data: { ...dataRef.current, ...partialData }
+          })
+        }).catch(e => console.warn('[Owner Backend Sync background notice]:', e));
+      } catch (e) {}
+    }
 
     // Supabase sync
     try {

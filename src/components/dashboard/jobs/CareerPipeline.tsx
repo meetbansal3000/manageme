@@ -29,6 +29,7 @@ import { AddJobModal } from './AddJobModal';
 import { QuickAiModal } from './QuickAiModal';
 import { Badge } from '../../ui/Badge';
 import { Button } from '../../ui/Button';
+import { toast } from '../../ui/Toast';
 
 export type PipelineViewMode = 'kanban' | 'table';
 export type SortField = 'rank' | 'firm' | 'deadline' | 'salary' | 'status';
@@ -121,6 +122,13 @@ export const CareerPipeline: React.FC<CareerPipelineProps> = ({
     }
   };
 
+  const handleUpdateStatus = (id: string, newStatus: TrackerStatus) => {
+    if (onUpdateStatus) {
+      onUpdateStatus(id, newStatus);
+      toast.info(`Moved application to ${newStatus}`);
+    }
+  };
+
   const openDetail = (scheme: GraduateScheme) => {
     setSelectedJob(scheme);
     setIsDrawerOpen(true);
@@ -191,7 +199,7 @@ export const CareerPipeline: React.FC<CareerPipelineProps> = ({
       {viewMode === 'kanban' ? (
         <KanbanBoard
           schemes={sortedSchemes}
-          onUpdateStatus={onUpdateStatus}
+          onUpdateStatus={handleUpdateStatus}
           onEdit={openDetail}
           onDelete={onDeleteScheme}
           onQuickAi={(scheme) => {
@@ -201,13 +209,13 @@ export const CareerPipeline: React.FC<CareerPipelineProps> = ({
         />
       ) : (
         /* High-Density Spreadsheet Table View */
-        <div className="rounded-2xl border border-white/10 bg-white/[0.02] overflow-hidden">
-          <div className="overflow-x-auto no-scrollbar">
-            <table className="w-full text-left text-xs text-slate-300 font-sans">
-              <thead className="bg-white/5 border-b border-white/10 font-mono text-[11px] uppercase tracking-wider text-slate-400">
+        <div className="rounded-2xl border border-white/10 bg-white/[0.02] overflow-hidden shadow-card-base">
+          <div className="overflow-x-auto custom-scrollbar" style={{ WebkitOverflowScrolling: 'touch' }}>
+            <table className="w-full text-left text-xs text-slate-300 font-sans min-w-[880px] border-collapse">
+              <thead className="bg-[#0c121e] border-b border-white/10 font-mono text-[11px] uppercase tracking-wider text-slate-400">
                 <tr>
                   <th 
-                    className="p-3.5 cursor-pointer hover:text-white"
+                    className="sticky left-0 bg-[#0c121e] z-20 shadow-[4px_0_12px_rgba(0,0,0,0.6)] p-3.5 min-w-[240px] cursor-pointer hover:text-white border-r border-white/5"
                     onClick={() => handleSort('firm')}
                   >
                     <div className="flex items-center gap-1">
@@ -216,7 +224,7 @@ export const CareerPipeline: React.FC<CareerPipelineProps> = ({
                     </div>
                   </th>
                   <th 
-                    className="p-3.5 cursor-pointer hover:text-white"
+                    className="p-3.5 min-w-[140px] cursor-pointer hover:text-white"
                     onClick={() => handleSort('status')}
                   >
                     <div className="flex items-center gap-1">
@@ -225,7 +233,7 @@ export const CareerPipeline: React.FC<CareerPipelineProps> = ({
                     </div>
                   </th>
                   <th 
-                    className="p-3.5 cursor-pointer hover:text-white"
+                    className="p-3.5 min-w-[130px] whitespace-nowrap cursor-pointer hover:text-white"
                     onClick={() => handleSort('deadline')}
                   >
                     <div className="flex items-center gap-1">
@@ -234,7 +242,7 @@ export const CareerPipeline: React.FC<CareerPipelineProps> = ({
                     </div>
                   </th>
                   <th 
-                    className="p-3.5 cursor-pointer hover:text-white"
+                    className="p-3.5 min-w-[140px] whitespace-nowrap cursor-pointer hover:text-white"
                     onClick={() => handleSort('salary')}
                   >
                     <div className="flex items-center gap-1">
@@ -242,8 +250,8 @@ export const CareerPipeline: React.FC<CareerPipelineProps> = ({
                       {sortField === 'salary' && (sortOrder === 'asc' ? <ArrowUp className="w-3 h-3" /> : <ArrowDown className="w-3 h-3" />)}
                     </div>
                   </th>
-                  <th className="p-3.5">Sector</th>
-                  <th className="p-3.5 text-right">Actions</th>
+                  <th className="p-3.5 min-w-[130px]">Sector</th>
+                  <th className="p-3.5 min-w-[120px] text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/5">
@@ -253,7 +261,7 @@ export const CareerPipeline: React.FC<CareerPipelineProps> = ({
                     onClick={() => openDetail(scheme)}
                     className="hover:bg-white/5 transition-colors cursor-pointer group"
                   >
-                    <td className="p-3.5">
+                    <td className="sticky left-0 bg-[#090d16] group-hover:bg-[#121927] transition-colors z-10 shadow-[4px_0_12px_rgba(0,0,0,0.6)] p-3.5 min-w-[240px] border-r border-white/5">
                       <div className="flex items-center gap-2.5">
                         <div className="w-7 h-7 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-slate-300 font-bold font-mono shrink-0">
                           {scheme.firm.slice(0, 1)}
@@ -265,26 +273,26 @@ export const CareerPipeline: React.FC<CareerPipelineProps> = ({
                       </div>
                     </td>
 
-                    <td className="p-3.5">
+                    <td className="p-3.5 min-w-[140px] whitespace-nowrap">
                       <Badge variant={getStatusVariant(scheme.status)} dot>
                         {scheme.status}
                       </Badge>
                     </td>
 
-                    <td className="p-3.5 font-mono text-slate-300">
+                    <td className="p-3.5 font-mono text-slate-300 whitespace-nowrap min-w-[130px]">
                       {scheme.appCloses || 'Rolling'}
                     </td>
 
-                    <td className="p-3.5 font-mono text-white font-medium">
+                    <td className="p-3.5 font-mono text-white font-medium whitespace-nowrap min-w-[140px]">
                       {scheme.salary || 'Competitive'}
                       {scheme.bonus && <span className="text-emerald-400 text-[10px] ml-1">+{scheme.bonus}</span>}
                     </td>
 
-                    <td className="p-3.5 font-mono text-[11px] text-slate-400">
+                    <td className="p-3.5 font-mono text-[11px] text-slate-400 min-w-[130px]">
                       {scheme.sector}
                     </td>
 
-                    <td className="p-3.5 text-right">
+                    <td className="p-3.5 min-w-[120px] text-right">
                       <div className="flex items-center justify-end gap-1.5" onClick={(e) => e.stopPropagation()}>
                         <button
                           onClick={() => {

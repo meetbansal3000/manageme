@@ -20,6 +20,7 @@ import { GraduateScheme, TrackerStatus } from '../../../types';
 import { ModalWrapper } from '../../modals/ModalWrapper';
 import { Button } from '../../ui/Button';
 import { Input } from '../../ui/Input';
+import { toast } from '../../ui/Toast';
 
 export interface AddJobModalProps {
   isOpen: boolean;
@@ -129,6 +130,7 @@ export const AddJobModal: React.FC<AddJobModalProps> = ({
     };
 
     onAdd(newScheme);
+    toast.success(`Saved ${roleTitle} at ${firm} to Potential Pipeline`);
     onClose();
   };
 

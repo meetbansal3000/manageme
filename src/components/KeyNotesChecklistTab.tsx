@@ -44,6 +44,9 @@ interface KeyNotesChecklistTabProps {
 
 const TASK_CATEGORIES = [
   'All',
+  'Finance',
+  'Study',
+  'Apps',
   'ACCA / Academics',
   'Job Applications',
   'Arrival Checklist',
@@ -158,6 +161,7 @@ export const KeyNotesChecklistTab: React.FC<KeyNotesChecklistTabProps> = ({
         onUpdateTasks([newTask, ...universalTasks]);
       }
 
+      showToast(`Added "${newTask.title}" [${newTask.category}] to Tasks`, 'success');
       setQuickTitle('');
       setQuickNotes('');
     });
@@ -184,6 +188,8 @@ export const KeyNotesChecklistTab: React.FC<KeyNotesChecklistTabProps> = ({
           completedAt: !t.completed ? new Date().toISOString() : undefined
         } : t)
       );
+
+      showToast(willComplete ? 'Task marked as completed 🎉' : 'Task marked as pending', 'info');
     });
   };
 

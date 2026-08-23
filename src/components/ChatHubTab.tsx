@@ -199,7 +199,7 @@ export const ChatHubTab: React.FC<Props> = ({ userData, updateData, pendingShare
       {/* Sidebar (Desktop permanent, Mobile off-canvas / overlay) */}
       <div className={`
         ${showMobileSidebar ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
-        fixed md:static inset-y-0 left-0 z-30 md:z-auto w-72 sm:w-80 max-w-[85vw]
+        fixed md:static inset-y-0 left-0 z-30 md:z-auto w-[85vw] sm:w-80 max-w-sm
         border-r border-[var(--border)] bg-slate-900/95 dark:bg-slate-950/95 md:bg-black/20
         backdrop-blur-2xl md:backdrop-blur-none flex flex-col transition-transform duration-300 ease-out shadow-2xl md:shadow-none
       `}>

@@ -147,47 +147,47 @@ export const PriorityTrackerTab: React.FC<PriorityTrackerTabProps> = ({
           className="my-4 py-12"
         />
       ) : (
-        <div className="border border-[var(--border)] overflow-x-auto bg-[var(--surface-solid)] rounded-2xl">
-          <table className="w-full text-left text-xs border-collapse min-w-[900px]">
+        <div className="border border-[var(--border)] overflow-x-auto bg-[var(--surface-solid)] rounded-2xl custom-scrollbar" style={{ WebkitOverflowScrolling: 'touch' }}>
+          <table className="w-full text-left text-xs border-collapse min-w-[1000px]">
           <thead>
             <tr className="bg-[var(--bg)] text-[var(--text-primary)] border-b border-[var(--border)] font-space-mono text-[10px] uppercase tracking-wider">
-              <th className="py-3 px-3 w-12 text-center">Rank</th>
-              <th className="py-3 px-4 w-48">Firm & Role</th>
-              <th className="py-3 px-3 w-28 text-center">Type</th>
-              <th className="py-3 px-3 w-32">Sector</th>
-              <th className="py-3 px-3 w-28 text-center">Deadline</th>
-              <th className="py-3 px-4 w-40 text-center">Live Status</th>
-              <th className="py-3 px-3 w-28 text-center">Date Applied</th>
-              <th className="py-3 px-4">Next Action & Strategic Fit</th>
-              <th className="py-3 px-3 w-14 text-center">Edit</th>
+              <th className="py-3 px-3 w-12 min-w-[50px] text-center">Rank</th>
+              <th className="sticky left-0 bg-[var(--bg)] z-20 shadow-[3px_0_8px_rgba(0,0,0,0.4)] py-3 px-4 w-52 min-w-[220px] border-r border-[var(--border)]/50">Firm & Role</th>
+              <th className="py-3 px-3 w-28 min-w-[100px] text-center whitespace-nowrap">Type</th>
+              <th className="py-3 px-3 w-32 min-w-[120px]">Sector</th>
+              <th className="py-3 px-3 w-28 min-w-[110px] text-center whitespace-nowrap">Deadline</th>
+              <th className="py-3 px-4 w-44 min-w-[160px] text-center">Live Status</th>
+              <th className="py-3 px-3 w-28 min-w-[110px] text-center whitespace-nowrap">Date Applied</th>
+              <th className="py-3 px-4 min-w-[240px]">Next Action & Strategic Fit</th>
+              <th className="py-3 px-3 w-14 min-w-[56px] text-center">Edit</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-[#1a1a1a]/15">
             {filtered.map((item) => {
               const isEditing = editingId === item.id;
               return (
-                <tr key={item.id} className="gsap-fade-up hover:bg-[var(--bg)] transition-colors">
-                  <td className="py-3.5 px-3 text-center align-top font-space-mono font-bold text-[var(--accent)]">
+                <tr key={item.id} className="gsap-fade-up hover:bg-[var(--bg)] transition-colors group">
+                  <td className="py-3.5 px-3 text-center align-top font-space-mono font-bold text-[var(--accent)] min-w-[50px]">
                     {item.rank}
                   </td>
-                  <td className="py-3.5 px-4 align-top">
+                  <td className="sticky left-0 bg-[var(--surface-solid)] group-hover:bg-[var(--bg)] transition-colors z-10 shadow-[3px_0_8px_rgba(0,0,0,0.4)] py-3.5 px-4 align-top min-w-[220px] border-r border-[var(--border)]/50">
                     <div className="apple-headline text-base font-semibold text-[var(--text-primary)]">{item.firm}</div>
                     <div className="text-xs text-[var(--text-secondary)] mt-0.5">{item.role}</div>
                   </td>
-                  <td className="py-3.5 px-3 text-center align-top font-space-mono text-[10px] text-[var(--text-secondary)]">
+                  <td className="py-3.5 px-3 text-center align-top font-space-mono text-[10px] text-[var(--text-secondary)] whitespace-nowrap min-w-[100px]">
                     {item.roleType}
                   </td>
-                  <td className="py-3.5 px-3 text-xs text-[var(--text-secondary)] align-top">
+                  <td className="py-3.5 px-3 text-xs text-[var(--text-secondary)] align-top min-w-[120px]">
                     {item.sector}
                   </td>
-                  <td className="py-3.5 px-3 text-xs font-mono text-center text-[var(--text-primary)] align-top">
+                  <td className="py-3.5 px-3 text-xs font-mono text-center text-[var(--text-primary)] align-top whitespace-nowrap min-w-[110px]">
                     {item.deadline}
                   </td>
-                  <td className="py-3.5 px-4 text-center align-top">
+                  <td className="py-3.5 px-4 text-center align-top min-w-[160px]">
                     <select
                       value={item.status}
                       onChange={(e) => handleStatusChange(item.id, e.target.value as TrackerStatus)}
-                      className="text-xs font-space-mono px-2 py-1 bg-transparent border border-[var(--border)] focus:outline-none cursor-pointer w-full"
+                      className="text-xs font-space-mono px-2 py-1 bg-transparent border border-[var(--border)] focus:outline-none cursor-pointer w-full rounded"
                     >
                       {STATUS_OPTIONS.map((opt) => (
                         <option key={opt} value={opt} className="bg-[var(--surface-solid)] text-[var(--text-primary)]">
@@ -196,10 +196,10 @@ export const PriorityTrackerTab: React.FC<PriorityTrackerTabProps> = ({
                       ))}
                     </select>
                   </td>
-                  <td className="py-3.5 px-3 font-space-mono text-[10px] text-center text-[var(--text-secondary)] align-top">
+                  <td className="py-3.5 px-3 font-space-mono text-[10px] text-center text-[var(--text-secondary)] align-top whitespace-nowrap min-w-[110px]">
                     {item.dateApplied || '—'}
                   </td>
-                  <td className="py-3.5 px-4 text-xs text-[var(--text-primary)] align-top space-y-1">
+                  <td className="py-3.5 px-4 text-xs text-[var(--text-primary)] align-top space-y-1 min-w-[240px]">
                     {isEditing ? (
                       <div className="space-y-2">
                         <input

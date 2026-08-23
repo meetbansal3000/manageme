@@ -5,7 +5,7 @@ import {
   Wallet, CreditCard as CardIcon, Receipt, Upload, Trash2, Plus, Download, 
   Loader2, Bot, Zap, Edit2, Copy, Sliders, Tag, Search, Filter, CheckCircle2,
   Calendar, Building, ExternalLink, ChevronDown, ChevronUp, Mail, Sparkles, Target, Percent,
-  CheckSquare, Square, Layers
+  CheckSquare, Square, Layers, RotateCcw
 } from 'lucide-react';
 import { UserTrackerData } from '../hooks/useFirestoreData';
 import { WorkShift, Expense, CreditCard, Invoice } from '../types';
@@ -502,7 +502,7 @@ export const FinanceHubTab: React.FC<Props> = ({ userData, updateData }) => {
     };
     
     updateData({ workShifts: [shift, ...(userData.workShifts || [])] });
-    showToast(`Logged ${shift.hours}h shift (+${currencySymbol}${totalEarned.toFixed(2)})`);
+    showToast(`Logged ${shift.hours} hours (£${totalEarned.toFixed(2)}) to Visa Ledger`, 'success');
 
     setNewShift({
       date: new Date().toISOString().split('T')[0],
@@ -546,6 +546,14 @@ export const FinanceHubTab: React.FC<Props> = ({ userData, updateData }) => {
   const handleDeleteShift = (id: string) => {
     updateData({ workShifts: (userData.workShifts || []).filter(s => s.id !== id) });
     showToast('Shift deleted');
+  };
+
+  const handleClearShifts = () => {
+    if (window.confirm('Are you sure you want to clear/reset all logged work shifts? This action will reset your Visa ledger hours.')) {
+      updateData({ workShifts: [] });
+      localStorage.removeItem('manageme_shifts_data');
+      showToast('All work shifts have been reset.', 'info');
+    }
   };
 
   // Batch Shift Handlers
@@ -1095,6 +1103,19 @@ export const FinanceHubTab: React.FC<Props> = ({ userData, updateData }) => {
                     </span>
                   )}
                 </button>
+
+                {/* Reset / Clear Shifts Button */}
+                {(userData.workShifts || []).length > 0 && (
+                  <button
+                    type="button"
+                    onClick={handleClearShifts}
+                    className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl border border-rose-500/20 bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 text-xs font-semibold transition-all cursor-pointer"
+                    title="Clear and reset all logged shifts"
+                  >
+                    <RotateCcw className="w-3 h-3 text-rose-400" />
+                    <span>Reset</span>
+                  </button>
+                )}
 
                 {/* Visa Limit Toggle */}
                 {hubPrefs.visibleModules.visaCap && (

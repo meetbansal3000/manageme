@@ -4,6 +4,7 @@ import { X, Plus, Sparkles, Loader2, CheckCircle2 } from 'lucide-react';
 import { PriorityTrackerItem, TrackerStatus } from '../types';
 import { useScrollLock } from '../hooks/useScrollLock';
 import { useModalDismiss } from '../hooks/useModalDismiss';
+import { toast } from './ui/Toast';
 
 interface AddApplicationModalProps {
   isOpen: boolean;
@@ -82,6 +83,8 @@ export const AddApplicationModal: React.FC<AddApplicationModalProps> = ({
       nextAction: nextAction || 'Prepare application materials & tailored CV',
       notes: notes || 'Target firm added to tracker'
     });
+
+    toast.success(`Saved ${role} at ${firm} to Potential Pipeline`);
 
     // reset
     setFirm('');

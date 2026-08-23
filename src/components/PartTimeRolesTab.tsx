@@ -4,6 +4,7 @@ import { PartTimeRole, WorkShift } from '../types';
 import { UserTrackerData } from '../hooks/useFirestoreData';
 import { AddToCalendar } from './AddToCalendar';
 import { AppleEmptyState } from './AppleEmptyState';
+import { toast } from './ui/Toast';
 
 interface Props {
   roles?: PartTimeRole[];
@@ -22,18 +23,23 @@ export const PartTimeRolesTab: React.FC<Props> = ({ roles = [], shifts = [], upd
     e.preventDefault();
     if (!newShift.description || !newShift.date) return;
     
+    const hours = calculateHours(newShift.startTime || '09:00', newShift.endTime || '17:00');
+    const rate = newShift.hourlyRate || 12.50;
+    const totalEarned = hours * rate;
+
     const shift: WorkShift = {
       id: crypto.randomUUID(),
       description: newShift.description!,
       date: newShift.date!,
       startTime: newShift.startTime || '09:00',
       endTime: newShift.endTime || '17:00',
-      hours: calculateHours(newShift.startTime || '09:00', newShift.endTime || '17:00'),
-      hourlyRate: newShift.hourlyRate || 0,
-      totalEarned: 0 // Mocked for now
+      hours,
+      hourlyRate: rate,
+      totalEarned: Number(totalEarned.toFixed(2))
     };
     
     updateData({ workShifts: [shift, ...shifts] });
+    toast.success(`Logged ${hours} hours (£${totalEarned.toFixed(2)}) to Visa Ledger`);
     setNewShift({ description: '', date: '', startTime: '', endTime: '', hourlyRate: 12.50 });
   };
 

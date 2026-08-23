@@ -92,15 +92,15 @@ export const LiveMarketPanel: React.FC<Props> = ({ asset, marketData, volatility
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full">
         {/* Tick Chart */}
-        <div className="bg-surface-elevated border border-border rounded-xl p-4 flex flex-col min-h-[300px] shadow-card-base">
+        <div className="bg-surface-elevated border border-border rounded-xl p-4 flex flex-col min-h-[320px] shadow-card-base w-full min-w-0">
           <h3 className="text-xs font-bold text-textMuted uppercase tracking-wider mb-4 flex items-center gap-2 font-mono">
             <Activity className="w-4 h-4 text-actionBlue"/> Live Tick Chart
           </h3>
-          <div className="flex-1 w-full relative">
+          <div className="flex-1 w-full min-w-0 min-h-[220px] h-[250px] relative">
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={history}>
+              <AreaChart data={history} margin={{ top: 5, right: 5, left: 5, bottom: 5 }}>
                 <defs>
                   <linearGradient id="colorPrice" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor={marketData.isUp ? "#00FF66" : "#FF3B30"} stopOpacity={0.25}/>

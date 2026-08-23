@@ -28,6 +28,7 @@ import { useModalDismiss } from './hooks/useModalDismiss';
 import { useGlobalShortcuts } from './hooks/useGlobalShortcuts';
 import { SpeedInsights } from '@vercel/speed-insights/react';
 import { Analytics } from '@vercel/analytics/react';
+import { toast } from './components/ui/Toast';
 
 const PRIMARY_TABS: AppTab[] = ['landing', 'news', 'study', 'metasuite', 'jobs', 'outreach', 'tasks', 'uni', 'finance', 'trading', 'work', 'skills', 'travel', 'transit', 'chat', 'resume', 'privacy', 'terms'];
 
@@ -339,8 +340,7 @@ export default function App() {
   const handleGeminiMutate = (mutations: any) => {
     updateData(mutations);
     const details = Object.keys(mutations).join(', ');
-    setGeminiToast(`✨ Gemini updated your settings: ${details}`);
-    setTimeout(() => setGeminiToast(null), 5000);
+    toast.success(`✨ Gemini updated your settings: ${details}`);
   };
 
   

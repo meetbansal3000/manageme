@@ -540,10 +540,10 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
       {/* 1. TERMINAL VIEW (Order Panel, Unified Market Switcher, Live Depth, Watchlist) */}
       {/* ========================================================================= */}
       {activeSection === 'portfolio' && (
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 w-full">
           
           {/* LEFT COLUMN: ORDER PANEL & ASSET DISCOVERY */}
-          <div className="lg:col-span-4 space-y-6">
+          <div className="lg:col-span-4 space-y-6 w-full min-w-0">
             
             <div id="order-ticket-container" className="bg-surface border border-border rounded-2xl p-5 sm:p-6 shadow-card-base hover:shadow-card-hover transition-all duration-300 ease-out relative">
               <div className="flex justify-between items-center mb-4">
@@ -937,7 +937,7 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
           </div>
 
           {/* RIGHT COLUMN: LIVE CHART & HOLDINGS */}
-          <div className="lg:col-span-8 space-y-6">
+          <div className="lg:col-span-8 space-y-6 w-full min-w-0">
             
             {selectedAsset && (
               <LiveMarketPanel 

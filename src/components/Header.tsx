@@ -470,29 +470,18 @@ export const Header: React.FC<HeaderProps> = ({
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
+              transition={{ duration: 0.25 }}
               onClick={() => setDrawerOpen(false)}
-              className="fixed inset-0 bg-black/40 dark:bg-black/60 backdrop-blur-sm z-50"
+              className="fixed inset-0 bg-black/70 backdrop-blur-md z-50 cursor-pointer"
             />
             
             <motion.div
-              initial={{ y: '100%', x: 0 }}
-              animate={{ y: 0, x: 0 }}
-              exit={{ y: '100%', x: 0 }}
-              drag="y"
-              dragConstraints={{ top: 0, bottom: 0 }}
-              dragElastic={{ top: 0, bottom: 0.8 }}
-              onDragEnd={(_: any, info: any) => {
-                if (info.offset.y > 100 || info.velocity.y > 200) {
-                  triggerHaptic(15);
-                  setDrawerOpen(false);
-                }
-              }}
-              transition={{ type: 'spring', damping: 30, stiffness: 350 }}
-              className="fixed bottom-0 left-0 right-0 sm:top-0 sm:left-auto sm:right-0 sm:bottom-0 w-full sm:max-w-sm border-t sm:border-t-0 border-l border-white/10 z-50 flex flex-col shadow-2xl bg-[#0A0A0A] backdrop-blur-2xl rounded-t-3xl sm:rounded-none max-h-[88vh] sm:max-h-full touch-none text-white"
+              initial={{ x: '100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '100%' }}
+              transition={{ type: 'spring', damping: 28, stiffness: 320 }}
+              className="fixed top-0 right-0 bottom-0 w-[85vw] sm:w-96 max-w-sm border-l border-white/10 z-50 flex flex-col shadow-2xl bg-[#0A0A0A]/95 backdrop-blur-2xl h-full text-white overflow-hidden"
             >
-              {/* Drag handle for mobile bottom sheet */}
-              <div className="w-12 h-1 bg-white/20 rounded-full my-2 mx-auto cursor-grab active:cursor-grabbing sm:hidden" />
-
               {/* Drawer Header */}
               <div className="flex items-center justify-between p-4 sm:p-5 border-b border-white/10 bg-transparent">
                 <div className="flex items-center gap-2">

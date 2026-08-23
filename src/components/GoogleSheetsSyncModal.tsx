@@ -19,8 +19,8 @@ import {
 import { generateGoogleSheetsTSV } from '../utils/googleSheetsService';
 import { exportMultiSheetWorkbook } from '../utils/excelExporter';
 import { useScrollLock } from '../hooks/useScrollLock';
-
 import { useModalDismiss } from '../hooks/useModalDismiss';
+import { toast } from './ui/Toast';
 
 interface GoogleSheetsSyncModalProps {
   isOpen: boolean;
@@ -74,12 +74,16 @@ export const GoogleSheetsSyncModal: React.FC<GoogleSheetsSyncModalProps> = ({
   const handleCreateSheet = async () => {
     setIsProcessing(true);
     setStatusMessage('Uploading 5-sheet master workbook to Google Drive...');
+    toast.info('Syncing with Google Sheets...');
     try {
       await onCreateGoogleSheet();
+      const totalCount = (gradSchemes?.length || 0) + (priorityTracker?.length || 0);
       setStatusMessage('Spreadsheet created and uploaded to Google Drive!');
+      toast.success(`Successfully synced ${totalCount} applications to Google Sheets`);
     } catch (err: any) {
       console.error(err);
       setStatusMessage(`Error: ${err.message || 'Failed to upload'}`);
+      toast.error('Sync failed: check API connection');
     } finally {
       setIsProcessing(false);
     }

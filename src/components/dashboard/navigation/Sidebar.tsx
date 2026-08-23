@@ -71,7 +71,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
   return (
     <aside className={cn(
-      'w-64 bg-black/90 backdrop-blur-2xl border-r border-white/10 flex flex-col h-full overflow-hidden text-white',
+      'w-[85vw] sm:w-64 max-w-sm bg-black/90 backdrop-blur-2xl border-r border-white/10 flex flex-col h-full overflow-hidden text-white',
       className
     )}>
       {/* Sidebar Header */}
