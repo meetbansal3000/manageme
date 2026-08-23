@@ -41,10 +41,21 @@ export const MarketDepth: React.FC<MarketDepthProps> = ({
   }, [customAsks, currentPrice]);
 
   const maxTotal = useMemo(() => {
-    const maxBid = Math.max(...bids.map(b => b.total), 1);
-    const maxAsk = Math.max(...asks.map(a => a.total), 1);
-    return Math.max(maxBid, maxAsk);
+    const validBids = (bids || []).map(b => b?.total || 0);
+    const validAsks = (asks || []).map(a => a?.total || 0);
+    const maxBid = validBids.length > 0 ? Math.max(...validBids, 1) : 1;
+    const maxAsk = validAsks.length > 0 ? Math.max(...validAsks, 1) : 1;
+    return Math.max(maxBid, maxAsk, 1);
   }, [bids, asks]);
+
+  const spread = useMemo(() => {
+    const topAsk = asks?.[0]?.price;
+    const topBid = bids?.[0]?.price;
+    if (topAsk !== undefined && topBid !== undefined) {
+      return (topAsk - topBid).toFixed(2);
+    }
+    return '0.30';
+  }, [asks, bids]);
 
   return (
     <Card variant="glass" padding="sm" className="border border-white/10">
@@ -53,7 +64,7 @@ export const MarketDepth: React.FC<MarketDepthProps> = ({
           ORDER BOOK ({symbol})
         </h4>
         <span className="text-[10px] font-mono text-emerald-400">
-          SPREAD: ${(asks[0]?.price - bids[0]?.price || 0.3).toFixed(2)}
+          SPREAD: ${spread}
         </span>
       </div>
 
@@ -65,18 +76,19 @@ export const MarketDepth: React.FC<MarketDepthProps> = ({
             <span>Size</span>
           </div>
           <div className="space-y-1">
-            {bids.map((bid) => {
-              const depthPct = Math.round((bid.total / maxTotal) * 100);
+            {(bids || []).map((bid) => {
+              if (!bid) return null;
+              const depthPct = Math.min(100, Math.max(0, Math.round(((bid.total || 0) / maxTotal) * 100)));
               return (
-                <div key={bid.id} className="relative flex justify-between items-center py-0.5 px-1 rounded overflow-hidden">
+                <div key={bid.id || `${bid.price}-${bid.amount}`} className="relative flex justify-between items-center py-0.5 px-1 rounded overflow-hidden">
                   <div
                     className="absolute right-0 top-0 bottom-0 bg-emerald-500/10 pointer-events-none"
                     style={{ width: `${depthPct}%` }}
                   />
                   <span className="text-emerald-400 font-semibold relative z-10">
-                    ${bid.price.toFixed(2)}
+                    ${(bid.price || 0).toFixed(2)}
                   </span>
-                  <span className="text-slate-300 relative z-10">{bid.amount}</span>
+                  <span className="text-slate-300 relative z-10">{bid.amount || 0}</span>
                 </div>
               );
             })}
@@ -90,18 +102,19 @@ export const MarketDepth: React.FC<MarketDepthProps> = ({
             <span>Size</span>
           </div>
           <div className="space-y-1">
-            {asks.map((ask) => {
-              const depthPct = Math.round((ask.total / maxTotal) * 100);
+            {(asks || []).map((ask) => {
+              if (!ask) return null;
+              const depthPct = Math.min(100, Math.max(0, Math.round(((ask.total || 0) / maxTotal) * 100)));
               return (
-                <div key={ask.id} className="relative flex justify-between items-center py-0.5 px-1 rounded overflow-hidden">
+                <div key={ask.id || `${ask.price}-${ask.amount}`} className="relative flex justify-between items-center py-0.5 px-1 rounded overflow-hidden">
                   <div
                     className="absolute left-0 top-0 bottom-0 bg-rose-500/10 pointer-events-none"
                     style={{ width: `${depthPct}%` }}
                   />
                   <span className="text-rose-400 font-semibold relative z-10">
-                    ${ask.price.toFixed(2)}
+                    ${(ask.price || 0).toFixed(2)}
                   </span>
-                  <span className="text-slate-300 relative z-10">{ask.amount}</span>
+                  <span className="text-slate-300 relative z-10">{ask.amount || 0}</span>
                 </div>
               );
             })}

@@ -171,7 +171,19 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
   // Order Panel State
   const [searchQuery, setSearchQuery] = useState('');
   const [showDropdown, setShowDropdown] = useState(false);
-  const [selectedAsset, setSelectedAsset] = useState<MarketAsset>(GLOBAL_ASSETS[0]);
+  const [selectedAsset, setSelectedAsset] = useState<MarketAsset>(() => GLOBAL_ASSETS[0] || {
+    symbol: 'AAPL',
+    name: 'Apple Inc.',
+    type: 'STOCKS',
+    exchange: 'NASDAQ',
+    region: 'US',
+    currency: '$',
+    price: 232.80,
+    change: '+1.1%',
+    isUp: true,
+    logo: 'A',
+    sparkline: [228, 229, 230, 231, 232.8]
+  });
   
   const [orderType, setOrderType] = useState<'Delivery' | 'Intraday'>('Delivery');
   const [orderMode, setOrderMode] = useState<'Market' | 'Limit' | 'SL'>('Market');
@@ -259,14 +271,15 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
   const totalValue = calculatePortfolioValue();
   const totalReturn = ((totalValue - tradingData.startingCapital) / tradingData.startingCapital) * 100;
   const unrealizedPnL = (tradingData.positions || []).reduce((acc, pos) => {
-    return acc + ((pos.currentPrice - pos.averageEntryPrice) * pos.quantity);
+    return acc + (((pos?.currentPrice ?? 0) - (pos?.averageEntryPrice ?? 0)) * (pos?.quantity ?? 0));
   }, 0);
 
   // Asset allocation breakdown
   const allocation = useMemo(() => {
-    const equitiesVal = tradingData.positions.filter(p => p.assetClass === 'Stock').reduce((acc, p) => acc + (p.currentPrice * p.quantity), 0);
-    const etfVal = tradingData.positions.filter(p => p.assetClass === 'ETF').reduce((acc, p) => acc + (p.currentPrice * p.quantity), 0);
-    const commodityVal = tradingData.positions.filter(p => p.assetClass === 'Commodity').reduce((acc, p) => acc + (p.currentPrice * p.quantity), 0);
+    const validPositions = tradingData.positions || [];
+    const equitiesVal = validPositions.filter(p => p?.assetClass === 'Stock').reduce((acc, p) => acc + ((p?.currentPrice ?? 0) * (p?.quantity ?? 0)), 0);
+    const etfVal = validPositions.filter(p => p?.assetClass === 'ETF').reduce((acc, p) => acc + ((p?.currentPrice ?? 0) * (p?.quantity ?? 0)), 0);
+    const commodityVal = validPositions.filter(p => p?.assetClass === 'Commodity').reduce((acc, p) => acc + ((p?.currentPrice ?? 0) * (p?.quantity ?? 0)), 0);
     const cashVal = tradingData.cashBalance;
 
     return {

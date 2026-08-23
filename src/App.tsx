@@ -29,6 +29,7 @@ import { useGlobalShortcuts } from './hooks/useGlobalShortcuts';
 import { SpeedInsights } from '@vercel/speed-insights/react';
 import { Analytics } from '@vercel/analytics/react';
 import { toast } from './components/ui/Toast';
+import { ErrorBoundary } from './components/ui/ErrorBoundary';
 
 const PRIMARY_TABS: AppTab[] = ['landing', 'news', 'study', 'metasuite', 'jobs', 'outreach', 'tasks', 'uni', 'finance', 'trading', 'work', 'skills', 'travel', 'transit', 'chat', 'resume', 'privacy', 'terms'];
 
@@ -545,7 +546,14 @@ export default function App() {
                 />
               )}
               
-              {activeTab === 'trading' && <PaperTradingTab userData={userData} updateData={updateData} />}
+              {activeTab === 'trading' && (
+                <ErrorBoundary
+                  fallbackTitle="Trading Station Notice"
+                  fallbackMessage="The Trading Terminal encountered an unexpected state. Click retry to recover."
+                >
+                  <PaperTradingTab userData={userData} updateData={updateData} />
+                </ErrorBoundary>
+              )}
               
               {(activeTab === 'travel' || activeTab === 'transit' || activeTab === 'places') && (
                 <TravelTripsTab 
