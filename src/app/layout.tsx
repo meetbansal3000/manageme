@@ -9,6 +9,7 @@ import { SettingsProvider } from '../context/SettingsContext';
 import { OwnerSecurityProvider } from '../context/OwnerSecurityContext';
 import { Analytics } from '@vercel/analytics/react';
 import { CookieBanner } from '../components/ui/CookieBanner';
+import { SmoothScroll } from '../components/ui/SmoothScroll';
 import './globals.css';
 
 export const metadata = {
@@ -53,9 +54,11 @@ export default function RootLayout({
           <UserProvider>
             <SettingsProvider>
               <OwnerSecurityProvider>
-                <div className="min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)] selection:bg-[var(--accent-primary)] selection:text-white font-sans antialiased transition-colors duration-200">
-                  {children}
-                </div>
+                <SmoothScroll>
+                  <div className="min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)] selection:bg-[var(--accent-primary)] selection:text-white font-sans antialiased transition-colors duration-200">
+                    {children}
+                  </div>
+                </SmoothScroll>
                 <CookieBanner />
                 <Analytics />
               </OwnerSecurityProvider>
