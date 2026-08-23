@@ -33,7 +33,8 @@ export const JobCard: React.FC<JobCardProps> = ({
       variant="glass"
       hoverEffect
       padding="sm"
-      className="border border-white/10 group transition-all"
+      className="border border-white/10 group transition-all cursor-pointer"
+      onClick={() => onEdit && onEdit(scheme)}
     >
       <div className="flex items-start justify-between gap-3 mb-2.5">
         <div className="flex items-center gap-2 min-w-0">
@@ -73,7 +74,7 @@ export const JobCard: React.FC<JobCardProps> = ({
           {scheme.sector}
         </span>
 
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
           {onEdit && (
             <button
               onClick={() => onEdit(scheme)}
