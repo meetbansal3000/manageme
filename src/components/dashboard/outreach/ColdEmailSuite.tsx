@@ -15,13 +15,17 @@ import {
   Edit3, 
   CheckCircle2, 
   Clock, 
-  MessageSquare,
-  Building2,
-  Linkedin,
-  GraduationCap,
-  Award,
-  BookOpen,
-  ArrowRight
+  MessageSquare, 
+  Building2, 
+  Linkedin, 
+  GraduationCap, 
+  Award, 
+  BookOpen, 
+  ArrowRight,
+  ShieldCheck,
+  Check,
+  Loader2,
+  X
 } from 'lucide-react';
 import { Card } from '../../ui/Card';
 import { Button } from '../../ui/Button';
@@ -48,7 +52,7 @@ export interface RecruiterContact {
 const STORAGE_KEY = 'manageme_recruiter_crm';
 
 const DEFAULT_CANDIDATE_PROFILE = {
-  name: 'Candidate',
+  name: 'Meet Bansal',
   university: 'Durham University',
   degree: 'MSc Finance & Investment',
   certifications: 'ACCA Affiliate, CFA Level 1 Candidate',
@@ -308,15 +312,66 @@ ACCA Affiliate`
     }
   }, [targetName, targetCompany, targetRole, templateType, tone, customAngle]);
 
+  // Pre-Send Human-in-the-Loop Review Modal State
+  const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
+  const [reviewTo, setReviewTo] = useState('');
+  const [reviewSubject, setReviewSubject] = useState('');
+  const [reviewBody, setReviewBody] = useState('');
+  const [isSavingDraft, setIsSavingDraft] = useState(false);
+
   const handleCopyEmail = () => {
     const fullText = `Subject: ${generatedEmail.subject}\n\n${generatedEmail.body}`;
     navigator.clipboard.writeText(fullText);
     toast.success('Subject & Email body copied to clipboard!');
   };
 
+  const handleOpenReviewModal = (recipientEmail?: string) => {
+    const targetEmail = recipientEmail || contacts.find(c => c.id === selectedContactId)?.email || 'sarah.jenkins@gs.com';
+    setReviewTo(targetEmail);
+    setReviewSubject(generatedEmail.subject);
+    setReviewBody(generatedEmail.body);
+    setIsReviewModalOpen(true);
+  };
+
+  const handleSaveToGmailDrafts = async () => {
+    if (!reviewTo.trim()) {
+      toast.error('Please enter a recipient email address.');
+      return;
+    }
+    setIsSavingDraft(true);
+    try {
+      const res = await fetch('/api/email/create-draft', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          to: reviewTo,
+          subject: reviewSubject,
+          body: reviewBody
+        })
+      });
+      const data = await res.json();
+      if (data.success) {
+        toast.success(`Draft successfully saved to Gmail! (ID: ${data.draftId})`);
+        setIsReviewModalOpen(false);
+      } else {
+        toast.error(data.error || 'Failed to create Gmail draft.');
+      }
+    } catch (err: any) {
+      toast.error(err?.message || 'Network error saving draft.');
+    } finally {
+      setIsSavingDraft(false);
+    }
+  };
+
+  const handleCopyReviewText = () => {
+    const full = `Subject: ${reviewSubject}\n\n${reviewBody}`;
+    navigator.clipboard.writeText(full);
+    toast.success('Subject and email body copied to clipboard!');
+  };
+
   const handleOpenMailto = () => {
-    const target = contacts.find(c => c.id === selectedContactId)?.email || '';
-    const mailto = `mailto:${encodeURIComponent(target)}?subject=${encodeURIComponent(generatedEmail.subject)}&body=${encodeURIComponent(generatedEmail.body)}`;
+    const target = reviewTo || contacts.find(c => c.id === selectedContactId)?.email || '';
+    const mailto = `mailto:${encodeURIComponent(target)}?subject=${encodeURIComponent(reviewSubject || generatedEmail.subject)}&body=${encodeURIComponent(reviewBody || generatedEmail.body)}`;
     window.open(mailto, '_blank');
   };
 
@@ -649,22 +704,31 @@ ACCA Affiliate`
 
                 <div className="flex items-center gap-2">
                   <Button
+                    variant="primary"
+                    size="sm"
+                    onClick={() => handleOpenReviewModal()}
+                    className="text-xs font-bold shadow-md shadow-blue-500/20"
+                  >
+                    <Send className="w-3.5 h-3.5 mr-1" />
+                    Send / Create Draft
+                  </Button>
+                  <Button
                     variant="secondary"
                     size="sm"
                     onClick={handleCopyEmail}
                     className="text-xs"
                   >
                     <Copy className="w-3.5 h-3.5 mr-1" />
-                    Copy Subject & Body
+                    Copy
                   </Button>
                   <Button
-                    variant="primary"
+                    variant="outline"
                     size="sm"
                     onClick={handleOpenMailto}
                     className="text-xs"
                   >
                     <ExternalLink className="w-3.5 h-3.5 mr-1" />
-                    Open in Mail
+                    Mail Client
                   </Button>
                 </div>
               </div>
@@ -684,8 +748,130 @@ ACCA Affiliate`
                   className="w-full bg-white/[0.02] border border-white/10 rounded-2xl p-4 font-mono text-xs text-slate-200 leading-relaxed focus:outline-none resize-none custom-scrollbar"
                 />
               </div>
+
+              {/* Bottom Quick Trigger */}
+              <div className="pt-2 flex items-center justify-between border-t border-white/10 text-xs font-mono text-slate-400">
+                <span>Candidate Profile: Meet Bansal (MSc Finance / ACCA)</span>
+                <button
+                  onClick={() => handleOpenReviewModal()}
+                  className="text-blue-400 hover:text-blue-300 font-bold flex items-center gap-1 cursor-pointer"
+                >
+                  <span>Review Draft Before Dispatch</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </button>
+              </div>
             </Card>
           </div>
+        </div>
+      )}
+
+      {/* OUTREACH REVIEW & CONFIRMATION MODAL (Human-in-the-Loop) */}
+      {isReviewModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+          <Card variant="glass" padding="lg" className="w-full max-w-2xl border border-white/20 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto custom-scrollbar">
+            <div className="flex items-center justify-between border-b border-white/10 pb-3">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-lg bg-blue-500/20 text-blue-400 flex items-center justify-center">
+                  <ShieldCheck className="w-4 h-4" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold font-mono text-white uppercase tracking-wider">
+                    Outreach Review & Confirmation
+                  </h3>
+                  <p className="text-[11px] font-mono text-slate-400">
+                    Human-in-the-loop verification before creating Gmail draft or dispatching.
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setIsReviewModalOpen(false)}
+                className="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-white/10 transition-colors"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Candidate Identity Attribution Banner */}
+            <div className="p-2.5 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center gap-2 text-xs font-mono text-blue-300">
+              <GraduationCap className="w-4 h-4 shrink-0 text-blue-400" />
+              <span>Sent on behalf of Meet Bansal (MSc Finance / ACCA Affiliate)</span>
+            </div>
+
+            <div className="space-y-3 font-mono text-xs">
+              <div>
+                <label className="text-slate-400 block mb-1 font-semibold">Recruiter Email (To:)</label>
+                <Input
+                  type="email"
+                  placeholder="recruiter@company.com"
+                  value={reviewTo}
+                  onChange={(e) => setReviewTo(e.target.value)}
+                />
+              </div>
+
+              <div>
+                <label className="text-slate-400 block mb-1 font-semibold">Subject Line (Editable)</label>
+                <Input
+                  value={reviewSubject}
+                  onChange={(e) => setReviewSubject(e.target.value)}
+                  placeholder="Subject line..."
+                />
+              </div>
+
+              <div>
+                <label className="text-slate-400 block mb-1 font-semibold">Email Body (Editable Preview)</label>
+                <textarea
+                  rows={10}
+                  value={reviewBody}
+                  onChange={(e) => setReviewBody(e.target.value)}
+                  className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-xs font-mono text-slate-200 focus:outline-none focus:border-blue-500 resize-none leading-relaxed custom-scrollbar"
+                />
+              </div>
+            </div>
+
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-3 border-t border-white/10">
+              <button
+                type="button"
+                onClick={() => setIsReviewModalOpen(false)}
+                className="text-xs font-mono text-slate-400 hover:text-white px-3 py-2"
+              >
+                Cancel
+              </button>
+
+              <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={handleCopyReviewText}
+                  className="text-xs"
+                >
+                  <Copy className="w-3.5 h-3.5 mr-1" />
+                  Copy to Clipboard
+                </Button>
+
+                <Button
+                  type="button"
+                  variant="primary"
+                  size="sm"
+                  disabled={isSavingDraft}
+                  onClick={handleSaveToGmailDrafts}
+                  className="text-xs font-bold"
+                >
+                  {isSavingDraft ? (
+                    <>
+                      <Loader2 className="w-3.5 h-3.5 mr-1 animate-spin" />
+                      Saving to Gmail...
+                    </>
+                  ) : (
+                    <>
+                      <Mail className="w-3.5 h-3.5 mr-1" />
+                      Save to Gmail Drafts
+                    </>
+                  )}
+                </Button>
+              </div>
+            </div>
+          </Card>
         </div>
       )}
 

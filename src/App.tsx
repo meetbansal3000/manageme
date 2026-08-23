@@ -509,29 +509,34 @@ export default function App() {
               {activeTab === 'news' && <FinancialNewsTab userData={userData} updateData={updateData} />}
               
               {activeTab === 'jobs' && (
-                <div className="space-y-8">
-                  <JobSearchTab userData={userData} updateData={updateData} />
-                  <GraduateSchemesTab 
-                    gradSchemes={userData.gradSchemes || []}
-                    onUpdateStatus={(id, status) => {
-                      updateData({ gradSchemes: (userData.gradSchemes || []).map(s => s.id === id ? { ...s, status } : s) });
-                    }}
-                    onAddScheme={(newScheme) => {
-                      updateData({ gradSchemes: [newScheme as any, ...(userData.gradSchemes || [])] });
-                    }}
-                    onEditScheme={(id, updated) => {
-                      updateData({ gradSchemes: (userData.gradSchemes || []).map(s => s.id === id ? { ...s, ...updated } : s) });
-                    }}
-                    onDeleteScheme={(id) => {
-                      updateData({ gradSchemes: (userData.gradSchemes || []).filter(s => s.id !== id) });
-                    }}
-                    onUpdateSchemes={(schemes) => {
-                      updateData({ gradSchemes: schemes });
-                    }}
-                    searchQuery={searchQuery}
-                    selectedSector={selectedSector}
-                  />
-                </div>
+                <ErrorBoundary
+                  fallbackTitle="Career Pipeline Notice"
+                  fallbackMessage="The Career Vault & Applications Pipeline encountered an unexpected state. Click retry to recover."
+                >
+                  <div className="space-y-8">
+                    <JobSearchTab userData={userData} updateData={updateData} />
+                    <GraduateSchemesTab 
+                      gradSchemes={userData.gradSchemes || []}
+                      onUpdateStatus={(id, status) => {
+                        updateData({ gradSchemes: (userData.gradSchemes || []).map(s => s.id === id ? { ...s, status } : s) });
+                      }}
+                      onAddScheme={(newScheme) => {
+                        updateData({ gradSchemes: [newScheme as any, ...(userData.gradSchemes || [])] });
+                      }}
+                      onEditScheme={(id, updated) => {
+                        updateData({ gradSchemes: (userData.gradSchemes || []).map(s => s.id === id ? { ...s, ...updated } : s) });
+                      }}
+                      onDeleteScheme={(id) => {
+                        updateData({ gradSchemes: (userData.gradSchemes || []).filter(s => s.id !== id) });
+                      }}
+                      onUpdateSchemes={(schemes) => {
+                        updateData({ gradSchemes: schemes });
+                      }}
+                      searchQuery={searchQuery}
+                      selectedSector={selectedSector}
+                    />
+                  </div>
+                </ErrorBoundary>
               )}
 
               {activeTab === 'outreach' && (

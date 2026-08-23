@@ -162,6 +162,19 @@ export const FinancialLedger: React.FC<FinancialLedgerProps> = ({
         </Card>
       </div>
 
+      {/* Overview Empty State */}
+      {expenses.length === 0 && shifts.length === 0 && (
+        <Card variant="glass" padding="md" className="border border-white/10 text-center py-6">
+          <Wallet className="w-8 h-8 mx-auto text-blue-400 opacity-60 mb-2" />
+          <p className="font-semibold text-white text-sm">
+            No expenses or shifts logged yet. Add your first entry above.
+          </p>
+          <p className="text-xs text-slate-400 mt-1">
+            Track daily living costs, part-time wages, and monitor Tier-4 / Student Visa 20-hour limits.
+          </p>
+        </Card>
+      )}
+
       {/* Main Ledger Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Expenses Column */}
