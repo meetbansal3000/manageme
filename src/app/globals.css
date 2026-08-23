@@ -1,102 +1,126 @@
 /* Styles: Global CSS Design Tokens & Tailwind Base */
 
-@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Manrope:wght@300;400;500;600;700;800&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap');
 @import "tailwindcss";
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  --font-sans: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-sans: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-jakarta: 'Plus Jakarta Sans', sans-serif;
   --font-serif: 'Instrument Serif', Georgia, serif;
   --font-editorial: 'Instrument Serif', Georgia, serif;
   --font-mono: 'Space Mono', monospace;
 
-  /* Vesper/Meridian Tokens */
-  --color-bg: #000000;
-  --color-surface: #0A0A0A;
-  --color-border-soft: rgba(255, 255, 255, 0.12);
-  --color-accent-blue: #0052FF;
+  /* Theme color token proxies */
+  --color-bg: var(--bg-primary, #0B0C10);
+  --color-surface: var(--card-bg, #15171E);
+  --color-border-soft: var(--border-subtle, rgba(255, 255, 255, 0.08));
+  --color-accent-blue: var(--accent-primary, #818CF8);
   --color-profit: #00FF66;
 
-  --color-appBg: #000000;
-  --color-appSurface: #0A0A0A;
-  --color-accentGlow: #0052FF;
+  --color-appBg: var(--bg-primary, #0B0C10);
+  --color-appSurface: var(--card-bg, #15171E);
+  --color-accentGlow: var(--accent-primary, #818CF8);
   --color-accentProfit: #00FF66;
 
-  --color-background: #000000;
-  --color-border: rgba(255, 255, 255, 0.12);
-  --color-text-primary: #FFFFFF;
-  --color-text-muted: #8B95A5;
+  --color-background: var(--bg-primary, #0B0C10);
+  --color-border: var(--border-subtle, rgba(255, 255, 255, 0.08));
+  --color-text-primary: var(--text-primary, #F9FAFB);
+  --color-text-muted: var(--text-secondary, #94A3B8);
 }
 
-@keyframes rise {
-  from {
-    transform: translate3d(0, 118%, 0);
-    opacity: 0;
-  }
-  to {
-    transform: translate3d(0, 0, 0);
-    opacity: 1;
-  }
+:root {
+  /* Light Mode Design Tokens */
+  --bg-primary: #FAF8F5;
+  --card-bg: #FFFFFF;
+  --border-subtle: #EAE6DF;
+  --text-primary: #111827;
+  --text-secondary: #6B7280;
+  --accent-primary: #5E43F3;
+  --accent-highlight: #FF6B4A;
+
+  --bg-app: #FAF8F5;
+  --bg-surface: #FFFFFF;
+  --border-soft: #EAE6DF;
+  --text-muted: #6B7280;
+  --accent-glow: #5E43F3;
+  --accent-profit: #10B981;
+  --accent-loss: #EF4444;
+
+  --bg: #FAF8F5;
+  --surface: #FFFFFF;
+  --surface-solid: #FFFFFF;
+  --surface-border: #EAE6DF;
+  --border: #EAE6DF;
+  --accent: #5E43F3;
+  --profit-green: #10B981;
+  --loss-red: #EF4444;
+  --bg-canvas: #FAF8F5;
+  --ink-main: #111827;
+
+  --theme-shadow: 0 4px 20px rgba(94, 67, 243, 0.08);
+  --theme-card-shadow: 0 4px 16px -2px rgba(0, 0, 0, 0.06);
+  --theme-card-hover-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.1), 0 0 20px rgba(94, 67, 243, 0.1);
+}
+
+:root.dark,
+.dark,
+html.dark,
+[data-theme="dark"] {
+  /* Dark Mode Design Tokens */
+  --bg-primary: #0B0C10;
+  --card-bg: #15171E;
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --text-primary: #F9FAFB;
+  --text-secondary: #94A3B8;
+  --accent-primary: #818CF8;
+  --accent-highlight: #FB923C;
+
+  --bg-app: #0B0C10;
+  --bg-surface: #15171E;
+  --border-soft: rgba(255, 255, 255, 0.08);
+  --text-muted: #94A3B8;
+  --accent-glow: #818CF8;
+  --accent-profit: #00FF66;
+  --accent-loss: #FF3B30;
+
+  --bg: #0B0C10;
+  --surface: #15171E;
+  --surface-solid: #15171E;
+  --surface-border: rgba(255, 255, 255, 0.08);
+  --border: rgba(255, 255, 255, 0.08);
+  --accent: #818CF8;
+  --profit-green: #00FF66;
+  --loss-red: #FF3B30;
+  --bg-canvas: #0B0C10;
+  --ink-main: #F9FAFB;
+
+  --theme-shadow: 0 0 25px rgba(129, 140, 248, 0.15);
+  --theme-card-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.6);
+  --theme-card-hover-shadow: 0 8px 30px rgba(0, 0, 0, 0.8), 0 0 25px rgba(129, 140, 248, 0.18);
 }
 
 html, body {
-  background: #000000 !important;
-  background-color: #000000 !important;
-  color: #FFFFFF;
+  background: var(--bg-primary);
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  font-family: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 @layer base {
-  :root,
-  .dark,
-  html.dark,
-  [data-theme="dark"] {
-    --bg-app: #000000;
-    --bg-surface: #0A0A0A;
-    --border-soft: rgba(255, 255, 255, 0.12);
-    --text-primary: #FFFFFF;
-    --text-muted: #8B95A5;
-    --accent-glow: #0052FF;
-    --accent-profit: #00FF66;
-    --accent-loss: #FF3B30;
-
-    --color-bg: #000000;
-    --color-surface: #0A0A0A;
-    --color-border: rgba(255, 255, 255, 0.12);
-    --color-text-primary: #FFFFFF;
-    --color-text-muted: #8B95A5;
-
-    --theme-shadow: 0 0 20px rgba(0, 82, 255, 0.15);
-    --theme-card-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.8);
-    --theme-card-hover-shadow: 0 8px 30px rgba(0, 0, 0, 0.9), 0 0 25px rgba(0, 82, 255, 0.15);
-
-    --bg: #000000;
-    --surface: #0A0A0A;
-    --surface-solid: #0A0A0A;
-    --surface-border: rgba(255, 255, 255, 0.12);
-    --border: rgba(255, 255, 255, 0.12);
-    --text-secondary: #8B95A5;
-    --card-bg: #0A0A0A;
-    --accent: #0052FF;
-    --accent-purple: #C645F9;
-    --profit-green: #00FF66;
-    --loss-red: #FF3B30;
-    --bg-canvas: #000000;
-    --ink-main: #FFFFFF;
-  }
-
+  /* Clean Typographic Hierarchy */
   h1, h2, h3, h4, h5, h6 {
-    color: #FFFFFF;
-    font-family: 'Manrope', sans-serif;
-    letter-spacing: -0.02em;
+    color: var(--text-primary);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    letter-spacing: -0.025em;
     font-weight: 700;
   }
 
   p {
-    color: #8B95A5;
+    color: var(--text-secondary);
   }
 
   .font-editorial,
@@ -105,8 +129,8 @@ html, body {
     font-style: italic;
   }
 
-  .font-manrope {
-    font-family: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  .font-jakarta {
+    font-family: 'Plus Jakarta Sans', sans-serif;
   }
 
   .tabular-nums,
@@ -122,16 +146,16 @@ html, body {
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.2);
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(148, 163, 184, 0.2);
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.3);
+  background: rgba(148, 163, 184, 0.4);
 }
 
 .no-scrollbar::-webkit-scrollbar {
