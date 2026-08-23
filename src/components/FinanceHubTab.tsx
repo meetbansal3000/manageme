@@ -392,27 +392,44 @@ export const FinanceHubTab: React.FC<Props> = ({ userData, updateData }) => {
     !!editingShift || !!editingExpense || isCardModalOpen || isInvoiceModalOpen || !!conflictWarning
   );
 
+  // Defensive state fallbacks
+  const [expenses, setExpenses] = useState<any[]>(() => Array.isArray(userData?.expenses) ? userData.expenses : []);
+  const [shifts, setShifts] = useState<any[]>(() => Array.isArray(userData?.workShifts) ? userData.workShifts : []);
+  const [income, setIncome] = useState<any[]>(() => Array.isArray(userData?.invoices) ? userData.invoices : []);
+
+  useEffect(() => {
+    setExpenses(Array.isArray(userData?.expenses) ? userData.expenses : []);
+  }, [userData?.expenses]);
+
+  useEffect(() => {
+    setShifts(Array.isArray(userData?.workShifts) ? userData.workShifts : []);
+  }, [userData?.workShifts]);
+
+  useEffect(() => {
+    setIncome(Array.isArray(userData?.invoices) ? userData.invoices : []);
+  }, [userData?.invoices]);
+
   // Currency resolution
   const activeCurrency = hubPrefs.currency || userData.currency || 'GBP';
   const currencySymbol = activeCurrency === 'USD' ? '$' : activeCurrency === 'INR' ? '₹' : activeCurrency === 'EUR' ? '€' : activeCurrency === 'CAD' ? 'C$' : activeCurrency === 'AUD' ? 'A$' : activeCurrency === 'JPY' ? '¥' : '£';
 
-  // Hours calculation
-  const totalHours = useMemo(() => (userData.workShifts || []).reduce((sum, s) => sum + s.hours, 0), [userData.workShifts]);
+  // Hours calculation with defensive fallbacks
+  const totalHours = useMemo(() => (shifts || []).reduce((sum, item) => sum + (Number(item?.hours) || 0), 0), [shifts]);
   
   const totalEarnedGross = useMemo(() => {
-    return (userData.workShifts || []).reduce((sum, s) => {
-      const rate = (s.hourlyRate || userData.hourlyRate || 0) * (s.rateMultiplier || 1.0);
-      const earned = s.totalEarned !== undefined ? s.totalEarned : s.hours * rate;
+    return (shifts || []).reduce((sum, item) => {
+      const rate = (item?.hourlyRate || userData?.hourlyRate || 0) * (item?.rateMultiplier || 1.0);
+      const earned = item?.totalEarned !== undefined ? item.totalEarned : (Number(item?.hours) || 0) * rate;
       return sum + earned;
     }, 0);
-  }, [userData.workShifts, userData.hourlyRate]);
+  }, [shifts, userData?.hourlyRate]);
 
   const taxDeductionAmount = hubPrefs.showTaxDeduction && hubPrefs.taxRatePct > 0 
     ? totalEarnedGross * (hubPrefs.taxRatePct / 100) 
     : 0;
   
   const totalEarnedNet = totalEarnedGross - taxDeductionAmount;
-  const totalExpenses = useMemo(() => (userData.expenses || []).reduce((sum, e) => sum + e.amount, 0), [userData.expenses]);
+  const totalExpenses = useMemo(() => (expenses || []).reduce((sum, item) => sum + (Number(item?.amount) || 0), 0), [expenses]);
   const netSavings = totalEarnedNet - totalExpenses;
 
   // Monthly earnings goal progress
@@ -886,37 +903,37 @@ export const FinanceHubTab: React.FC<Props> = ({ userData, updateData }) => {
     }
   };
 
-  // Filtered lists
+  // Filtered lists with safe checks
   const filteredShifts = useMemo(() => {
-    const all = userData.workShifts || [];
+    const all = shifts || [];
     if (!shiftSearchQuery.trim()) return all;
     const q = shiftSearchQuery.toLowerCase();
     return all.filter(s => 
-      s.date.includes(q) || 
-      (s.roleTitle && s.roleTitle.toLowerCase().includes(q)) ||
-      (s.location && s.location.toLowerCase().includes(q)) ||
-      (s.notes && s.notes.toLowerCase().includes(q))
+      (s?.date && s.date.includes(q)) || 
+      (s?.roleTitle && s.roleTitle.toLowerCase().includes(q)) ||
+      (s?.location && s.location.toLowerCase().includes(q)) ||
+      (s?.notes && s.notes.toLowerCase().includes(q))
     );
-  }, [userData.workShifts, shiftSearchQuery]);
+  }, [shifts, shiftSearchQuery]);
 
   const filteredExpenses = useMemo(() => {
-    const all = userData.expenses || [];
+    const all = expenses || [];
     return all.filter(e => {
-      if (selectedExpenseCatFilter !== 'ALL' && e.category !== selectedExpenseCatFilter) {
+      if (selectedExpenseCatFilter !== 'ALL' && e?.category !== selectedExpenseCatFilter) {
         return false;
       }
       if (expenseSearchQuery.trim()) {
         const q = expenseSearchQuery.toLowerCase();
         return (
-          (e.description && e.description.toLowerCase().includes(q)) ||
-          e.category.toLowerCase().includes(q) ||
-          (e.splitWith && e.splitWith.toLowerCase().includes(q)) ||
-          e.date.includes(q)
+          (e?.description && e.description.toLowerCase().includes(q)) ||
+          (e?.category && e.category.toLowerCase().includes(q)) ||
+          (e?.splitWith && e.splitWith.toLowerCase().includes(q)) ||
+          (e?.date && e.date.includes(q))
         );
       }
       return true;
     });
-  }, [userData.expenses, selectedExpenseCatFilter, expenseSearchQuery]);
+  }, [expenses, selectedExpenseCatFilter, expenseSearchQuery]);
 
   // Peer balance calculations
   const peerBalances = useMemo(() => {
@@ -1377,7 +1394,7 @@ export const FinanceHubTab: React.FC<Props> = ({ userData, updateData }) => {
               {filteredShifts.length === 0 ? (
                 <div className="h-36 flex flex-col items-center justify-center text-[var(--text-secondary)] text-xs bg-[var(--surface-solid)] rounded-2xl border border-[var(--border)] p-4 text-center space-y-1">
                   <p className="font-medium text-[var(--text-primary)]">
-                    {(userData.workShifts || []).length === 0 
+                    {shifts.length === 0 
                       ? "No shifts logged for this week (0/20 hrs used)."
                       : "No work shifts match your filter. Log a shift above."}
                   </p>
@@ -1752,7 +1769,7 @@ export const FinanceHubTab: React.FC<Props> = ({ userData, updateData }) => {
                 <AppleEmptyState
                   icon={Receipt}
                   title="No Expenses Logged"
-                  description={userData.expenses?.length === 0 ? "Log your student budget, food, transport, and prep materials with multi-currency support." : "No expenses match your active search or category filter."}
+                  description={expenses.length === 0 ? "No expenses logged yet. Add your first expense above." : "No expenses match your active search or category filter."}
                   actionLabel="+ Log Expense"
                   onAction={() => {
                     setEditingExpense({
