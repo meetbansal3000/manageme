@@ -1,0 +1,8 @@
+# Robots.txt for manageme OS
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /admin/
+Disallow: /private/
+
+Sitemap: https://manageme-three.vercel.app/sitemap.xml
