@@ -1,7 +1,7 @@
 // Component: Next.js Root Layout with Global Context Providers & Metadata
 
 import React from 'react';
-import { ThemeProvider } from '../context/ThemeContext';
+import { ThemeProvider } from '@/components/theme/ThemeProvider';
 import { ToastProvider } from '../context/ToastContext';
 import { AuthProvider } from '../context/AuthContext';
 import { UserProvider } from '../context/UserContext';
@@ -48,24 +48,28 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <ThemeProvider>
-      <ToastProvider>
-        <AuthProvider>
-          <UserProvider>
-            <SettingsProvider>
-              <OwnerSecurityProvider>
-                <SmoothScroll>
-                  <div className="min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)] selection:bg-[var(--accent-primary)] selection:text-white font-sans antialiased transition-colors duration-200">
-                    {children}
-                  </div>
-                </SmoothScroll>
-                <CookieBanner />
-                <Analytics />
-              </OwnerSecurityProvider>
-            </SettingsProvider>
-          </UserProvider>
-        </AuthProvider>
-      </ToastProvider>
-    </ThemeProvider>
+    <html lang="en" suppressHydrationWarning>
+      <body className="bg-canvas text-primary antialiased min-h-screen">
+        <ThemeProvider>
+          <ToastProvider>
+            <AuthProvider>
+              <UserProvider>
+                <SettingsProvider>
+                  <OwnerSecurityProvider>
+                    <SmoothScroll>
+                      <div className="min-h-screen bg-canvas text-primary selection:bg-indigo-500 selection:text-white font-sans antialiased transition-colors duration-200">
+                        {children}
+                      </div>
+                    </SmoothScroll>
+                    <CookieBanner />
+                    <Analytics />
+                  </OwnerSecurityProvider>
+                </SettingsProvider>
+              </UserProvider>
+            </AuthProvider>
+          </ToastProvider>
+        </ThemeProvider>
+      </body>
+    </html>
   );
 }

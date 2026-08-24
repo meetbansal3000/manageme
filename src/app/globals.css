@@ -64,11 +64,18 @@
   --accent-loss: #FF3344;
 }
 
+/* Light Mode Defaults */
 body {
-  background-color: var(--bg-canvas);
-  color: var(--text-primary);
+  background-color: #FAF8F5;
+  color: #111827;
   transition: background-color 0.2s ease, color 0.2s ease;
   overflow-x: hidden;
+}
+
+/* Dark Mode Class Overrides */
+html.dark body {
+  background-color: #050506;
+  color: #EDEDEF;
 }
 
 /* Precision Typography */

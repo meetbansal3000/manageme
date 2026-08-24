@@ -1,121 +1,112 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+// Theme Provider using next-themes with class-based Tailwind and HTML data-theme attribute
 
-export type ThemeMode = 'light' | 'dark';
+'use client';
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import { ThemeProvider as NextThemesProvider, useTheme as useNextTheme } from 'next-themes';
+
+export type ThemeMode = 'light' | 'dark' | 'system';
 
 interface ThemeContextType {
-  theme: ThemeMode;
+  theme: 'light' | 'dark';
+  rawTheme: string;
   isDark: boolean;
   toggleTheme: () => void;
-  setTheme: (theme: ThemeMode) => void;
+  setTheme: (theme: 'light' | 'dark') => void;
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
-export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [theme, setThemeState] = useState<ThemeMode>(() => {
-    try {
-      return (localStorage.getItem('manageme_theme') as ThemeMode) || 'dark';
-    } catch {
-      return 'dark';
-    }
-  });
-
-  const applyThemeClasses = (mode: ThemeMode) => {
-    const root = document.documentElement;
-    if (mode === 'dark') {
-      root.classList.add('dark');
-      root.classList.remove('light');
-      root.setAttribute('data-theme', 'dark');
-      root.style.colorScheme = 'dark';
-    } else {
-      root.classList.remove('dark');
-      root.classList.add('light');
-      root.setAttribute('data-theme', 'light');
-      root.style.colorScheme = 'light';
-    }
-  };
+const InternalThemeBridge: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { theme: nextTheme, setTheme: setNextTheme, resolvedTheme } = useNextTheme();
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    const savedTheme = (localStorage.getItem('manageme_theme') as ThemeMode) || theme || 'dark';
-    setThemeState(savedTheme);
-    applyThemeClasses(savedTheme);
-
-    const handleThemeSync = (e: CustomEvent<{ theme: ThemeMode }>) => {
-      if (e.detail?.theme) {
-        setThemeState(e.detail.theme);
-        applyThemeClasses(e.detail.theme);
-      }
-    };
-
-    window.addEventListener('manageme:themeChange' as any, handleThemeSync);
-    return () => window.removeEventListener('manageme:themeChange' as any, handleThemeSync);
+    setMounted(true);
   }, []);
 
-  const toggleTheme = () => {
-    const nextTheme: ThemeMode = theme === 'dark' ? 'light' : 'dark';
-    setThemeState(nextTheme);
-    applyThemeClasses(nextTheme);
-    try {
-      localStorage.setItem('manageme_theme', nextTheme);
-    } catch {}
+  const isDark = (resolvedTheme || nextTheme || 'dark') === 'dark';
+  const activeTheme: 'light' | 'dark' = isDark ? 'dark' : 'light';
 
-    if (typeof window !== 'undefined') {
-      window.dispatchEvent(new CustomEvent('manageme:themeChange', { detail: { theme: nextTheme } }));
+  useEffect(() => {
+    if (typeof document !== 'undefined') {
+      document.documentElement.setAttribute('data-theme', activeTheme);
+      document.documentElement.style.colorScheme = activeTheme;
     }
+  }, [activeTheme]);
+
+  const toggleTheme = () => {
+    const nextMode = isDark ? 'light' : 'dark';
+    setNextTheme(nextMode);
+    try {
+      localStorage.setItem('manageme_theme', nextMode);
+    } catch {}
   };
 
-  const setTheme = (newTheme: ThemeMode) => {
-    setThemeState(newTheme);
-    applyThemeClasses(newTheme);
+  const setTheme = (mode: 'light' | 'dark') => {
+    setNextTheme(mode);
     try {
-      localStorage.setItem('manageme_theme', newTheme);
+      localStorage.setItem('manageme_theme', mode);
     } catch {}
-
-    if (typeof window !== 'undefined') {
-      window.dispatchEvent(new CustomEvent('manageme:themeChange', { detail: { theme: newTheme } }));
-    }
   };
 
   return (
-    <ThemeContext.Provider value={{ theme, isDark: theme === 'dark', toggleTheme, setTheme }}>
+    <ThemeContext.Provider 
+      value={{ 
+        theme: activeTheme, 
+        rawTheme: nextTheme || 'dark', 
+        isDark, 
+        toggleTheme, 
+        setTheme 
+      }}
+    >
       {children}
     </ThemeContext.Provider>
   );
 };
 
+export function ThemeProvider({ children }: { children: React.ReactNode }) {
+  return (
+    <NextThemesProvider
+      attribute="class"
+      defaultTheme="dark"
+      enableSystem={false}
+      disableTransitionOnChange
+      storageKey="manageme_theme"
+    >
+      <InternalThemeBridge>
+        {children}
+      </InternalThemeBridge>
+    </NextThemesProvider>
+  );
+}
+
 export const useTheme = () => {
   const context = useContext(ThemeContext);
   if (!context) {
-    // Fallback if rendered outside ThemeProvider
-    const savedTheme = (typeof window !== 'undefined' ? localStorage.getItem('manageme_theme') : 'dark') as ThemeMode || 'dark';
+    const savedTheme = (typeof window !== 'undefined' ? localStorage.getItem('manageme_theme') : 'dark') || 'dark';
+    const isDark = savedTheme === 'dark';
     return {
-      theme: savedTheme,
-      isDark: savedTheme === 'dark',
+      theme: (isDark ? 'dark' : 'light') as 'light' | 'dark',
+      rawTheme: savedTheme,
+      isDark,
       toggleTheme: () => {
-        const next: ThemeMode = savedTheme === 'dark' ? 'light' : 'dark';
+        const next = isDark ? 'light' : 'dark';
         if (typeof window !== 'undefined') {
           localStorage.setItem('manageme_theme', next);
           if (next === 'dark') {
             document.documentElement.classList.add('dark');
             document.documentElement.classList.remove('light');
+            document.documentElement.setAttribute('data-theme', 'dark');
           } else {
             document.documentElement.classList.remove('dark');
             document.documentElement.classList.add('light');
+            document.documentElement.setAttribute('data-theme', 'light');
           }
-          window.dispatchEvent(new CustomEvent('manageme:themeChange', { detail: { theme: next } }));
         }
       },
-      setTheme: (mode: ThemeMode) => {
+      setTheme: (t: 'light' | 'dark') => {
         if (typeof window !== 'undefined') {
-          localStorage.setItem('manageme_theme', mode);
-          if (mode === 'dark') {
-            document.documentElement.classList.add('dark');
-            document.documentElement.classList.remove('light');
-          } else {
-            document.documentElement.classList.remove('dark');
-            document.documentElement.classList.add('light');
-          }
-          window.dispatchEvent(new CustomEvent('manageme:themeChange', { detail: { theme: mode } }));
+          localStorage.setItem('manageme_theme', t);
         }
       }
     };
@@ -123,4 +114,4 @@ export const useTheme = () => {
   return context;
 };
 
-export default ThemeContext;
+export default ThemeProvider;
