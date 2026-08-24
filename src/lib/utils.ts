@@ -30,3 +30,15 @@ export function truncate(text: string, length: number = 80): string {
   if (!text || text.length <= length) return text;
   return `${text.substring(0, length)}...`;
 }
+
+export function getStoredArray<T = any>(key: string): T[] {
+  if (typeof window === 'undefined') return [];
+  try {
+    const item = localStorage.getItem(key);
+    if (!item) return [];
+    const parsed = JSON.parse(item);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
