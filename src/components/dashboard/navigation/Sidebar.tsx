@@ -61,6 +61,17 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onClose,
   className
 }) => {
+  React.useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isOpen]);
+
   const categories = [
     { id: 'core', label: 'Work & Career' },
     { id: 'intelligence', label: 'Intelligence & AI' },
@@ -71,7 +82,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
   return (
     <aside className={cn(
-      'w-[85vw] sm:w-64 max-w-sm bg-black/90 backdrop-blur-2xl border-r border-white/10 flex flex-col h-full overflow-hidden text-white',
+      'w-[85vw] sm:w-64 max-w-sm bg-black/90 backdrop-blur-2xl border-r border-white/10 flex flex-col h-full overflow-y-auto overscroll-contain text-white z-50',
       className
     )}>
       {/* Sidebar Header */}

@@ -52,19 +52,20 @@ export const ModalWrapper: React.FC<ModalWrapperProps> = ({
     '5xl': 'max-w-5xl'
   };
 
+  if (!isOpen) return null;
+
   return (
     <AnimatePresence>
-      {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
-          {/* Backdrop */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            onClick={onClose}
-            className="fixed inset-0 bg-black/75 backdrop-blur-md"
-          />
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 overflow-y-auto bg-black/70 backdrop-blur-sm">
+        {/* Backdrop */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.2 }}
+          onClick={onClose}
+          className="fixed inset-0 bg-black/75 backdrop-blur-md"
+        />
 
           {/* Modal Container */}
           <motion.div
@@ -110,7 +111,6 @@ export const ModalWrapper: React.FC<ModalWrapperProps> = ({
             </div>
           </motion.div>
         </div>
-      )}
     </AnimatePresence>
   );
 };

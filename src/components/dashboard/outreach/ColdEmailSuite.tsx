@@ -32,6 +32,7 @@ import { Button } from '../../ui/Button';
 import { Input } from '../../ui/Input';
 import { Badge } from '../../ui/Badge';
 import { toast } from '../../ui/Toast';
+import { useAuth } from '../../../context/AuthContext';
 
 export type ContactStatus = 'Not Contacted' | 'Sent' | 'Followed Up' | 'Replied';
 export type EmailTemplateType = 'networking' | 'application' | 'thankyou';
@@ -52,49 +53,25 @@ export interface RecruiterContact {
 const STORAGE_KEY = 'manageme_recruiter_crm';
 
 const DEFAULT_CANDIDATE_PROFILE = {
-  name: 'Meet Bansal',
-  university: 'Durham University',
-  degree: 'MSc Finance & Investment',
-  certifications: 'ACCA Affiliate, CFA Level 1 Candidate',
-  skills: 'IFRS, Xero Accounting, DCF Valuation, LBO Modeling, SQL, Python',
-  experience: 'CA Firm IFRS Accounting Trainee & Valuation Analyst'
+  name: '[Your Name]',
+  university: '[Your University]',
+  degree: '[Your Degree/Major]',
+  certifications: '[Your Key Specializations / Certifications]',
+  skills: 'Financial Modeling, Valuations, Financial Analysis, Accounting',
+  experience: 'Finance Trainee / Analyst'
 };
 
 const DEFAULT_CONTACTS: RecruiterContact[] = [
   {
     id: 'rec_1',
-    name: 'Sarah Jenkins',
-    company: 'Goldman Sachs',
-    role: 'Campus Recruiting Lead - Investment Banking',
-    email: 'sarah.jenkins@gs.com',
-    linkedin: 'https://linkedin.com/in/sarah-jenkins-recruiter',
-    status: 'Sent',
-    notes: 'Reached out regarding 2027 Full-Time Analyst Class.',
-    dateAdded: '2026-08-15',
-    lastContacted: '2026-08-18'
-  },
-  {
-    id: 'rec_2',
-    name: 'Michael Chang',
-    company: 'Morgan Stanley',
-    role: 'VP, Global Capital Markets',
-    email: 'm.chang@morganstanley.com',
-    linkedin: 'https://linkedin.com/in/michael-chang-gcm',
+    name: '[Target Recruiter Name]',
+    company: '[Company Name]',
+    role: '[Target Role / Division]',
+    email: 'recruiter@example.com',
+    linkedin: 'https://linkedin.com/in/recruiter-profile',
     status: 'Not Contacted',
-    notes: 'Durham Alum. Receptive to coffee chats.',
-    dateAdded: '2026-08-20'
-  },
-  {
-    id: 'rec_3',
-    name: 'Elena Rostova',
-    company: 'BlackRock',
-    role: 'Senior Talent Acquisition Specialist',
-    email: 'elena.rostova@blackrock.com',
-    linkedin: 'https://linkedin.com/in/elena-rostova-talent',
-    status: 'Replied',
-    notes: 'Agreed to a 15-minute introductory call next Tuesday.',
-    dateAdded: '2026-08-10',
-    lastContacted: '2026-08-21'
+    notes: 'Initial recruiter outreach contact.',
+    dateAdded: '2026-08-15'
   }
 ];
 
@@ -137,20 +114,23 @@ export const ColdEmailSuite: React.FC = () => {
   });
 
   // AI Email Generator State
+  const { user } = useAuth();
+  const userName = user?.displayName || user?.email?.split('@')[0] || 'Workspace User';
+
   const [selectedContactId, setSelectedContactId] = useState<string>('');
   const [templateType, setTemplateType] = useState<EmailTemplateType>('networking');
-  const [targetName, setTargetName] = useState('Sarah Jenkins');
-  const [targetCompany, setTargetCompany] = useState('Goldman Sachs');
-  const [targetRole, setTargetRole] = useState('Investment Banking Analyst');
+  const [targetName, setTargetName] = useState('[Target Recruiter Name]');
+  const [targetCompany, setTargetCompany] = useState('[Company Name]');
+  const [targetRole, setTargetRole] = useState('[Target Role / Division]');
   const [tone, setTone] = useState<'professional' | 'direct' | 'enthusiastic'>('professional');
-  const [customAngle, setCustomAngle] = useState('Durham University MSc Finance background & ACCA affiliate experience');
+  const [customAngle, setCustomAngle] = useState('Career inquiry and professional networking');
 
   // Sync AI generator inputs when a contact is selected
   const handleSelectContactForEmail = (c: RecruiterContact) => {
     setSelectedContactId(c.id);
     setTargetName(c.name);
     setTargetCompany(c.company);
-    setTargetRole(c.role || 'Investment Banking Division');
+    setTargetRole(c.role || '[Target Role / Division]');
     setActiveTab('generator');
     toast.info(`Loaded contact details for ${c.name}`);
   };
@@ -241,73 +221,59 @@ export const ColdEmailSuite: React.FC = () => {
 
   // Generate Email Content
   const generatedEmail = useMemo(() => {
-    const name = targetName.trim() || 'Hiring Team';
+    const name = targetName.trim() || '[Recruiter Name]';
     const firstName = name.split(' ')[0] || name;
-    const company = targetCompany.trim() || 'your firm';
-    const role = targetRole.trim() || 'Analyst Program';
+    const company = targetCompany.trim() || '[Company Name]';
+    const role = targetRole.trim() || '[Target Role / Division]';
 
     if (templateType === 'networking') {
       return {
-        subject: `Durham MSc Finance Student - Coffee Chat & ${company} Career Inquiry`,
+        subject: `[Your Degree/Title] - Career Inquiry & Coffee Chat - ${company}`,
         body: `Dear ${firstName},
 
 I hope this email finds you well.
 
-My name is ${DEFAULT_CANDIDATE_PROFILE.name}, currently pursuing an MSc in Finance & Investment at Durham University and an ACCA Affiliate with practical experience in IFRS accounting, financial reporting, and DCF/LBO valuation modeling.
+My name is ${DEFAULT_CANDIDATE_PROFILE.name}, currently pursuing a ${DEFAULT_CANDIDATE_PROFILE.degree} at ${DEFAULT_CANDIDATE_PROFILE.university} with a background in ${DEFAULT_CANDIDATE_PROFILE.certifications}.
 
-I have been following ${company}'s impressive deal flow and sector focus in ${role}. Given your leadership and trajectory at the firm, I would be immensely grateful for the opportunity to learn from your career journey.
+I have been closely following ${company}'s recent work in ${role}, and I would be grateful for the opportunity to learn more about your team's focus.
 
-If your schedule permits over the coming fortnight, would you have 10-15 minutes for a brief introductory phone call or virtual coffee chat? I would be delighted to hear your perspectives on thriving at ${company}.
-
-Thank you very much for your time and consideration.
-
-Warm regards,
-
-${DEFAULT_CANDIDATE_PROFILE.name}
-Durham University | MSc Finance & Investment
-ACCA Affiliate | CFA Level 1 Candidate
-Email: candidate@durham.ac.uk`
-      };
-    } else if (templateType === 'application') {
-      return {
-        subject: `Application: ${role} - ${DEFAULT_CANDIDATE_PROFILE.name} (Durham MSc Finance / ACCA Affiliate)`,
-        body: `Dear ${firstName},
-
-I am writing to formally express my strong interest in the ${role} position at ${company}.
-
-Currently completing my MSc in Finance & Investment at Durham University alongside holding ACCA Affiliate status, I bring hands-on experience in IFRS financial statement analysis, Xero accounting automation, and DCF valuation modeling. Through rigorous coursework and practical accounting trainee experience, I have developed deep commercial acumen and precision under tight deliverables.
-
-Key highlights I would bring to ${company}:
-• Rigorous Financial Modeling: Built robust DCF, comparable company, and integrated 3-statement financial models.
-• Accounting Mastery (ACCA): Solid foundation in GAAP/IFRS standards, working capital reconciliations, and audit preparation.
-• Technical & Analytical Toolkit: Fluent with Excel modeling, Python data analysis, and SQL query scripting.
-
-I have attached my standard ATS resume for your review. I would welcome the opportunity to discuss how my analytical rigor and dedication can contribute to ${company}'s continued success.
-
-Sincerely,
-
-${DEFAULT_CANDIDATE_PROFILE.name}
-Durham University | MSc Finance & Investment
-ACCA Affiliate
-LinkedIn: linkedin.com/in/msc-finance-durham`
-      };
-    } else {
-      // Thank you email
-      return {
-        subject: `Thank You - Interview for ${role} with ${company}`,
-        body: `Dear ${firstName},
-
-Thank you very much for taking the time to speak with me today regarding the ${role} opportunity at ${company}.
-
-I truly enjoyed our discussion regarding the team's strategic direction and valuation methodologies. Our conversation further reinforced my strong enthusiasm for joining ${company}, and I am confident that my background in Durham's MSc Finance curriculum and ACCA accounting training aligns seamlessly with the high analytical standards of your division.
-
-Please let me know if you require any additional work samples or references from my side. I look forward to hearing about next steps in the process.
+Would you have 10–15 minutes for a brief introductory conversation in the coming weeks?
 
 Best regards,
 
 ${DEFAULT_CANDIDATE_PROFILE.name}
-MSc Finance & Investment, Durham University
-ACCA Affiliate`
+[Your Phone] | [Your LinkedIn URL]`
+      };
+    } else if (templateType === 'application') {
+      return {
+        subject: `Application: ${role} - ${DEFAULT_CANDIDATE_PROFILE.name}`,
+        body: `Dear ${firstName},
+
+I am writing to formally express my strong interest in the ${role} position at ${company}.
+
+My name is ${DEFAULT_CANDIDATE_PROFILE.name}, currently pursuing a ${DEFAULT_CANDIDATE_PROFILE.degree} at ${DEFAULT_CANDIDATE_PROFILE.university} with a background in ${DEFAULT_CANDIDATE_PROFILE.certifications}.
+
+I have attached my CV for your review and would welcome the opportunity to discuss how my skill set aligns with ${company}'s current initiatives.
+
+Sincerely,
+
+${DEFAULT_CANDIDATE_PROFILE.name}
+[Your Phone] | [Your LinkedIn URL]`
+      };
+    } else {
+      // Thank you email
+      return {
+        subject: `Thank You - Conversation regarding ${role} at ${company}`,
+        body: `Dear ${firstName},
+
+Thank you very much for taking the time to speak with me regarding the ${role} opportunity at ${company}.
+
+I truly enjoyed learning more about the team's ongoing projects and strategic goals.
+
+Best regards,
+
+${DEFAULT_CANDIDATE_PROFILE.name}
+[Your Phone] | [Your LinkedIn URL]`
       };
     }
   }, [targetName, targetCompany, targetRole, templateType, tone, customAngle]);
@@ -326,7 +292,7 @@ ACCA Affiliate`
   };
 
   const handleOpenReviewModal = (recipientEmail?: string) => {
-    const targetEmail = recipientEmail || contacts.find(c => c.id === selectedContactId)?.email || 'sarah.jenkins@gs.com';
+    const targetEmail = recipientEmail || contacts.find(c => c.id === selectedContactId)?.email || 'recruiter@example.com';
     setReviewTo(targetEmail);
     setReviewSubject(generatedEmail.subject);
     setReviewBody(generatedEmail.body);
@@ -349,15 +315,24 @@ ACCA Affiliate`
           body: reviewBody
         })
       });
-      const data = await res.json();
-      if (data.success) {
-        toast.success(`Draft successfully saved to Gmail! (ID: ${data.draftId})`);
+
+      const contentType = res.headers.get('content-type');
+      if (contentType && contentType.includes('application/json')) {
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || data.error || 'Failed to create draft');
+        toast.success('Draft created in Gmail');
         setIsReviewModalOpen(false);
       } else {
-        toast.error(data.error || 'Failed to create Gmail draft.');
+        // Fallback if backend API is offline or returns plain text
+        toast.info('Draft copied to clipboard (Gmail API offline)');
+        navigator.clipboard.writeText(`Subject: ${reviewSubject}\n\n${reviewBody}`);
+        setIsReviewModalOpen(false);
       }
     } catch (err: any) {
-      toast.error(err?.message || 'Network error saving draft.');
+      // Fallback: Copy to clipboard and notify user
+      navigator.clipboard.writeText(`Subject: ${reviewSubject}\n\n${reviewBody}`);
+      toast.info('Copied email to clipboard');
+      setIsReviewModalOpen(false);
     } finally {
       setIsSavingDraft(false);
     }

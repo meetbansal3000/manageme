@@ -78,75 +78,58 @@ const STORAGE_SKILLS_KEY = 'manageme_skills_vault';
 
 const DEFAULT_RESUME: ResumeData = {
   header: {
-    name: 'Candidate Name',
-    targetTitle: 'Investment Banking & Corporate Finance Analyst',
-    email: 'candidate@durham.ac.uk',
-    phone: '+44 (0) 7700 900123',
-    location: 'Durham & London, United Kingdom',
-    linkedin: 'linkedin.com/in/msc-finance-durham'
+    name: '[FULL NAME]',
+    targetTitle: '[Target Professional Role / Analyst]',
+    email: 'email@example.com',
+    phone: '+44 0000 000000',
+    location: '[City, Country]',
+    linkedin: 'linkedin.com/in/yourprofile'
   },
-  summary: 'MSc Finance & Investment student at Durham University and ACCA Affiliate with extensive practical experience in IFRS financial statement analysis, multi-stage DCF valuation modeling, and accounting automation. Proven record of building 3-statement integrated models and preparing audit workpapers for mid-market corporate clients.',
+  summary: 'Motivated finance and investment graduate with hands-on experience in financial statement analysis, multi-stage DCF valuation modeling, and corporate accounting.',
   education: [
     {
       id: 'edu_1',
-      institution: 'Durham University',
-      degree: 'MSc in Finance & Investment (Distinction Track)',
-      dates: 'Sept 2025 – Present',
+      institution: '[University Name]',
+      degree: '[Degree Program] (Expected Graduation: 2026)',
+      dates: '2025 – 2026',
       details: [
-        'Core Modules: Advanced Corporate Finance, Financial Reporting & Analysis, Applied Econometrics, Valuation.',
-        'Dissertation / Project: Empirical valuation and cross-border M&A synergy pricing across European equities.'
-      ]
-    },
-    {
-      id: 'edu_2',
-      institution: 'ACCA (Association of Chartered Certified Accountants)',
-      degree: 'ACCA Affiliate Status (All Applied Knowledge, Skills & Strategic Professional Exams Completed)',
-      dates: '2023 – 2025',
-      details: [
-        'Specialization: Strategic Business Reporting (SBR) & Advanced Financial Management (AFM).'
+        'Relevant Coursework: Corporate Finance, Financial Analysis, Valuation & Econometrics.',
+        'Academic Project: Valuation and corporate M&A synergy pricing analysis.'
       ]
     }
   ],
   experience: [
     {
       id: 'exp_1',
-      company: 'Chartered Accountants & Advisory Practice',
-      role: 'IFRS Accounting Trainee & Corporate Advisory Analyst',
-      location: 'London, UK',
-      dates: 'June 2024 – August 2025',
+      company: '[Company Name]',
+      role: '[Job Title]',
+      location: '[City, Country]',
+      dates: '2024 – 2025',
       details: [],
       bullets: [
-        'Constructed multi-stage Discounted Cash Flow (DCF), Comparable Company Analysis (CCA), and Precedent Transaction models to value private mid-market acquisition targets.',
-        'Prepared IFRS-compliant financial statements, lease reconciliations (IFRS 16), and revenue recognition models (IFRS 15) for commercial clients with over £25M in annual turnover.',
-        'Executed automated Xero accounting migrations and ledger reconciliations, improving month-end close speeds by 35%.'
+        'Constructed multi-stage Discounted Cash Flow (DCF) and Comparable Company Analysis (CCA) valuation models.',
+        'Prepared financial statements, working capital reconciliations, and financial reporting analysis.',
+        'Executed data analytics and workflow automation to streamline process efficiency.'
       ]
     }
   ],
   certifications: [
-    { id: 'cert_1', name: 'ACCA Affiliate', issuer: 'ACCA Global', date: '2025' },
-    { id: 'cert_2', name: 'CFA Level 1 Candidate', issuer: 'CFA Institute', date: '2026' },
-    { id: 'cert_3', name: 'Xero Certified Advisor', issuer: 'Xero UK', date: '2024' },
-    { id: 'cert_4', name: 'Bloomberg Market Concepts (BMC)', issuer: 'Bloomberg LP', date: '2025' }
+    { id: 'cert_1', name: '[Certification / Designation]', issuer: '[Issuer Name]', date: '2025' }
   ],
   skills: {
-    valuation: ['DCF Modeling', 'LBO Analysis', 'Trading & Transaction Comps', 'WACC Analysis', 'Cap Table Management'],
-    accounting: ['IFRS / UK GAAP', '3-Statement Financial Modeling', 'Working Capital Management', 'Xero Accounting', 'Audit Assurance'],
-    technical: ['Financial Modeling in Excel (Advanced)', 'Python (pandas, numpy)', 'SQL Queries', 'Capital IQ', 'FactSet', 'Power BI']
+    valuation: ['DCF Modeling', 'LBO Analysis', 'Trading & Transaction Comps', 'WACC Analysis'],
+    accounting: ['3-Statement Financial Modeling', 'Working Capital Management', 'Financial Reporting'],
+    technical: ['Financial Modeling in Excel', 'Python Financial Analytics', 'SQL Queries']
   }
 };
 
 const DEFAULT_SKILLS_VAULT: SkillItem[] = [
-  { id: 'sk_1', category: 'Valuation & Modeling', name: 'Discounted Cash Flow (DCF)', level: 'Advanced', endorsements: 'Durham MSc / CA Firm Models' },
+  { id: 'sk_1', category: 'Valuation & Modeling', name: 'Discounted Cash Flow (DCF)', level: 'Advanced', endorsements: 'Financial Modeling Coursework' },
   { id: 'sk_2', category: 'Valuation & Modeling', name: 'LBO Modeling & Returns', level: 'Proficient', endorsements: 'Coursework & Self-Directed' },
-  { id: 'sk_3', category: 'Valuation & Modeling', name: 'Trading & Precedent Comps', level: 'Advanced', endorsements: 'Advisory Practice' },
-  { id: 'sk_4', category: 'Accounting & IFRS', name: 'IFRS 16 (Lease Accounting)', level: 'Advanced', endorsements: 'ACCA SBR Exam' },
-  { id: 'sk_5', category: 'Accounting & IFRS', name: 'Xero Accounting Software', level: 'Advanced', endorsements: 'Xero Certified Advisor' },
-  { id: 'sk_6', category: 'Accounting & IFRS', name: 'Working Capital Optimization', level: 'Proficient', endorsements: 'CA Firm Trainee' },
-  { id: 'sk_7', category: 'Data Analytics & Tech', name: 'Advanced Excel & Financial Modeling', level: 'Advanced', endorsements: 'Wall St Prep / Daily Usage' },
-  { id: 'sk_8', category: 'Data Analytics & Tech', name: 'Python Financial Analytics (pandas)', level: 'Proficient', endorsements: 'Durham Econometrics' },
-  { id: 'sk_9', category: 'Data Analytics & Tech', name: 'SQL Querying & Data Extraction', level: 'Proficient', endorsements: 'Database Projects' },
-  { id: 'sk_10', category: 'Financial Markets', name: 'CFA Level 1 Curriculum', level: 'Proficient', endorsements: 'CFA Candidate' },
-  { id: 'sk_11', category: 'Financial Markets', name: 'Bloomberg Terminal / BMC', level: 'Proficient', endorsements: 'Bloomberg Certified' }
+  { id: 'sk_3', category: 'Valuation & Modeling', name: 'Trading & Precedent Comps', level: 'Advanced', endorsements: 'Corporate Finance' },
+  { id: 'sk_4', category: 'Accounting & IFRS', name: 'Financial Statement Analysis', level: 'Advanced', endorsements: 'Accounting Specialization' },
+  { id: 'sk_5', category: 'Data Analytics & Tech', name: 'Advanced Excel & Financial Modeling', level: 'Advanced', endorsements: 'Daily Practice' },
+  { id: 'sk_6', category: 'Data Analytics & Tech', name: 'Python Financial Analytics', level: 'Proficient', endorsements: 'Econometrics & Analytics' }
 ];
 
 export const ResumeBuilder: React.FC = () => {
