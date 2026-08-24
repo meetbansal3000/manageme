@@ -138,7 +138,7 @@ export const Header: React.FC<HeaderProps> = ({
     signOut: authSignOut 
   } = useAuth();
   
-  const userName = user?.displayName || user?.email?.split('@')[0] || (isGuest ? 'Guest Executive' : 'Meet');
+  const userName = user?.displayName || user?.email?.split('@')[0] || (isGuest ? 'Guest Demo User' : 'Workspace User');
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 10);

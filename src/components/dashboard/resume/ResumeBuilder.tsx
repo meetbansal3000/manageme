@@ -767,7 +767,7 @@ export const ResumeBuilder: React.FC = () => {
               <div>
                 <label className="text-slate-400 block mb-1">Evidence / Endorsements</label>
                 <Input
-                  placeholder="e.g. Durham Coursework or ACCA Exam"
+                  placeholder="e.g. University Coursework or Professional Exam"
                   value={newSkill.endorsements}
                   onChange={(e) => setNewSkill({ ...newSkill, endorsements: e.target.value })}
                 />

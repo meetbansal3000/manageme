@@ -33,6 +33,7 @@ import { Input } from '../../ui/Input';
 import { Badge } from '../../ui/Badge';
 import { toast } from '../../ui/Toast';
 import { useAuth } from '../../../context/AuthContext';
+import { MailStudio } from './MailStudio';
 
 export type ContactStatus = 'Not Contacted' | 'Sent' | 'Followed Up' | 'Replied';
 export type EmailTemplateType = 'networking' | 'application' | 'thankyou';
@@ -96,7 +97,10 @@ export const ColdEmailSuite: React.FC = () => {
   }, [contacts]);
 
   // UI state
-  const [activeTab, setActiveTab] = useState<'crm' | 'generator'>('crm');
+  const [activeTab, setActiveTab] = useState<'crm' | 'generator' | 'studio'>('crm');
+  const [studioInitialTo, setStudioInitialTo] = useState<string>('');
+  const [studioInitialSubject, setStudioInitialSubject] = useState<string>('');
+  const [studioInitialBody, setStudioInitialBody] = useState<string>('');
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('ALL');
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -221,21 +225,25 @@ export const ColdEmailSuite: React.FC = () => {
 
   // Generate Email Content
   const generatedEmail = useMemo(() => {
-    const name = targetName.trim() || '[Recruiter Name]';
-    const firstName = name.split(' ')[0] || name;
+    const name = targetName.trim() || '[Target Recruiter Name]';
+    const recruiterSalutation = (name === '[Target Recruiter Name]' || name === '[Recruiter Name]')
+      ? '[Recruiter Name]'
+      : (name.split(' ')[0] || name);
     const company = targetCompany.trim() || '[Company Name]';
     const role = targetRole.trim() || '[Target Role / Division]';
 
     if (templateType === 'networking') {
+      const companyName = company === '[Company Name]' ? '[Company Name]' : company;
+      const firmSector = role === '[Target Role / Division]' ? '[Industry/Sector]' : company;
       return {
-        subject: `[Your Degree/Title] - Career Inquiry & Coffee Chat - ${company}`,
-        body: `Dear ${firstName},
+        subject: `[Your Degree/Title] - Career Inquiry & Coffee Chat - ${companyName}`,
+        body: `Dear ${recruiterSalutation},
 
 I hope this email finds you well.
 
 My name is ${DEFAULT_CANDIDATE_PROFILE.name}, currently pursuing a ${DEFAULT_CANDIDATE_PROFILE.degree} at ${DEFAULT_CANDIDATE_PROFILE.university} with a background in ${DEFAULT_CANDIDATE_PROFILE.certifications}.
 
-I have been closely following ${company}'s recent work in ${role}, and I would be grateful for the opportunity to learn more about your team's focus.
+I have been closely following ${companyName}'s recent work in ${firmSector}, and I would be grateful for the opportunity to learn more about your team's focus.
 
 Would you have 10–15 minutes for a brief introductory conversation in the coming weeks?
 
@@ -247,7 +255,7 @@ ${DEFAULT_CANDIDATE_PROFILE.name}
     } else if (templateType === 'application') {
       return {
         subject: `Application: ${role} - ${DEFAULT_CANDIDATE_PROFILE.name}`,
-        body: `Dear ${firstName},
+        body: `Dear ${recruiterSalutation},
 
 I am writing to formally express my strong interest in the ${role} position at ${company}.
 
@@ -264,7 +272,7 @@ ${DEFAULT_CANDIDATE_PROFILE.name}
       // Thank you email
       return {
         subject: `Thank You - Conversation regarding ${role} at ${company}`,
-        body: `Dear ${firstName},
+        body: `Dear ${recruiterSalutation},
 
 Thank you very much for taking the time to speak with me regarding the ${role} opportunity at ${company}.
 
@@ -319,7 +327,7 @@ ${DEFAULT_CANDIDATE_PROFILE.name}
       const contentType = res.headers.get('content-type');
       if (contentType && contentType.includes('application/json')) {
         const data = await res.json();
-        if (!res.ok) throw new Error(data.message || data.error || 'Failed to create draft');
+        if (!res.ok) throw new Error(data.message || 'Failed to create draft');
         toast.success('Draft created in Gmail');
         setIsReviewModalOpen(false);
       } else {
@@ -348,6 +356,36 @@ ${DEFAULT_CANDIDATE_PROFILE.name}
     const target = reviewTo || contacts.find(c => c.id === selectedContactId)?.email || '';
     const mailto = `mailto:${encodeURIComponent(target)}?subject=${encodeURIComponent(reviewSubject || generatedEmail.subject)}&body=${encodeURIComponent(reviewBody || generatedEmail.body)}`;
     window.open(mailto, '_blank');
+  };
+
+  const handleEmailSentFromStudio = (to: string, subject: string, body: string) => {
+    const existingIndex = contacts.findIndex(c => c.email.toLowerCase() === to.toLowerCase());
+    const today = new Date().toISOString().split('T')[0];
+
+    if (existingIndex >= 0) {
+      const updated = [...contacts];
+      updated[existingIndex] = {
+        ...updated[existingIndex],
+        status: 'Sent',
+        lastContacted: today,
+        notes: `Sent outreach via Mail Studio: "${subject}". Follow-up due in 3 days.`
+      };
+      setContacts(updated);
+    } else {
+      const newContact: RecruiterContact = {
+        id: `rec_${Date.now()}`,
+        name: to.split('@')[0] || 'Recruiter',
+        company: 'Target Firm',
+        role: 'Recruiter',
+        email: to,
+        status: 'Sent',
+        notes: `Sent outreach via Mail Studio: "${subject}". Follow-up due in 3 days.`,
+        dateAdded: today,
+        lastContacted: today
+      };
+      setContacts([newContact, ...contacts]);
+    }
+    toast.success(`Logged email dispatch for ${to} in Outreach CRM (Follow-up due in 3 days).`);
   };
 
   return (
@@ -384,6 +422,15 @@ ${DEFAULT_CANDIDATE_PROFILE.name}
             <Sparkles className="w-3.5 h-3.5 inline mr-1.5 text-amber-300" />
             AI Email Generator
           </button>
+          <button
+            onClick={() => setActiveTab('studio')}
+            className={`px-3 py-1.5 rounded-lg text-xs font-mono font-medium transition-all ${
+              activeTab === 'studio' ? 'bg-blue-600 text-white shadow-md' : 'text-slate-400 hover:text-white'
+            }`}
+          >
+            <Mail className="w-3.5 h-3.5 inline mr-1.5 text-sky-300" />
+            Mail Studio & Drafts
+          </button>
         </div>
       </div>
 
@@ -395,8 +442,8 @@ ${DEFAULT_CANDIDATE_PROFILE.name}
               <GraduationCap className="w-4 h-4" />
             </div>
             <div>
-              <span className="font-bold text-white block">Durham University MSc Finance & ACCA Affiliate</span>
-              <span className="text-[11px] text-slate-400">Integrated Credentials: IFRS Reporting • Xero Accounting • DCF/LBO Financial Modeling</span>
+              <span className="font-bold text-white block">[Your Degree/Major] Candidate</span>
+              <span className="text-[11px] text-slate-400">Integrated Credentials: [Your Key Specializations / Certifications]</span>
             </div>
           </div>
           <span className="text-[10px] text-blue-300 bg-blue-500/10 px-2 py-1 rounded-md border border-blue-500/20 shrink-0">
@@ -677,12 +724,28 @@ ${DEFAULT_CANDIDATE_PROFILE.name}
                   <span>Draft Output</span>
                 </h3>
 
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 flex-wrap">
                   <Button
                     variant="primary"
                     size="sm"
+                    onClick={() => {
+                      const targetEmail = contacts.find(c => c.id === selectedContactId)?.email || 'recruiter@example.com';
+                      setStudioInitialTo(targetEmail);
+                      setStudioInitialSubject(generatedEmail.subject);
+                      setStudioInitialBody(generatedEmail.body);
+                      setActiveTab('studio');
+                      toast.success('Loaded template into Mail Studio live draft editor!');
+                    }}
+                    className="text-xs font-bold bg-purple-600 hover:bg-purple-500 text-white shadow-md"
+                  >
+                    <Edit3 className="w-3.5 h-3.5 mr-1" />
+                    Open in In-App Editor
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    size="sm"
                     onClick={() => handleOpenReviewModal()}
-                    className="text-xs font-bold shadow-md shadow-blue-500/20"
+                    className="text-xs font-bold"
                   >
                     <Send className="w-3.5 h-3.5 mr-1" />
                     Send / Create Draft
@@ -726,18 +789,34 @@ ${DEFAULT_CANDIDATE_PROFILE.name}
 
               {/* Bottom Quick Trigger */}
               <div className="pt-2 flex items-center justify-between border-t border-white/10 text-xs font-mono text-slate-400">
-                <span>Candidate Profile: Meet Bansal (MSc Finance / ACCA)</span>
+                <span>Candidate Profile: {userName}</span>
                 <button
-                  onClick={() => handleOpenReviewModal()}
+                  onClick={() => {
+                    const targetEmail = contacts.find(c => c.id === selectedContactId)?.email || 'recruiter@example.com';
+                    setStudioInitialTo(targetEmail);
+                    setStudioInitialSubject(generatedEmail.subject);
+                    setStudioInitialBody(generatedEmail.body);
+                    setActiveTab('studio');
+                  }}
                   className="text-blue-400 hover:text-blue-300 font-bold flex items-center gap-1 cursor-pointer"
                 >
-                  <span>Review Draft Before Dispatch</span>
+                  <span>Edit in Mail Studio</span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </button>
               </div>
             </Card>
           </div>
         </div>
+      )}
+
+      {/* VIEW 3: IN-APP MAIL STUDIO & LIVE DRAFTS */}
+      {activeTab === 'studio' && (
+        <MailStudio
+          initialTo={studioInitialTo}
+          initialSubject={studioInitialSubject}
+          initialBody={studioInitialBody}
+          onEmailSent={handleEmailSentFromStudio}
+        />
       )}
 
       {/* OUTREACH REVIEW & CONFIRMATION MODAL (Human-in-the-Loop) */}
@@ -769,7 +848,7 @@ ${DEFAULT_CANDIDATE_PROFILE.name}
             {/* Candidate Identity Attribution Banner */}
             <div className="p-2.5 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center gap-2 text-xs font-mono text-blue-300">
               <GraduationCap className="w-4 h-4 shrink-0 text-blue-400" />
-              <span>Sent on behalf of Meet Bansal (MSc Finance / ACCA Affiliate)</span>
+              <span>Sent on behalf of {userName} ({DEFAULT_CANDIDATE_PROFILE.degree})</span>
             </div>
 
             <div className="space-y-3 font-mono text-xs">
