@@ -308,11 +308,11 @@ export const CareerPipeline: React.FC<CareerPipelineProps> = ({
                       </Badge>
                     </td>
 
-                    <td className="p-3.5 font-mono text-slate-300 whitespace-nowrap min-w-[130px]">
+                    <td className="p-3.5 font-mono tabular-nums text-slate-300 whitespace-nowrap min-w-[130px]">
                       {scheme.appCloses || 'Rolling'}
                     </td>
 
-                    <td className="p-3.5 font-mono text-white font-medium whitespace-nowrap min-w-[140px]">
+                    <td className="p-3.5 font-mono tabular-nums text-white font-medium whitespace-nowrap min-w-[140px]">
                       {scheme.salary || 'Competitive'}
                       {scheme.bonus && <span className="text-emerald-400 text-[10px] ml-1">+{scheme.bonus}</span>}
                     </td>

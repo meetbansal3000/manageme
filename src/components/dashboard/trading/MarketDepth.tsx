@@ -2,7 +2,7 @@
 
 import React, { useMemo } from 'react';
 import { MarketDepthOrder } from '../../../types';
-import { Card } from '../../ui/Card';
+import { SpatialCard } from '../../ui/SpatialCard';
 
 export interface MarketDepthProps {
   symbol?: string;
@@ -17,7 +17,7 @@ export const MarketDepth: React.FC<MarketDepthProps> = ({
   bids: customBids,
   asks: customAsks
 }) => {
-  // Generate realistic order book if not passed
+  // Generate order book if not passed
   const bids = useMemo(() => {
     if (customBids && customBids.length > 0) return customBids;
     return [
@@ -58,20 +58,20 @@ export const MarketDepth: React.FC<MarketDepthProps> = ({
   }, [asks, bids]);
 
   return (
-    <Card variant="glass" padding="sm" className="border border-white/10">
-      <div className="flex items-center justify-between pb-2 mb-2 border-b border-white/10">
-        <h4 className="text-xs font-bold font-mono tracking-wider text-slate-300">
+    <SpatialCard className="p-4 border border-black/[0.06] dark:border-white/[0.08] bg-white/75 dark:bg-white/[0.03] backdrop-blur-2xl">
+      <div className="flex items-center justify-between pb-2 mb-2 border-b border-black/[0.06] dark:border-white/[0.08]">
+        <h4 className="text-xs font-bold font-mono tracking-wider text-[var(--text-muted)]">
           ORDER BOOK ({symbol})
         </h4>
-        <span className="text-[10px] font-mono text-emerald-400">
+        <span className="text-[10px] font-mono tabular-nums tracking-tight font-semibold text-emerald-400">
           SPREAD: ${spread}
         </span>
       </div>
 
-      <div className="grid grid-cols-2 gap-3 text-[11px] font-mono">
+      <div className="grid grid-cols-2 gap-3 text-[11px] font-mono tabular-nums">
         {/* Bids (Buy Orders) */}
         <div>
-          <div className="flex justify-between text-slate-500 text-[10px] mb-1.5 uppercase">
+          <div className="flex justify-between text-[var(--text-muted)] text-[10px] mb-1.5 uppercase font-mono tracking-wider">
             <span>Bid Price</span>
             <span>Size</span>
           </div>
@@ -85,10 +85,10 @@ export const MarketDepth: React.FC<MarketDepthProps> = ({
                     className="absolute right-0 top-0 bottom-0 bg-emerald-500/10 pointer-events-none"
                     style={{ width: `${depthPct}%` }}
                   />
-                  <span className="text-emerald-400 font-semibold relative z-10">
+                  <span className="text-emerald-400 font-mono tabular-nums tracking-tight font-semibold relative z-10">
                     ${(bid.price || 0).toFixed(2)}
                   </span>
-                  <span className="text-slate-300 relative z-10">{bid.amount || 0}</span>
+                  <span className="text-[var(--text-primary)] font-mono tabular-nums relative z-10">{bid.amount || 0}</span>
                 </div>
               );
             })}
@@ -97,7 +97,7 @@ export const MarketDepth: React.FC<MarketDepthProps> = ({
 
         {/* Asks (Sell Orders) */}
         <div>
-          <div className="flex justify-between text-slate-500 text-[10px] mb-1.5 uppercase">
+          <div className="flex justify-between text-[var(--text-muted)] text-[10px] mb-1.5 uppercase font-mono tracking-wider">
             <span>Ask Price</span>
             <span>Size</span>
           </div>
@@ -111,17 +111,17 @@ export const MarketDepth: React.FC<MarketDepthProps> = ({
                     className="absolute left-0 top-0 bottom-0 bg-rose-500/10 pointer-events-none"
                     style={{ width: `${depthPct}%` }}
                   />
-                  <span className="text-rose-400 font-semibold relative z-10">
+                  <span className="text-rose-400 font-mono tabular-nums tracking-tight font-semibold relative z-10">
                     ${(ask.price || 0).toFixed(2)}
                   </span>
-                  <span className="text-slate-300 relative z-10">{ask.amount || 0}</span>
+                  <span className="text-[var(--text-primary)] font-mono tabular-nums relative z-10">{ask.amount || 0}</span>
                 </div>
               );
             })}
           </div>
         </div>
       </div>
-    </Card>
+    </SpatialCard>
   );
 };
 

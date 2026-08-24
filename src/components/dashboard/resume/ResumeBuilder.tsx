@@ -307,7 +307,7 @@ export const ResumeBuilder: React.FC = () => {
                   <div>
                     <label className="text-slate-400 block mb-1">Target Role Headline</label>
                     <Input
-                      placeholder="e.g. Corporate Finance & Investment Analyst"
+                      placeholder="e.g. Target Professional Title"
                       value={resumeData.header.targetTitle}
                       onChange={(e) => setResumeData({
                         ...resumeData,
@@ -375,7 +375,7 @@ export const ResumeBuilder: React.FC = () => {
                         <span className="text-[10px] uppercase font-bold text-blue-400">Education #{idx + 1}</span>
                       </div>
                       <Input
-                        placeholder="e.g. London Business School / Harvard / Oxford"
+                        placeholder="e.g. University / Business School"
                         value={edu.institution}
                         onChange={(e) => {
                           const updated = [...resumeData.education];
@@ -384,7 +384,7 @@ export const ResumeBuilder: React.FC = () => {
                         }}
                       />
                       <Input
-                        placeholder="e.g. Bachelor of Science / Master's in Management"
+                        placeholder="e.g. Master's in Finance / Computer Science"
                         value={edu.degree}
                         onChange={(e) => {
                           const updated = [...resumeData.education];
@@ -413,7 +413,7 @@ export const ResumeBuilder: React.FC = () => {
                     <div key={exp.id} className="p-3 rounded-xl bg-white/[0.02] border border-white/10 space-y-2">
                       <span className="text-[10px] uppercase font-bold text-emerald-400">Experience #{idx + 1}</span>
                       <Input
-                        placeholder="e.g. Goldman Sachs / Morgan Stanley / McKinsey"
+                        placeholder="e.g. Target Organization / Company"
                         value={exp.company}
                         onChange={(e) => {
                           const updated = [...resumeData.experience];
@@ -422,7 +422,7 @@ export const ResumeBuilder: React.FC = () => {
                         }}
                       />
                       <Input
-                        placeholder="e.g. Investment Banking Analyst / Associate"
+                        placeholder="e.g. Professional Role / Analyst"
                         value={exp.role}
                         onChange={(e) => {
                           const updated = [...resumeData.experience];

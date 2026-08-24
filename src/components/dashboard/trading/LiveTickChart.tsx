@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { TrendingUp, TrendingDown, Activity, Maximize2, BarChart2 } from 'lucide-react';
-import { Card } from '../../ui/Card';
+import { SpatialCard } from '../../ui/SpatialCard';
 
 export interface LiveTickPoint {
   time: string;
@@ -99,61 +99,57 @@ export const LiveTickChart: React.FC<LiveTickChartProps> = ({
     return coords.reduce((acc, curr, idx) => {
       return idx === 0 ? `M ${curr.x} ${curr.y}` : `${acc} L ${curr.x} ${curr.y}`;
     }, '');
-  }, [coords, chartPaddingLeft, chartPaddingRight, svgHeight, svgWidth]);
+  }, [coords, chartPaddingLeft, svgHeight, svgWidth, chartPaddingRight]);
 
   const areaD = useMemo(() => {
     if (coords.length === 0) return '';
-    const first = coords[0];
-    const last = coords[coords.length - 1];
-    const bottomY = chartPaddingTop + effectiveHeight;
-    return `${pathD} L ${last.x} ${bottomY} L ${first.x} ${bottomY} Z`;
+    const lastCoord = coords[coords.length - 1];
+    const firstCoord = coords[0];
+    return `${pathD} L ${lastCoord.x} ${chartPaddingTop + effectiveHeight} L ${firstCoord.x} ${chartPaddingTop + effectiveHeight} Z`;
   }, [coords, pathD, chartPaddingTop, effectiveHeight]);
 
   const strokeColor = isPositive ? '#10B981' : '#F43F5E';
-  const fillColorId = `grad_${symbol.replace(/[^a-zA-Z0-9]/g, '_')}_${isPositive ? 'up' : 'down'}`;
+  const gradientId = `chartGradient_${symbol.replace(/[^a-zA-Z0-9]/g, '_')}`;
 
   return (
-    <Card variant="glass" padding="none" className="border border-white/10 overflow-hidden relative">
-      {/* Header Bar */}
-      <div className="p-4 border-b border-white/10 flex flex-wrap items-center justify-between gap-3">
+    <SpatialCard className="p-4 sm:p-5 border border-black/[0.06] dark:border-white/[0.08] bg-white/75 dark:bg-white/[0.03] backdrop-blur-2xl">
+      {/* Header bar */}
+      <div className="flex flex-wrap items-center justify-between gap-3 pb-3 mb-2 border-b border-black/[0.06] dark:border-white/[0.08]">
         <div className="flex items-center gap-3">
-          <div>
-            <div className="flex items-center gap-2">
-              <h3 className="text-lg font-extrabold font-mono text-white tracking-tight">{symbol}</h3>
-              <span className={`inline-flex items-center gap-0.5 text-xs font-mono font-bold px-2 py-0.5 rounded-full ${
-                isPositive ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30' : 'bg-rose-500/15 text-rose-400 border border-rose-500/30'
-              }`}>
-                {isPositive ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
-                <span>{change}</span>
-              </span>
-            </div>
-            <div className="flex items-center gap-2 mt-0.5">
-              <span className="text-xl font-bold font-mono text-white">
-                ${(hoveredPoint?.price || currentPrice).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-              </span>
-              {hoveredPoint && (
-                <span className="text-[11px] font-mono text-slate-400">
-                  at {hoveredPoint.time}
-                </span>
-              )}
-            </div>
+          <div className="flex items-center gap-2">
+            <span className="font-bold text-base text-[var(--text-primary)] font-mono tracking-tight">{symbol}</span>
+            <span className="text-xs px-2 py-0.5 rounded-full bg-black/[0.04] dark:bg-white/10 text-[var(--text-muted)] font-mono">
+              Live Feed
+            </span>
+          </div>
+
+          <div className="flex items-center gap-2 font-mono tabular-nums tracking-tight font-semibold">
+            <span className="text-lg font-extrabold text-[var(--text-primary)]">
+              ${(hoveredPoint?.price ?? lastPrice).toFixed(2)}
+            </span>
+            <span className={`text-xs px-1.5 py-0.5 rounded flex items-center gap-0.5 ${
+              isPositive ? 'bg-emerald-500/10 text-emerald-400' : 'bg-rose-500/10 text-rose-400'
+            }`}>
+              {isPositive ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
+              {change}
+            </span>
           </div>
         </div>
 
-        {/* Time Range Filter Buttons */}
+        {/* Time range selector */}
         {showControls && (
-          <div className="flex items-center gap-1 bg-white/5 p-1 rounded-xl border border-white/10">
-            {(['1D', '1W', '1M', '1Y', 'ALL'] as const).map((range) => (
+          <div className="flex items-center gap-1 bg-black/[0.03] dark:bg-white/5 p-1 rounded-xl">
+            {(['1D', '1W', '1M', '1Y', 'ALL'] as const).map((r) => (
               <button
-                key={range}
-                onClick={() => setTimeRange(range)}
-                className={`px-3 py-1 text-xs font-mono font-semibold rounded-lg transition-all cursor-pointer ${
-                  timeRange === range
-                    ? 'bg-[#0052FF] text-white shadow-sm'
-                    : 'text-slate-400 hover:text-white hover:bg-white/5'
+                key={r}
+                onClick={() => setTimeRange(r)}
+                className={`px-2.5 py-1 rounded-lg text-xs font-mono font-medium transition-all cursor-pointer ${
+                  timeRange === r
+                    ? 'bg-[var(--accent)] text-white shadow-xs'
+                    : 'text-[var(--text-muted)] hover:text-[var(--text-primary)]'
                 }`}
               >
-                {range}
+                {r}
               </button>
             ))}
           </div>
@@ -161,116 +157,105 @@ export const LiveTickChart: React.FC<LiveTickChartProps> = ({
       </div>
 
       {/* SVG Canvas Area */}
-      <div className="w-full relative" style={{ height: `${height}px` }}>
+      <div className="relative w-full overflow-hidden select-none" style={{ height }}>
         <svg
           viewBox={`0 0 ${svgWidth} ${svgHeight}`}
-          className="w-full h-full select-none"
+          className="w-full h-full overflow-visible"
           preserveAspectRatio="none"
         >
           <defs>
-            <linearGradient id={fillColorId} x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor={strokeColor} stopOpacity={0.25} />
-              <stop offset="100%" stopColor={strokeColor} stopOpacity={0.0} />
+            <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor={strokeColor} stopOpacity="0.25" />
+              <stop offset="100%" stopColor={strokeColor} stopOpacity="0.0" />
             </linearGradient>
           </defs>
 
-          {/* Background Grid Lines */}
-          {[0.25, 0.5, 0.75].map((pct, idx) => {
-            const y = chartPaddingTop + effectiveHeight * pct;
-            const priceLabel = maxPrice - priceRange * pct;
-            return (
-              <g key={idx}>
-                <line
-                  x1={chartPaddingLeft}
-                  y1={y}
-                  x2={svgWidth - chartPaddingRight}
-                  y2={y}
-                  stroke="rgba(255, 255, 255, 0.05)"
-                  strokeDasharray="4 4"
-                />
-                <text
-                  x={svgWidth - chartPaddingRight + 8}
-                  y={y + 3}
-                  fill="#64748b"
-                  fontSize="10"
-                  fontFamily="monospace"
-                >
-                  ${priceLabel.toFixed(2)}
-                </text>
-              </g>
-            );
-          })}
+          {/* Grid lines */}
+          <line
+            x1={chartPaddingLeft}
+            y1={chartPaddingTop}
+            x2={svgWidth - chartPaddingRight}
+            y2={chartPaddingTop}
+            stroke="currentColor"
+            className="text-black/[0.04] dark:text-white/[0.04]"
+            strokeDasharray="4 4"
+          />
+          <line
+            x1={chartPaddingLeft}
+            y1={chartPaddingTop + effectiveHeight / 2}
+            x2={svgWidth - chartPaddingRight}
+            y2={chartPaddingTop + effectiveHeight / 2}
+            stroke="currentColor"
+            className="text-black/[0.04] dark:text-white/[0.04]"
+            strokeDasharray="4 4"
+          />
+          <line
+            x1={chartPaddingLeft}
+            y1={chartPaddingTop + effectiveHeight}
+            x2={svgWidth - chartPaddingRight}
+            y2={chartPaddingTop + effectiveHeight}
+            stroke="currentColor"
+            className="text-black/[0.04] dark:text-white/[0.04]"
+          />
 
-          {/* Area Fill */}
-          {areaD && <path d={areaD} fill={`url(#${fillColorId})`} />}
+          {/* Shaded Area */}
+          <path d={areaD} fill={`url(#${gradientId})`} />
 
-          {/* Main Price Line */}
+          {/* Price Line */}
           <path
             d={pathD}
             fill="none"
             stroke={strokeColor}
-            strokeWidth="2.5"
+            strokeWidth="2.2"
             strokeLinecap="round"
             strokeLinejoin="round"
           />
 
-          {/* Current Live Tick Pulse Point */}
-          {coords.length > 0 && (
-            <g transform={`translate(${coords[coords.length - 1].x}, ${coords[coords.length - 1].y})`}>
-              <circle r="6" fill={strokeColor} opacity="0.3" className="animate-ping" />
-              <circle r="4" fill={strokeColor} stroke="#ffffff" strokeWidth="1.5" />
-            </g>
-          )}
+          {/* Price Scale Markers on Right */}
+          <text
+            x={svgWidth - chartPaddingRight + 8}
+            y={chartPaddingTop + 4}
+            className="fill-[var(--text-muted)] text-[10px] font-mono"
+          >
+            ${maxPrice.toFixed(2)}
+          </text>
+          <text
+            x={svgWidth - chartPaddingRight + 8}
+            y={chartPaddingTop + effectiveHeight / 2 + 4}
+            className="fill-[var(--text-muted)] text-[10px] font-mono"
+          >
+            ${((maxPrice + minPrice) / 2).toFixed(2)}
+          </text>
+          <text
+            x={svgWidth - chartPaddingRight + 8}
+            y={chartPaddingTop + effectiveHeight + 4}
+            className="fill-[var(--text-muted)] text-[10px] font-mono"
+          >
+            ${minPrice.toFixed(2)}
+          </text>
 
-          {/* Hover Crosshair & Dot */}
-          {hoveredPoint && (
-            (() => {
-              const matchedCoord = coords.find(c => c.point.time === hoveredPoint.time) || coords[coords.length - 1];
-              if (!matchedCoord) return null;
-              return (
-                <g>
-                  <line
-                    x1={matchedCoord.x}
-                    y1={chartPaddingTop}
-                    x2={matchedCoord.x}
-                    y2={chartPaddingTop + effectiveHeight}
-                    stroke="rgba(255, 255, 255, 0.3)"
-                    strokeDasharray="3 3"
-                  />
-                  <circle cx={matchedCoord.x} cy={matchedCoord.y} r="5" fill="#ffffff" stroke={strokeColor} strokeWidth="2" />
-                </g>
-              );
-            })()
-          )}
-        </svg>
-
-        {/* Hover Transparent Overlays for interactive scrub */}
-        <div
-          className="absolute inset-0 cursor-crosshair flex"
-          onMouseLeave={() => setHoveredPoint(null)}
-        >
-          {points.map((p, idx) => (
-            <div
+          {/* Hover interactive overlay */}
+          {coords.map((c, idx) => (
+            <circle
               key={idx}
-              className="flex-1 h-full"
-              onMouseEnter={() => setHoveredPoint(p)}
+              cx={c.x}
+              cy={c.y}
+              r="6"
+              className="opacity-0 hover:opacity-100 fill-white stroke-[var(--accent)] stroke-2 cursor-pointer transition-opacity"
+              onMouseEnter={() => setHoveredPoint(c.point)}
+              onMouseLeave={() => setHoveredPoint(null)}
             />
           ))}
-        </div>
-      </div>
+        </svg>
 
-      {/* Footer Info */}
-      <div className="p-3 bg-white/[0.02] border-t border-white/5 flex items-center justify-between text-[11px] font-mono text-slate-400">
-        <div className="flex items-center gap-2">
-          <Activity className="w-3.5 h-3.5 text-blue-400 animate-pulse" />
-          <span>Real-Time WebSocket Tick Engine Active</span>
-        </div>
-        <div className="flex items-center gap-3">
-          <span>Min: <strong className="text-white">${minPrice.toFixed(2)}</strong></span>
-          <span>Max: <strong className="text-white">${maxPrice.toFixed(2)}</strong></span>
-        </div>
+        {/* Hover details badge */}
+        {hoveredPoint && (
+          <div className="absolute top-2 left-3 bg-black/80 backdrop-blur-md border border-white/10 px-2.5 py-1 rounded-lg text-xs font-mono tabular-nums text-white">
+            <span>{hoveredPoint.time}</span> • <span className="text-emerald-400 font-bold">${hoveredPoint.price.toFixed(2)}</span>
+          </div>
+        )}
       </div>
-    </Card>
+    </SpatialCard>
   );
 };
 

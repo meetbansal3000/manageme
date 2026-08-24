@@ -676,7 +676,7 @@ ${DEFAULT_CANDIDATE_PROFILE.name}
                   <Input
                     value={targetName}
                     onChange={(e) => setTargetName(e.target.value)}
-                    placeholder="e.g. Sarah Jenkins"
+                    placeholder="e.g. Recruiter Name"
                   />
                 </div>
 
@@ -686,7 +686,7 @@ ${DEFAULT_CANDIDATE_PROFILE.name}
                     <Input
                       value={targetCompany}
                       onChange={(e) => setTargetCompany(e.target.value)}
-                      placeholder="e.g. Goldman Sachs"
+                      placeholder="e.g. Target Company"
                     />
                   </div>
                   <div>
@@ -694,7 +694,7 @@ ${DEFAULT_CANDIDATE_PROFILE.name}
                     <Input
                       value={targetRole}
                       onChange={(e) => setTargetRole(e.target.value)}
-                      placeholder="e.g. M&A Analyst"
+                      placeholder="e.g. Financial Analyst / Software Engineer"
                     />
                   </div>
                 </div>
@@ -950,10 +950,10 @@ ${DEFAULT_CANDIDATE_PROFILE.name}
 
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <label className="text-slate-400 block mb-1">Company / Bank *</label>
+                  <label className="text-slate-400 block mb-1">Company / Organization *</label>
                   <Input
                     required
-                    placeholder="e.g. Goldman Sachs"
+                    placeholder="e.g. Target Company"
                     value={contactForm.company}
                     onChange={(e) => setContactForm({ ...contactForm, company: e.target.value })}
                   />
@@ -961,7 +961,7 @@ ${DEFAULT_CANDIDATE_PROFILE.name}
                 <div>
                   <label className="text-slate-400 block mb-1">Role / Title</label>
                   <Input
-                    placeholder="e.g. Campus Recruiter"
+                    placeholder="e.g. Talent Acquisition / Recruiter"
                     value={contactForm.role}
                     onChange={(e) => setContactForm({ ...contactForm, role: e.target.value })}
                   />
@@ -973,7 +973,7 @@ ${DEFAULT_CANDIDATE_PROFILE.name}
                   <label className="text-slate-400 block mb-1">Email Address</label>
                   <Input
                     type="email"
-                    placeholder="sarah@gs.com"
+                    placeholder="recruiter@company.com"
                     value={contactForm.email}
                     onChange={(e) => setContactForm({ ...contactForm, email: e.target.value })}
                   />

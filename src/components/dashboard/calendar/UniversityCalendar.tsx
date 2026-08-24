@@ -13,7 +13,7 @@ import {
   ChevronRight,
   GraduationCap
 } from 'lucide-react';
-import { Card } from '../../ui/Card';
+import { SpatialCard } from '../../ui/SpatialCard';
 import { Button } from '../../ui/Button';
 import { Input } from '../../ui/Input';
 import { UserTrackerData } from '../../../hooks/useFirestoreData';
@@ -87,41 +87,41 @@ export const UniversityCalendar: React.FC<UniversityCalendarProps> = ({
       {/* Header & Quick Stats */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-bold font-mono text-white flex items-center gap-2">
-            <GraduationCap className="w-5 h-5 text-blue-400" />
+          <h2 className="text-xl font-bold font-mono text-[var(--text-primary)] flex items-center gap-2">
+            <GraduationCap className="w-5 h-5 text-[var(--accent)]" />
             <span>University Calendar & Timetable</span>
           </h2>
-          <p className="text-xs text-slate-400 mt-1">
+          <p className="text-xs text-[var(--text-muted)] mt-1">
             Weekly lecture schedules, revision blocks, and seminar rooms.
           </p>
         </div>
 
         <div className="flex items-center gap-2">
-          <span className="text-xs font-mono px-3 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-300">
+          <span className="text-xs font-mono tabular-nums px-3 py-1.5 rounded-full bg-[var(--accent)]/10 border border-[var(--accent)]/20 text-[var(--accent)]">
             {classes.length} Scheduled Classes
           </span>
         </div>
       </div>
 
       {/* Add Class Form */}
-      <Card variant="glass" padding="md" className="border border-white/10">
-        <h3 className="text-sm font-bold font-mono text-white uppercase tracking-wider mb-4 flex items-center gap-2">
-          <Plus className="w-4 h-4 text-blue-400" />
+      <SpatialCard className="p-4 sm:p-5 border border-black/[0.06] dark:border-white/[0.08] bg-white/75 dark:bg-white/[0.03] backdrop-blur-2xl">
+        <h3 className="text-sm font-bold font-mono text-[var(--text-primary)] uppercase tracking-wider mb-4 flex items-center gap-2">
+          <Plus className="w-4 h-4 text-[var(--accent)]" />
           <span>+ Add Class / Revision Block</span>
         </h3>
         <form onSubmit={handleAddClass} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
           <Input
-            placeholder="Module (e.g. Econometrics)"
+            placeholder="Module (e.g. Econometrics / Finance)"
             value={newClass.moduleName}
             onChange={(e) => setNewClass({ ...newClass, moduleName: e.target.value })}
           />
           <select
             value={newClass.dayOfWeek}
             onChange={(e) => setNewClass({ ...newClass, dayOfWeek: e.target.value as any })}
-            className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-xs font-mono text-white focus:outline-none focus:border-blue-500"
+            className="w-full bg-black/[0.03] dark:bg-white/5 border border-black/[0.06] dark:border-white/10 rounded-xl px-3 py-2 text-xs font-mono text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent)]"
           >
             {DAYS_OF_WEEK.map((d) => (
-              <option key={d} value={d} className="bg-slate-900 text-white">{d}</option>
+              <option key={d} value={d} className="bg-white dark:bg-slate-900 text-[var(--text-primary)]">{d}</option>
             ))}
           </select>
           <div className="flex items-center gap-1.5">
@@ -129,16 +129,18 @@ export const UniversityCalendar: React.FC<UniversityCalendarProps> = ({
               type="time"
               value={newClass.startTime}
               onChange={(e) => setNewClass({ ...newClass, startTime: e.target.value })}
+              className="font-mono tabular-nums"
             />
-            <span className="text-slate-400 text-xs">to</span>
+            <span className="text-[var(--text-muted)] text-xs font-mono">to</span>
             <Input
               type="time"
               value={newClass.endTime}
               onChange={(e) => setNewClass({ ...newClass, endTime: e.target.value })}
+              className="font-mono tabular-nums"
             />
           </div>
           <Input
-            placeholder="Room / Location (e.g. TLC 101)"
+            placeholder="Room / Location (e.g. Hall 101)"
             value={newClass.location}
             onChange={(e) => setNewClass({ ...newClass, location: e.target.value })}
           />
@@ -146,19 +148,19 @@ export const UniversityCalendar: React.FC<UniversityCalendarProps> = ({
             + Add Class
           </Button>
         </form>
-      </Card>
+      </SpatialCard>
 
       {/* Empty State Check */}
       {classes.length === 0 && (
-        <Card variant="glass" padding="lg" className="border border-white/10 text-center py-10">
-          <CalendarIcon className="w-8 h-8 mx-auto text-blue-400 opacity-60 mb-2" />
-          <p className="font-semibold text-white text-sm">
-            No lectures scheduled for this week.
+        <SpatialCard className="p-8 text-center border border-black/[0.06] dark:border-white/[0.08] bg-white/75 dark:bg-white/[0.03] backdrop-blur-2xl">
+          <CalendarIcon className="w-8 h-8 mx-auto text-[var(--accent)] opacity-60 mb-2" />
+          <p className="font-semibold text-[var(--text-primary)] text-sm">
+            No classes scheduled.
           </p>
-          <p className="text-xs text-slate-400 mt-1">
-            Click '+ Add Class / Revision Block' above to set up your weekly schedule.
+          <p className="text-xs text-[var(--text-muted)] mt-1">
+            Click &apos;+ Add Class / Revision Block&apos; above to set up your weekly schedule.
           </p>
-        </Card>
+        </SpatialCard>
       )}
 
       {/* Monday - Friday Schedule Grid */}
@@ -169,9 +171,9 @@ export const UniversityCalendar: React.FC<UniversityCalendarProps> = ({
             .sort((a, b) => (a?.startTime || '').localeCompare(b?.startTime || ''));
 
           return (
-            <Card key={day} variant="glass" padding="sm" className="border border-white/10 flex flex-col gap-3 min-h-[160px]">
-              <div className="text-center pb-2 border-b border-white/10">
-                <span className="text-xs font-mono font-bold uppercase tracking-wider text-slate-300">
+            <SpatialCard key={day} className="p-3 border border-black/[0.06] dark:border-white/[0.08] bg-white/75 dark:bg-white/[0.03] backdrop-blur-2xl flex flex-col gap-3 min-h-[160px]">
+              <div className="text-center pb-2 border-b border-black/[0.06] dark:border-white/[0.08]">
+                <span className="text-xs font-mono font-bold uppercase tracking-wider text-[var(--text-muted)]">
                   {day}
                 </span>
               </div>
@@ -179,26 +181,26 @@ export const UniversityCalendar: React.FC<UniversityCalendarProps> = ({
               {(dayClasses || []).map((c) => {
                 if (!c) return null;
                 return (
-                  <div key={c.id} className="p-3 rounded-xl bg-white/[0.03] border border-white/10 relative group space-y-1.5">
+                  <div key={c.id} className="p-3 rounded-xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/[0.04] dark:border-white/10 relative group space-y-1.5">
                     <div className="flex items-start justify-between">
-                      <span className="font-bold text-xs text-blue-400 font-mono truncate max-w-[110px]">
+                      <span className="font-bold text-xs text-[var(--accent)] font-mono truncate max-w-[110px]">
                         {c.moduleName}
                       </span>
                       <button
                         onClick={() => handleDeleteClass(c.id)}
-                        className="opacity-0 group-hover:opacity-100 text-slate-500 hover:text-rose-400 transition-opacity p-0.5 cursor-pointer"
+                        className="opacity-0 group-hover:opacity-100 text-[var(--text-muted)] hover:text-rose-400 transition-opacity p-0.5 cursor-pointer"
                         title="Delete class"
                       >
                         <Trash2 className="w-3 h-3" />
                       </button>
                     </div>
 
-                    <div className="text-[10px] font-mono text-slate-400 flex items-center gap-1">
-                      <Clock className="w-3 h-3 text-blue-400" />
+                    <div className="text-[10px] font-mono tabular-nums text-[var(--text-muted)] flex items-center gap-1">
+                      <Clock className="w-3 h-3 text-[var(--accent)]" />
                       <span>{c.startTime} - {c.endTime}</span>
                     </div>
 
-                    <div className="text-[10px] font-mono text-slate-400 flex items-center gap-1">
+                    <div className="text-[10px] font-mono text-[var(--text-muted)] flex items-center gap-1">
                       <MapPin className="w-3 h-3 text-emerald-400" />
                       <span>{c.location || 'TBA'}</span>
                     </div>
@@ -207,11 +209,11 @@ export const UniversityCalendar: React.FC<UniversityCalendarProps> = ({
               })}
 
               {dayClasses.length === 0 && (
-                <div className="my-auto text-center py-4 text-[11px] font-mono text-slate-600">
+                <div className="my-auto text-center py-4 text-[11px] font-mono text-[var(--text-muted)]">
                   No classes
                 </div>
               )}
-            </Card>
+            </SpatialCard>
           );
         })}
       </div>
