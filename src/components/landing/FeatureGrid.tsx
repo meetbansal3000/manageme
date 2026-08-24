@@ -1,4 +1,4 @@
-// Component: Landing Page Feature Grid with 7 SpatialCard Instances & whileInView Stagger
+// Component: Landing Page Feature Grid with 7 SpatialCard Subsystems & Exact Anchor Jumps
 
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
@@ -16,7 +16,6 @@ import {
   Printer, 
   Download, 
 } from 'lucide-react';
-import { Button } from '../ui/Button';
 import { SpatialCard } from '../ui/SpatialCard';
 
 export interface FeatureGridProps {
@@ -33,14 +32,14 @@ const staggerChild = {
 };
 
 export const FeatureGrid: React.FC<FeatureGridProps> = ({ onEnterApp }) => {
-  // Card 2 interactive flashcard state
+  // Interactive flashcard state for Copilot
   const [showAnswer, setShowAnswer] = useState(false);
 
-  // Card 3 interactive wage calculator state
+  // Interactive wage slider state
   const [calcHours, setCalcHours] = useState(16);
   const [calcRate, setCalcRate] = useState(15.5);
 
-  // Card 6 market terminal region state
+  // Market terminal region state
   const [selectedRegion, setSelectedRegion] = useState<'UK' | 'US' | 'IN' | 'EU' | 'SG'>('UK');
 
   const regionTicks = {
@@ -55,14 +54,14 @@ export const FeatureGrid: React.FC<FeatureGridProps> = ({ onEnterApp }) => {
     <section id="features" className="py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto z-10 relative">
       {/* Section Header */}
       <div className="text-center mb-16">
-        <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full backdrop-blur-md bg-zinc-900/[0.06] dark:bg-white/[0.05] border border-zinc-900/[0.08] dark:border-white/[0.08] text-xs font-mono font-medium text-zinc-600 dark:text-zinc-400 mb-3">
+        <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full backdrop-blur-md bg-black/[0.03] dark:bg-white/[0.05] border border-black/[0.06] dark:border-white/[0.08] text-xs font-mono font-medium text-[var(--text-muted)] mb-3">
           <Sparkles className="w-3.5 h-3.5 text-indigo-500" />
           <span>Complete High-Frequency Suite</span>
         </div>
-        <h2 className="text-3xl sm:text-4xl font-extrabold tracking-[-0.035em] text-[#1D1D1F] dark:text-[#F5F5F7]">
+        <h2 className="text-3xl sm:text-4xl font-extrabold tracking-[-0.035em] text-[var(--text-primary)]">
           7 Purpose-Built Intelligence Modules
         </h2>
-        <p className="text-sm sm:text-base text-zinc-500 dark:text-zinc-400 max-w-2xl mx-auto mt-3 font-sans">
+        <p className="text-sm sm:text-base text-[var(--text-muted)] max-w-2xl mx-auto mt-3 font-sans">
           Engineered without fluff for finance students, multi-asset traders, and UK Tier-4 visa holders.
         </p>
       </div>
@@ -76,31 +75,31 @@ export const FeatureGrid: React.FC<FeatureGridProps> = ({ onEnterApp }) => {
         viewport={{ once: true, margin: "-80px" }}
       >
         
-        {/* CARD 1: Career Vault & Multi-View Board */}
+        {/* CARD 1: Career Vault & Multi-View Board -> #jobs */}
         <motion.div variants={staggerChild}>
-          <SpatialCard className="p-6 flex flex-col justify-between h-full">
+          <SpatialCard className="p-6 flex flex-col justify-between h-full border border-black/[0.06] dark:border-white/[0.08] bg-white/80 dark:bg-white/[0.03] backdrop-blur-2xl">
             <div>
               <div className="flex items-center justify-between mb-4">
                 <div className="w-10 h-10 rounded-2xl bg-amber-500/[0.08] text-amber-500 flex items-center justify-center font-bold">
                   <Briefcase className="w-5 h-5" />
                 </div>
-                <span className="text-[10px] font-mono font-medium px-2.5 py-1 rounded-full backdrop-blur-md bg-zinc-900/[0.06] dark:bg-white/[0.05] border border-zinc-900/[0.08] dark:border-white/[0.08] text-zinc-600 dark:text-zinc-400">
+                <span className="text-[10px] font-mono font-medium px-2.5 py-1 rounded-full backdrop-blur-md bg-black/[0.03] dark:bg-white/[0.05] border border-black/[0.06] dark:border-white/[0.08] text-[var(--text-muted)]">
                   Kanban + Table
                 </span>
               </div>
 
-              <h3 className="text-lg font-bold text-[#1D1D1F] dark:text-[#F5F5F7] tracking-tight">
-                Career Vault & Pipeline
+              <h3 className="text-lg font-bold text-[var(--text-primary)] tracking-tight">
+                Career Vault & Multi-View Board
               </h3>
-              <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1.5 mb-4 leading-relaxed">
-                Track 2026 graduate schemes and internships across IB, PE, AM, and Big 4 audit.
+              <p className="text-xs text-[var(--text-muted)] mt-1.5 mb-4 leading-relaxed">
+                Track 2026 graduate schemes and internships across IB, PE, AM, and quantitative advisory.
               </p>
 
-              {/* Live Interactive Preview: Mini Kanban Column */}
-              <div className="p-3 rounded-2xl bg-black/[0.03] dark:bg-white/[0.03] border border-black/[0.04] dark:border-white/[0.04] space-y-2 mb-4">
-                <div className="flex items-center justify-between text-[11px] font-mono text-zinc-500 font-medium">
+              {/* Live Interactive Preview */}
+              <div className="p-3 rounded-2xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/[0.04] dark:border-white/[0.04] space-y-2 mb-4">
+                <div className="flex items-center justify-between text-[11px] font-mono text-[var(--text-muted)] font-medium">
                   <span>Active Pipeline Stages</span>
-                  <span className="text-emerald-500">3 Offers</span>
+                  <span className="text-emerald-500 font-mono tabular-nums">3 Offers</span>
                 </div>
                 <div className="grid grid-cols-3 gap-1.5 text-[10px] font-mono">
                   <div className="p-2 rounded-xl bg-amber-500/[0.08] border border-amber-500/[0.12] text-amber-600 dark:text-amber-400">
@@ -119,40 +118,38 @@ export const FeatureGrid: React.FC<FeatureGridProps> = ({ onEnterApp }) => {
               </div>
             </div>
 
-            <Button
-              variant="outline"
-              size="sm"
+            <button
               onClick={() => { window.location.hash = '#jobs'; onEnterApp('jobs'); }}
-              rightIcon={<ArrowRight className="w-3.5 h-3.5" />}
-              className="w-full justify-between font-mono text-xs hover:border-indigo-500 hover:text-indigo-500"
+              className="w-full py-2.5 px-4 rounded-xl border border-black/[0.08] dark:border-white/[0.1] bg-black/[0.02] dark:bg-white/[0.03] text-xs font-mono font-medium text-[var(--text-primary)] hover:border-indigo-500 hover:text-indigo-500 transition-all flex items-center justify-between cursor-pointer"
             >
-              Open Career Vault
-            </Button>
+              <span>Open Career Vault</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </button>
           </SpatialCard>
         </motion.div>
 
-        {/* CARD 2: AI Interview Copilot & CV Tailor */}
+        {/* CARD 2: AI Interview Copilot & CV Tailor -> #jobs */}
         <motion.div variants={staggerChild}>
-          <SpatialCard className="p-6 flex flex-col justify-between h-full">
+          <SpatialCard className="p-6 flex flex-col justify-between h-full border border-black/[0.06] dark:border-white/[0.08] bg-white/80 dark:bg-white/[0.03] backdrop-blur-2xl">
             <div>
               <div className="flex items-center justify-between mb-4">
                 <div className="w-10 h-10 rounded-2xl bg-indigo-500/[0.08] text-indigo-500 flex items-center justify-center font-bold">
                   <Sparkles className="w-5 h-5" />
                 </div>
-                <span className="text-[10px] font-mono font-medium px-2.5 py-1 rounded-full backdrop-blur-md bg-zinc-900/[0.06] dark:bg-white/[0.05] border border-zinc-900/[0.08] dark:border-white/[0.08] text-zinc-600 dark:text-zinc-400">
-                  Gemini 2.5 Copilot
+                <span className="text-[10px] font-mono font-medium px-2.5 py-1 rounded-full backdrop-blur-md bg-black/[0.03] dark:bg-white/[0.05] border border-black/[0.06] dark:border-white/[0.08] text-[var(--text-muted)]">
+                  Gemini Copilot
                 </span>
               </div>
 
-              <h3 className="text-lg font-bold text-[#1D1D1F] dark:text-[#F5F5F7] tracking-tight">
+              <h3 className="text-lg font-bold text-[var(--text-primary)] tracking-tight">
                 AI Interview Copilot & CV Tailor
               </h3>
-              <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1.5 mb-4 leading-relaxed">
-                Drill valuation questions, bridge EV to Equity Value, and tailor ATS bullet points in seconds.
+              <p className="text-xs text-[var(--text-muted)] mt-1.5 mb-4 leading-relaxed">
+                Drill technical valuation questions, bridge EV to Equity Value, and tailor ATS bullet points in seconds.
               </p>
 
-              {/* Live Interactive Preview: Technical Question Flashcard */}
-              <div className="p-3 rounded-2xl bg-black/[0.03] dark:bg-white/[0.03] border border-black/[0.04] dark:border-white/[0.04] space-y-2 mb-4">
+              {/* Live Interactive Preview: Flashcard */}
+              <div className="p-3 rounded-2xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/[0.04] dark:border-white/[0.04] space-y-2 mb-4">
                 <div className="flex items-center justify-between text-[11px] font-mono">
                   <span className="font-bold text-indigo-500">Technical Drill</span>
                   <button
@@ -163,54 +160,52 @@ export const FeatureGrid: React.FC<FeatureGridProps> = ({ onEnterApp }) => {
                     {showAnswer ? 'Hide Answer' : 'Show Ideal Points'}
                   </button>
                 </div>
-                <p className="text-[11px] font-sans text-[#1D1D1F] dark:text-[#F5F5F7] font-medium">
-                  "Walk me through how a £10 depreciation increase flows through the 3 statements at a 25% tax rate."
+                <p className="text-[11px] font-sans text-[var(--text-primary)] font-medium">
+                  &quot;Walk me through how a £10 depreciation increase flows through the 3 statements at a 25% tax rate.&quot;
                 </p>
                 {showAnswer && (
                   <div className="text-[10px] font-mono p-2 rounded-lg bg-indigo-500/[0.08] text-indigo-600 dark:text-indigo-300 border border-indigo-500/[0.12]">
-                    IS: Net Income -£7.50 | CFS: Cash +£2.50 | BS: PP&E -£10, Cash +£2.50, Retained Earnings -£7.50 (Balanced).
+                    IS: Net Income -£7.50 | CFS: Cash +£2.50 | BS: PP&amp;E -£10, Cash +£2.50, Retained Earnings -£7.50.
                   </div>
                 )}
               </div>
             </div>
 
-            <Button
-              variant="outline"
-              size="sm"
+            <button
               onClick={() => { window.location.hash = '#jobs'; onEnterApp('jobs'); }}
-              rightIcon={<ArrowRight className="w-3.5 h-3.5" />}
-              className="w-full justify-between font-mono text-xs hover:border-indigo-500 hover:text-indigo-500"
+              className="w-full py-2.5 px-4 rounded-xl border border-black/[0.08] dark:border-white/[0.1] bg-black/[0.02] dark:bg-white/[0.03] text-xs font-mono font-medium text-[var(--text-primary)] hover:border-indigo-500 hover:text-indigo-500 transition-all flex items-center justify-between cursor-pointer"
             >
-              Practice Interviews
-            </Button>
+              <span>Career Copilot</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </button>
           </SpatialCard>
         </motion.div>
 
-        {/* CARD 3: UK Visa & Wage Compliance Ledger */}
+        {/* CARD 3: UK Visa & Wage Compliance Ledger -> #ledger */}
         <motion.div variants={staggerChild}>
-          <SpatialCard className="p-6 flex flex-col justify-between h-full">
+          <SpatialCard className="p-6 flex flex-col justify-between h-full border border-black/[0.06] dark:border-white/[0.08] bg-white/80 dark:bg-white/[0.03] backdrop-blur-2xl">
             <div>
               <div className="flex items-center justify-between mb-4">
                 <div className="w-10 h-10 rounded-2xl bg-indigo-500/[0.08] text-indigo-500 flex items-center justify-center font-bold">
                   <ShieldCheck className="w-5 h-5" />
                 </div>
-                <span className="text-[10px] font-mono font-medium px-2.5 py-1 rounded-full backdrop-blur-md bg-zinc-900/[0.06] dark:bg-white/[0.05] border border-zinc-900/[0.08] dark:border-white/[0.08] text-zinc-600 dark:text-zinc-400">
-                  UK Home Office 20h Cap
+                <span className="text-[10px] font-mono font-medium px-2.5 py-1 rounded-full backdrop-blur-md bg-black/[0.03] dark:bg-white/[0.05] border border-black/[0.06] dark:border-white/[0.08] text-[var(--text-muted)]">
+                  UKVI 20h Cap
                 </span>
               </div>
 
-              <h3 className="text-lg font-bold text-[#1D1D1F] dark:text-[#F5F5F7] tracking-tight">
-                UK Visa & Wage Ledger
+              <h3 className="text-lg font-bold text-[var(--text-primary)] tracking-tight">
+                UK Visa & Wage Compliance Ledger
               </h3>
-              <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1.5 mb-4 leading-relaxed">
+              <p className="text-xs text-[var(--text-muted)] mt-1.5 mb-4 leading-relaxed">
                 Track legal work hour thresholds, calculate gross weekly earnings, and prevent visa violations.
               </p>
 
-              {/* Live Interactive Preview: Progress Meter & Wage Slider */}
-              <div className="p-3 rounded-2xl bg-black/[0.03] dark:bg-white/[0.03] border border-black/[0.04] dark:border-white/[0.04] space-y-2 mb-4">
+              {/* Live Interactive Preview: Progress Meter */}
+              <div className="p-3 rounded-2xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/[0.04] dark:border-white/[0.04] space-y-2 mb-4">
                 <div className="flex items-center justify-between text-[11px] font-mono">
-                  <span className="text-zinc-500">Weekly Shift Progress</span>
-                  <span className="font-bold text-[#1D1D1F] dark:text-[#F5F5F7] tabular-numbers">{calcHours}/20.0h</span>
+                  <span className="text-[var(--text-muted)]">Weekly Shift Progress</span>
+                  <span className="font-bold text-[var(--text-primary)] font-mono tabular-nums">{calcHours} / 20.0h</span>
                 </div>
                 <div className="w-full bg-black/[0.06] dark:bg-white/[0.06] h-2 rounded-full overflow-hidden">
                   <div 
@@ -220,8 +215,8 @@ export const FeatureGrid: React.FC<FeatureGridProps> = ({ onEnterApp }) => {
                     style={{ width: `${Math.min(100, (calcHours / 20) * 100)}%` }}
                   />
                 </div>
-                <div className="flex items-center justify-between text-[10px] font-mono pt-1 text-zinc-500">
-                  <span>Est. Gross: <strong className="text-emerald-500 tabular-numbers">£{(calcHours * calcRate).toFixed(2)}</strong></span>
+                <div className="flex items-center justify-between text-[10px] font-mono pt-1 text-[var(--text-muted)]">
+                  <span>Est. Gross: <strong className="text-emerald-500 font-mono tabular-nums">£{(calcHours * calcRate).toFixed(2)}</strong></span>
                   <span className="text-emerald-500 flex items-center gap-0.5">
                     <CheckCircle2 className="w-3 h-3" /> 100% Compliant
                   </span>
@@ -229,137 +224,131 @@ export const FeatureGrid: React.FC<FeatureGridProps> = ({ onEnterApp }) => {
               </div>
             </div>
 
-            <Button
-              variant="outline"
-              size="sm"
+            <button
               onClick={() => { window.location.hash = '#ledger'; onEnterApp('work'); }}
-              rightIcon={<ArrowRight className="w-3.5 h-3.5" />}
-              className="w-full justify-between font-mono text-xs hover:border-indigo-500 hover:text-indigo-500"
+              className="w-full py-2.5 px-4 rounded-xl border border-black/[0.08] dark:border-white/[0.1] bg-black/[0.02] dark:bg-white/[0.03] text-xs font-mono font-medium text-[var(--text-primary)] hover:border-indigo-500 hover:text-indigo-500 transition-all flex items-center justify-between cursor-pointer"
             >
-              Open Visa Ledger
-            </Button>
+              <span>Open Visa Ledger</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </button>
           </SpatialCard>
         </motion.div>
 
-        {/* CARD 4: Study Engine & CFA Level 1 Matrix */}
+        {/* CARD 4: Academic Study Engine & CFA Matrix -> #study */}
         <motion.div variants={staggerChild}>
-          <SpatialCard className="p-6 flex flex-col justify-between h-full">
+          <SpatialCard className="p-6 flex flex-col justify-between h-full border border-black/[0.06] dark:border-white/[0.08] bg-white/80 dark:bg-white/[0.03] backdrop-blur-2xl">
             <div>
               <div className="flex items-center justify-between mb-4">
                 <div className="w-10 h-10 rounded-2xl bg-emerald-500/[0.08] text-emerald-500 flex items-center justify-center font-bold">
                   <GraduationCap className="w-5 h-5" />
                 </div>
-                <span className="text-[10px] font-mono font-medium px-2.5 py-1 rounded-full backdrop-blur-md bg-zinc-900/[0.06] dark:bg-white/[0.05] border border-zinc-900/[0.08] dark:border-white/[0.08] text-zinc-600 dark:text-zinc-400">
-                  Academic Degree + CFA
+                <span className="text-[10px] font-mono font-medium px-2.5 py-1 rounded-full backdrop-blur-md bg-black/[0.03] dark:bg-white/[0.05] border border-black/[0.06] dark:border-white/[0.08] text-[var(--text-muted)]">
+                  Degree + CFA Matrix
                 </span>
               </div>
 
-              <h3 className="text-lg font-bold text-[#1D1D1F] dark:text-[#F5F5F7] tracking-tight">
-                Study Engine & CFA Matrix
+              <h3 className="text-lg font-bold text-[var(--text-primary)] tracking-tight">
+                Academic Study Engine & CFA Matrix
               </h3>
-              <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1.5 mb-4 leading-relaxed">
+              <p className="text-xs text-[var(--text-muted)] mt-1.5 mb-4 leading-relaxed">
                 Curated modules for university academic courses & 10 CFA topic revision trackers.
               </p>
 
-              {/* Live Interactive Preview: Progress Module Badges */}
-              <div className="p-3 rounded-2xl bg-black/[0.03] dark:bg-white/[0.03] border border-black/[0.04] dark:border-white/[0.04] space-y-1.5 mb-4 font-mono text-[10px]">
+              {/* Live Interactive Preview */}
+              <div className="p-3 rounded-2xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/[0.04] dark:border-white/[0.04] space-y-1.5 mb-4 font-mono text-[10px]">
                 <div className="flex items-center justify-between p-1.5 rounded-lg bg-emerald-500/[0.08] text-emerald-600 dark:text-emerald-400">
                   <span>Advanced Corporate Finance</span>
-                  <span className="font-bold tabular-numbers">92%</span>
+                  <span className="font-bold font-mono tabular-nums">92%</span>
                 </div>
                 <div className="flex items-center justify-between p-1.5 rounded-lg bg-indigo-500/[0.08] text-indigo-600 dark:text-indigo-400">
                   <span>Derivatives & Financial Engineering</span>
-                  <span className="font-bold tabular-numbers">85%</span>
+                  <span className="font-bold font-mono tabular-nums">85%</span>
                 </div>
-                <div className="flex items-center justify-between p-1.5 rounded-lg bg-zinc-500/[0.08] text-zinc-600 dark:text-zinc-300">
+                <div className="flex items-center justify-between p-1.5 rounded-lg bg-black/[0.03] dark:bg-white/[0.05] text-[var(--text-primary)]">
                   <span>CFA Level 1: FSA & Quant</span>
                   <span className="font-bold">100% Complete</span>
                 </div>
               </div>
             </div>
 
-            <Button
-              variant="outline"
-              size="sm"
+            <button
               onClick={() => { window.location.hash = '#study'; onEnterApp('study'); }}
-              rightIcon={<ArrowRight className="w-3.5 h-3.5" />}
-              className="w-full justify-between font-mono text-xs hover:border-emerald-500 hover:text-emerald-500"
+              className="w-full py-2.5 px-4 rounded-xl border border-black/[0.08] dark:border-white/[0.1] bg-black/[0.02] dark:bg-white/[0.03] text-xs font-mono font-medium text-[var(--text-primary)] hover:border-emerald-500 hover:text-emerald-500 transition-all flex items-center justify-between cursor-pointer"
             >
-              Open Study Engine
-            </Button>
+              <span>Open Study Engine</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </button>
           </SpatialCard>
         </motion.div>
 
-        {/* CARD 5: Cold Email & Recruiter CRM */}
+        {/* CARD 5: Cold Email & Recruiter CRM Suite -> #outreach */}
         <motion.div variants={staggerChild}>
-          <SpatialCard className="p-6 flex flex-col justify-between h-full">
+          <SpatialCard className="p-6 flex flex-col justify-between h-full border border-black/[0.06] dark:border-white/[0.08] bg-white/80 dark:bg-white/[0.03] backdrop-blur-2xl">
             <div>
               <div className="flex items-center justify-between mb-4">
                 <div className="w-10 h-10 rounded-2xl bg-rose-500/[0.08] text-rose-500 flex items-center justify-center font-bold">
                   <Mail className="w-5 h-5" />
                 </div>
-                <span className="text-[10px] font-mono font-medium px-2.5 py-1 rounded-full backdrop-blur-md bg-zinc-900/[0.06] dark:bg-white/[0.05] border border-zinc-900/[0.08] dark:border-white/[0.08] text-zinc-600 dark:text-zinc-400">
-                  AI Templates
+                <span className="text-[10px] font-mono font-medium px-2.5 py-1 rounded-full backdrop-blur-md bg-black/[0.03] dark:bg-white/[0.05] border border-black/[0.06] dark:border-white/[0.08] text-[var(--text-muted)]">
+                  AI Pitch Engine
                 </span>
               </div>
 
-              <h3 className="text-lg font-bold text-[#1D1D1F] dark:text-[#F5F5F7] tracking-tight">
-                Cold Email & Recruiter CRM
+              <h3 className="text-lg font-bold text-[var(--text-primary)] tracking-tight">
+                Cold Email & Recruiter CRM Suite
               </h3>
-              <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1.5 mb-4 leading-relaxed">
+              <p className="text-xs text-[var(--text-muted)] mt-1.5 mb-4 leading-relaxed">
                 Auto-generate tailored recruiter pitches citing your academic background and valuation experience.
               </p>
 
-              {/* Live Interactive Preview: Mini Email Composer */}
-              <div className="p-3 rounded-2xl bg-black/[0.03] dark:bg-white/[0.03] border border-black/[0.04] dark:border-white/[0.04] space-y-1.5 mb-4 text-[10px] font-mono">
-                <div className="flex items-center gap-1.5 text-zinc-500 pb-1 border-b border-black/[0.04] dark:border-white/[0.04]">
+              {/* Live Interactive Preview */}
+              <div className="p-3 rounded-2xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/[0.04] dark:border-white/[0.04] space-y-1.5 mb-4 text-[10px] font-mono">
+                <div className="flex items-center gap-1.5 text-[var(--text-muted)] pb-1 border-b border-black/[0.04] dark:border-white/[0.04]">
                   <Send className="w-3 h-3 text-rose-500" />
-                  <span className="truncate">To: recruiter@example.com</span>
+                  <span className="truncate">To: recruiter@company.com</span>
                 </div>
-                <p className="text-[#1D1D1F] dark:text-[#F5F5F7] line-clamp-2 italic font-sans text-[11px] pt-1">
-                  "Subject: Analyst Application & Coffee Chat Inquiry..."
+                <p className="text-[var(--text-primary)] line-clamp-2 italic font-sans text-[11px] pt-1">
+                  &quot;Subject: Career Inquiry - Investment Analyst - Target Firm...&quot;
                 </p>
                 <div className="flex items-center justify-between text-[9px] text-emerald-500 pt-1">
-                  <span>1-Click Copy & Gmail Draft</span>
+                  <span>1-Click Copy &amp; Gmail Draft</span>
                   <span>Ready</span>
                 </div>
               </div>
             </div>
 
-            <Button
-              variant="outline"
-              size="sm"
+            <button
               onClick={() => { window.location.hash = '#outreach'; onEnterApp('outreach'); }}
-              rightIcon={<ArrowRight className="w-3.5 h-3.5" />}
-              className="w-full justify-between font-mono text-xs hover:border-rose-500 hover:text-rose-500"
+              className="w-full py-2.5 px-4 rounded-xl border border-black/[0.08] dark:border-white/[0.1] bg-black/[0.02] dark:bg-white/[0.03] text-xs font-mono font-medium text-[var(--text-primary)] hover:border-rose-500 hover:text-rose-500 transition-all flex items-center justify-between cursor-pointer"
             >
-              Launch Email Suite
-            </Button>
+              <span>Launch Email Suite</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </button>
           </SpatialCard>
         </motion.div>
 
-        {/* CARD 6: Multi-Region Valuation Terminal */}
+        {/* CARD 6: Multi-Region Valuation Terminal -> #trading */}
         <motion.div variants={staggerChild}>
-          <SpatialCard className="p-6 flex flex-col justify-between h-full">
+          <SpatialCard className="p-6 flex flex-col justify-between h-full border border-black/[0.06] dark:border-white/[0.08] bg-white/80 dark:bg-white/[0.03] backdrop-blur-2xl">
             <div>
               <div className="flex items-center justify-between mb-4">
                 <div className="w-10 h-10 rounded-2xl bg-indigo-500/[0.08] text-indigo-500 flex items-center justify-center font-bold">
                   <TrendingUp className="w-5 h-5" />
                 </div>
-                <span className="text-[10px] font-mono font-medium px-2.5 py-1 rounded-full backdrop-blur-md bg-zinc-900/[0.06] dark:bg-white/[0.05] border border-zinc-900/[0.08] dark:border-white/[0.08] text-zinc-600 dark:text-zinc-400">
+                <span className="text-[10px] font-mono font-medium px-2.5 py-1 rounded-full backdrop-blur-md bg-black/[0.03] dark:bg-white/[0.05] border border-black/[0.06] dark:border-white/[0.08] text-[var(--text-muted)]">
                   5 Global Exchanges
                 </span>
               </div>
 
-              <h3 className="text-lg font-bold text-[#1D1D1F] dark:text-[#F5F5F7] tracking-tight">
-                Multi-Region Terminal
+              <h3 className="text-lg font-bold text-[var(--text-primary)] tracking-tight">
+                Multi-Region Valuation Terminal
               </h3>
-              <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1.5 mb-4 leading-relaxed">
+              <p className="text-xs text-[var(--text-muted)] mt-1.5 mb-4 leading-relaxed">
                 Real-time quotes, multi-currency valuation benchmarks, and simulated paper portfolio orders.
               </p>
 
               {/* Live Interactive Preview: Region Ticks */}
-              <div className="p-3 rounded-2xl bg-black/[0.03] dark:bg-white/[0.03] border border-black/[0.04] dark:border-white/[0.04] space-y-2 mb-4">
+              <div className="p-3 rounded-2xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/[0.04] dark:border-white/[0.04] space-y-2 mb-4">
                 <div className="flex items-center justify-between gap-1">
                   {(['UK', 'US', 'IN', 'EU', 'SG'] as const).map((r) => (
                     <button
@@ -369,7 +358,7 @@ export const FeatureGrid: React.FC<FeatureGridProps> = ({ onEnterApp }) => {
                       className={`px-2 py-0.5 rounded text-[10px] font-mono font-bold transition-all cursor-pointer ${
                         selectedRegion === r 
                           ? 'bg-indigo-500 text-white' 
-                          : 'bg-black/[0.04] dark:bg-white/[0.04] text-zinc-500 hover:text-[#1D1D1F] dark:hover:text-[#F5F5F7]'
+                          : 'bg-black/[0.04] dark:bg-white/[0.04] text-[var(--text-muted)] hover:text-[var(--text-primary)]'
                       }`}
                     >
                       {r}
@@ -377,51 +366,49 @@ export const FeatureGrid: React.FC<FeatureGridProps> = ({ onEnterApp }) => {
                   ))}
                 </div>
                 <div className="flex items-center justify-between font-mono text-xs pt-1">
-                  <span className="font-bold text-[#1D1D1F] dark:text-[#F5F5F7]">{regionTicks[selectedRegion].name}</span>
+                  <span className="font-bold text-[var(--text-primary)]">{regionTicks[selectedRegion].name}</span>
                   <div className="flex items-center gap-2">
-                    <span className="text-[#1D1D1F] dark:text-[#F5F5F7] tabular-numbers">{regionTicks[selectedRegion].val}</span>
-                    <span className={`font-bold tabular-numbers ${regionTicks[selectedRegion].color}`}>{regionTicks[selectedRegion].chg}</span>
+                    <span className="text-[var(--text-primary)] font-mono tabular-nums">{regionTicks[selectedRegion].val}</span>
+                    <span className={`font-bold font-mono tabular-nums ${regionTicks[selectedRegion].color}`}>{regionTicks[selectedRegion].chg}</span>
                   </div>
                 </div>
               </div>
             </div>
 
-            <Button
-              variant="outline"
-              size="sm"
+            <button
               onClick={() => { window.location.hash = '#trading'; onEnterApp('trading'); }}
-              rightIcon={<ArrowRight className="w-3.5 h-3.5" />}
-              className="w-full justify-between font-mono text-xs hover:border-indigo-500 hover:text-indigo-500"
+              className="w-full py-2.5 px-4 rounded-xl border border-black/[0.08] dark:border-white/[0.1] bg-black/[0.02] dark:bg-white/[0.03] text-xs font-mono font-medium text-[var(--text-primary)] hover:border-indigo-500 hover:text-indigo-500 transition-all flex items-center justify-between cursor-pointer"
             >
-              Open Trading Terminal
-            </Button>
+              <span>Open Trading Terminal</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </button>
           </SpatialCard>
         </motion.div>
 
-        {/* CARD 7: Executive Reporting & Exporters — full width */}
+        {/* CARD 7: Executive Compliance & PDF Reports -> #jobs */}
         <motion.div variants={staggerChild} className="md:col-span-2 lg:col-span-3">
-          <SpatialCard className="p-6">
+          <SpatialCard className="p-6 border border-black/[0.06] dark:border-white/[0.08] bg-white/80 dark:bg-white/[0.03] backdrop-blur-2xl">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
               <div className="max-w-xl">
                 <div className="flex items-center gap-2 mb-3">
                   <div className="w-9 h-9 rounded-xl bg-indigo-500/[0.08] text-indigo-500 flex items-center justify-center font-bold">
                     <FileText className="w-5 h-5" />
                   </div>
-                  <span className="text-[10px] font-mono font-medium px-2.5 py-1 rounded-full backdrop-blur-md bg-zinc-900/[0.06] dark:bg-white/[0.05] border border-zinc-900/[0.08] dark:border-white/[0.08] text-zinc-600 dark:text-zinc-400">
-                    Printable A4 PDF + RFC 4180 CSV
+                  <span className="text-[10px] font-mono font-medium px-2.5 py-1 rounded-full backdrop-blur-md bg-black/[0.03] dark:bg-white/[0.05] border border-black/[0.06] dark:border-white/[0.08] text-[var(--text-muted)]">
+                    Printable PDF + RFC 4180 CSV
                   </span>
                 </div>
 
-                <h3 className="text-xl font-bold text-[#1D1D1F] dark:text-[#F5F5F7] tracking-tight">
-                  Executive Reporting & Data Exporters
+                <h3 className="text-xl font-bold text-[var(--text-primary)] tracking-tight">
+                  Executive Compliance & PDF Reports
                 </h3>
-                <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1.5 leading-relaxed">
-                  Generate high-resolution printable PDF summaries of your recruitment pipeline, visa compliance audits, and export raw CSV records for Excel.
+                <p className="text-xs text-[var(--text-muted)] mt-1.5 leading-relaxed">
+                  Generate high-resolution printable PDF summaries of your recruitment pipeline, visa compliance audits, and export raw CSV records for spreadsheet analysis.
                 </p>
               </div>
 
-              {/* Live Interactive Preview: Printable Badge & Quick Download */}
-              <div className="p-4 rounded-2xl bg-black/[0.03] dark:bg-white/[0.03] border border-black/[0.04] dark:border-white/[0.04] flex flex-wrap items-center gap-3">
+              {/* Live Interactive Preview: Printable Badge & Download Chips */}
+              <div className="p-4 rounded-2xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/[0.04] dark:border-white/[0.04] flex flex-wrap items-center gap-3">
                 <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-indigo-500/[0.06] border border-indigo-500/[0.1] text-xs font-mono text-indigo-600 dark:text-indigo-400">
                   <Download className="w-4 h-4" />
                   <span>applications.csv</span>
@@ -430,7 +417,7 @@ export const FeatureGrid: React.FC<FeatureGridProps> = ({ onEnterApp }) => {
                   <Download className="w-4 h-4" />
                   <span>visa_shifts.csv</span>
                 </div>
-                <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-zinc-500/[0.06] border border-zinc-500/[0.1] text-xs font-mono text-zinc-600 dark:text-zinc-400">
+                <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-black/[0.03] dark:bg-white/[0.05] border border-black/[0.06] dark:border-white/[0.08] text-xs font-mono text-[var(--text-primary)]">
                   <Printer className="w-4 h-4" />
                   <span>Executive_Summary.pdf</span>
                 </div>
@@ -438,18 +425,16 @@ export const FeatureGrid: React.FC<FeatureGridProps> = ({ onEnterApp }) => {
             </div>
 
             <div className="mt-6 pt-4 border-t border-black/[0.04] dark:border-white/[0.04] flex items-center justify-between">
-              <span className="text-xs font-mono text-zinc-500">
+              <span className="text-xs font-mono text-[var(--text-muted)]">
                 Instant 1-click downloads with UTF-8 BOM Excel compatibility
               </span>
-              <Button
-                variant="outline"
-                size="sm"
+              <button
                 onClick={() => { window.location.hash = '#jobs'; onEnterApp('jobs'); }}
-                rightIcon={<ArrowRight className="w-3.5 h-3.5" />}
-                className="font-mono text-xs hover:border-indigo-500 hover:text-indigo-500"
+                className="py-2 px-4 rounded-xl border border-black/[0.08] dark:border-white/[0.1] bg-black/[0.02] dark:bg-white/[0.03] text-xs font-mono font-medium text-[var(--text-primary)] hover:border-indigo-500 hover:text-indigo-500 transition-all flex items-center gap-1.5 cursor-pointer"
               >
-                View Executive Reports
-              </Button>
+                <span>View Executive Reports</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </button>
             </div>
           </SpatialCard>
         </motion.div>
