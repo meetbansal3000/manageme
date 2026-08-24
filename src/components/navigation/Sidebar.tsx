@@ -64,11 +64,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
+      document.body.style.touchAction = 'none';
     } else {
       document.body.style.overflow = 'unset';
+      document.body.style.touchAction = 'unset';
     }
     return () => {
       document.body.style.overflow = 'unset';
+      document.body.style.touchAction = 'unset';
     };
   }, [isOpen]);
 
@@ -84,6 +87,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
   return (
     <aside
+      data-lenis-prevent="true"
       className={cn(
         "fixed right-0 top-0 h-[100dvh] w-full max-w-sm overflow-y-auto overscroll-contain z-50 p-6 bg-black/90 backdrop-blur-2xl border-l border-white/10 text-white flex flex-col shadow-2xl scroll-smooth",
         className

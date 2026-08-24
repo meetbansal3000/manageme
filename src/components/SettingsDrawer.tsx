@@ -168,7 +168,7 @@ export const SettingsDrawer: React.FC<SettingsDrawerProps> = ({ isOpen, onClose,
           </button>
         </div>
 
-        <div className="flex-1 overflow-y-auto px-6 py-6 space-y-6">
+        <div data-lenis-prevent="true" className="flex-1 overflow-y-auto overscroll-contain px-6 py-6 space-y-6 custom-scrollbar">
           
           {/* iOS Inset Grouped List - Profile Settings */}
           <section className="space-y-2">

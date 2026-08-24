@@ -115,7 +115,7 @@ export const InterviewSimulatorDrawer: React.FC<Props> = ({ isOpen, onClose }) =
           </div>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-6 space-y-4">
+        <div data-lenis-prevent="true" className="flex-1 overflow-y-auto overscroll-contain p-6 space-y-4 custom-scrollbar">
           {messages.length === 0 && !isLoading && (
             <div className="text-center text-[var(--text-secondary)] mt-10 text-sm">
               Select a role and click Start to begin the mock interview.

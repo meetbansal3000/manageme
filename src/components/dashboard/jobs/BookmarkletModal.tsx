@@ -16,6 +16,7 @@ import {
 import { Card } from '../../ui/Card';
 import { Button } from '../../ui/Button';
 import { toast } from '../../ui/Toast';
+import { useScrollLock } from '../../../hooks/useScrollLock';
 
 export interface BookmarkletModalProps {
   isOpen: boolean;
@@ -28,6 +29,7 @@ export const BookmarkletModal: React.FC<BookmarkletModalProps> = ({
   isOpen,
   onClose
 }) => {
+  useScrollLock(isOpen);
   const [hasCopied, setHasCopied] = useState(false);
 
   if (!isOpen) return null;
@@ -40,11 +42,11 @@ export const BookmarkletModal: React.FC<BookmarkletModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+    <div data-lenis-prevent="true" className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 overflow-hidden overscroll-contain">
       <Card 
         variant="glass" 
         padding="lg" 
-        className="w-full max-w-xl border border-white/20 shadow-2xl space-y-6 max-h-[90vh] overflow-y-auto custom-scrollbar"
+        className="w-full max-w-xl border border-white/20 shadow-2xl space-y-6 max-h-[90vh] overflow-y-auto overscroll-contain custom-scrollbar"
       >
         {/* Header */}
         <div className="flex items-center justify-between border-b border-white/10 pb-4">

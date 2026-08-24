@@ -79,7 +79,7 @@ export const ActivityDrawer: React.FC<Props> = ({ isOpen, onClose, userData }) =
             <X className="w-5 h-5" />
           </button>
         </div>
-        <div className="flex-1 overflow-y-auto p-4 space-y-3">
+        <div data-lenis-prevent="true" className="flex-1 overflow-y-auto overscroll-contain p-4 space-y-3 custom-scrollbar">
           {recentItems.length === 0 ? (
             <p className="text-[var(--text-secondary)] text-sm text-center mt-10">No items added in the last 24 hours.</p>
           ) : (

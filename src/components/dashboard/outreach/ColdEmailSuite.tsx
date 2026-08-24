@@ -821,8 +821,8 @@ ${DEFAULT_CANDIDATE_PROFILE.name}
 
       {/* OUTREACH REVIEW & CONFIRMATION MODAL (Human-in-the-Loop) */}
       {isReviewModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
-          <Card variant="glass" padding="lg" className="w-full max-w-2xl border border-white/20 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto custom-scrollbar">
+        <div data-lenis-prevent="true" className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 overflow-hidden overscroll-contain">
+          <Card variant="glass" padding="lg" className="w-full max-w-2xl border border-white/20 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto overscroll-contain custom-scrollbar">
             <div className="flex items-center justify-between border-b border-white/10 pb-3">
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 rounded-lg bg-blue-500/20 text-blue-400 flex items-center justify-center">
@@ -839,7 +839,7 @@ ${DEFAULT_CANDIDATE_PROFILE.name}
               </div>
               <button
                 onClick={() => setIsReviewModalOpen(false)}
-                className="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-white/10 transition-colors"
+                className="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-white/10 transition-colors cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -848,7 +848,7 @@ ${DEFAULT_CANDIDATE_PROFILE.name}
             {/* Candidate Identity Attribution Banner */}
             <div className="p-2.5 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center gap-2 text-xs font-mono text-blue-300">
               <GraduationCap className="w-4 h-4 shrink-0 text-blue-400" />
-              <span>Sent on behalf of {userName} ({DEFAULT_CANDIDATE_PROFILE.degree})</span>
+              <span>Sent on behalf of {userName}</span>
             </div>
 
             <div className="space-y-3 font-mono text-xs">
@@ -867,7 +867,7 @@ ${DEFAULT_CANDIDATE_PROFILE.name}
                 <Input
                   value={reviewSubject}
                   onChange={(e) => setReviewSubject(e.target.value)}
-                  placeholder="Subject line..."
+                  placeholder="Career Inquiry - [Target Role] - [Company Name]"
                 />
               </div>
 
@@ -886,7 +886,7 @@ ${DEFAULT_CANDIDATE_PROFILE.name}
               <button
                 type="button"
                 onClick={() => setIsReviewModalOpen(false)}
-                className="text-xs font-mono text-slate-400 hover:text-white px-3 py-2"
+                className="text-xs font-mono text-slate-400 hover:text-white px-3 py-2 cursor-pointer"
               >
                 Cancel
               </button>
@@ -931,8 +931,8 @@ ${DEFAULT_CANDIDATE_PROFILE.name}
 
       {/* ADD/EDIT CONTACT MODAL */}
       {isAddModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-md flex items-center justify-center p-4">
-          <Card variant="glass" padding="lg" className="w-full max-w-md border border-white/20 shadow-2xl">
+        <div data-lenis-prevent="true" className="fixed inset-0 z-50 bg-black/70 backdrop-blur-md flex items-center justify-center p-4 overflow-hidden overscroll-contain">
+          <Card variant="glass" padding="lg" className="w-full max-w-md border border-white/20 shadow-2xl max-h-[90vh] overflow-y-auto overscroll-contain custom-scrollbar">
             <h3 className="text-base font-bold font-mono text-white uppercase mb-4">
               {editingContact ? 'Edit Recruiter Contact' : 'Add Recruiter Contact'}
             </h3>
@@ -942,7 +942,7 @@ ${DEFAULT_CANDIDATE_PROFILE.name}
                 <label className="text-slate-400 block mb-1">Contact Name *</label>
                 <Input
                   required
-                  placeholder="e.g. Sarah Jenkins"
+                  placeholder="e.g. Recruiter Name"
                   value={contactForm.name}
                   onChange={(e) => setContactForm({ ...contactForm, name: e.target.value })}
                 />

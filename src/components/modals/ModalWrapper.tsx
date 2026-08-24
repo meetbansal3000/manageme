@@ -56,7 +56,10 @@ export const ModalWrapper: React.FC<ModalWrapperProps> = ({
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 overflow-y-auto bg-black/70 backdrop-blur-sm">
+      <div 
+        data-lenis-prevent="true"
+        className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 overflow-y-auto overscroll-contain bg-black/70 backdrop-blur-sm"
+      >
         {/* Backdrop */}
         <motion.div
           initial={{ opacity: 0 }}
@@ -67,50 +70,53 @@ export const ModalWrapper: React.FC<ModalWrapperProps> = ({
           className="fixed inset-0 bg-black/75 backdrop-blur-md"
         />
 
-          {/* Modal Container */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 10 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 10 }}
-            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-            className={cn(
-              'relative w-full bg-[#0D0B18] border border-white/10 rounded-2xl shadow-2xl overflow-hidden z-10 my-auto text-white',
-              maxWidthStyles[maxWidth],
-              className
-            )}
-          >
-            {/* Header */}
-            {(title || showCloseButton) && (
-              <div className="flex items-center justify-between px-6 py-4 border-b border-white/10 bg-white/[0.02]">
-                <div className="flex items-center gap-3">
-                  {icon && (
-                    <div className="p-2 rounded-xl bg-white/5 border border-white/10 text-[#0052FF]">
-                      {icon}
-                    </div>
-                  )}
-                  <div>
-                    {title && <h3 className="font-semibold text-white text-base tracking-tight">{title}</h3>}
-                    {subtitle && <p className="text-xs text-slate-400 font-sans mt-0.5">{subtitle}</p>}
+        {/* Modal Container */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95, y: 10 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.95, y: 10 }}
+          transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+          className={cn(
+            'relative w-full bg-[#0D0B18] border border-white/10 rounded-2xl shadow-2xl overflow-hidden z-10 my-auto text-white flex flex-col max-h-[90vh]',
+            maxWidthStyles[maxWidth],
+            className
+          )}
+        >
+          {/* Header */}
+          {(title || showCloseButton) && (
+            <div className="flex items-center justify-between px-6 py-4 border-b border-white/10 bg-white/[0.02] shrink-0">
+              <div className="flex items-center gap-3">
+                {icon && (
+                  <div className="p-2 rounded-xl bg-white/5 border border-white/10 text-[#0052FF]">
+                    {icon}
                   </div>
-                </div>
-                {showCloseButton && (
-                  <button
-                    onClick={onClose}
-                    className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
-                    aria-label="Close modal"
-                  >
-                    <X className="w-5 h-5" />
-                  </button>
                 )}
+                <div>
+                  {title && <h3 className="font-semibold text-white text-base tracking-tight">{title}</h3>}
+                  {subtitle && <p className="text-xs text-slate-400 font-sans mt-0.5">{subtitle}</p>}
+                </div>
               </div>
-            )}
-
-            {/* Body */}
-            <div className="p-6">
-              {children}
+              {showCloseButton && (
+                <button
+                  onClick={onClose}
+                  className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+                  aria-label="Close modal"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              )}
             </div>
-          </motion.div>
-        </div>
+          )}
+
+          {/* Body with data-lenis-prevent and overscroll containment */}
+          <div 
+            data-lenis-prevent="true"
+            className="p-6 max-h-[85vh] overflow-y-auto overscroll-contain custom-scrollbar"
+          >
+            {children}
+          </div>
+        </motion.div>
+      </div>
     </AnimatePresence>
   );
 };

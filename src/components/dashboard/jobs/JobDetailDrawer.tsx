@@ -416,7 +416,7 @@ export const JobDetailDrawer: React.FC<JobDetailDrawerProps> = ({
             </div>
 
             {/* Drawer Body */}
-            <div className="flex-1 overflow-y-auto p-5 sm:p-6 space-y-6 custom-scrollbar">
+            <div data-lenis-prevent="true" className="flex-1 overflow-y-auto overscroll-contain p-5 sm:p-6 space-y-6 custom-scrollbar">
               {/* TAB 1: OVERVIEW */}
               {activeTab === 'overview' && (
                 <div className="space-y-6 animate-in fade-in duration-200">
