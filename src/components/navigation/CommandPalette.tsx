@@ -3,6 +3,8 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
+  Globe,
+  Zap,
   Search, 
   Briefcase, 
   TrendingUp, 
@@ -553,7 +555,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
                   >
                     <div className="flex items-center gap-3 min-w-0">
                       <div className={`p-2 rounded-lg ${isSelected ? 'bg-white/20 text-white' : 'bg-white/5 text-slate-300'}`}>
-                        {cmd.icon}
+                        {cmd.icon || <Search className="w-4 h-4 text-slate-400" />}
                       </div>
                       <div className="min-w-0">
                         <div className="flex items-center gap-2">
