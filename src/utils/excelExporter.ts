@@ -58,7 +58,7 @@ export function exportMultiSheetWorkbook(
   // ═════════════════════════════════════════════════════════════════
   const ws2Data: any[][] = [
     ['GRADUATE SCHEMES (FULL-TIME 2027 ENTRY) | TARGET FIRMS PIPELINE'],
-    ['Rank', 'Firm', 'Sector', 'Role Title', 'App Opens', 'App Closes', 'Start Date', 'Base Salary (£ est.)', 'Bonus', '2:1 Filter Risk', 'ACCA Advantage', 'Difficulty', 'Apply Portal / Link', 'Key Strategy Notes'],
+    ['Rank', 'Firm', 'Sector', 'Role Title', 'App Opens', 'App Closes', 'Start Date', 'Base Salary (£ est.)', 'Bonus', '2:1 Filter Risk', 'Fast-Track Advantage', 'Difficulty', 'Apply Portal / Link', 'Key Strategy Notes'],
     ...gradSchemes.map(g => [
       g.rank,
       g.firm,
@@ -66,29 +66,29 @@ export function exportMultiSheetWorkbook(
       g.roleTitle,
       g.appOpens,
       g.appCloses,
-      g.startDate,
+      g.startDate || 'Autumn 2026',
       g.salary,
-      g.bonus,
-      g.filterRisk,
-      g.accaAdvantage,
-      g.difficulty,
-      g.applyVia,
+      g.bonus || 'Discretionary',
+      g.filterRisk || 'Low',
+      g.certAdvantage || g.accaAdvantage || 'Medium',
+      g.difficulty || 'Medium',
+      g.applyVia || 'Direct Portal',
       g.notes
     ])
   ];
   const ws2 = XLSX.utils.aoa_to_sheet(ws2Data);
   ws2['!cols'] = [
     { wch: 6 },  // Rank
-    { wch: 24 }, // Firm
-    { wch: 20 }, // Sector
+    { wch: 22 }, // Firm
+    { wch: 22 }, // Sector
     { wch: 32 }, // Role Title
-    { wch: 14 }, // App Opens
-    { wch: 14 }, // App Closes
+    { wch: 12 }, // App Opens
+    { wch: 12 }, // App Closes
     { wch: 14 }, // Start Date
     { wch: 18 }, // Base Salary
-    { wch: 12 }, // Bonus
-    { wch: 14 }, // 2:1 Risk
-    { wch: 14 }, // ACCA Advantage
+    { wch: 14 }, // Bonus
+    { wch: 14 }, // Filter Risk
+    { wch: 16 }, // Fast-Track Advantage
     { wch: 14 }, // Difficulty
     { wch: 26 }, // Apply Portal
     { wch: 52 }  // Notes
@@ -99,7 +99,7 @@ export function exportMultiSheetWorkbook(
   // SHEET 3: 💼 Part-Time Roles (15 Regional Practices & Agencies)
   // ═════════════════════════════════════════════════════════════════
   const ws3Data: any[][] = [
-    ['PART-TIME & PRACTICE ROLES | DURING MSc 2026–27 | ⚠️ STRICT 20-HR/WEEK CAP IN TERM TIME'],
+    ['PART-TIME & PRACTICE ROLES | ACADEMIC YEAR LOG | ⚠️ STRICT 20-HR/WEEK CAP IN TERM TIME'],
     ['Rank', 'Firm / Employer', 'Location', 'Sector', 'Role Title', 'Hours/Wk', 'Rate (£/hr)', 'Est. Annual (£)', 'App Window', 'Status', 'Contact / Portal', 'Key Notes & Strategy'],
     ...partTime.map(pt => [
       pt.rank,

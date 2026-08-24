@@ -454,8 +454,8 @@ export const JobDetailDrawer: React.FC<JobDetailDrawerProps> = ({
                       <span className="text-[var(--text-secondary)] font-medium">Difficulty Rating:</span>
                       <span className="text-[var(--text-primary)] font-semibold text-right">{job.difficulty || 'Medium'}</span>
 
-                      <span className="text-[var(--text-secondary)] font-medium">ACCA Advantage:</span>
-                      <span className="text-emerald-400 font-mono font-bold text-right">{job.accaAdvantage || 'High'}</span>
+                      <span className="text-[var(--text-secondary)] font-medium">Fast-Track Advantage:</span>
+                      <span className="text-emerald-400 font-mono font-bold text-right">{job.certAdvantage || job.accaAdvantage || 'High'}</span>
 
                       <span className="text-[var(--text-secondary)] font-medium">Filter Risk:</span>
                       <span className="text-amber-400 font-mono font-bold text-right">{job.filterRisk || 'Medium'}</span>

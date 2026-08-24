@@ -170,7 +170,7 @@ export const ExecutiveSummaryModal: React.FC<ExecutiveSummaryModalProps> = ({
               </h1>
               <p className="text-xs text-slate-400 print:text-gray-700 mt-1 flex items-center gap-2">
                 <GraduationCap className="w-3.5 h-3.5 text-blue-400 print:text-black" />
-                <span>Meet Bansal • Durham University MSc Finance & Investment (ACCA Affiliate)</span>
+                <span>Workspace User • [Your Degree / Title] Candidate</span>
               </p>
             </div>
 
@@ -249,7 +249,7 @@ export const ExecutiveSummaryModal: React.FC<ExecutiveSummaryModalProps> = ({
                       <th className="py-2.5 px-3">Role Title</th>
                       <th className="py-2.5 px-3">Sector</th>
                       <th className="py-2.5 px-3">Deadline</th>
-                      <th className="py-2.5 px-3">ACCA Advantage</th>
+                      <th className="py-2.5 px-3">Fast-Track Advantage</th>
                       <th className="py-2.5 px-3 text-right">Stage</th>
                     </tr>
                   </thead>
@@ -260,7 +260,7 @@ export const ExecutiveSummaryModal: React.FC<ExecutiveSummaryModalProps> = ({
                         <td className="py-2.5 px-3 text-slate-300 print:text-gray-800">{scheme.roleTitle}</td>
                         <td className="py-2.5 px-3 text-slate-400 print:text-gray-600">{scheme.sector || 'Finance'}</td>
                         <td className="py-2.5 px-3 text-slate-300 print:text-gray-800">{scheme.appCloses || 'Rolling'}</td>
-                        <td className="py-2.5 px-3 text-emerald-400 print:text-black font-semibold">{scheme.accaAdvantage || 'Standard'}</td>
+                        <td className="py-2.5 px-3 text-emerald-400 print:text-black font-semibold">{scheme.certAdvantage || scheme.accaAdvantage || 'Standard'}</td>
                         <td className="py-2.5 px-3 text-right">
                           <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-500/20 text-blue-300 border border-blue-500/30 print:bg-gray-200 print:text-black print:border-gray-400">
                             {scheme.status}

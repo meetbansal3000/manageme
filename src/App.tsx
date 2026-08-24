@@ -135,6 +135,33 @@ export default function App() {
   const [isBookmarkletModalOpen, setIsBookmarkletModalOpen] = useState(false);
   const [initialImportData, setInitialImportData] = useState<{ text?: string; title?: string; url?: string; autoParse?: boolean } | null>(null);
 
+  // One-time cache migration check to reset stale mock data
+  useEffect(() => {
+    try {
+      const MIGRATION_KEY = 'manageme_cache_migration_v2';
+      if (!localStorage.getItem(MIGRATION_KEY)) {
+        const mockKeysToReset = [
+          'manageme_recruiter_crm',
+          'manageme_resume_builder',
+          'manageme_skills_vault',
+          'manageme_shifts_ledger',
+          'manageme_expenses_ledger',
+          'manageme_study_engine_data',
+          'manageme_chat_messages',
+          'manageme_job_applications',
+          'manageme_timeline_items',
+          'manageme_part_time_roles',
+          'manageme_priority_tracker',
+          'manageme_key_notes'
+        ];
+        mockKeysToReset.forEach(k => {
+          localStorage.removeItem(k);
+        });
+        localStorage.setItem(MIGRATION_KEY, 'true');
+      }
+    } catch {}
+  }, []);
+
   // Auto-redirect authenticated users directly into their dashboard
   useEffect(() => {
     if (!isLoading && (user || isGuest || isAuthenticated)) {

@@ -47,7 +47,7 @@ export const TailorModal: React.FC<TailorModalProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
   const [candidateProfile, setCandidateProfile] = useState(
-    'ACCA Affiliate, IFRS & UK GAAP reporting experience, Xero & advanced Excel financial modeling certification, CFA Level 1 candidate with a first-class BSc in Economics & Finance from Durham University.'
+    '[Your Degree/Major] candidate with background in [Your Key Specializations / Certifications].'
   );
   const [tailoredData, setTailoredData] = useState<TailoredOutput | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -249,7 +249,7 @@ ${tailoredData.atsKeywords?.missingKeywords?.join(', ')}
           {isLoading ? (
             <div className="py-16 text-center space-y-3">
               <div className="w-10 h-10 border-2 border-[#0052FF] border-t-transparent rounded-full animate-spin mx-auto" />
-              <p className="text-sm font-medium text-slate-300">Synthesizing job requirements with Durham / ACCA background...</p>
+              <p className="text-sm font-medium text-slate-300">Synthesizing job requirements with your candidate profile...</p>
               <p className="text-xs text-slate-500">Generating formal UK cover letter & Google X-Y-Z bullet points</p>
             </div>
           ) : error ? (

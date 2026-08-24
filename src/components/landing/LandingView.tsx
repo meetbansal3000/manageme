@@ -67,7 +67,7 @@ export const LandingView: React.FC<LandingViewProps> = ({ onEnterApp }) => {
     },
     {
       q: 'Can I practice role-specific technical finance interview questions?',
-      a: 'Yes! The AI Interview Copilot generates technical drills for Investment Banking, Private Equity, Asset Management, and Valuation. It covers 3-statement modeling flows, DCF bridge questions, LBO mechanics, and IFRS/ACCA accounting treatments with ideal model answers.'
+      a: 'Yes! The AI Interview Copilot generates technical drills for Investment Banking, Private Equity, Asset Management, and Valuation. It covers 3-statement modeling flows, DCF bridge questions, LBO mechanics, and financial accounting standards with ideal model answers.'
     },
     {
       q: 'How does Owner Mode protect my personal application notes and shift logs?',
@@ -204,7 +204,7 @@ export const LandingView: React.FC<LandingViewProps> = ({ onEnterApp }) => {
               <div className="hidden sm:flex items-center gap-4 text-[11px]">
                 <span className="text-emerald-500 font-medium">● Markets Open</span>
                 <span>Tier-4 Visa: 100% Compliant</span>
-                <span>Durham MSc Finance</span>
+                <span>University Academic Portal</span>
               </div>
             </div>
 
@@ -389,7 +389,7 @@ export const LandingView: React.FC<LandingViewProps> = ({ onEnterApp }) => {
             Ready to elevate your career and trading?
           </h3>
           <p className="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 max-w-md mx-auto mt-2 mb-6">
-            Join the executive workstation designed for serious finance applicants, MSc students, and traders.
+            Join the executive workstation designed for serious career applicants, university students, and traders.
           </p>
           <div className="flex flex-wrap items-center justify-center gap-3">
             <Button

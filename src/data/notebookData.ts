@@ -125,7 +125,7 @@ export const DEFAULT_NOTEBOOKS: VirtualNotebook[] = [
   },
   {
     id: 'nb-msc-fin',
-    title: 'MSc Finance - Asset Pricing & Fixed Income',
+    title: 'Academic Finance - Asset Pricing & Fixed Income',
     description: 'Yield curves, duration, convexity, and multi-factor arbitrage pricing models.',
     emoji: '🏛️',
     color: 'purple',

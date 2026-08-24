@@ -34,7 +34,8 @@ export type SectorType =
 
 export type DifficultyLevel = 'Easy' | 'Medium' | 'Hard' | 'Very Hard';
 export type FilterRisk = 'Low' | 'Medium' | 'High' | 'Variable';
-export type AccaAdvantage = 'Very High' | 'High' | 'Medium' | 'Low';
+export type CertAdvantage = 'Very High' | 'High' | 'Medium' | 'Low';
+export type AccaAdvantage = CertAdvantage;
 
 export type TrackerStatus = 
   | 'Not Applied'
@@ -64,7 +65,8 @@ export interface GraduateScheme {
   salary: string;
   bonus?: string;
   filterRisk?: FilterRisk;
-  accaAdvantage?: AccaAdvantage;
+  certAdvantage?: CertAdvantage;
+  accaAdvantage?: CertAdvantage;
   difficulty?: DifficultyLevel;
   applyVia?: string;
   notes: string;

@@ -86,7 +86,7 @@ export const JobSyncHub: React.FC<JobSyncHubProps> = ({
         return [
           { id: 'linkedin', name: 'LinkedIn Jobs & Easy Apply', icon: Linkedin, color: '#0a66c2', bgColor: 'rgba(10, 102, 194, 0.15)', status: 'connected', lastSynced: '10 mins ago', autoSync: true, totalSynced: 14 },
           { id: 'indeed', name: 'Indeed UK & Global', icon: Briefcase, color: '#2164f3', bgColor: 'rgba(33, 100, 243, 0.15)', status: 'connected', lastSynced: '1 hour ago', autoSync: true, totalSynced: 8 },
-          { id: 'handshake', name: 'Handshake / Durham University Careers', icon: Globe, color: '#d64000', bgColor: 'rgba(214, 64, 0, 0.15)', status: 'connected', lastSynced: 'Today, 09:30 AM', autoSync: false, totalSynced: 19 },
+          { id: 'handshake', name: 'Handshake / University Careers Portal', icon: Globe, color: '#d64000', bgColor: 'rgba(214, 64, 0, 0.15)', status: 'connected', lastSynced: 'Today, 09:30 AM', autoSync: false, totalSynced: 19 },
           { id: 'otta', name: 'Otta & Glassdoor Tech/Finance', icon: Layers, color: '#10b981', bgColor: 'rgba(16, 185, 129, 0.15)', status: 'idle', lastSynced: 'Yesterday', autoSync: true, totalSynced: 6 }
         ];
       }
@@ -107,8 +107,8 @@ export const JobSyncHub: React.FC<JobSyncHubProps> = ({
 
     setIsExtracting(true);
     setTimeout(() => {
-      let company = 'Goldman Sachs';
-      let title = 'Summer Analyst - Global Banking & Markets';
+      let company = 'Target Firm';
+      let title = 'Graduate Analyst - Financial Markets';
       let location = 'London, UK (Hybrid)';
       let salary = '£65,000 - £75,000 pro-rata';
       let deadline = '31 Oct 2026 (Rolling)';
@@ -147,8 +147,8 @@ export const JobSyncHub: React.FC<JobSyncHubProps> = ({
         sector = 'Fintech';
       } else if (textToScan.includes('indeed')) {
         platform = 'Indeed';
-      } else if (textToScan.includes('handshake') || textToScan.includes('durham')) {
-        platform = 'Handshake (Durham Careers)';
+      } else if (textToScan.includes('handshake')) {
+        platform = 'Handshake (University Careers)';
       } else if (textToScan.includes('otta')) {
         platform = 'Otta';
       }

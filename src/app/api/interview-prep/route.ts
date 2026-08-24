@@ -12,7 +12,8 @@ export async function POST(req: Request) {
       sector = 'Investment Banking / Corporate Finance',
       jobDescription = '',
       question = '',
-      answer = ''
+      answer = '',
+      candidateBackground = body.background || body.candidateBackground || 'General Graduate / Professional Candidate'
     } = body;
 
     const apiKey = process.env.GEMINI_API_KEY || process.env.VITE_GEMINI_API_KEY;
@@ -33,7 +34,7 @@ export async function POST(req: Request) {
             'Incorporate specific numerical metrics or percentage impacts to solidify your outcome.',
             'Explicitly structure using Situation-Task-Action-Result (STAR) flow.'
           ],
-          missingKeywords: ['DCF Sensitivity', 'EBITDA Multiple', 'IFRS 16 / Working Capital', 'Synergy Valuation']
+          missingKeywords: ['DCF Sensitivity', 'EBITDA Multiple', 'Accounting Standards / Working Capital', 'Synergy Valuation']
         }), {
           status: 200,
           headers: { 'Content-Type': 'application/json' }
@@ -43,6 +44,7 @@ export async function POST(req: Request) {
       const ai = new GoogleGenAI({ apiKey });
       const prompt = `You are a Senior Managing Director & Lead Interviewer in ${sector} at ${company}.
 Review and grade this candidate's interview answer for the role of ${jobTitle}.
+Candidate Background: ${candidateBackground}
 
 QUESTION:
 ${question}
@@ -142,6 +144,7 @@ Evaluate rigorously:
 
     const ai = new GoogleGenAI({ apiKey });
     const prompt = `You are a Technical Interview Lead for ${company} interviewing candidates for the role: "${jobTitle}" in the sector: "${sector}".
+Candidate Background: ${candidateBackground}
 ${jobDescription ? `Job Posting Context:\n${jobDescription}\n` : ''}
 
 Generate structured interview preparation material:

@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 import { onAuthStateChanged, signInWithPopup, signOut } from 'firebase/auth';
 import { auth, googleProvider } from '../firebase';
 
-export const MASTER_OWNER_EMAIL = 'Meetban123@gmail.com';
+export const MASTER_OWNER_EMAIL = 'admin@manageme.app';
 export const MASTER_OWNER_NAME = 'Workspace Owner';
 
 interface OwnerSecurityContextType {

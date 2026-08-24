@@ -38,7 +38,7 @@ export function generateGoogleSheetsTSV(
 
   if (mode === 'all' || mode === 'grad') {
     lines.push('🎓 GRADUATE SCHEMES (FULL-TIME 2027 ENTRY — TARGET FIRMS)');
-    lines.push(['#', 'Firm', 'Sector', 'Role Title', 'App Opens', 'App Closes', 'Start Date', 'Base Salary (£ est.)', 'Bonus', '2:1 Filter Risk', 'ACCA Advantage', 'Difficulty', 'Apply Via', 'Key Notes'].join('\t'));
+    lines.push(['#', 'Firm', 'Sector', 'Role Title', 'App Opens', 'App Closes', 'Start Date', 'Base Salary (£ est.)', 'Bonus', '2:1 Filter Risk', 'Fast-Track Advantage', 'Difficulty', 'Apply Via', 'Key Notes'].join('\t'));
     gradSchemes.forEach(g => {
       lines.push([
         g.rank,
@@ -51,7 +51,7 @@ export function generateGoogleSheetsTSV(
         g.salary,
         g.bonus,
         g.filterRisk,
-        g.accaAdvantage,
+        g.certAdvantage || g.accaAdvantage || 'Medium',
         g.difficulty,
         g.applyVia,
         g.notes
@@ -188,8 +188,8 @@ export async function createGoogleSpreadsheetWithData(
       range: "'2. 🎓 Graduate Schemes'!A1",
       values: [
         ['GRADUATE SCHEMES (FULL-TIME 2027 ENTRY) | TARGET FIRMS PIPELINE'],
-        ['Rank', 'Firm', 'Sector', 'Role Title', 'App Opens', 'App Closes', 'Start Date', 'Base Salary (£ est.)', 'Bonus', '2:1 Filter Risk', 'ACCA Advantage', 'Difficulty', 'Apply Portal / Link', 'Key Strategy Notes'],
-        ...gradSchemes.map(g => [g.rank, g.firm, g.sector, g.roleTitle, g.appOpens, g.appCloses, g.startDate, g.salary, g.bonus, g.filterRisk, g.accaAdvantage, g.difficulty, g.applyVia, g.notes])
+        ['Rank', 'Firm', 'Sector', 'Role Title', 'App Opens', 'App Closes', 'Start Date', 'Base Salary (£ est.)', 'Bonus', '2:1 Filter Risk', 'Fast-Track Advantage', 'Difficulty', 'Apply Portal / Link', 'Key Strategy Notes'],
+        ...gradSchemes.map(g => [g.rank, g.firm, g.sector, g.roleTitle, g.appOpens, g.appCloses, g.startDate, g.salary, g.bonus, g.filterRisk, g.certAdvantage || g.accaAdvantage || 'Medium', g.difficulty, g.applyVia, g.notes])
       ]
     },
     {

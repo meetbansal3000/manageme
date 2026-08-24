@@ -88,7 +88,7 @@ export async function uploadMasterTrackerToGoogleDrive(
       range: "'2. 🎓 Graduate Schemes'!A1",
       values: [
         ['GRADUATE SCHEMES (FULL-TIME 2027 ENTRY) | TARGET FIRMS PIPELINE'],
-        ['Rank', 'Firm', 'Sector', 'Role Title', 'App Opens', 'App Closes', 'Start Date', 'Base Salary (£ est.)', 'Bonus', '2:1 Filter Risk', 'ACCA Advantage', 'Difficulty', 'Apply Portal / Link', 'Key Strategy Notes'],
+        ['Rank', 'Firm', 'Sector', 'Role Title', 'App Opens', 'App Closes', 'Start Date', 'Base Salary (£ est.)', 'Bonus', '2:1 Filter Risk', 'Fast-Track Advantage', 'Difficulty', 'Apply Portal / Link', 'Key Strategy Notes'],
         ...gradSchemes.map(g => [
           g.rank,
           g.firm,
@@ -100,7 +100,7 @@ export async function uploadMasterTrackerToGoogleDrive(
           g.salary,
           g.bonus,
           g.filterRisk,
-          g.accaAdvantage,
+          g.certAdvantage || g.accaAdvantage || 'Medium',
           g.difficulty,
           g.applyVia,
           g.notes

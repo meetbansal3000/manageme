@@ -47,7 +47,7 @@ const TASK_CATEGORIES = [
   'Finance',
   'Study',
   'Apps',
-  'ACCA / Academics',
+  'Academics / Exams',
   'Job Applications',
   'Arrival Checklist',
   'Finance & Shifts',
@@ -419,7 +419,7 @@ export const KeyNotesChecklistTab: React.FC<KeyNotesChecklistTabProps> = ({
               <div className="flex flex-col sm:flex-row gap-3">
                 <input
                   type="text"
-                  placeholder="What needs to get done? (e.g. Register for ACCA DipIFR, Book BRP collection, Practice SHL test...)"
+                  placeholder="What needs to get done? (e.g. Register for professional exam, Book BRP collection, Practice SHL test...)"
                   value={quickTitle}
                   onChange={e => setQuickTitle(e.target.value)}
                   className="flex-1 bg-[var(--bg)] border border-[var(--border)] rounded-xl px-4 py-2.5 text-sm text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent)]"

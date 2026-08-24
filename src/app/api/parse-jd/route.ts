@@ -35,7 +35,7 @@ export async function POST(req: Request) {
         salaryRange: '£45,000 - £65,000',
         suggestedTalkingPoints: [
           'Demonstrate commercial awareness regarding recent UK market M&A transactions',
-          'Highlight rigorous accounting foundation and ACCA / CFA exam progress'
+          'Highlight rigorous accounting foundation and professional exam progress'
         ]
       }), {
         status: 200,

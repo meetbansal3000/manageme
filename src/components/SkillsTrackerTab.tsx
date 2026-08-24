@@ -758,7 +758,7 @@ export const SkillsTrackerTab: React.FC<SkillsTrackerTabProps> = ({
                 <GraduationCap className="w-5 h-5 text-[var(--accent)]" /> Courses & Professional Certifications
               </h3>
               <p className="text-xs text-[var(--text-secondary)] mt-0.5">
-                Track exam completions (CFA, Bloomberg BMC, ACCA DipIFR) and online course progress.
+                Track exam completions (CFA, Bloomberg BMC, Professional Accounting Certifications) and online course progress.
               </p>
             </div>
 

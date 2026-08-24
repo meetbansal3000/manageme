@@ -22,12 +22,7 @@ const GLOBAL_CHANNELS = [
   { id: 'trading-ideas', name: '#trading-ideas' }
 ];
 
-const mockPeers: ChatUser[] = [
-  { id: 'peer-1', name: 'Alex M.', isOnline: true, lastActive: Date.now() },
-  { id: 'peer-2', name: 'Oliver K.', isOnline: true, lastActive: Date.now() },
-  { id: 'peer-3', name: 'Chen W.', isOnline: false, lastActive: Date.now() - 3600000 },
-  { id: 'peer-4', name: 'Amira H.', isOnline: true, lastActive: Date.now() }
-];
+const mockPeers: ChatUser[] = [];
 
 export const ChatHubTab: React.FC<Props> = ({ userData, updateData, pendingShare, clearPendingShare }) => {
   const { user } = useUser();
@@ -54,16 +49,7 @@ export const ChatHubTab: React.FC<Props> = ({ userData, updateData, pendingShare
   // Fetch Messages for active channel
   useEffect(() => {
     if (!currentUser) {
-      setMessages([
-        {
-          id: 'welcome-demo-msg',
-          channelId: activeChannelId,
-          senderId: 'system',
-          senderName: `${user.degree || 'Academic'} Peer Community`,
-          text: `Welcome to the #${activeChannelId} peer channel! Connect with ${user.degree || 'Degree Program'} classmates at ${user.university || 'University'}, share application strategies, and exchange interview insights.\n\nTip: Sign in with Google to participate in live cloud discussions.`,
-          timestamp: Date.now() - 1800000
-        }
-      ]);
+      setMessages([]);
       return;
     }
 
@@ -317,7 +303,12 @@ export const ChatHubTab: React.FC<Props> = ({ userData, updateData, pendingShare
 
         {/* Messages Container */}
         <div className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-3 sm:space-y-4 custom-scrollbar">
-          {messages.map(msg => (
+          {messages.length === 0 ? (
+            <div className="h-full flex items-center justify-center py-16 text-center text-slate-400 font-mono text-xs">
+              <p>No messages yet. Start a discussion or search for peers.</p>
+            </div>
+          ) : (
+            messages.map(msg => (
             <div key={msg.id} className={`flex flex-col ${msg.senderId === auth.currentUser?.uid ? 'items-end' : 'items-start'}`}>
               <span className="text-[10px] text-slate-400 mb-1 mx-1 font-mono">
                 {msg.senderName} • {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
@@ -356,8 +347,9 @@ export const ChatHubTab: React.FC<Props> = ({ userData, updateData, pendingShare
                 )}
               </div>
             </div>
-          ))}
-          <div ref={messagesEndRef} />
+          ))
+        )}
+        <div ref={messagesEndRef} />
         </div>
 
         {/* Pending Share Indicator */}

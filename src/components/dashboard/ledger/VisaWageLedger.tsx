@@ -47,47 +47,9 @@ export interface LedgerExpense {
 const STORAGE_SHIFTS_KEY = 'manageme_shifts_ledger';
 const STORAGE_EXPENSES_KEY = 'manageme_expenses_ledger';
 
-const DEFAULT_SHIFTS: LedgerShift[] = [
-  {
-    id: 's_1',
-    date: new Date().toISOString().split('T')[0],
-    employer: 'University Library - Student Assistant',
-    hourlyRate: 15.50,
-    startTime: '09:00',
-    endTime: '13:00',
-    hours: 4,
-    totalPay: 62.00,
-    notes: 'Morning shift cataloging reserve books'
-  },
-  {
-    id: 's_2',
-    date: new Date(Date.now() - 86400000 * 2).toISOString().split('T')[0],
-    employer: 'Durham Union Society - Event Steward',
-    hourlyRate: 16.00,
-    startTime: '17:00',
-    endTime: '21:30',
-    hours: 4.5,
-    totalPay: 72.00,
-    notes: 'Guest speaker debate session'
-  }
-];
+const DEFAULT_SHIFTS: LedgerShift[] = [];
 
-const DEFAULT_EXPENSES: LedgerExpense[] = [
-  {
-    id: 'e_1',
-    date: new Date().toISOString().split('T')[0],
-    category: 'Groceries',
-    amount: 45.20,
-    description: 'Weekly grocery run (Tesco/M&S)'
-  },
-  {
-    id: 'e_2',
-    date: new Date(Date.now() - 86400000 * 3).toISOString().split('T')[0],
-    category: 'Transport',
-    amount: 18.50,
-    description: 'Train to Newcastle & Metro'
-  }
-];
+const DEFAULT_EXPENSES: LedgerExpense[] = [];
 
 export const VisaWageLedger: React.FC = () => {
   // Term mode state: 'term' (20h max) vs 'vacation' (40h max)
@@ -503,7 +465,7 @@ export const VisaWageLedger: React.FC = () => {
                   <label className="text-slate-400 block mb-1">Employer / Institution *</label>
                   <Input
                     required
-                    placeholder="e.g. Durham University Library"
+                    placeholder="e.g. University Library"
                     value={newShift.employer}
                     onChange={(e) => setNewShift({ ...newShift, employer: e.target.value })}
                   />

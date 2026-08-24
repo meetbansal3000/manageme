@@ -1006,7 +1006,7 @@ ${DEFAULT_CANDIDATE_PROFILE.name}
                 <label className="text-slate-400 block mb-1">Notes & Follow-up Details</label>
                 <textarea
                   rows={3}
-                  placeholder="e.g. Met at Durham careers fair, interested in M&A..."
+                  placeholder="e.g. Met at university careers fair, interested in M&A..."
                   value={contactForm.notes}
                   onChange={(e) => setContactForm({ ...contactForm, notes: e.target.value })}
                   className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-xs font-mono text-white focus:outline-none focus:border-blue-500 resize-none"

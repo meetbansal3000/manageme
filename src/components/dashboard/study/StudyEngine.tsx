@@ -55,207 +55,9 @@ export interface TimetableClass {
 
 const STORAGE_KEY = 'manageme_study_engine_data';
 
-const DEFAULT_MODULES: AcademicModule[] = [
-  {
-    id: 'mod_1',
-    code: 'FIN401',
-    name: 'Advanced Corporate Finance',
-    term: 'Michaelmas',
-    credits: 20,
-    status: 'In Progress',
-    targetGrade: 'Distinction (75%)',
-    currentScore: 78,
-    deliverables: [
-      { id: 'del_1', title: 'M&A Valuation Case Study (DCF & Comps)', weight: 30, completed: true },
-      { id: 'del_2', title: 'Capital Structure & WACC Empirical Paper', weight: 30, completed: false },
-      { id: 'del_3', title: 'Final Comprehensive Exam', weight: 40, completed: false }
-    ]
-  },
-  {
-    id: 'mod_2',
-    code: 'FIN402',
-    name: 'Financial Reporting & Statement Analysis',
-    term: 'Michaelmas',
-    credits: 20,
-    status: 'In Progress',
-    targetGrade: 'Distinction (72%)',
-    currentScore: 74,
-    deliverables: [
-      { id: 'del_4', title: 'IFRS 16 Lease & Revenue Recognition Analysis', weight: 40, completed: true },
-      { id: 'del_5', title: 'Earnings Quality & Fraud Detection Project', weight: 60, completed: false }
-    ]
-  },
-  {
-    id: 'mod_3',
-    code: 'FIN403',
-    name: 'Applied Financial Econometrics & Machine Learning',
-    term: 'Epiphany',
-    credits: 20,
-    status: 'In Progress',
-    targetGrade: 'Distinction (70%)',
-    deliverables: [
-      { id: 'del_6', title: 'ARIMA & GARCH Volatility Modeling in Python', weight: 50, completed: false },
-      { id: 'del_7', title: 'Asset Pricing Empirical Project', weight: 50, completed: false }
-    ]
-  },
-  {
-    id: 'mod_4',
-    code: 'FIN404',
-    name: 'Equity Valuation & Portfolio Management',
-    term: 'Epiphany',
-    credits: 20,
-    status: 'In Progress',
-    targetGrade: 'Distinction (76%)',
-    deliverables: [
-      { id: 'del_8', title: 'LBO & Multi-Stage DCF Model on LSE FTSE 100 Firm', weight: 50, completed: false },
-      { id: 'del_9', title: 'Black-Litterman Portfolio Optimization', weight: 50, completed: false }
-    ]
-  }
-];
-
-const DEFAULT_CFA_TOPICS: CfaTopic[] = [
-  {
-    id: 'cfa_1',
-    name: 'Ethical & Professional Standards',
-    weightRange: '15-20%',
-    readings: [
-      { id: 'cfa_r1', title: 'Code of Ethics & Standards of Professional Conduct', completed: true },
-      { id: 'cfa_r2', title: 'Guidance for Standards I - VII & GIPS Overview', completed: true },
-      { id: 'cfa_r3', title: 'Ethics Case Scenarios & Soft Dollar Standards', completed: false }
-    ]
-  },
-  {
-    id: 'cfa_2',
-    name: 'Financial Statement Analysis (FSA)',
-    weightRange: '11-14%',
-    readings: [
-      { id: 'cfa_r4', title: 'Income Statement, Balance Sheet & Cash Flow Mechanics', completed: true },
-      { id: 'cfa_r5', title: 'Inventories (FIFO vs LIFO) & Long-Lived Assets', completed: true },
-      { id: 'cfa_r6', title: 'Income Taxes, DTL/DTA & Financial Reporting Quality', completed: false }
-    ]
-  },
-  {
-    id: 'cfa_3',
-    name: 'Equity Investments',
-    weightRange: '11-14%',
-    readings: [
-      { id: 'cfa_r7', title: 'Market Organization, Structure & Security Market Indices', completed: true },
-      { id: 'cfa_r8', title: 'Industry & Company Analysis / Porter 5 Forces', completed: false },
-      { id: 'cfa_r9', title: 'Equity Valuation: DDM, Multiples & Asset-Based Models', completed: false }
-    ]
-  },
-  {
-    id: 'cfa_4',
-    name: 'Fixed Income',
-    weightRange: '11-14%',
-    readings: [
-      { id: 'cfa_r10', title: 'Fixed-Income Securities: Defining Elements & Issuance', completed: true },
-      { id: 'cfa_r11', title: 'Bond Yields, Spreads, Spot Rates & Forward Rates', completed: false },
-      { id: 'cfa_r12', title: 'Macaulay / Modified Duration, Convexity & Credit Risk', completed: false }
-    ]
-  },
-  {
-    id: 'cfa_5',
-    name: 'Quantitative Methods',
-    weightRange: '6-9%',
-    readings: [
-      { id: 'cfa_r13', title: 'Time Value of Money & Statistical Concepts', completed: true },
-      { id: 'cfa_r14', title: 'Probability Distributions & Hypothesis Testing', completed: false }
-    ]
-  },
-  {
-    id: 'cfa_6',
-    name: 'Economics',
-    weightRange: '6-9%',
-    readings: [
-      { id: 'cfa_r15', title: 'Microeconomics: Demand/Supply & Elasticity', completed: true },
-      { id: 'cfa_r16', title: 'Macroeconomics: GDP, Monetary & Fiscal Policy, FX Rates', completed: false }
-    ]
-  },
-  {
-    id: 'cfa_7',
-    name: 'Corporate Issuers',
-    weightRange: '6-9%',
-    readings: [
-      { id: 'cfa_r17', title: 'Corporate Governance, Stakeholder Mgmt & ESG', completed: true },
-      { id: 'cfa_r18', title: 'Working Capital Management & Cost of Capital (WACC)', completed: false }
-    ]
-  },
-  {
-    id: 'cfa_8',
-    name: 'Derivatives',
-    weightRange: '5-8%',
-    readings: [
-      { id: 'cfa_r19', title: 'Derivative Markets: Forwards, Futures & Swaps', completed: false },
-      { id: 'cfa_r20', title: 'Option Basics, Put-Call Parity & Binomial Trees', completed: false }
-    ]
-  },
-  {
-    id: 'cfa_9',
-    name: 'Alternative Investments',
-    weightRange: '5-8%',
-    readings: [
-      { id: 'cfa_r21', title: 'Private Equity, Real Estate, Hedge Funds & Commodities', completed: false }
-    ]
-  },
-  {
-    id: 'cfa_10',
-    name: 'Portfolio Management',
-    weightRange: '8-12%',
-    readings: [
-      { id: 'cfa_r22', title: 'Portfolio Risk & Return, Capital Allocation Line', completed: true },
-      { id: 'cfa_r23', title: 'CAPM, Security Market Line & Investment Policy Statement (IPS)', completed: false }
-    ]
-  }
-];
-
-const DEFAULT_TIMETABLE: TimetableClass[] = [
-  {
-    id: 'tt_1',
-    moduleName: 'Advanced Corporate Finance',
-    type: 'Lecture',
-    day: 'Monday',
-    startTime: '09:00',
-    endTime: '11:00',
-    location: 'Teaching & Learning Centre (TLC 101)'
-  },
-  {
-    id: 'tt_2',
-    moduleName: 'Financial Reporting & Statement Analysis',
-    type: 'Lecture',
-    day: 'Tuesday',
-    startTime: '10:00',
-    endTime: '12:00',
-    location: 'Durham Business School - W204'
-  },
-  {
-    id: 'tt_3',
-    moduleName: 'Applied Econometrics Lab',
-    type: 'Lab',
-    day: 'Wednesday',
-    startTime: '14:00',
-    endTime: '16:00',
-    location: 'Computer Lab 3 (Python/Stata)'
-  },
-  {
-    id: 'tt_4',
-    moduleName: 'Equity Valuation Seminar',
-    type: 'Seminar',
-    day: 'Thursday',
-    startTime: '11:00',
-    endTime: '13:00',
-    location: 'Business School Executive Suite'
-  },
-  {
-    id: 'tt_5',
-    moduleName: 'CFA Level 1 Study Session',
-    type: 'Study Session',
-    day: 'Friday',
-    startTime: '13:00',
-    endTime: '16:00',
-    location: 'Bill Bryson Library - Silent Study Room 4'
-  }
-];
+const DEFAULT_MODULES: AcademicModule[] = [];
+const DEFAULT_CFA_TOPICS: CfaTopic[] = [];
+const DEFAULT_TIMETABLE: TimetableClass[] = [];
 
 const DAYS_OF_WEEK = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'] as const;
 
@@ -373,7 +175,7 @@ export const StudyEngine: React.FC = () => {
       day: (newClass.day as any) || 'Monday',
       startTime: newClass.startTime || '09:00',
       endTime: newClass.endTime || '11:00',
-      location: newClass.location || 'Durham Business School'
+      location: newClass.location || 'Campus / Online'
     };
 
     setTimetable([...timetable, item]);
@@ -394,6 +196,44 @@ export const StudyEngine: React.FC = () => {
     toast.info('Session removed from timetable');
   };
 
+  // Custom Module Modal State
+  const [isAddModuleModalOpen, setIsAddModuleModalOpen] = useState(false);
+  const [newModule, setNewModule] = useState<Partial<AcademicModule>>({
+    code: '',
+    name: '',
+    term: 'Autumn',
+    credits: 20,
+    status: 'In Progress',
+    targetGrade: 'First Class (70%+)'
+  });
+
+  const handleAddModule = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newModule.name || !newModule.code) {
+      toast.error('Module code and title are required.');
+      return;
+    }
+    const item: AcademicModule = {
+      id: `mod_${Date.now()}`,
+      code: newModule.code.toUpperCase(),
+      name: newModule.name,
+      term: newModule.term || 'Autumn',
+      credits: newModule.credits || 20,
+      status: (newModule.status as any) || 'In Progress',
+      targetGrade: newModule.targetGrade || '70%+',
+      deliverables: []
+    };
+    setModules([...modules, item]);
+    toast.success(`Added module ${item.code}: ${item.name}`);
+    setIsAddModuleModalOpen(false);
+    setNewModule({ code: '', name: '', term: 'Autumn', credits: 20, status: 'In Progress', targetGrade: 'First Class (70%+)' });
+  };
+
+  const handleDeleteModule = (id: string) => {
+    setModules(modules.filter(m => m.id !== id));
+    toast.info('Academic module removed');
+  };
+
   return (
     <div className="space-y-6">
       {/* Top Header */}
@@ -404,7 +244,7 @@ export const StudyEngine: React.FC = () => {
             <span>Study Engine, CFA Roadmap & Timetable</span>
           </h2>
           <p className="text-xs text-slate-400 mt-1">
-            Durham University MSc Finance modules, CFA Level 1 10-topic revision matrix, and weekly schedule.
+            Academic degree modules, CFA Level 1 10-topic revision matrix, and weekly schedule.
           </p>
         </div>
 
@@ -417,7 +257,7 @@ export const StudyEngine: React.FC = () => {
             }`}
           >
             <GraduationCap className="w-3.5 h-3.5 inline mr-1.5" />
-            MSc Modules ({modules.length})
+            Academic Modules ({modules.length})
           </button>
           <button
             onClick={() => setActiveTab('cfa')}
@@ -440,60 +280,95 @@ export const StudyEngine: React.FC = () => {
         </div>
       </div>
 
-      {/* VIEW 1: DURHAM MSC ACADEMIC MODULES */}
+      {/* VIEW 1: ACADEMIC DEGREE MODULES */}
       {activeTab === 'modules' && (
         <div className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {modules.map((mod) => (
-              <Card key={mod.id} variant="glass" padding="md" className="border border-white/10 flex flex-col justify-between space-y-4">
-                <div>
-                  <div className="flex items-start justify-between gap-2">
-                    <div>
-                      <span className="text-[10px] font-mono font-bold text-purple-400 uppercase tracking-wider">{mod.code} • {mod.term} Term</span>
-                      <h3 className="text-sm font-bold text-white mt-0.5">{mod.name}</h3>
-                    </div>
-                    <Badge variant={mod.status === 'Completed' ? 'success' : 'info'} size="sm">
-                      {mod.status}
-                    </Badge>
-                  </div>
-
-                  <div className="flex items-center gap-3 text-xs font-mono text-slate-400 mt-2">
-                    <span>Credits: <strong className="text-slate-200">{mod.credits}</strong></span>
-                    <span>•</span>
-                    <span>Target: <strong className="text-emerald-400">{mod.targetGrade}</strong></span>
-                  </div>
-                </div>
-
-                {/* Deliverables Checklist */}
-                <div className="bg-white/[0.02] border border-white/5 rounded-xl p-3 space-y-2">
-                  <span className="text-[10px] font-mono uppercase text-slate-400 font-semibold block">
-                    Assessment & Coursework Deliverables
-                  </span>
-                  <div className="space-y-1.5">
-                    {mod.deliverables.map((del) => (
-                      <div
-                        key={del.id}
-                        onClick={() => handleToggleDeliverable(mod.id, del.id)}
-                        className="flex items-center justify-between text-xs font-mono text-slate-300 p-1.5 rounded-lg hover:bg-white/5 cursor-pointer transition-colors"
-                      >
-                        <div className="flex items-center gap-2">
-                          {del.completed ? (
-                            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                          ) : (
-                            <Circle className="w-3.5 h-3.5 text-slate-500 shrink-0" />
-                          )}
-                          <span className={del.completed ? 'line-through text-slate-500' : 'text-slate-200'}>
-                            {del.title}
-                          </span>
-                        </div>
-                        <span className="text-[10px] font-bold text-slate-400">{del.weight}%</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </Card>
-            ))}
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-mono text-slate-400">
+              Academic Courses, Credits & Deliverables Checklist
+            </span>
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={() => setIsAddModuleModalOpen(true)}
+            >
+              <Plus className="w-3.5 h-3.5 mr-1" />
+              + Add Custom Module
+            </Button>
           </div>
+
+          {modules.length === 0 ? (
+            <Card variant="glass" padding="lg" className="border border-white/10 text-center py-12 space-y-3">
+              <BookOpen className="w-8 h-8 text-purple-400 mx-auto opacity-60" />
+              <p className="font-semibold text-white text-sm">
+                No academic modules added yet.
+              </p>
+              <p className="text-xs text-slate-400">
+                Click '+ Add Custom Module' above to track your courses, assessments, and grade targets.
+              </p>
+            </Card>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {modules.map((mod) => (
+                <Card key={mod.id} variant="glass" padding="md" className="border border-white/10 flex flex-col justify-between space-y-4 relative group">
+                  <div>
+                    <div className="flex items-start justify-between gap-2">
+                      <div>
+                        <span className="text-[10px] font-mono font-bold text-purple-400 uppercase tracking-wider">{mod.code} • {mod.term} Term</span>
+                        <h3 className="text-sm font-bold text-white mt-0.5">{mod.name}</h3>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Badge variant={mod.status === 'Completed' ? 'success' : 'info'} size="sm">
+                          {mod.status}
+                        </Badge>
+                        <button
+                          onClick={() => handleDeleteModule(mod.id)}
+                          className="opacity-0 group-hover:opacity-100 text-slate-500 hover:text-rose-400 p-1 transition-opacity cursor-pointer"
+                          title="Delete module"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-3 text-xs font-mono text-slate-400 mt-2">
+                      <span>Credits: <strong className="text-slate-200">{mod.credits}</strong></span>
+                      <span>•</span>
+                      <span>Target: <strong className="text-emerald-400">{mod.targetGrade}</strong></span>
+                    </div>
+                  </div>
+
+                  {/* Deliverables Checklist */}
+                  <div className="bg-white/[0.02] border border-white/5 rounded-xl p-3 space-y-2">
+                    <span className="text-[10px] font-mono uppercase text-slate-400 font-semibold block">
+                      Assessment & Coursework Deliverables
+                    </span>
+                    <div className="space-y-1.5">
+                      {mod.deliverables.map((del) => (
+                        <div
+                          key={del.id}
+                          onClick={() => handleToggleDeliverable(mod.id, del.id)}
+                          className="flex items-center justify-between text-xs font-mono text-slate-300 p-1.5 rounded-lg hover:bg-white/5 cursor-pointer transition-colors"
+                        >
+                          <div className="flex items-center gap-2">
+                            {del.completed ? (
+                              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                            ) : (
+                              <Circle className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+                            )}
+                            <span className={del.completed ? 'line-through text-slate-500' : 'text-slate-200'}>
+                              {del.title}
+                            </span>
+                          </div>
+                          <span className="text-[10px] font-bold text-slate-400">{del.weight}%</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </Card>
+              ))}
+            </div>
+          )}
         </div>
       )}
 
@@ -728,6 +603,87 @@ export const StudyEngine: React.FC = () => {
                 </Button>
                 <Button type="submit" variant="primary">
                   Add to Timetable
+                </Button>
+              </div>
+            </form>
+          </Card>
+        </div>
+      )}
+
+      {/* ADD CUSTOM MODULE MODAL */}
+      {isAddModuleModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-md flex items-center justify-center p-4">
+          <Card variant="glass" padding="lg" className="w-full max-w-md border border-white/20 shadow-2xl">
+            <div className="flex items-center justify-between border-b border-white/10 pb-3 mb-4">
+              <h3 className="text-base font-bold font-mono text-white uppercase flex items-center gap-2">
+                <BookOpen className="w-4 h-4 text-purple-400" />
+                <span>+ Add Custom Academic Module</span>
+              </h3>
+              <button onClick={() => setIsAddModuleModalOpen(false)} className="text-slate-400 hover:text-white">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <form onSubmit={handleAddModule} className="space-y-3 font-mono text-xs">
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="text-slate-400 block mb-1">Module Code *</label>
+                  <Input
+                    required
+                    placeholder="e.g. FIN401 or CS101"
+                    value={newModule.code}
+                    onChange={(e) => setNewModule({ ...newModule, code: e.target.value })}
+                  />
+                </div>
+                <div>
+                  <label className="text-slate-400 block mb-1">Academic Term</label>
+                  <Input
+                    placeholder="e.g. Autumn / Semester 1"
+                    value={newModule.term}
+                    onChange={(e) => setNewModule({ ...newModule, term: e.target.value })}
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="text-slate-400 block mb-1">Module Title *</label>
+                <Input
+                  required
+                  placeholder="e.g. Corporate Strategy & Financial Markets"
+                  value={newModule.name}
+                  onChange={(e) => setNewModule({ ...newModule, name: e.target.value })}
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="text-slate-400 block mb-1">Academic Credits</label>
+                  <Input
+                    type="number"
+                    value={newModule.credits}
+                    onChange={(e) => setNewModule({ ...newModule, credits: Number(e.target.value) })}
+                  />
+                </div>
+                <div>
+                  <label className="text-slate-400 block mb-1">Target Grade</label>
+                  <Input
+                    placeholder="e.g. Distinction / 75%"
+                    value={newModule.targetGrade}
+                    onChange={(e) => setNewModule({ ...newModule, targetGrade: e.target.value })}
+                  />
+                </div>
+              </div>
+
+              <div className="flex items-center justify-end gap-2 pt-3 border-t border-white/10">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  onClick={() => setIsAddModuleModalOpen(false)}
+                >
+                  Cancel
+                </Button>
+                <Button type="submit" variant="primary">
+                  Save Module
                 </Button>
               </div>
             </form>

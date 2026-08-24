@@ -135,12 +135,12 @@ const SKILL_METADATA_MAP: Record<string, {
     resource: 'Corporate Finance Institute (CFI) M&A Advisory Certification',
     defaultProficiency: 'Intermediate'
   },
-  'ACCA / IFRS': {
+  'Financial Reporting / IFRS': {
     category: 'Accounting',
-    rationale: 'Key differentiator for Audit, Forensic Accounting, and UK Corporate Finance positions.',
-    suggestedAction: 'Pass ACCA DipIFR exam (December sitting) covering IAS 36, IFRS 9, IFRS 15, and IFRS 16.',
+    rationale: 'Key differentiator for Audit, Financial Analysis, and UK Corporate Finance positions.',
+    suggestedAction: 'Complete advanced reporting modules covering asset valuation, revenue recognition, and lease accounting.',
     hours: '40 hrs',
-    resource: 'ACCA Study Hub & Advanced Financial Accounting Modules',
+    resource: 'Financial Reporting & Accounting Standards Certification',
     defaultProficiency: 'Advanced'
   },
   'Xero': {
@@ -245,8 +245,6 @@ export const SkillsGapResolver: React.FC<SkillsGapResolverProps> = ({
     for (const [userSkillLower] of userSkillMap.entries()) {
       if (userSkillLower.includes(reqLower) || reqLower.includes(userSkillLower)) return true;
       if (reqLower === 'dcf' && userSkillLower.includes('dcf')) return true;
-      if (reqLower === 'lbo' && userSkillLower.includes('lbo')) return true;
-      if (reqLower.includes('acca') && userSkillLower.includes('acca')) return true;
       if (reqLower.includes('ifrs') && userSkillLower.includes('ifrs')) return true;
       if (reqLower.includes('3-statement') && userSkillLower.includes('3-statement')) return true;
     }

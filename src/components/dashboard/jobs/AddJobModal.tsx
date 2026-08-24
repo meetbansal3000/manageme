@@ -125,7 +125,7 @@ export const AddJobModal: React.FC<AddJobModalProps> = ({
       notes,
       skills: skills.length > 0 ? skills : ['Financial Analysis', 'Excel Modeling'],
       difficulty: 'Medium',
-      accaAdvantage: 'High',
+      certAdvantage: 'High',
       filterRisk: 'Low'
     };
 

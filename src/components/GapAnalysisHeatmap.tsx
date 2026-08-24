@@ -45,7 +45,7 @@ const SKILL_CATEGORY_MAP: Record<string, string> = {
   'Equity Research': 'Domain Knowledge',
   'M&A Advisory': 'Domain Knowledge',
   'Corporate Finance': 'Technical',
-  'ACCA / IFRS': 'Accounting',
+  'Financial Reporting': 'Accounting',
   'Xero': 'Accounting',
   'Power BI': 'Analytics',
   'Restructuring': 'Domain Knowledge',
@@ -89,7 +89,7 @@ export const GapAnalysisHeatmap: React.FC<GapAnalysisHeatmapProps> = ({
 
     // If schemes have no skills defined, provide sensible standard defaults for finance schemes
     if (skillSet.size === 0) {
-      ['Financial Modeling', 'Valuation', 'Python', 'DCF', 'LBO', 'M&A Advisory', 'ACCA / IFRS', 'Fixed Income', 'Power BI'].forEach(s => skillSet.add(s));
+      ['Financial Modeling', 'Valuation', 'Python', 'DCF', 'LBO', 'M&A Advisory', 'Financial Reporting', 'Fixed Income', 'Power BI'].forEach(s => skillSet.add(s));
     }
 
     return Array.from(skillSet);
@@ -172,7 +172,6 @@ export const GapAnalysisHeatmap: React.FC<GapAnalysisHeatmapProps> = ({
       // Special aliases
       if (reqLower === 'dcf' && userSkillLower.includes('dcf')) return { matched: true, status: data.status === 'verified' ? 'verified' : 'in_progress', rating: data.rating, userSkillTitle: data.originalName, proficiency: data.proficiency };
       if (reqLower === 'lbo' && userSkillLower.includes('lbo')) return { matched: true, status: data.status === 'verified' ? 'verified' : 'in_progress', rating: data.rating, userSkillTitle: data.originalName, proficiency: data.proficiency };
-      if (reqLower.includes('acca') && userSkillLower.includes('acca')) return { matched: true, status: data.status === 'verified' ? 'verified' : 'in_progress', rating: data.rating, userSkillTitle: data.originalName, proficiency: data.proficiency };
       if (reqLower.includes('ifrs') && userSkillLower.includes('ifrs')) return { matched: true, status: data.status === 'verified' ? 'verified' : 'in_progress', rating: data.rating, userSkillTitle: data.originalName, proficiency: data.proficiency };
       if (reqLower.includes('3-statement') && userSkillLower.includes('3-statement')) return { matched: true, status: data.status === 'verified' ? 'verified' : 'in_progress', rating: data.rating, userSkillTitle: data.originalName, proficiency: data.proficiency };
     }

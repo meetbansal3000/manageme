@@ -78,7 +78,7 @@ export const QuickAiModalInner: React.FC<{
         
         // High quality fallback if API is delayed or empty
         setGeneratedText(
-          `Hi [Recruiter/Alumni Name],\n\nI noticed the ${roleTitle} opening at ${company} and wanted to reach out. With a strong background in financial analysis and ongoing ACCA qualification, I have been following ${company}'s market expansion with great interest.\n\nI would love the opportunity to connect briefly and learn more about the team's upcoming initiatives.\n\nBest regards,\n[Your Name]`
+          `Hi [Recruiter/Alumni Name],\n\nI noticed the ${roleTitle} opening at ${company} and wanted to reach out. With a strong background in financial analysis and analytical coursework, I have been following ${company}'s market expansion with great interest.\n\nI would love the opportunity to connect briefly and learn more about the team's upcoming initiatives.\n\nBest regards,\n[Your Name]`
         );
       } else if (actionType === 'prep') {
         const res = await fetch('/api/parse-jd', {
@@ -104,7 +104,7 @@ export const QuickAiModalInner: React.FC<{
         setGeneratedText(
           `🎯 Recommended Interview Talking Points for ${company} (${roleTitle}):\n\n` +
           `1. Commercial Awareness: Highlight recent macroeconomic shifts influencing ${company}'s core business model.\n\n` +
-          `2. Technical Foundation: Discuss rigorous financial modeling experience and accounting competencies under ACCA standards.\n\n` +
+          `2. Technical Foundation: Discuss your financial modeling experience and core analytical competencies.\n\n` +
           `3. Leadership & Initiative: Prepare 2 STAR method examples showcasing collaborative problem-solving under tight deadlines.`
         );
       } else {

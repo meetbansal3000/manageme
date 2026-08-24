@@ -78,59 +78,25 @@ const STORAGE_SKILLS_KEY = 'manageme_skills_vault';
 
 const DEFAULT_RESUME: ResumeData = {
   header: {
-    name: '[FULL NAME]',
-    targetTitle: '[Target Professional Role / Analyst]',
-    email: 'email@example.com',
-    phone: '+44 0000 000000',
-    location: '[City, Country]',
-    linkedin: 'linkedin.com/in/yourprofile'
+    name: '',
+    targetTitle: '',
+    email: '',
+    phone: '',
+    location: '',
+    linkedin: ''
   },
-  summary: 'Motivated finance and investment graduate with hands-on experience in financial statement analysis, multi-stage DCF valuation modeling, and corporate accounting.',
-  education: [
-    {
-      id: 'edu_1',
-      institution: '[University Name]',
-      degree: '[Degree Program] (Expected Graduation: 2026)',
-      dates: '2025 – 2026',
-      details: [
-        'Relevant Coursework: Corporate Finance, Financial Analysis, Valuation & Econometrics.',
-        'Academic Project: Valuation and corporate M&A synergy pricing analysis.'
-      ]
-    }
-  ],
-  experience: [
-    {
-      id: 'exp_1',
-      company: '[Company Name]',
-      role: '[Job Title]',
-      location: '[City, Country]',
-      dates: '2024 – 2025',
-      details: [],
-      bullets: [
-        'Constructed multi-stage Discounted Cash Flow (DCF) and Comparable Company Analysis (CCA) valuation models.',
-        'Prepared financial statements, working capital reconciliations, and financial reporting analysis.',
-        'Executed data analytics and workflow automation to streamline process efficiency.'
-      ]
-    }
-  ],
-  certifications: [
-    { id: 'cert_1', name: '[Certification / Designation]', issuer: '[Issuer Name]', date: '2025' }
-  ],
+  summary: '',
+  education: [],
+  experience: [],
+  certifications: [],
   skills: {
-    valuation: ['DCF Modeling', 'LBO Analysis', 'Trading & Transaction Comps', 'WACC Analysis'],
-    accounting: ['3-Statement Financial Modeling', 'Working Capital Management', 'Financial Reporting'],
-    technical: ['Financial Modeling in Excel', 'Python Financial Analytics', 'SQL Queries']
+    valuation: [],
+    accounting: [],
+    technical: []
   }
 };
 
-const DEFAULT_SKILLS_VAULT: SkillItem[] = [
-  { id: 'sk_1', category: 'Valuation & Modeling', name: 'Discounted Cash Flow (DCF)', level: 'Advanced', endorsements: 'Financial Modeling Coursework' },
-  { id: 'sk_2', category: 'Valuation & Modeling', name: 'LBO Modeling & Returns', level: 'Proficient', endorsements: 'Coursework & Self-Directed' },
-  { id: 'sk_3', category: 'Valuation & Modeling', name: 'Trading & Precedent Comps', level: 'Advanced', endorsements: 'Corporate Finance' },
-  { id: 'sk_4', category: 'Accounting & IFRS', name: 'Financial Statement Analysis', level: 'Advanced', endorsements: 'Accounting Specialization' },
-  { id: 'sk_5', category: 'Data Analytics & Tech', name: 'Advanced Excel & Financial Modeling', level: 'Advanced', endorsements: 'Daily Practice' },
-  { id: 'sk_6', category: 'Data Analytics & Tech', name: 'Python Financial Analytics', level: 'Proficient', endorsements: 'Econometrics & Analytics' }
-];
+const DEFAULT_SKILLS_VAULT: SkillItem[] = [];
 
 export const ResumeBuilder: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'builder' | 'skills'>('builder');
@@ -329,6 +295,7 @@ export const ResumeBuilder: React.FC = () => {
                   <div>
                     <label className="text-slate-400 block mb-1">Full Name</label>
                     <Input
+                      placeholder="Your Full Name"
                       value={resumeData.header.name}
                       onChange={(e) => setResumeData({
                         ...resumeData,
@@ -340,6 +307,7 @@ export const ResumeBuilder: React.FC = () => {
                   <div>
                     <label className="text-slate-400 block mb-1">Target Role Headline</label>
                     <Input
+                      placeholder="e.g. Corporate Finance & Investment Analyst"
                       value={resumeData.header.targetTitle}
                       onChange={(e) => setResumeData({
                         ...resumeData,
@@ -352,6 +320,7 @@ export const ResumeBuilder: React.FC = () => {
                     <div>
                       <label className="text-slate-400 block mb-1">Email</label>
                       <Input
+                        placeholder="email@example.com"
                         value={resumeData.header.email}
                         onChange={(e) => setResumeData({
                           ...resumeData,
@@ -362,6 +331,7 @@ export const ResumeBuilder: React.FC = () => {
                     <div>
                       <label className="text-slate-400 block mb-1">Phone</label>
                       <Input
+                        placeholder="+44 0000 000000"
                         value={resumeData.header.phone}
                         onChange={(e) => setResumeData({
                           ...resumeData,
@@ -374,6 +344,7 @@ export const ResumeBuilder: React.FC = () => {
                   <div>
                     <label className="text-slate-400 block mb-1">Location</label>
                     <Input
+                      placeholder="City, Country"
                       value={resumeData.header.location}
                       onChange={(e) => setResumeData({
                         ...resumeData,
@@ -386,6 +357,7 @@ export const ResumeBuilder: React.FC = () => {
                     <label className="text-slate-400 block mb-1">Executive Summary</label>
                     <textarea
                       rows={4}
+                      placeholder="Brief professional summary..."
                       value={resumeData.summary}
                       onChange={(e) => setResumeData({ ...resumeData, summary: e.target.value })}
                       className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-xs font-mono text-white focus:outline-none focus:border-blue-500 resize-none"
@@ -403,7 +375,7 @@ export const ResumeBuilder: React.FC = () => {
                         <span className="text-[10px] uppercase font-bold text-blue-400">Education #{idx + 1}</span>
                       </div>
                       <Input
-                        placeholder="Institution"
+                        placeholder="e.g. London Business School / Harvard / Oxford"
                         value={edu.institution}
                         onChange={(e) => {
                           const updated = [...resumeData.education];
@@ -412,7 +384,7 @@ export const ResumeBuilder: React.FC = () => {
                         }}
                       />
                       <Input
-                        placeholder="Degree & Grade"
+                        placeholder="e.g. Bachelor of Science / Master's in Management"
                         value={edu.degree}
                         onChange={(e) => {
                           const updated = [...resumeData.education];
@@ -421,7 +393,7 @@ export const ResumeBuilder: React.FC = () => {
                         }}
                       />
                       <Input
-                        placeholder="Dates"
+                        placeholder="e.g. 2022 – 2026"
                         value={edu.dates}
                         onChange={(e) => {
                           const updated = [...resumeData.education];
@@ -441,7 +413,7 @@ export const ResumeBuilder: React.FC = () => {
                     <div key={exp.id} className="p-3 rounded-xl bg-white/[0.02] border border-white/10 space-y-2">
                       <span className="text-[10px] uppercase font-bold text-emerald-400">Experience #{idx + 1}</span>
                       <Input
-                        placeholder="Company"
+                        placeholder="e.g. Goldman Sachs / Morgan Stanley / McKinsey"
                         value={exp.company}
                         onChange={(e) => {
                           const updated = [...resumeData.experience];
@@ -450,7 +422,7 @@ export const ResumeBuilder: React.FC = () => {
                         }}
                       />
                       <Input
-                        placeholder="Role / Title"
+                        placeholder="e.g. Investment Banking Analyst / Associate"
                         value={exp.role}
                         onChange={(e) => {
                           const updated = [...resumeData.experience];
@@ -558,20 +530,26 @@ export const ResumeBuilder: React.FC = () => {
                   Education & Professional Accreditations
                 </h2>
                 <div className="space-y-2">
-                  {resumeData.education.map((edu) => (
-                    <div key={edu.id} className="text-xs">
-                      <div className="flex justify-between font-bold text-slate-900 font-sans">
-                        <span>{edu.institution}</span>
-                        <span className="font-normal text-slate-700">{edu.dates}</span>
-                      </div>
-                      <div className="italic text-slate-800">{edu.degree}</div>
-                      {edu.details.map((d, i) => (
-                        <div key={i} className="text-[11px] text-slate-700 pl-3 relative before:content-['•'] before:absolute before:left-0">
-                          {d}
+                  {resumeData.education.length > 0 ? (
+                    resumeData.education.map((edu) => (
+                      <div key={edu.id} className="text-xs">
+                        <div className="flex justify-between font-bold text-slate-900 font-sans">
+                          <span>{edu.institution}</span>
+                          <span className="font-normal text-slate-700">{edu.dates}</span>
                         </div>
-                      ))}
-                    </div>
-                  ))}
+                        <div className="italic text-slate-800">{edu.degree}</div>
+                        {edu.details.map((d, i) => (
+                          <div key={i} className="text-[11px] text-slate-700 pl-3 relative before:content-['•'] before:absolute before:left-0">
+                            {d}
+                          </div>
+                        ))}
+                      </div>
+                    ))
+                  ) : (
+                    <p className="text-xs text-slate-500 italic py-1 font-sans">
+                      Click '+ Add Education' or '+ Add Experience' to build your 1-page ATS resume.
+                    </p>
+                  )}
                 </div>
               </div>
 
@@ -581,20 +559,26 @@ export const ResumeBuilder: React.FC = () => {
                   Professional Experience
                 </h2>
                 <div className="space-y-3">
-                  {resumeData.experience.map((exp) => (
-                    <div key={exp.id} className="text-xs">
-                      <div className="flex justify-between font-bold text-slate-900 font-sans">
-                        <span>{exp.company}</span>
-                        <span className="font-normal text-slate-700">{exp.dates}</span>
+                  {resumeData.experience.length > 0 ? (
+                    resumeData.experience.map((exp) => (
+                      <div key={exp.id} className="text-xs">
+                        <div className="flex justify-between font-bold text-slate-900 font-sans">
+                          <span>{exp.company}</span>
+                          <span className="font-normal text-slate-700">{exp.dates}</span>
+                        </div>
+                        <div className="italic text-slate-800 mb-1">{exp.role} — {exp.location}</div>
+                        <ul className="list-disc list-outside pl-4 space-y-1 text-[11px] text-slate-800 leading-normal">
+                          {exp.bullets.map((b, i) => (
+                            <li key={i}>{b}</li>
+                          ))}
+                        </ul>
                       </div>
-                      <div className="italic text-slate-800 mb-1">{exp.role} — {exp.location}</div>
-                      <ul className="list-disc list-outside pl-4 space-y-1 text-[11px] text-slate-800 leading-normal">
-                        {exp.bullets.map((b, i) => (
-                          <li key={i}>{b}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  ))}
+                    ))
+                  ) : (
+                    <p className="text-xs text-slate-500 italic py-1 font-sans">
+                      Click '+ Add Education' or '+ Add Experience' to build your 1-page ATS resume.
+                    </p>
+                  )}
                 </div>
               </div>
 
@@ -658,6 +642,14 @@ export const ResumeBuilder: React.FC = () => {
           </div>
 
           {/* Grid of Skill Categories */}
+          {skillsVault.length === 0 ? (
+            <Card variant="glass" padding="lg" className="border border-white/10 text-center py-12 space-y-3">
+              <Award className="w-8 h-8 text-slate-500 mx-auto opacity-50" />
+              <p className="text-xs font-mono text-slate-400">
+                No competencies added yet. Click '+ Add Skill' to customize your matrix.
+              </p>
+            </Card>
+          ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {(['Valuation & Modeling', 'Accounting & IFRS', 'Data Analytics & Tech', 'Financial Markets'] as const).map(cat => {
               const catSkills = skillsVault.filter(s => s.category === cat);
@@ -715,6 +707,7 @@ export const ResumeBuilder: React.FC = () => {
               );
             })}
           </div>
+          )}
         </div>
       )}
 

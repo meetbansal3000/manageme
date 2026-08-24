@@ -1559,7 +1559,7 @@ export const GraduateSchemesTab: React.FC<GraduateSchemesTabProps> = ({
                 <label className="block text-xs font-semibold text-[var(--text-secondary)] mb-1">Key Strategy Notes</label>
                 <textarea
                   rows={3}
-                  placeholder="e.g., Tailor for Asset Management stream, focus on DCF valuation and ACCA exam exemptions..."
+                  placeholder="e.g., Tailor for Asset Management stream, focus on DCF valuation and technical interview prep..."
                   value={formData.notes}
                   onChange={e => setFormData({ ...formData, notes: e.target.value })}
                   className="w-full bg-[var(--bg)] border border-[var(--border)] rounded-xl px-3 py-2 text-sm text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent)]"

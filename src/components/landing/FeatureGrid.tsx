@@ -250,7 +250,7 @@ export const FeatureGrid: React.FC<FeatureGridProps> = ({ onEnterApp }) => {
                   <GraduationCap className="w-5 h-5" />
                 </div>
                 <span className="text-[10px] font-mono font-medium px-2.5 py-1 rounded-full backdrop-blur-md bg-zinc-900/[0.06] dark:bg-white/[0.05] border border-zinc-900/[0.08] dark:border-white/[0.08] text-zinc-600 dark:text-zinc-400">
-                  Durham MSc + CFA
+                  Academic Degree + CFA
                 </span>
               </div>
 
@@ -258,7 +258,7 @@ export const FeatureGrid: React.FC<FeatureGridProps> = ({ onEnterApp }) => {
                 Study Engine & CFA Matrix
               </h3>
               <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1.5 mb-4 leading-relaxed">
-                Curated modules for Durham University MSc Finance & 10 CFA topic revision trackers.
+                Curated modules for university academic courses & 10 CFA topic revision trackers.
               </p>
 
               {/* Live Interactive Preview: Progress Module Badges */}
@@ -307,17 +307,17 @@ export const FeatureGrid: React.FC<FeatureGridProps> = ({ onEnterApp }) => {
                 Cold Email & Recruiter CRM
               </h3>
               <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1.5 mb-4 leading-relaxed">
-                Auto-generate tailored recruiter pitches citing your ACCA affiliation and valuation experience.
+                Auto-generate tailored recruiter pitches citing your academic background and valuation experience.
               </p>
 
               {/* Live Interactive Preview: Mini Email Composer */}
               <div className="p-3 rounded-2xl bg-black/[0.03] dark:bg-white/[0.03] border border-black/[0.04] dark:border-white/[0.04] space-y-1.5 mb-4 text-[10px] font-mono">
                 <div className="flex items-center gap-1.5 text-zinc-500 pb-1 border-b border-black/[0.04] dark:border-white/[0.04]">
                   <Send className="w-3 h-3 text-rose-500" />
-                  <span className="truncate">To: recruiter@lazard.com</span>
+                  <span className="truncate">To: recruiter@example.com</span>
                 </div>
                 <p className="text-[#1D1D1F] dark:text-[#F5F5F7] line-clamp-2 italic font-sans text-[11px] pt-1">
-                  "Subject: Durham MSc Finance / ACCA Affiliate — Analyst Inquiry..."
+                  "Subject: Analyst Application & Coffee Chat Inquiry..."
                 </p>
                 <div className="flex items-center justify-between text-[9px] text-emerald-500 pt-1">
                   <span>1-Click Copy & Gmail Draft</span>

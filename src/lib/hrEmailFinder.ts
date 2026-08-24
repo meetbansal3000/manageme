@@ -582,7 +582,7 @@ export const COLD_EMAIL_TEMPLATES: { id: ColdEmailDraftParams['tone']; title: st
     title: 'University Alumni Connection',
     subtitle: 'Warm 10-min informal coffee chat',
     description: 'Leverages shared university background and genuine curiosity about their desk journey.',
-    preview: 'As a fellow Durham finance student admiring your path in M&A, I would love to ask 2 quick questions over a brief call...'
+    preview: 'As a fellow student admiring your path in M&A, I would love to ask 2 quick questions over a brief call...'
   },
   {
     id: 'referral_ask',
@@ -593,35 +593,31 @@ export const COLD_EMAIL_TEMPLATES: { id: ColdEmailDraftParams['tone']; title: st
   },
   {
     id: 'formal_corporate',
-    title: 'Formal Executive Introduction',
-    subtitle: 'Standard corporate inquiry to HR/Recruiters',
-    description: 'Polished, professional outreach to Talent Acquisition or Department Leads.',
-    preview: 'I am writing to express my strong interest in joining the team as a Graduate Analyst...'
-  },
-  {
-    id: 'post_application',
-    title: 'Post-Application Follow-Up',
-    subtitle: 'Stand out from ATS pipeline queues',
-    description: 'Follows up on an existing application ID with fresh portfolio updates or test scores.',
-    preview: 'Following my recent application submission (Ref: UK-2026), I wanted to reiterate my strong enthusiasm...'
+    title: 'Formal Cover Note',
+    subtitle: 'Structured HR / recruiter outreach',
+    description: 'Traditional 3-paragraph executive note suited for senior recruiters or talent acquisition directors.',
+    preview: 'Please find attached my resume for the Analyst role. My background in quantitative modeling aligns closely with...'
   }
 ];
 
-/**
- * AI & Rule-based Cold Email Generator
- */
-export function generateColdEmailDraft(params: ColdEmailDraftParams): GeneratedColdEmail {
+export function buildCustomOutreachEmail(params: OutreachBuildParams): GeneratedOutreachEmail {
+  return buildCustomOutreachEmailImpl(params);
+}
+
+export const generateColdEmailDraft = buildCustomOutreachEmail;
+
+function buildCustomOutreachEmailImpl(params: OutreachBuildParams): GeneratedOutreachEmail {
   const {
     companyName,
     targetRole,
     recipientName = 'Hiring Manager',
     recipientRole = 'Recruiting Team',
     tone = 'high_impact',
-    candidateName = 'Meet Bansal',
-    universityOrBackground = 'Durham University (Accounting & Finance, 1st Class Predicted, CFA L1 Candidate)',
+    candidateName = '[Your Name]',
+    universityOrBackground = '[Your University / Degree Background]',
     keyStrengths = [
       'Comprehensive financial modeling & valuation (DCF, LBO, Multiples)',
-      'ACCA exemption track record & Bloomberg Market Concepts (BMC)',
+      'Relevant Professional Certifications & Coursework',
       'Proven data synthesis with Python, BigQuery & automated analytics'
     ],
     customNote = ''
@@ -648,7 +644,7 @@ export function generateColdEmailDraft(params: ColdEmailDraftParams): GeneratedC
     previewSummary = `Direct pitch highlighting concrete technical capabilities and immediate desk contribution for ${cleanRole}.`;
     valueHooks = [
       'Immediate modeling leverage: Experienced in 3-statement modeling, DCF, and precedent transactions',
-      'ACCA / CFA foundational rigor with focus on financial statement analysis',
+      'Foundational analytical rigor with focus on financial statement analysis',
       'Proactive execution mindset with zero ramp-up time required'
     ];
     callToAction = 'Would you be open to a brief 5-minute introductory call next Tuesday or Thursday afternoon?';
@@ -659,9 +655,9 @@ I hope you are having a productive week.
 
 I have been closely following ${companyName}'s recent deal flow and market positioning in ${discovery.sector}, and I am reaching out to explore opportunities to contribute as a ${cleanRole}.
 
-As a high-performing finance student at ${universityOrBackground}, I have built rigorous, practical competencies designed to deliver immediate leverage to your desk:
+As a high-performing student with a background in ${universityOrBackground}, I have built rigorous, practical competencies designed to deliver immediate leverage to your desk:
 • Valuation & Modeling: Hands-on experience constructing 3-statement financial models, DCF valuations, and sensitivity matrices.
-• Analytical Precision: Deep grounding in corporate finance, financial reporting (ACCA syllabus), and capital structure optimization.
+• Analytical Precision: Deep grounding in corporate finance, financial reporting, and capital structure optimization.
 • Execution Speed: Proven ability to synthesize complex equity research and annual reports under tight deadlines.
 ${customNote ? `\n${customNote}\n` : ''}
 I would welcome the opportunity to discuss how my technical skills and work ethic can support your team's upcoming mandates. ${callToAction}
@@ -672,7 +668,7 @@ Best regards,
 
 ${candidateName}
 ${universityOrBackground}
-LinkedIn: linkedin.com/in/meet-bansal | +44 (0) 7000 000000`;
+LinkedIn: linkedin.com/in/yourprofile | +44 (0) 7000 000000`;
   } else if (tone === 'casual_alumni') {
     subject = `Fellow Student / Alumni Coffee Chat — ${companyName} & ${cleanRole}`;
     previewSummary = `Warm, low-pressure networking note requesting a brief informational conversation.`;
