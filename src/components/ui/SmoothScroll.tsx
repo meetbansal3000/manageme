@@ -13,15 +13,15 @@ export function SmoothScroll({ children }: { children: React.ReactNode }) {
       smoothWheel: true,
     });
 
-    let animationFrameId: number;
+    let rafId: number;
     function raf(time: number) {
       lenis.raf(time);
-      animationFrameId = requestAnimationFrame(raf);
+      rafId = requestAnimationFrame(raf);
     }
-    animationFrameId = requestAnimationFrame(raf);
+    rafId = requestAnimationFrame(raf);
 
     return () => {
-      cancelAnimationFrame(animationFrameId);
+      cancelAnimationFrame(rafId);
       lenis.destroy();
     };
   }, []);

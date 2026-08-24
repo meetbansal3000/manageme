@@ -1,187 +1,85 @@
-/* Styles: Global CSS Design Tokens & Tailwind Base */
-
-@import url('https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500;600;700&family=Geist:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap');
 @import "tailwindcss";
-@custom-variant dark (&:where(.dark, .dark *));
 
-@theme {
-  --font-sans: 'Plus Jakarta Sans', 'Geist', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-jakarta: 'Plus Jakarta Sans', sans-serif;
-  --font-geist: 'Geist', sans-serif;
-  --font-serif: 'Instrument Serif', Georgia, serif;
-  --font-editorial: 'Instrument Serif', Georgia, serif;
-  --font-mono: 'Space Mono', 'Geist Mono', monospace;
-  --font-geist-mono: 'Geist Mono', 'Space Mono', monospace;
-
-  /* Theme color token proxies */
-  --color-bg: var(--bg-primary, #0B0C10);
-  --color-surface: var(--card-bg, #15171E);
-  --color-border-soft: var(--border-subtle, rgba(255, 255, 255, 0.08));
-  --color-accent-blue: var(--accent-primary, #818CF8);
-  --color-profit: #00FF66;
-
-  --color-appBg: var(--bg-primary, #0B0C10);
-  --color-appSurface: var(--card-bg, #15171E);
-  --color-accentGlow: var(--accent-primary, #818CF8);
-  --color-accentProfit: #00FF66;
-
-  --color-background: var(--bg-primary, #0B0C10);
-  --color-border: var(--border-subtle, rgba(255, 255, 255, 0.08));
-  --color-text-primary: var(--text-primary, #F9FAFB);
-  --color-text-muted: var(--text-secondary, #94A3B8);
-}
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 :root {
-  --font-geist-mono: 'Geist Mono', 'Space Mono', monospace;
-  --font-geist: 'Geist', 'Plus Jakarta Sans', sans-serif;
+  /* Light Theme: Minimalist Modern / Warm Luxury */
+  --bg-canvas: #FAF8F5;
+  --bg-surface: rgba(255, 255, 255, 0.75);
+  --bg-surface-hover: rgba(255, 255, 255, 0.95);
+  --border-subtle: rgba(0, 0, 0, 0.07);
+  --border-hover: rgba(0, 0, 0, 0.14);
+  --text-primary: #111827;
+  --text-muted: #64748B;
+  --accent: #5E6AD2;
+  --accent-secondary: #0052FF;
+  --accent-glow: rgba(94, 106, 210, 0.15);
 
-  /* Light Mode — Apple Off-White "Quiet Luxury" */
-  --bg-primary: #FBFBFD;
-  --card-bg: rgba(255, 255, 255, 0.8);
-  --border-subtle: rgba(161, 161, 170, 0.2);
-  --text-primary: #1D1D1F;
-  --text-secondary: #71717A;
-  --accent-primary: #6366F1;
-  --accent-highlight: #6366F1;
-
-  --bg-app: #FBFBFD;
-  --bg-surface: rgba(255, 255, 255, 0.8);
-  --border-soft: rgba(161, 161, 170, 0.2);
-  --text-muted: #71717A;
-  --accent-glow: #6366F1;
+  /* Legacy Bridge Tokens */
+  --bg-primary: var(--bg-canvas);
+  --bg-app: var(--bg-canvas);
+  --bg: var(--bg-canvas);
+  --card-bg: var(--bg-surface);
+  --surface: var(--bg-surface);
+  --surface-solid: #FFFFFF;
+  --surface-border: var(--border-subtle);
+  --border: var(--border-subtle);
+  --border-soft: var(--border-subtle);
+  --text-secondary: var(--text-muted);
+  --accent-primary: var(--accent);
+  --accent-highlight: var(--accent-secondary);
   --accent-profit: #10B981;
   --accent-loss: #EF4444;
-
-  --bg: #FBFBFD;
-  --surface: rgba(255, 255, 255, 0.8);
-  --surface-solid: #FFFFFF;
-  --surface-border: rgba(161, 161, 170, 0.2);
-  --border: rgba(161, 161, 170, 0.2);
-  --accent: #6366F1;
-  --profit-green: #10B981;
-  --loss-red: #EF4444;
-  --bg-canvas: #FBFBFD;
-  --ink-main: #1D1D1F;
-
-  --theme-shadow: 0 4px 20px rgba(99, 102, 241, 0.06);
-  --theme-card-shadow: 0 4px 16px -2px rgba(0, 0, 0, 0.04);
-  --theme-card-hover-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.08), 0 0 20px rgba(99, 102, 241, 0.06);
 }
 
-:root.dark,
-.dark,
-html.dark,
-[data-theme="dark"] {
-  /* Dark Mode — Deep Obsidian "Quiet Luxury" */
-  --bg-primary: #09090B;
-  --card-bg: rgba(24, 24, 27, 0.8);
-  --border-subtle: rgba(255, 255, 255, 0.08);
-  --text-primary: #F5F5F7;
-  --text-secondary: #A1A1AA;
-  --accent-primary: #818CF8;
-  --accent-highlight: #818CF8;
+.dark {
+  /* Dark Theme: Linear / Deep Space Ambient */
+  --bg-canvas: #050506;
+  --bg-surface: rgba(255, 255, 255, 0.04);
+  --bg-surface-hover: rgba(255, 255, 255, 0.07);
+  --border-subtle: rgba(255, 255, 255, 0.07);
+  --border-hover: rgba(255, 255, 255, 0.15);
+  --text-primary: #EDEDEF;
+  --text-muted: #8A8F98;
+  --accent: #5E6AD2;
+  --accent-secondary: #7C86FF;
+  --accent-glow: rgba(94, 106, 210, 0.35);
 
-  --bg-app: #09090B;
-  --bg-surface: rgba(24, 24, 27, 0.8);
-  --border-soft: rgba(255, 255, 255, 0.08);
-  --text-muted: #A1A1AA;
-  --accent-glow: #818CF8;
-  --accent-profit: #34D399;
-  --accent-loss: #F87171;
-
-  --bg: #09090B;
-  --surface: rgba(24, 24, 27, 0.8);
-  --surface-solid: #18181B;
-  --surface-border: rgba(255, 255, 255, 0.08);
-  --border: rgba(255, 255, 255, 0.08);
-  --accent: #818CF8;
-  --profit-green: #34D399;
-  --loss-red: #F87171;
-  --bg-canvas: #09090B;
-  --ink-main: #F5F5F7;
-
-  --theme-shadow: 0 0 25px rgba(129, 140, 248, 0.08);
-  --theme-card-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.5);
-  --theme-card-hover-shadow: 0 8px 30px rgba(0, 0, 0, 0.6), 0 0 20px rgba(129, 140, 248, 0.1);
+  /* Legacy Bridge Tokens */
+  --bg-primary: var(--bg-canvas);
+  --bg-app: var(--bg-canvas);
+  --bg: var(--bg-canvas);
+  --card-bg: var(--bg-surface);
+  --surface: var(--bg-surface);
+  --surface-solid: #0A0A0C;
+  --surface-border: var(--border-subtle);
+  --border: var(--border-subtle);
+  --border-soft: var(--border-subtle);
+  --text-secondary: var(--text-muted);
+  --accent-primary: var(--accent);
+  --accent-highlight: var(--accent-secondary);
+  --accent-profit: #00FF66;
+  --accent-loss: #FF3344;
 }
 
-html, body {
-  background: var(--bg-primary);
-  background-color: var(--bg-primary);
+body {
+  background-color: var(--bg-canvas);
   color: var(--text-primary);
+  transition: background-color 0.2s ease, color 0.2s ease;
   overflow-x: hidden;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
-@layer base {
-  /* Crisp optical kerning */
-  h1, h2, h3, .heading-display {
-    letter-spacing: -0.035em;
-    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
-    color: var(--text-primary);
-    font-family: 'Plus Jakarta Sans', 'Geist', sans-serif;
-    font-weight: 700;
-  }
-
-  /* Monospaced tabular alignment for all financial numbers and metrics */
-  .tabular-numbers, .tabular-nums, .metric-value, .ticker-price {
-    font-variant-numeric: tabular-nums;
-    letter-spacing: -0.02em;
-    font-family: var(--font-geist-mono), monospace;
-  }
-
-  h4, h5, h6 {
-    color: var(--text-primary);
-    font-family: 'Plus Jakarta Sans', 'Geist', sans-serif;
-    letter-spacing: -0.025em;
-    font-weight: 700;
-  }
-
-  p {
-    color: var(--text-secondary);
-  }
-
-  .font-editorial,
-  .font-serif {
-    font-family: 'Instrument Serif', Georgia, serif;
-    font-style: italic;
-  }
-
-  .font-jakarta {
-    font-family: 'Plus Jakarta Sans', sans-serif;
-  }
-
-  .font-mono {
-    font-family: var(--font-geist-mono), monospace;
-    font-variant-numeric: tabular-nums;
-  }
+/* Precision Typography */
+h1, h2, h3, .font-heading {
+  letter-spacing: -0.035em;
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
 }
 
-/* Custom Scrollbar Styles */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-  background: rgba(148, 163, 184, 0.2);
-  border-radius: 9999px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(148, 163, 184, 0.4);
-}
-
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
-}
-.no-scrollbar {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
+/* Monospaced Tabular Numbers for Financial Metrics & Tickers */
+.tabular-nums, .metric-value, .ticker-val {
+  font-variant-numeric: tabular-nums;
+  font-family: var(--font-geist-mono), monospace;
+  letter-spacing: -0.02em;
 }
