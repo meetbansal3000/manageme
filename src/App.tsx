@@ -603,12 +603,12 @@ export default function App() {
                 </ErrorBoundary>
               )}
               
-              {(activeTab === 'ledger' || activeTab === 'work') && (
+              {(activeTab === 'ledger' || activeTab === 'work' || activeTab === 'timesheet') && (
                 <ErrorBoundary
-                  fallbackTitle="Financial Ledger Notice"
-                  fallbackMessage="Unable to load Financial Ledger. Click retry to recover."
+                  fallbackTitle="Visa & Wage Ledger Notice"
+                  fallbackMessage="Unable to load Visa & Wage Ledger. Click retry to recover."
                 >
-                  <FinancialLedger userData={userData} updateData={updateData} />
+                  <VisaWageLedger />
                 </ErrorBoundary>
               )}
               
