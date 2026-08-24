@@ -1,12 +1,16 @@
 ---
-title: Multi-Region Trading Terminal
-tags: [finance, trading, valuation, charts]
-status: active
+title: Multi-Region Valuation Terminal
+tags: [trading, finance, valuation, charts]
 ---
 
-# 📈 Multi-Region Trading Terminal
+# 📈 Trading Terminal
 
-> [[00_ManageMe_MOC]] → Core Modules → Trading Terminal
+Connects to: [[00_ManageMe_MOC]] | [[Live_Tick_Chart]] | [[Order_Ticket]]
+
+- Regional discovery: US, UK, India, EU, SG markets.
+- Interactive Level-2 depth, volatility metrics, and live SVG tick charts.
+
+---
 
 ## Overview
 

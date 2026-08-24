@@ -1,12 +1,16 @@
 ---
-title: Cold Email & Recruiter CRM Suite
-tags: [outreach, email, networking]
-status: active
+title: Cold Email & Recruiter CRM
+tags: [outreach, networking, crm]
 ---
 
-# ✉️ Cold Email & Recruiter CRM Suite
+# ✉️ Cold Email Suite
 
-> [[00_ManageMe_MOC]] → Core Modules → Cold Email Suite
+Connects to: [[00_ManageMe_MOC]] | [[Security_Model]] | [[Recruiter_CRM]]
+
+- Recruiter contact management and AI networking template generation.
+- Human-in-the-loop pre-send review modal before drafting.
+
+---
 
 ## Overview
 
@@ -58,7 +62,7 @@ The AI generates emails following this structure:
 | LinkedIn | url | Profile link |
 | Last Contacted | date | Most recent outreach |
 | Status | enum | Not Contacted / Sent / Replied / Meeting |
-| Notes | text | Conversation notes |
+| Notes | text | Personal notes |
 
 ## Key Files
 

@@ -1,12 +1,16 @@
 ---
-title: Study Engine & CFA Level 1 Matrix
-tags: [study, cfa, durham, accounting]
-status: active
+title: Academic & CFA Study Engine
+tags: [study, cfa, durham, finance]
 ---
 
-# 🎓 Study Engine & CFA Level 1 Matrix
+# 📚 Study Engine
 
-> [[00_ManageMe_MOC]] → Core Modules → Study Engine
+Connects to: [[00_ManageMe_MOC]] | [[Durham_MSc_Modules]] | [[CFA_Level_1_Matrix]]
+
+- Durham MSc Accounting & Finance core module tracker.
+- Complete 10-topic CFA Level 1 revision matrix and weekly class timetable.
+
+---
 
 ## Overview
 

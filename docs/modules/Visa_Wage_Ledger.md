@@ -1,12 +1,16 @@
 ---
 title: UK Visa & Wage Compliance Ledger
 tags: [compliance, visa, timesheet, finance]
-status: active
 ---
 
-# 🇬🇧 UK Visa & Wage Compliance Ledger
+# 🇬🇧 Visa & Wage Ledger
 
-> [[00_ManageMe_MOC]] → Core Modules → Visa Wage Ledger
+Connects to: [[00_ManageMe_MOC]] | [[20_Hour_Work_Cap]] | [[Timesheet_Exporter]]
+
+- Legal 20-hour weekly student cap monitor with threshold warning banners.
+- Shift logger with gross wage calculations and CSV export.
+
+---
 
 ## Overview
 

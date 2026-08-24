@@ -1,12 +1,16 @@
 ---
-title: Career Vault & Pipeline CRM
-tags: [career, kanban, ai, recruitment]
-status: active
+title: Career Vault & Recruitment OS
+tags: [career, recruitment, ai, kanban]
 ---
 
-# 💼 Career Vault & Pipeline CRM
+# 🎯 Career Vault
 
-> [[00_ManageMe_MOC]] → Core Modules → Career Vault
+Connects to: [[00_ManageMe_MOC]] | [[API_Parse_JD]] | [[Interview_Copilot]] | [[Cover_Letter_Tailor]]
+
+- Multi-View Pipeline: Kanban board (*Potential -> Applied -> Interview -> Offer*) & dense Table View.
+- Ingestion: 1-Click Browser Bookmarklet & AI JD text parsing.
+
+---
 
 ## Overview
 
