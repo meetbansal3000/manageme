@@ -559,9 +559,17 @@ export default function App() {
                 <LandingPage onEnterApp={(target) => handleTabChange(target || 'news')} />
               )}
 
-              {activeTab === 'chat' && <ChatHubTab userData={userData} updateData={updateData} pendingShare={pendingShare} clearPendingShare={() => setPendingShare(null)} />}
+              {activeTab === 'chat' && (
+                <ErrorBoundary fallbackTitle="Chat Workspace Notice" fallbackMessage="The AI Chat Hub encountered an issue. Click retry to recover.">
+                  <ChatHubTab userData={userData} updateData={updateData} pendingShare={pendingShare} clearPendingShare={() => setPendingShare(null)} />
+                </ErrorBoundary>
+              )}
               
-              {activeTab === 'news' && <FinancialNewsTab userData={userData} updateData={updateData} />}
+              {activeTab === 'news' && (
+                <ErrorBoundary fallbackTitle="Financial News Notice" fallbackMessage="The Financial News Feed encountered an issue. Click retry to recover.">
+                  <FinancialNewsTab userData={userData} updateData={updateData} />
+                </ErrorBoundary>
+              )}
               
               {activeTab === 'jobs' && (
                 <ErrorBoundary
@@ -622,11 +630,13 @@ export default function App() {
               )}
               
               {(activeTab === 'travel' || activeTab === 'transit' || activeTab === 'places') && (
-                <TravelTripsTab 
-                  userData={userData} 
-                  updateData={updateData} 
-                  defaultView={activeTab === 'transit' ? 'transit' : activeTab === 'places' ? 'places' : 'trips'} 
-                />
+                <ErrorBoundary fallbackTitle="Travel & Transit Notice" fallbackMessage="The Travel & Transit planner encountered an issue. Click retry to recover.">
+                  <TravelTripsTab 
+                    userData={userData} 
+                    updateData={updateData} 
+                    defaultView={activeTab === 'transit' ? 'transit' : activeTab === 'places' ? 'places' : 'trips'} 
+                  />
+                </ErrorBoundary>
               )}
               
               {activeTab === 'resume' && (
@@ -638,7 +648,11 @@ export default function App() {
                 </ErrorBoundary>
               )}
               
-              {activeTab === 'metasuite' && <ExecutiveAiMetaSuiteTab />}
+              {activeTab === 'metasuite' && (
+                <ErrorBoundary fallbackTitle="AI Meta-Suite Notice" fallbackMessage="The Executive AI Meta-Suite encountered an issue. Click retry to recover.">
+                  <ExecutiveAiMetaSuiteTab />
+                </ErrorBoundary>
+              )}
               
               {activeTab === 'finance' && (
                 <ErrorBoundary
@@ -650,46 +664,47 @@ export default function App() {
               )}
               
               {activeTab === 'tasks' && (
-                <div className="space-y-8">
-                  <KeyNotesChecklistTab 
-                    notesSections={userData.notesSections || []}
-                    onToggleItem={(secId, itemId) => {
-                      const newSections = (userData.notesSections || []).map(sec => {
-                        if (sec.id === secId) {
-                          return {
-                            ...sec,
-                            items: (sec.items || []).map(item => item.id === itemId ? { ...item, completed: !item.completed } : item)
-                          };
-                        }
-                        return sec;
-                      });
-                      updateData({ notesSections: newSections });
-                    }}
-                    onUpdateNotesSections={(newSections) => {
-                      updateData({ notesSections: newSections });
-                    }}
-                    searchQuery={searchQuery}
-                    universalTasks={userData.universalTasks || []}
-                    onUpdateTasks={(tasks) => {
-                      updateData({ universalTasks: tasks });
-                    }}
-                  />
-                  <PriorityTrackerTab 
-                    priorityItems={userData.priorityItems || []}
-                    onUpdateStatus={(id, status) => {
-                      updateData({ priorityItems: (userData.priorityItems || []).map(p => p.id === id ? { ...p, status } : p) });
-                    }}
-                    onUpdateNotes={(id, nextAction, notes) => {
-                      updateData({ priorityItems: (userData.priorityItems || []).map(p => p.id === id ? { ...p, nextAction, notes } : p) });
-                    }}
-                    onAddNewApplication={() => setIsAddModalOpen(true)}
-                    searchQuery={searchQuery}
-                    selectedSector={selectedSector}
-                    userData={userData}
-                  />
-                  <ExtraItemsCard items={userData.extraItems || []} userData={userData} updateData={updateData} />
-
-                </div>
+                <ErrorBoundary fallbackTitle="Tasks & Checklist Notice" fallbackMessage="The Priority Tasks & Master Checklist encountered an issue. Click retry to recover.">
+                  <div className="space-y-8">
+                    <KeyNotesChecklistTab 
+                      notesSections={userData.notesSections || []}
+                      onToggleItem={(secId, itemId) => {
+                        const newSections = (userData.notesSections || []).map(sec => {
+                          if (sec.id === secId) {
+                            return {
+                              ...sec,
+                              items: (sec.items || []).map(item => item.id === itemId ? { ...item, completed: !item.completed } : item)
+                            };
+                          }
+                          return sec;
+                        });
+                        updateData({ notesSections: newSections });
+                      }}
+                      onUpdateNotesSections={(newSections) => {
+                        updateData({ notesSections: newSections });
+                      }}
+                      searchQuery={searchQuery}
+                      universalTasks={userData.universalTasks || []}
+                      onUpdateTasks={(tasks) => {
+                        updateData({ universalTasks: tasks });
+                      }}
+                    />
+                    <PriorityTrackerTab 
+                      priorityItems={userData.priorityItems || []}
+                      onUpdateStatus={(id, status) => {
+                        updateData({ priorityItems: (userData.priorityItems || []).map(p => p.id === id ? { ...p, status } : p) });
+                      }}
+                      onUpdateNotes={(id, nextAction, notes) => {
+                        updateData({ priorityItems: (userData.priorityItems || []).map(p => p.id === id ? { ...p, nextAction, notes } : p) });
+                      }}
+                      onAddNewApplication={() => setIsAddModalOpen(true)}
+                      searchQuery={searchQuery}
+                      selectedSector={selectedSector}
+                      userData={userData}
+                    />
+                    <ExtraItemsCard items={userData.extraItems || []} userData={userData} updateData={updateData} />
+                  </div>
+                </ErrorBoundary>
               )}
               
               {activeTab === 'skills' && (
