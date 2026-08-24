@@ -183,6 +183,7 @@
   },
   "active": "793e067bb6b35bba",
   "lastOpenFiles": [
+    "dist/assets/index-DYU4vn-F.css",
     "src/components/ThemeToggle.tsx",
     "src/components/theme/ThemeToggle.tsx",
     "dist/assets/index-DOVBXb5L.css",
@@ -193,7 +194,6 @@
     "node_modules/next-themes/dist/index.mjs",
     "node_modules/next-themes/dist/index.js",
     "node_modules/next-themes/dist/index.d.ts",
-    "node_modules/next-themes/dist/index.d.mts",
     "node_modules/next-themes/README.md",
     "node_modules/next-themes/license.md",
     "skills/ecc/skills/remotion-video-creation/SKILL.md",
