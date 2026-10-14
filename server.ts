@@ -5,6 +5,7 @@ import { createServer as createViteServer } from 'vite';
 import multer from 'multer';
 import { GoogleGenAI, Type, ThinkingLevel, Modality } from '@google/genai';
 import { getProvidersStatus, executeMultiModelChat } from './server/aiService';
+import { fetchLiveQuote, fetchMultipleLiveQuotes } from './server/marketQuoteService';
 import {
   validateEnvironment,
   securityHeadersMiddleware,
@@ -91,6 +92,63 @@ async function startServer() {
       res.json({ success: true, providers });
     } catch (e: any) {
       sendSafeError(res, 500, 'Unable to retrieve AI provider status.', e);
+    }
+  });
+
+  // Paper Trading & Live Market Quotes
+  app.post('/api/trade/validate-order', (req, res) => {
+    try {
+      const { symbol, orderSide, orderMode, orderType, quantity, limitPrice, triggerPrice, cashBalance, positions } = req.body || {};
+      const result = validateAndCalculatePaperTrade({
+        symbol: String(symbol || ''),
+        orderSide,
+        orderMode,
+        orderType,
+        quantity: Number(quantity),
+        limitPrice: limitPrice ? Number(limitPrice) : undefined,
+        triggerPrice: triggerPrice ? Number(triggerPrice) : undefined,
+        cashBalance: Number(cashBalance || 0),
+        positions: Array.isArray(positions) ? positions : []
+      });
+
+      if (!result.valid) {
+        return res.status(400).json({ success: false, error: result.error });
+      }
+
+      return res.status(200).json({ success: true, ...result });
+    } catch (err: any) {
+      return res.status(500).json({ success: false, error: err?.message || 'Trade validation failed' });
+    }
+  });
+
+  app.get('/api/market/quotes', async (req, res) => {
+    try {
+      const symbolsParam = (req.query.symbols as string) || '';
+      const symbolList = symbolsParam.split(',').map(s => s.trim()).filter(Boolean);
+      const quotes = await fetchMultipleLiveQuotes(symbolList);
+      res.json({ success: true, quotes });
+    } catch (err: any) {
+      res.status(500).json({ success: false, error: err?.message || 'Failed to fetch quotes' });
+    }
+  });
+
+  app.post('/api/market/quotes', async (req, res) => {
+    try {
+      const symbols = Array.isArray(req.body.symbols) ? req.body.symbols : [];
+      const quotes = await fetchMultipleLiveQuotes(symbols);
+      res.json({ success: true, quotes });
+    } catch (err: any) {
+      res.status(500).json({ success: false, error: err?.message || 'Failed to fetch quotes' });
+    }
+  });
+
+  app.get('/api/market/quote', async (req, res) => {
+    try {
+      const symbol = (req.query.symbol as string) || 'AAPL';
+      const quote = await fetchLiveQuote(symbol);
+      res.json({ success: true, quote });
+    } catch (err: any) {
+      res.status(500).json({ success: false, error: err?.message || 'Failed to fetch quote' });
     }
   });
 

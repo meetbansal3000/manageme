@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Activity, Settings, TrendingUp, TrendingDown, BarChart2 } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Activity, Settings, TrendingUp, TrendingDown, BarChart2, Radio } from 'lucide-react';
 import { LiveMarketData, VolatilityProfile } from '../hooks/useMarketEngine';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 
@@ -34,6 +34,7 @@ export const LiveMarketPanel: React.FC<Props> = ({
   setVolatility = () => {} 
 }) => {
   const [history, setHistory] = useState<any[]>([]);
+  const [flash, setFlash] = useState<'up' | 'down' | null>(null);
 
   const safePrice = Number(marketData?.currentPrice) || 100;
   const isUp = Boolean(marketData?.isUp);
@@ -42,13 +43,44 @@ export const LiveMarketPanel: React.FC<Props> = ({
   const bids = Array.isArray(marketData?.bids) ? marketData.bids : [];
   const asks = Array.isArray(marketData?.asks) ? marketData.asks : [];
 
+  const prevPriceRef = useRef(safePrice);
+
+  // Initialize or re-seed history when symbol changes
   useEffect(() => {
+    const sparkline = Array.isArray(asset?.sparkline) && asset.sparkline.length > 0 
+      ? asset.sparkline 
+      : [safePrice * 0.992, safePrice * 0.995, safePrice * 1.002, safePrice * 0.998, safePrice];
+    
+    const seeded = sparkline.map((p: number, idx: number) => ({
+      time: `T-${(sparkline.length - idx) * 3}s`,
+      price: Number(p)
+    }));
+
+    setHistory([...seeded, { time: new Date().toLocaleTimeString(), price: safePrice }]);
+    prevPriceRef.current = safePrice;
+  }, [symbol]);
+
+  // Flash animation & tick history update on price tick
+  useEffect(() => {
+    if (safePrice > prevPriceRef.current) {
+      setFlash('up');
+    } else if (safePrice < prevPriceRef.current) {
+      setFlash('down');
+    }
+    prevPriceRef.current = safePrice;
+
     setHistory(prev => {
       const newHistory = [...prev, { time: new Date().toLocaleTimeString(), price: safePrice }];
-      if (newHistory.length > 30) newHistory.shift();
+      if (newHistory.length > 35) newHistory.shift();
       return newHistory;
     });
+
+    const timer = setTimeout(() => setFlash(null), 900);
+    return () => clearTimeout(timer);
   }, [safePrice]);
+
+  const changeVal = Number(marketData?.change) || 0;
+  const changePct = Number(marketData?.changePercent) || 0;
 
   return (
     <div className="bg-surface border border-border rounded-2xl p-6 shadow-card-base space-y-6 transition-all duration-300 ease-out">
@@ -56,13 +88,20 @@ export const LiveMarketPanel: React.FC<Props> = ({
       {/* Header & Volatility Controls */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-border pb-4">
         <div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="relative flex h-2.5 w-2.5">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-profitGreen opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-profitGreen"></span>
+            </span>
             <h2 className="text-xl font-extrabold text-textPrimary tracking-tight">{symbol} Live Market</h2>
             {asset?.region && (
               <span className="px-2.5 py-0.5 bg-actionBlue/10 text-actionBlue text-[10px] font-bold rounded-full border border-actionBlue/20 uppercase font-sans">
                 {asset.region} • {asset.exchange || 'EXCHANGE'}
               </span>
             )}
+            <span className={`px-2 py-0.5 text-[10px] font-mono font-bold rounded-full border ${isUp ? 'bg-profitGreen/10 text-profitGreen border-profitGreen/30' : 'bg-lossRed/10 text-lossRed border-lossRed/30'}`}>
+              {isUp ? '+' : ''}{changeVal.toFixed(2)} ({isUp ? '+' : ''}{changePct.toFixed(2)}%)
+            </span>
             {marketData?.volumeSpike && (
               <span className="px-2.5 py-0.5 bg-lossRed/10 text-lossRed text-[10px] font-bold rounded-full border border-lossRed/30 animate-pulse uppercase">
                 Vol Spike
@@ -73,6 +112,10 @@ export const LiveMarketPanel: React.FC<Props> = ({
             <span>VIX Est: {(Number(marketData?.vixEstimate) || 15).toFixed(1)}</span>
             <span>•</span>
             <span>Spread: {currency}{(Number(marketData?.spread) || 0).toFixed(4)}</span>
+            <span>•</span>
+            <span className="text-profitGreen flex items-center gap-1 font-sans text-[11px]">
+              <Radio className="w-3 h-3 animate-pulse" /> Live Mirroring Active
+            </span>
           </p>
         </div>
         
@@ -98,33 +141,48 @@ export const LiveMarketPanel: React.FC<Props> = ({
 
       {/* Metrics Row */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="bg-surface-elevated p-4 rounded-xl border border-border font-mono tabular-nums transition-all duration-300 ease-out hover:-translate-y-0.5 shadow-card-base hover:shadow-card-hover">
-          <div className="text-textMuted text-[10px] font-bold uppercase tracking-wider mb-1 font-sans">LTP</div>
-          <div className={`text-lg font-extrabold flex items-center gap-1 ${isUp ? 'text-profitGreen' : 'text-lossRed'}`}>
+        <div className={`p-4 rounded-xl border font-mono tabular-nums transition-all duration-300 ease-out hover:-translate-y-0.5 shadow-card-base ${
+          flash === 'up' 
+            ? 'bg-profitGreen/15 border-profitGreen/60 ring-2 ring-profitGreen/30' 
+            : flash === 'down' 
+              ? 'bg-lossRed/15 border-lossRed/60 ring-2 ring-lossRed/30' 
+              : 'bg-surface-elevated border-border'
+        }`}>
+          <div className="text-textMuted text-[10px] font-bold uppercase tracking-wider mb-1 font-sans flex justify-between items-center">
+            <span>Last Traded Price</span>
+            <span className="text-[9px] px-1.5 py-0.2 rounded bg-surface border border-border text-actionBlue font-mono">LIVE</span>
+          </div>
+          <div className={`text-xl font-extrabold flex items-center gap-1.5 ${isUp ? 'text-profitGreen' : 'text-lossRed'}`}>
             {currency}{safePrice.toFixed(2)}
             {isUp ? <TrendingUp className="w-4 h-4"/> : <TrendingDown className="w-4 h-4"/>}
           </div>
         </div>
+
         <div className="bg-surface-elevated p-4 rounded-xl border border-border font-mono tabular-nums transition-all duration-300 ease-out hover:-translate-y-0.5 shadow-card-base hover:shadow-card-hover">
           <div className="text-textMuted text-[10px] font-bold uppercase tracking-wider mb-1 font-sans">24h High</div>
-          <div className="text-lg font-extrabold text-textPrimary">{currency}{(Number(marketData?.high24h) || safePrice * 1.01).toFixed(2)}</div>
+          <div className="text-xl font-extrabold text-textPrimary">{currency}{(Number(marketData?.high24h) || safePrice * 1.01).toFixed(2)}</div>
         </div>
+
         <div className="bg-surface-elevated p-4 rounded-xl border border-border font-mono tabular-nums transition-all duration-300 ease-out hover:-translate-y-0.5 shadow-card-base hover:shadow-card-hover">
           <div className="text-textMuted text-[10px] font-bold uppercase tracking-wider mb-1 font-sans">24h Low</div>
-          <div className="text-lg font-extrabold text-textPrimary">{currency}{(Number(marketData?.low24h) || safePrice * 0.99).toFixed(2)}</div>
+          <div className="text-xl font-extrabold text-textPrimary">{currency}{(Number(marketData?.low24h) || safePrice * 0.99).toFixed(2)}</div>
         </div>
+
         <div className="bg-surface-elevated p-4 rounded-xl border border-border font-mono tabular-nums transition-all duration-300 ease-out hover:-translate-y-0.5 shadow-card-base hover:shadow-card-hover">
-          <div className="text-textMuted text-[10px] font-bold uppercase tracking-wider mb-1 font-sans">ATR</div>
-          <div className="text-lg font-extrabold text-textPrimary">{currency}{(Number(marketData?.atr) || 0.05).toFixed(4)}</div>
+          <div className="text-textMuted text-[10px] font-bold uppercase tracking-wider mb-1 font-sans">ATR (True Range)</div>
+          <div className="text-xl font-extrabold text-textPrimary">{currency}{(Number(marketData?.atr) || 0.05).toFixed(4)}</div>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full">
         {/* Tick Chart */}
         <div className="bg-surface-elevated border border-border rounded-xl p-4 flex flex-col min-h-[320px] shadow-card-base w-full min-w-0">
-          <h3 className="text-xs font-bold text-textMuted uppercase tracking-wider mb-4 flex items-center gap-2 font-mono">
-            <Activity className="w-4 h-4 text-actionBlue"/> Live Tick Chart
-          </h3>
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-xs font-bold text-textMuted uppercase tracking-wider flex items-center gap-2 font-mono">
+              <Activity className="w-4 h-4 text-actionBlue"/> Real-Time Tick Stream
+            </h3>
+            <span className="text-[10px] font-mono text-textMuted">Sub-second executions</span>
+          </div>
           <div className="flex-1 w-full min-w-0 min-h-[220px] h-[250px] relative">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={history} margin={{ top: 5, right: 5, left: 5, bottom: 5 }}>
@@ -139,6 +197,7 @@ export const LiveMarketPanel: React.FC<Props> = ({
                 <Tooltip 
                   contentStyle={{ backgroundColor: 'var(--color-surface)', borderColor: 'var(--color-border)', color: 'var(--color-text-primary)', fontSize: '12px', borderRadius: '12px' }}
                   itemStyle={{ color: isUp ? "#00FF66" : "#FF3B30" }}
+                  formatter={(val: any) => [`${currency}${Number(val).toFixed(2)}`, 'LTP']}
                 />
                 <Area 
                   type="monotone" 
@@ -156,9 +215,12 @@ export const LiveMarketPanel: React.FC<Props> = ({
 
         {/* Level 2 Order Book */}
         <div className="bg-surface-elevated border border-border rounded-xl p-4 flex flex-col shadow-card-base">
-          <h3 className="text-xs font-bold text-textMuted uppercase tracking-wider mb-4 flex items-center gap-2 font-mono">
-            <BarChart2 className="w-4 h-4 text-actionBlue"/> Market Depth (Level 2)
-          </h3>
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-xs font-bold text-textMuted uppercase tracking-wider flex items-center gap-2 font-mono">
+              <BarChart2 className="w-4 h-4 text-actionBlue"/> Market Depth (Level 2)
+            </h3>
+            <span className="text-[10px] font-mono text-textMuted">5-Tier Depth</span>
+          </div>
           
           <div className="flex flex-col gap-1 w-full text-xs flex-1">
             <div className="flex justify-between text-textMuted font-semibold mb-2 uppercase text-[10px] tracking-wider px-1 font-mono">
@@ -198,9 +260,9 @@ export const LiveMarketPanel: React.FC<Props> = ({
               })}
             </div>
             <div className="mt-4 pt-4 border-t border-border flex justify-between text-[10px] text-textMuted font-mono tabular-nums">
-              <div>Total Bid: {bids.reduce((a,b)=> a + (Number(b?.volume) || 0), 0)}</div>
+              <div>Total Bid: {bids.reduce((a, b) => a + (Number(b?.volume) || 0), 0)}</div>
               <div>Spread: {(((Number(marketData?.spread) || 0) / (safePrice || 1)) * 100).toFixed(3)}%</div>
-              <div>Total Ask: {asks.reduce((a,b)=> a + (Number(b?.volume) || 0), 0)}</div>
+              <div>Total Ask: {asks.reduce((a, b) => a + (Number(b?.volume) || 0), 0)}</div>
             </div>
           </div>
         </div>

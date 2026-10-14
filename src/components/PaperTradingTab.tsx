@@ -36,7 +36,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useScrollLock } from '../hooks/useScrollLock';
 import { useMarketEngine } from '../hooks/useMarketEngine';
 import { useWatchlist, WatchlistItem } from '../hooks/useWatchlist';
-import { Star, Globe, Eye, Sparkles as SparklesIcon, Plus, Check } from 'lucide-react';
+import { useLiveMarketPrices } from '../hooks/useLiveMarketPrices';
+import { useToast } from '../context/ToastContext';
+import { Star, Globe, Eye, Sparkles as SparklesIcon, Plus, Check, RefreshCw, Radio, Wifi } from 'lucide-react';
 
 // --- MULTI-REGION CONFIGURATION ---
 export type MarketRegion = 'US' | 'India' | 'UK' | 'EU' | 'Singapore';
@@ -196,7 +198,34 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
 
   useScrollLock(!!activeModule);
 
-  const { marketData, volatility, setVolatility } = useMarketEngine(selectedAsset?.price || 100, selectedAsset?.symbol || 'AAPL');
+  const { showToast } = useToast();
+
+  // Multi-Asset Live Market Feeds & Order-Book Stream
+  const allSymbols = useMemo(() => {
+    const list = [
+      ...GLOBAL_ASSETS.map(a => a.symbol),
+      ...(watchlist || []).map(w => w.symbol),
+      ...(userData?.paperTrading?.positions || []).map(p => p.symbol),
+      selectedAsset?.symbol
+    ];
+    return Array.from(new Set(list)).filter(Boolean) as string[];
+  }, [watchlist, userData?.paperTrading?.positions, selectedAsset?.symbol]);
+
+  const {
+    liveQuotes,
+    tickDirections,
+    isConnected,
+    lastRefreshed,
+    isRefreshing,
+    refreshQuotes,
+    getLivePrice,
+    getLiveQuote
+  } = useLiveMarketPrices(allSymbols);
+
+  const currentLiveQuote = getLiveQuote(selectedAsset?.symbol || 'AAPL');
+  const baseLivePrice = currentLiveQuote?.price ?? (selectedAsset?.price || 100);
+
+  const { marketData, volatility, setVolatility } = useMarketEngine(baseLivePrice, selectedAsset?.symbol || 'AAPL');
 
   // Helper to check if ticker is in watchlist
   const isMonitored = (symbol: string) => (watchlist || []).some(w => w.symbol === symbol);
@@ -265,7 +294,7 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
 
   const calculatePortfolioValue = () => {
     const positionsValue = (tradingData.positions || []).reduce((acc, pos) => {
-      const p = Number(pos?.currentPrice ?? pos?.averageEntryPrice ?? 0);
+      const p = getLivePrice(pos?.symbol, Number(pos?.currentPrice ?? pos?.averageEntryPrice ?? 0));
       const q = Number(pos?.quantity ?? 0);
       return acc + (p * q);
     }, 0);
@@ -276,7 +305,7 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
   const startingCap = tradingData.startingCapital || 100000;
   const totalReturn = ((totalValue - startingCap) / startingCap) * 100;
   const unrealizedPnL = (tradingData.positions || []).reduce((acc, pos) => {
-    const curr = Number(pos?.currentPrice ?? pos?.averageEntryPrice ?? 0);
+    const curr = getLivePrice(pos?.symbol, Number(pos?.currentPrice ?? pos?.averageEntryPrice ?? 0));
     const avg = Number(pos?.averageEntryPrice ?? 0);
     const q = Number(pos?.quantity ?? 0);
     return acc + ((curr - avg) * q);
@@ -285,9 +314,9 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
   // Asset allocation breakdown
   const allocation = useMemo(() => {
     const validPositions = tradingData.positions || [];
-    const equitiesVal = validPositions.filter(p => p?.assetClass === 'Stock').reduce((acc, p) => acc + ((Number(p?.currentPrice) || Number(p?.averageEntryPrice) || 0) * (Number(p?.quantity) || 0)), 0);
-    const etfVal = validPositions.filter(p => p?.assetClass === 'ETF').reduce((acc, p) => acc + ((Number(p?.currentPrice) || Number(p?.averageEntryPrice) || 0) * (Number(p?.quantity) || 0)), 0);
-    const commodityVal = validPositions.filter(p => p?.assetClass === 'Commodity').reduce((acc, p) => acc + ((Number(p?.currentPrice) || Number(p?.averageEntryPrice) || 0) * (Number(p?.quantity) || 0)), 0);
+    const equitiesVal = validPositions.filter(p => p?.assetClass === 'Stock').reduce((acc, p) => acc + (getLivePrice(p?.symbol, Number(p?.currentPrice) || Number(p?.averageEntryPrice) || 0) * (Number(p?.quantity) || 0)), 0);
+    const etfVal = validPositions.filter(p => p?.assetClass === 'ETF').reduce((acc, p) => acc + (getLivePrice(p?.symbol, Number(p?.currentPrice) || Number(p?.averageEntryPrice) || 0) * (Number(p?.quantity) || 0)), 0);
+    const commodityVal = validPositions.filter(p => p?.assetClass === 'Commodity').reduce((acc, p) => acc + (getLivePrice(p?.symbol, Number(p?.currentPrice) || Number(p?.averageEntryPrice) || 0) * (Number(p?.quantity) || 0)), 0);
     const cashVal = tradingData.cashBalance;
 
     return {
@@ -300,7 +329,7 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
       commodityVal,
       cashVal
     };
-  }, [tradingData.positions, tradingData.cashBalance, totalValue]);
+  }, [tradingData.positions, tradingData.cashBalance, totalValue, liveQuotes]);
 
   // Regional Filtered Assets
   const regionalAssets = useMemo(() => {
@@ -323,15 +352,24 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
     return watchlist.filter(w => (w.region || 'US') === watchlistFilter);
   }, [watchlist, watchlistFilter]);
 
-  const handleExecuteTrade = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleExecuteTrade = async (e?: React.FormEvent, explicitSide?: 'Buy' | 'Sell') => {
+    if (e && typeof e.preventDefault === 'function') e.preventDefault();
+    const side = explicitSide || orderSide;
     if (!selectedAsset || !quantity) return;
 
     const qty = Math.floor(Number(quantity));
     if (isNaN(qty) || qty <= 0) {
-      alert("Order quantity must be a positive integer.");
+      if (showToast) showToast("Order quantity must be a positive integer.", "warning");
+      else alert("Order quantity must be a positive integer.");
       return;
     }
+
+    const price = orderMode === 'Market' 
+      ? (Number(marketData?.currentPrice) || baseLivePrice) 
+      : Number(limitPrice || marketData?.currentPrice || baseLivePrice);
+    const gross = price * qty;
+    const fee = Number(Math.max(1.00, gross * 0.001).toFixed(2));
+    const totalCost = Number((gross + fee).toFixed(2));
 
     try {
       // 1. Validate & calculate execution costs, margins, and fees server-side
@@ -340,7 +378,7 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           symbol: selectedAsset.symbol,
-          orderSide,
+          orderSide: side,
           orderMode,
           orderType,
           quantity: qty,
@@ -370,19 +408,23 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
           setQuantity(10);
           setLimitPrice('');
           setTriggerPrice('');
-          const execP = Number(resData.executionPrice) || (Number(marketData?.currentPrice) || 100);
-          const bFee = Number(resData.brokerFee) || 1.0;
-          alert(`Order Executed: ${orderSide} ${qty} ${selectedAsset.symbol} @ ${selectedAsset.currency || activeRegionConfig.currency}${execP.toFixed(2)} | Fee: ${selectedAsset.currency || activeRegionConfig.currency}${bFee.toFixed(2)}`);
+          const execP = Number(resData.executionPrice) || price;
+          const bFee = Number(resData.brokerFee) || fee;
+          const msg = `Order Executed: ${side} ${qty} ${selectedAsset.symbol} @ ${selectedAsset.currency || activeRegionConfig.currency}${execP.toFixed(2)} | Fee: ${selectedAsset.currency || activeRegionConfig.currency}${bFee.toFixed(2)}`;
+          if (showToast) showToast(msg, side === 'Buy' ? 'success' : 'info', 4000);
+          else alert(msg);
           serverCommitted = true;
           return;
         } else if (resData && resData.error) {
-          alert(resData.error);
+          if (showToast) showToast(resData.error, 'warning');
+          else alert(resData.error);
           return;
         }
       } else if (response.status === 400) {
         const errJson = await response.json().catch(() => ({}));
         if (errJson?.error) {
-          alert(errJson.error);
+          if (showToast) showToast(errJson.error, 'warning');
+          else alert(errJson.error);
           return;
         }
       }
@@ -394,84 +436,88 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
     } catch (netErr) {
       console.warn("Trade validation network bypass:", netErr);
     }
-      // Offline fallback: enforce the same strict logic locally
-      const price = orderMode === 'Market' ? (Number(marketData?.currentPrice) || 100) : Number(limitPrice || marketData?.currentPrice || 100);
-      const gross = price * qty;
-      const fee = Number(Math.max(1.00, gross * 0.001).toFixed(2));
-      const totalCost = Number((gross + fee).toFixed(2));
 
-      if (orderSide === 'Buy' && totalCost > tradingData.cashBalance) {
-        alert(`Insufficient margin/cash balance. Required: ${selectedAsset.currency || activeRegionConfig.currency}${totalCost.toFixed(2)}, Available: ${selectedAsset.currency || activeRegionConfig.currency}${tradingData.cashBalance.toFixed(2)}`);
-        return;
-      }
+    // Offline fallback: enforce the same strict logic locally
+    if (side === 'Buy' && totalCost > tradingData.cashBalance) {
+      const errMsg = `Insufficient margin/cash balance. Required: ${selectedAsset.currency || activeRegionConfig.currency}${totalCost.toFixed(2)}, Available: ${selectedAsset.currency || activeRegionConfig.currency}${tradingData.cashBalance.toFixed(2)}`;
+      if (showToast) showToast(errMsg, 'warning');
+      else alert(errMsg);
+      return;
+    }
 
-      const newTrade: TradeOrder = {
-        id: Date.now().toString(),
-        symbol: selectedAsset.symbol,
-        type: orderMode as any,
-        side: orderSide,
-        quantity: qty,
-        executionPrice: price,
-        status: 'Executed',
-        timestamp: Date.now()
-      };
+    const newTrade: TradeOrder = {
+      id: Date.now().toString(),
+      symbol: selectedAsset.symbol,
+      type: orderMode as any,
+      side,
+      quantity: qty,
+      executionPrice: price,
+      status: 'Executed',
+      timestamp: Date.now()
+    };
 
-      let newPositions = [...tradingData.positions];
-      const existingIdx = newPositions.findIndex(p => p.symbol === selectedAsset.symbol);
-      let newBalance = tradingData.cashBalance;
+    let newPositions = [...tradingData.positions];
+    const existingIdx = newPositions.findIndex(p => p.symbol === selectedAsset.symbol);
+    let newBalance = tradingData.cashBalance;
 
-      if (orderSide === 'Buy') {
-        newBalance -= totalCost;
-        if (existingIdx >= 0) {
-          const p = newPositions[existingIdx];
-          const newTotalCost = ((Number(p.averageEntryPrice) || 0) * (Number(p.quantity) || 0)) + gross;
-          const newQty = (Number(p.quantity) || 0) + qty;
-          newPositions[existingIdx] = { ...p, quantity: newQty, averageEntryPrice: newTotalCost / (newQty || 1), currentPrice: price };
-        } else {
-          newPositions.push({
-            id: Date.now().toString(),
-            symbol: selectedAsset.symbol,
-            name: selectedAsset.name,
-            assetClass: selectedAsset.type === 'COMMODITY' ? 'Commodity' : selectedAsset.type === 'ETF' ? 'ETF' : 'Stock',
-            quantity: qty,
-            averageEntryPrice: price,
-            currentPrice: price
-          });
-        }
-      } else {
-        if (existingIdx < 0) {
-          alert("You do not own this asset.");
-          return;
-        }
+    if (side === 'Buy') {
+      newBalance -= totalCost;
+      if (existingIdx >= 0) {
         const p = newPositions[existingIdx];
-        if (p.quantity < qty) {
-          alert("Insufficient quantity to sell.");
-          return;
-        }
-        newBalance += (gross - fee);
-        if (p.quantity === qty) {
-          newPositions.splice(existingIdx, 1);
-        } else {
-          newPositions[existingIdx] = { ...p, quantity: p.quantity - qty, currentPrice: price };
-        }
-      }
-
-      if (updateData) {
-        updateData({
-          paperTrading: {
-            ...tradingData,
-            cashBalance: Number(newBalance.toFixed(2)),
-            positions: newPositions,
-            tradeHistory: [newTrade, ...tradingData.tradeHistory]
-          }
+        const newTotalCost = ((Number(p.averageEntryPrice) || 0) * (Number(p.quantity) || 0)) + gross;
+        const newQty = (Number(p.quantity) || 0) + qty;
+        newPositions[existingIdx] = { ...p, quantity: newQty, averageEntryPrice: newTotalCost / (newQty || 1), currentPrice: price };
+      } else {
+        newPositions.push({
+          id: Date.now().toString(),
+          symbol: selectedAsset.symbol,
+          name: selectedAsset.name,
+          assetClass: selectedAsset.type === 'COMMODITY' ? 'Commodity' : selectedAsset.type === 'ETF' ? 'ETF' : 'Stock',
+          quantity: qty,
+          averageEntryPrice: price,
+          currentPrice: price
         });
       }
+    } else {
+      if (existingIdx < 0) {
+        const errMsg = "You do not own this asset.";
+        if (showToast) showToast(errMsg, 'warning');
+        else alert(errMsg);
+        return;
+      }
+      const p = newPositions[existingIdx];
+      if (p.quantity < qty) {
+        const errMsg = `Insufficient quantity to sell. You own ${p.quantity} shares.`;
+        if (showToast) showToast(errMsg, 'warning');
+        else alert(errMsg);
+        return;
+      }
+      const proceeds = (price * qty) - fee;
+      newBalance += proceeds;
+      if (p.quantity === qty) {
+        newPositions.splice(existingIdx, 1);
+      } else {
+        newPositions[existingIdx] = { ...p, quantity: p.quantity - qty, currentPrice: price };
+      }
+    }
 
-      setQuantity(10);
-      setLimitPrice('');
-      setTriggerPrice('');
-      alert(`Order Executed (Local Offline): ${orderSide} ${qty} ${selectedAsset.symbol} @ ${selectedAsset.currency || activeRegionConfig.currency}${price.toFixed(2)}`);
-    
+    if (updateData) {
+      updateData({
+        paperTrading: {
+          ...tradingData,
+          cashBalance: Number(newBalance.toFixed(2)),
+          positions: newPositions,
+          tradeHistory: [newTrade, ...tradingData.tradeHistory]
+        }
+      });
+    }
+
+    setQuantity(10);
+    setLimitPrice('');
+    setTriggerPrice('');
+    const execMsg = `Order Executed: ${side} ${qty} ${selectedAsset.symbol} @ ${selectedAsset.currency || activeRegionConfig.currency}${price.toFixed(2)}`;
+    if (showToast) showToast(execMsg, side === 'Buy' ? 'success' : 'info', 4000);
+    else alert(execMsg);
   };
 
   const handleClearTradeHistory = () => {
@@ -512,7 +558,37 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
         />
       )}
 
-      {/* Header & Mode Switcher */}
+      {/* Live Market Mirror Status Bar */}
+      <div className="flex flex-wrap items-center justify-between gap-3 bg-surface-elevated/80 backdrop-blur-md border border-border px-4 py-2.5 rounded-2xl font-mono text-xs shadow-xs">
+        <div className="flex items-center gap-2.5">
+          <span className="relative flex h-2.5 w-2.5">
+            <span className={`animate-ping absolute inline-flex h-full w-full rounded-full ${isConnected ? 'bg-profitGreen opacity-75' : 'bg-lossRed opacity-75'}`}></span>
+            <span className={`relative inline-flex rounded-full h-2.5 w-2.5 ${isConnected ? 'bg-profitGreen' : 'bg-lossRed'}`}></span>
+          </span>
+          <span className="font-bold text-textPrimary text-xs font-sans flex items-center gap-1.5">
+            <Radio className="w-3.5 h-3.5 text-actionBlue animate-pulse" />
+            {isConnected ? 'Real-Time Market Mirror Active' : 'Connecting Market Stream...'}
+          </span>
+          <span className="text-[10px] text-textMuted hidden md:inline font-sans">
+            • Yahoo Finance Live Quotes & Sub-Second Order-Book Simulation
+          </span>
+        </div>
+        <div className="flex items-center gap-3">
+          <span className="text-[10px] text-textMuted">
+            Refreshed: {lastRefreshed.toLocaleTimeString()}
+          </span>
+          <button
+            type="button"
+            onClick={() => refreshQuotes()}
+            disabled={isRefreshing}
+            className="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-surface border border-border hover:border-actionBlue/40 text-textMuted hover:text-textPrimary transition-all cursor-pointer active:scale-95 disabled:opacity-50 font-sans font-bold text-[11px] shadow-xs"
+          >
+            <RefreshCw className={`w-3 h-3 text-actionBlue ${isRefreshing ? 'animate-spin' : ''}`} />
+            <span>{isRefreshing ? 'Fetching...' : 'Refresh Quotes'}</span>
+          </button>
+        </div>
+      </div>
+
       {/* Top Banner / Header & View Switcher */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-surface border border-border p-5 sm:p-6 rounded-2xl shadow-card-base transition-all duration-300 ease-out">
         <div>
@@ -679,8 +755,18 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
                             </div>
                             <div className="flex items-center gap-3">
                               <div className="text-right font-mono tabular-nums">
-                                <div className="font-semibold text-textPrimary text-xs">{asset.currency}{(Number(asset.price) || 0).toFixed(2)}</div>
-                                <div className={`text-[10px] font-bold ${asset.isUp ? 'text-profitGreen' : 'text-lossRed'}`}>{asset.change}</div>
+                                {(() => {
+                                  const lp = getLivePrice(asset.symbol, asset.price);
+                                  const lq = getLiveQuote(asset.symbol);
+                                  const isPos = lq ? lq.isUp : asset.isUp;
+                                  const chg = lq ? `${isPos ? '+' : ''}${lq.changePercent}%` : asset.change;
+                                  return (
+                                    <>
+                                      <div className="font-semibold text-textPrimary text-xs">{asset.currency}{lp.toFixed(2)}</div>
+                                      <div className={`text-[10px] font-bold ${isPos ? 'text-profitGreen' : 'text-lossRed'}`}>{chg}</div>
+                                    </>
+                                  );
+                                })()}
                               </div>
                               <button
                                 type="button"
@@ -701,20 +787,28 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
               {/* QUICK ASSET CHIPS (Selected Region) */}
               <div className="flex items-center gap-1.5 overflow-x-auto pb-3 mb-2 custom-scrollbar">
                 <span className="text-[10px] font-mono text-textMuted uppercase font-bold shrink-0">Hot:</span>
-                {regionalAssets.slice(0, 5).map(asset => (
-                  <button
-                    key={asset.symbol}
-                    onClick={() => { setSelectedAsset(asset); }}
-                    className={`px-3 py-1 rounded-xl text-[11px] font-mono tabular-nums font-bold shrink-0 transition-all duration-300 ease-out cursor-pointer flex items-center gap-1.5 active:scale-95 border ${
-                      selectedAsset?.symbol === asset.symbol
-                        ? 'bg-accentPrimary text-background border-transparent shadow-xs'
-                        : 'bg-surface-elevated border-border text-textPrimary hover:border-actionBlue/40'
-                    }`}
-                  >
-                    <span>{asset.symbol}</span>
-                    <span className="text-[9px] opacity-80">{asset.currency}{(Number(asset.price) || 0).toFixed(0)}</span>
-                  </button>
-                ))}
+                {regionalAssets.slice(0, 6).map(asset => {
+                  const liveP = getLivePrice(asset.symbol, asset.price);
+                  const tick = tickDirections[asset.symbol];
+                  return (
+                    <button
+                      key={asset.symbol}
+                      onClick={() => { setSelectedAsset(asset); }}
+                      className={`px-3 py-1 rounded-xl text-[11px] font-mono tabular-nums font-bold shrink-0 transition-all duration-300 ease-out cursor-pointer flex items-center gap-1.5 active:scale-95 border ${
+                        selectedAsset?.symbol === asset.symbol
+                          ? 'bg-accentPrimary text-background border-transparent shadow-xs'
+                          : tick === 'up'
+                            ? 'bg-profitGreen/20 border-profitGreen/50 text-profitGreen'
+                            : tick === 'down'
+                              ? 'bg-lossRed/20 border-lossRed/50 text-lossRed'
+                              : 'bg-surface-elevated border-border text-textPrimary hover:border-actionBlue/40'
+                      }`}
+                    >
+                      <span>{asset.symbol}</span>
+                      <span className="text-[9px] opacity-90">{asset.currency}{liveP.toFixed(liveP < 10 ? 2 : 0)}</span>
+                    </button>
+                  );
+                })}
               </div>
 
               {/* ORDER EXECUTION TICKET */}
@@ -773,7 +867,37 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
                   {/* Inputs */}
                   <div className="grid grid-cols-2 gap-3 font-mono tabular-nums text-xs">
                     <div>
-                      <label className="block text-textMuted mb-1 font-sans">Quantity</label>
+                      <div className="flex justify-between items-center mb-1 font-sans">
+                        <label className="text-textMuted">Quantity</label>
+                        <div className="flex items-center gap-1">
+                          {[10, 50, 100].map(v => (
+                            <button
+                              key={v}
+                              type="button"
+                              onClick={() => setQuantity(v)}
+                              className="px-1.5 py-0.2 rounded text-[9px] font-mono bg-surface border border-border text-textMuted hover:text-textPrimary hover:border-actionBlue/40 cursor-pointer active:scale-95"
+                            >
+                              +{v}
+                            </button>
+                          ))}
+                          <button
+                            type="button"
+                            onClick={() => {
+                              if (orderSide === 'Buy') {
+                                const p = orderMode === 'Market' ? (Number(marketData?.currentPrice) || baseLivePrice) : Number(limitPrice || baseLivePrice);
+                                const maxAffordable = Math.max(1, Math.floor((tradingData.cashBalance * 0.99) / (p || 1)));
+                                setQuantity(maxAffordable);
+                              } else {
+                                const existing = tradingData.positions.find(pos => pos.symbol === selectedAsset.symbol);
+                                setQuantity(Number(existing?.quantity) || 10);
+                              }
+                            }}
+                            className="px-1.5 py-0.2 rounded text-[9px] font-mono bg-actionBlue/10 border border-actionBlue/30 text-actionBlue font-bold hover:bg-actionBlue/20 cursor-pointer active:scale-95"
+                          >
+                            Max
+                          </button>
+                        </div>
+                      </div>
                       <input 
                         type="number" required min="1" value={quantity} onChange={e => setQuantity(Number(e.target.value))}
                         className="w-full bg-surface-elevated border border-border rounded-xl p-2.5 text-textPrimary font-bold focus:border-actionBlue focus:outline-none" 
@@ -805,15 +929,15 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
                   {/* Action Buttons */}
                   <div className="flex gap-3 pt-2">
                     <button 
-                      type="submit" 
-                      onClick={() => setOrderSide('Buy')} 
+                      type="button" 
+                      onClick={() => { setOrderSide('Buy'); handleExecuteTrade(undefined, 'Buy'); }} 
                       className="flex-1 py-3 bg-profitGreen hover:bg-profitGreen/90 text-black font-extrabold text-xs rounded-xl transition-all duration-300 ease-out cursor-pointer shadow-xs active:scale-95 hover:-translate-y-0.5"
                     >
                       BUY {selectedAsset.symbol}
                     </button>
                     <button 
-                      type="submit" 
-                      onClick={() => setOrderSide('Sell')} 
+                      type="button" 
+                      onClick={() => { setOrderSide('Sell'); handleExecuteTrade(undefined, 'Sell'); }} 
                       className="flex-1 py-3 bg-lossRed hover:bg-lossRed/90 text-white font-extrabold text-xs rounded-xl transition-all duration-300 ease-out cursor-pointer shadow-xs active:scale-95 hover:-translate-y-0.5"
                     >
                       SELL {selectedAsset.symbol}
@@ -886,16 +1010,24 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
               ) : (
                 <div className="space-y-2 max-h-72 overflow-y-auto custom-scrollbar pr-1">
                   {filteredWatchlist.map((item) => {
-                    const price = item.price || 100;
-                    const change = item.changePercent || item.change || 0;
-                    const isPositive = change >= 0;
+                    const price = getLivePrice(item.symbol, item.price || 100);
+                    const q = getLiveQuote(item.symbol);
+                    const change = q ? q.changePercent : (item.changePercent || item.change || 0);
+                    const isPositive = q ? q.isUp : (change >= 0);
                     const itemCurrency = item.currency || '$';
+                    const tick = tickDirections[item.symbol];
                     const points = [price * 0.985, price * 0.99, price * (isPositive ? 1.01 : 0.995), price * (isPositive ? 1.02 : 0.98), price];
 
                     return (
                       <div 
                         key={item.id}
-                        className="p-3 bg-surface-elevated hover:bg-surface border border-border hover:border-actionBlue/40 rounded-xl flex items-center justify-between transition-all duration-300 ease-out group hover:-translate-y-0.5 shadow-card-base hover:shadow-card-hover"
+                        className={`p-3 bg-surface-elevated hover:bg-surface border rounded-xl flex items-center justify-between transition-all duration-300 ease-out group hover:-translate-y-0.5 shadow-card-base hover:shadow-card-hover ${
+                          tick === 'up' 
+                            ? 'border-profitGreen/60 bg-profitGreen/10' 
+                            : tick === 'down' 
+                              ? 'border-lossRed/60 bg-lossRed/10' 
+                              : 'border-border hover:border-actionBlue/40'
+                        }`}
                       >
                         {/* Symbol & Name */}
                         <div className="min-w-0 pr-2">
@@ -1028,31 +1160,94 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
                             <th className="pb-3 px-2">Instrument</th>
                             <th className="pb-3 px-2 text-right">Qty</th>
                             <th className="pb-3 px-2 text-right">Avg Cost</th>
-                            <th className="pb-3 px-2 text-right">Current LTP</th>
+                            <th className="pb-3 px-2 text-right">Current LTP (Live)</th>
                             <th className="pb-3 px-2 text-right">Unrealized P&L</th>
+                            <th className="pb-3 px-2 text-right">Quick Trade</th>
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-border">
                           {tradingData.positions.map((pos) => {
                             const qty = Number(pos?.quantity) || 0;
                             const avgCost = Number(pos?.averageEntryPrice) || 0;
-                            const curPrice = Number(pos?.currentPrice) || avgCost;
+                            const curPrice = getLivePrice(pos.symbol, Number(pos?.currentPrice) || avgCost);
                             const invested = qty * avgCost;
                             const current = qty * curPrice;
                             const pnl = current - invested;
                             const pnlPct = invested > 0 ? (pnl / invested) * 100 : 0;
+                            const tickDir = tickDirections[pos.symbol];
+                            const assetMeta = GLOBAL_ASSETS.find(a => a.symbol === pos.symbol);
+                            const curSymbol = (pos as any)?.currency || assetMeta?.currency || '$';
                             return (
                               <tr key={pos.id} className="hover:bg-surface-elevated transition-colors">
                                 <td className="py-3 px-2">
-                                  <div className="font-bold text-textPrimary">{pos.symbol}</div>
-                                  <div className="text-[10px] text-textMuted">{pos.name} • {pos.assetClass}</div>
+                                  <div className="flex items-center space-x-2">
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        handleLoadIntoTicket(pos);
+                                        const ticketEl = document.getElementById('order-ticket-container');
+                                        if (ticketEl) ticketEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                      }}
+                                      className="font-bold text-textPrimary hover:text-actionBlue hover:underline text-left transition-colors cursor-pointer"
+                                      title="Click to load into Order Ticket"
+                                    >
+                                      {pos.symbol}
+                                    </button>
+                                    <span className="text-[9px] px-1 py-0.5 rounded bg-surface-muted border border-border text-textMuted font-sans">
+                                      {pos.assetClass || 'Stock'}
+                                    </span>
+                                  </div>
+                                  <div className="text-[10px] text-textMuted truncate max-w-[170px]">{pos.name}</div>
                                 </td>
-                                <td className="py-3 px-2 text-right text-textPrimary">{qty}</td>
-                                <td className="py-3 px-2 text-right text-textMuted">${avgCost.toFixed(2)}</td>
-                                <td className="py-3 px-2 text-right text-textPrimary font-bold">${curPrice.toFixed(2)}</td>
+                                <td className="py-3 px-2 text-right text-textPrimary font-semibold">{qty}</td>
+                                <td className="py-3 px-2 text-right text-textMuted">{curSymbol}{avgCost.toFixed(2)}</td>
+                                <td className="py-3 px-2 text-right font-bold">
+                                  <span className={`inline-flex items-center gap-1 transition-all duration-300 ${
+                                    tickDir === 'up' ? 'text-profitGreen drop-shadow-[0_0_8px_rgba(16,185,129,0.35)]' :
+                                    tickDir === 'down' ? 'text-lossRed drop-shadow-[0_0_8px_rgba(244,63,94,0.35)]' :
+                                    'text-textPrimary'
+                                  }`}>
+                                    {tickDir === 'up' && <span className="text-[10px]">▲</span>}
+                                    {tickDir === 'down' && <span className="text-[10px]">▼</span>}
+                                    {curSymbol}{curPrice.toFixed(2)}
+                                  </span>
+                                </td>
                                 <td className={`py-3 px-2 text-right font-bold ${pnl >= 0 ? 'text-profitGreen' : 'text-lossRed'}`}>
-                                  {pnl >= 0 ? '+' : ''}${pnl.toFixed(2)}
+                                  {pnl >= 0 ? '+' : ''}{curSymbol}{pnl.toFixed(2)}
                                   <span className="text-[10px] font-normal block">({pnl >= 0 ? '+' : ''}{pnlPct.toFixed(2)}%)</span>
+                                </td>
+                                <td className="py-3 px-2 text-right">
+                                  <div className="inline-flex items-center gap-1.5 justify-end">
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        handleLoadIntoTicket(pos);
+                                        setOrderSide('Buy');
+                                        if (showToast) showToast(`Loaded ${pos.symbol} to Buy`, 'info', 2000);
+                                        const ticketEl = document.getElementById('order-ticket-container');
+                                        if (ticketEl) ticketEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                      }}
+                                      className="px-2 py-1 rounded-md text-[10px] font-semibold bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 border border-emerald-500/30 transition-all hover:scale-105 active:scale-95 cursor-pointer"
+                                      title="Load into ticket to buy more"
+                                    >
+                                      + Buy
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        handleLoadIntoTicket(pos);
+                                        setOrderSide('Sell');
+                                        setQuantity(qty);
+                                        if (showToast) showToast(`Prepared Exit for ${pos.symbol} (${qty} shares)`, 'warning', 2500);
+                                        const ticketEl = document.getElementById('order-ticket-container');
+                                        if (ticketEl) ticketEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                      }}
+                                      className="px-2 py-1 rounded-md text-[10px] font-semibold bg-rose-500/10 text-rose-400 hover:bg-rose-500/20 border border-rose-500/30 transition-all hover:scale-105 active:scale-95 cursor-pointer"
+                                      title="Exit full position"
+                                    >
+                                      Exit
+                                    </button>
+                                  </div>
                                 </td>
                               </tr>
                             );
@@ -1218,46 +1413,57 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
                 <span className="text-[10px] font-mono text-textMuted">Live Mark-to-Market</span>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                {tradingData.positions.map(pos => {
-                  const qty = Number(pos?.quantity) || 0;
-                  const avgCost = Number(pos?.averageEntryPrice) || 0;
-                  const curPrice = Number(pos?.currentPrice) || avgCost;
-                  const invested = qty * avgCost;
-                  const current = qty * curPrice;
-                  const pnl = current - invested;
-                  const pnlPct = invested > 0 ? (pnl / invested) * 100 : 0;
-                  const isPositive = pnl >= 0;
+              {tradingData.positions.length === 0 ? (
+                <div className="py-8 text-center text-textMuted font-mono text-xs border border-dashed border-border rounded-xl">
+                  No active holdings to display in heatmap. Execute paper trades to view live performance.
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  {tradingData.positions.map(pos => {
+                    const qty = Number(pos?.quantity) || 0;
+                    const avgCost = Number(pos?.averageEntryPrice) || 0;
+                    const curPrice = getLivePrice(pos.symbol, Number(pos?.currentPrice) || avgCost);
+                    const invested = qty * avgCost;
+                    const current = qty * curPrice;
+                    const pnl = current - invested;
+                    const pnlPct = invested > 0 ? (pnl / invested) * 100 : 0;
+                    const isPositive = pnl >= 0;
+                    const tickDir = tickDirections[pos.symbol];
+                    const assetMeta = GLOBAL_ASSETS.find(a => a.symbol === pos.symbol);
+                    const curSymbol = (pos as any)?.currency || assetMeta?.currency || '$';
 
-                  return (
-                    <div 
-                      key={pos.id}
-                      className={`p-4 rounded-xl border transition-all duration-300 ease-out space-y-2 shadow-card-base hover:shadow-card-hover hover:-translate-y-0.5 ${
-                        isPositive 
-                          ? 'bg-profitGreen/5 border-profitGreen/30' 
-                          : 'bg-lossRed/5 border-lossRed/30'
-                      }`}
-                    >
-                      <div className="flex justify-between items-start font-mono">
-                        <div>
-                          <span className="font-extrabold text-sm text-textPrimary block">{pos.symbol}</span>
-                          <span className="text-[10px] text-textMuted">{qty} units</span>
+                    return (
+                      <div 
+                        key={pos.id}
+                        className={`p-4 rounded-xl border transition-all duration-300 ease-out space-y-2 shadow-card-base hover:shadow-card-hover hover:-translate-y-0.5 ${
+                          isPositive 
+                            ? 'bg-profitGreen/5 border-profitGreen/30' 
+                            : 'bg-lossRed/5 border-lossRed/30'
+                        }`}
+                      >
+                        <div className="flex justify-between items-start font-mono">
+                          <div>
+                            <span className="font-extrabold text-sm text-textPrimary block">{pos.symbol}</span>
+                            <span className="text-[10px] text-textMuted">{qty} units • LTP {curSymbol}{curPrice.toFixed(2)}</span>
+                          </div>
+                          <span className={`text-xs font-bold inline-flex items-center gap-0.5 ${isPositive ? 'text-profitGreen' : 'text-lossRed'}`}>
+                            {tickDir === 'up' && <span className="text-[9px]">▲</span>}
+                            {tickDir === 'down' && <span className="text-[9px]">▼</span>}
+                            {isPositive ? '+' : ''}{pnlPct.toFixed(2)}%
+                          </span>
                         </div>
-                        <span className={`text-xs font-bold ${isPositive ? 'text-profitGreen' : 'text-lossRed'}`}>
-                          {isPositive ? '+' : ''}{pnlPct.toFixed(2)}%
-                        </span>
-                      </div>
 
-                      <div className="pt-2 border-t border-border flex justify-between items-baseline font-mono text-xs">
-                        <span className="text-textMuted text-[10px]">Position P&L:</span>
-                        <span className={`font-bold ${isPositive ? 'text-profitGreen' : 'text-lossRed'}`}>
-                          {isPositive ? '+' : ''}${pnl.toFixed(2)}
-                        </span>
+                        <div className="pt-2 border-t border-border flex justify-between items-baseline font-mono text-xs">
+                          <span className="text-textMuted text-[10px]">Position P&L:</span>
+                          <span className={`font-bold ${isPositive ? 'text-profitGreen' : 'text-lossRed'}`}>
+                            {isPositive ? '+' : ''}{curSymbol}{pnl.toFixed(2)}
+                          </span>
+                        </div>
                       </div>
-                    </div>
-                  );
-                })}
-              </div>
+                    );
+                  })}
+                </div>
+              )}
             </div>
 
           </div>
@@ -1306,30 +1512,36 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-border">
-                    {tradingData.tradeHistory.map((tr) => (
-                      <tr key={tr.id} className="hover:bg-surface-elevated transition-colors">
-                        <td className="py-3 px-2 text-textMuted">
-                          {new Date(tr.timestamp).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' })}
-                        </td>
-                        <td className="py-3 px-2 font-bold text-textPrimary">{tr.symbol}</td>
-                        <td className="py-3 px-2">
-                          <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                            tr.side === 'Buy' ? 'bg-profitGreen/15 text-profitGreen' : 'bg-lossRed/15 text-lossRed'
-                          }`}>
-                            {tr.side.toUpperCase()}
-                          </span>
-                        </td>
-                        <td className="py-3 px-2 text-textMuted">{tr.type}</td>
-                        <td className="py-3 px-2 text-right text-textPrimary font-bold">{tr.quantity}</td>
-                        <td className="py-3 px-2 text-right text-textMuted">${(Number(tr?.executionPrice) || 0).toFixed(2)}</td>
-                        <td className="py-3 px-2 text-right font-bold text-textPrimary">${((Number(tr?.executionPrice) || 0) * (Number(tr?.quantity) || 0)).toFixed(2)}</td>
-                        <td className="py-3 px-2 text-center">
-                          <span className="px-2 py-0.5 rounded-full bg-profitGreen/15 text-profitGreen text-[10px] font-bold">
-                            {tr.status}
-                          </span>
-                        </td>
-                      </tr>
-                    ))}
+                    {tradingData.tradeHistory.map((tr) => {
+                      const assetMeta = GLOBAL_ASSETS.find(a => a.symbol === tr.symbol);
+                      const curSymbol = (tr as any)?.currency || assetMeta?.currency || '$';
+                      const execPrice = Number(tr?.executionPrice) || 0;
+                      const trQty = Number(tr?.quantity) || 0;
+                      return (
+                        <tr key={tr.id} className="hover:bg-surface-elevated transition-colors">
+                          <td className="py-3 px-2 text-textMuted">
+                            {new Date(tr.timestamp).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' })}
+                          </td>
+                          <td className="py-3 px-2 font-bold text-textPrimary">{tr.symbol}</td>
+                          <td className="py-3 px-2">
+                            <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                              tr.side === 'Buy' ? 'bg-profitGreen/15 text-profitGreen' : 'bg-lossRed/15 text-lossRed'
+                            }`}>
+                              {tr.side.toUpperCase()}
+                            </span>
+                          </td>
+                          <td className="py-3 px-2 text-textMuted">{tr.type}</td>
+                          <td className="py-3 px-2 text-right text-textPrimary font-bold">{trQty}</td>
+                          <td className="py-3 px-2 text-right text-textMuted">{curSymbol}{execPrice.toFixed(2)}</td>
+                          <td className="py-3 px-2 text-right font-bold text-textPrimary">{curSymbol}{(execPrice * trQty).toFixed(2)}</td>
+                          <td className="py-3 px-2 text-center">
+                            <span className="px-2 py-0.5 rounded-full bg-profitGreen/15 text-profitGreen text-[10px] font-bold">
+                              {tr.status}
+                            </span>
+                          </td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>

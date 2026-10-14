@@ -54,7 +54,19 @@ export const useMarketEngine = (initialPrice: number, symbol: string) => {
   useEffect(() => {
     priceRef.current = initialPrice;
     basePriceRef.current = initialPrice;
-  }, [initialPrice]);
+    const spreadPct = volatility === 'low' ? 0.0002 : volatility === 'high' ? 0.002 : 0.0005;
+    const spreadValue = initialPrice * spreadPct;
+    setMarketData(prev => ({
+      ...prev,
+      symbol,
+      currentPrice: initialPrice,
+      bidPrice: initialPrice - (spreadValue / 2),
+      askPrice: initialPrice + (spreadValue / 2),
+      spread: spreadValue,
+      high24h: Math.max(prev.high24h || 0, initialPrice),
+      low24h: Math.min(prev.low24h || initialPrice, initialPrice)
+    }));
+  }, [initialPrice, symbol, volatility]);
 
   useEffect(() => {
     let tickInterval: NodeJS.Timeout;

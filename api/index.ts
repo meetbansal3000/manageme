@@ -1,5 +1,6 @@
 
 import { validateAndCalculatePaperTrade } from '../server/security';
+import { fetchLiveQuote, fetchMultipleLiveQuotes } from '../server/marketQuoteService';
 
 export default async function handler(req: any, res: any) {
   // Strict CORS for web and Vercel clients
@@ -40,6 +41,34 @@ export default async function handler(req: any, res: any) {
       return res.status(200).json({ success: true, ...result });
     } catch (err: any) {
       return res.status(500).json({ success: false, error: err?.message || 'Trade validation failed' });
+    }
+  }
+
+  if (url.includes('/market/quotes') || url.includes('/api/market/quotes')) {
+    try {
+      const urlObj = new URL(url, 'http://localhost');
+      const symbolsParam = urlObj.searchParams.get('symbols') || req.body?.symbols || '';
+      const symbolList = Array.isArray(symbolsParam) 
+        ? symbolsParam 
+        : typeof symbolsParam === 'string' && symbolsParam.trim() 
+          ? symbolsParam.split(',').map(s => s.trim()) 
+          : [];
+
+      const quotes = await fetchMultipleLiveQuotes(symbolList);
+      return res.status(200).json({ success: true, quotes });
+    } catch (err: any) {
+      return res.status(500).json({ success: false, error: err?.message || 'Failed to fetch live quotes' });
+    }
+  }
+
+  if (url.includes('/market/quote') || url.includes('/api/market/quote')) {
+    try {
+      const urlObj = new URL(url, 'http://localhost');
+      const symbol = urlObj.searchParams.get('symbol') || req.body?.symbol || 'AAPL';
+      const quote = await fetchLiveQuote(String(symbol));
+      return res.status(200).json({ success: true, quote });
+    } catch (err: any) {
+      return res.status(500).json({ success: false, error: err?.message || 'Failed to fetch live quote' });
     }
   }
 
