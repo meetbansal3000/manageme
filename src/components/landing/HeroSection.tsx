@@ -61,7 +61,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
         transition={{ duration: 0.5, delay: 0.3 }}
         className="mt-8 flex flex-wrap items-center justify-center gap-4"
       >
-        <GoogleAuthButton onAuthSuccess={() => onEnterApp('news')} />
+        <GoogleAuthButton onSuccess={() => onEnterApp('news')} />
         
         <Button
           variant="secondary"

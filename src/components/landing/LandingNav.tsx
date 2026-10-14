@@ -73,7 +73,7 @@ export const LandingNav: React.FC<LandingNavProps> = ({
               >
                 Guest Demo
               </Button>
-              <GoogleAuthButton onAuthSuccess={() => onEnterApp('news')} />
+              <GoogleAuthButton onSuccess={() => onEnterApp('news')} />
             </div>
           )}
         </div>

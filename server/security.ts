@@ -388,7 +388,11 @@ export function validateAndCalculatePaperTrade(input: ServerTradeValidationReque
   const currentPositions = Array.isArray(input.positions) ? [...input.positions] : [];
 
   let newCashBalance = currentCash;
-  const newPositions = currentPositions.map(p => ({ ...p }));
+  const newPositions = currentPositions.map(p => ({
+    ...p,
+    name: p.name || p.symbol,
+    assetClass: p.assetClass || 'Stock'
+  }));
   const existingPosIdx = newPositions.findIndex(p => p.symbol.toUpperCase() === symbol);
 
   if (input.orderSide === 'Buy') {

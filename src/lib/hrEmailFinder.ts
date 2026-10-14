@@ -600,6 +600,27 @@ export const COLD_EMAIL_TEMPLATES: { id: ColdEmailDraftParams['tone']; title: st
   }
 ];
 
+export interface OutreachBuildParams {
+  companyName: string;
+  targetRole?: string;
+  recipientName?: string;
+  recipientRole?: string;
+  tone?: 'high_impact' | 'casual_alumni' | 'referral_ask' | 'post_application' | 'formal_corporate' | string;
+  candidateName?: string;
+  universityOrBackground?: string;
+  keyStrengths?: string[];
+  customNote?: string;
+}
+
+export interface GeneratedOutreachEmail {
+  subject: string;
+  recipientEmail: string;
+  body: string;
+  previewSummary: string;
+  valueHooks: string[];
+  callToAction: string;
+}
+
 export function buildCustomOutreachEmail(params: OutreachBuildParams): GeneratedOutreachEmail {
   return buildCustomOutreachEmailImpl(params);
 }

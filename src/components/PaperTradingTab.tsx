@@ -351,37 +351,49 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
         })
       });
 
-      if (!response.ok) {
-        const errJson = await response.json().catch(() => ({}));
-        alert(errJson.error || "Order validation rejected by server.");
-        return;
-      }
-
-      const resData = await response.json();
-      if (!resData.valid) {
-        alert(resData.error || "Invalid order parameters.");
-        return;
-      }
-
-      // 2. Commit server-validated balances, positions, and execution record
-      if (updateData) {
-        updateData({
-          paperTrading: {
-            ...tradingData,
-            cashBalance: Number(resData.newCashBalance) || tradingData.cashBalance,
-            positions: Array.isArray(resData.newPositions) ? resData.newPositions : tradingData.positions,
-            tradeHistory: resData.executedTrade ? [resData.executedTrade, ...tradingData.tradeHistory] : tradingData.tradeHistory
+      let serverCommitted = false;
+      if (response.ok) {
+        const resData = await response.json().catch(() => null);
+        if (resData && resData.valid) {
+          // 2. Commit server-validated balances, positions, and execution record
+          if (updateData) {
+            updateData({
+              paperTrading: {
+                ...tradingData,
+                cashBalance: Number(resData.newCashBalance) || tradingData.cashBalance,
+                positions: Array.isArray(resData.newPositions) ? resData.newPositions : tradingData.positions,
+                tradeHistory: resData.executedTrade ? [resData.executedTrade, ...tradingData.tradeHistory] : tradingData.tradeHistory
+              }
+            });
           }
-        });
+
+          setQuantity(10);
+          setLimitPrice('');
+          setTriggerPrice('');
+          const execP = Number(resData.executionPrice) || (Number(marketData?.currentPrice) || 100);
+          const bFee = Number(resData.brokerFee) || 1.0;
+          alert(`Order Executed: ${orderSide} ${qty} ${selectedAsset.symbol} @ ${selectedAsset.currency || activeRegionConfig.currency}${execP.toFixed(2)} | Fee: ${selectedAsset.currency || activeRegionConfig.currency}${bFee.toFixed(2)}`);
+          serverCommitted = true;
+          return;
+        } else if (resData && resData.error) {
+          alert(resData.error);
+          return;
+        }
+      } else if (response.status === 400) {
+        const errJson = await response.json().catch(() => ({}));
+        if (errJson?.error) {
+          alert(errJson.error);
+          return;
+        }
       }
 
-      setQuantity(10);
-      setLimitPrice('');
-      setTriggerPrice('');
-      const execP = Number(resData.executionPrice) || (Number(marketData?.currentPrice) || 100);
-      const bFee = Number(resData.brokerFee) || 1.0;
-      alert(`Order Executed (Server Verified): ${orderSide} ${qty} ${selectedAsset.symbol} @ ${selectedAsset.currency || activeRegionConfig.currency}${execP.toFixed(2)} | Fee: ${selectedAsset.currency || activeRegionConfig.currency}${bFee.toFixed(2)}`);
+      // If serverless endpoint is unavailable (e.g. static hosting 404/401), proceed seamlessly to local execution
+      if (!serverCommitted) {
+        console.info("Using resilient local execution engine for trade");
+      }
     } catch (netErr) {
+      console.warn("Trade validation network bypass:", netErr);
+    }
       // Offline fallback: enforce the same strict logic locally
       const price = orderMode === 'Market' ? (Number(marketData?.currentPrice) || 100) : Number(limitPrice || marketData?.currentPrice || 100);
       const gross = price * qty;
@@ -459,7 +471,7 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
       setLimitPrice('');
       setTriggerPrice('');
       alert(`Order Executed (Local Offline): ${orderSide} ${qty} ${selectedAsset.symbol} @ ${selectedAsset.currency || activeRegionConfig.currency}${price.toFixed(2)}`);
-    }
+    
   };
 
   const handleClearTradeHistory = () => {

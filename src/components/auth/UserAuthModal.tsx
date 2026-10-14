@@ -17,6 +17,7 @@ interface UserAuthModalProps {
   isOpen: boolean;
   onClose: () => void;
   onNavigateLegal?: (page: 'privacy' | 'terms') => void;
+  onSuccess?: () => void;
 }
 
 export const UserAuthModal: React.FC<UserAuthModalProps> = ({

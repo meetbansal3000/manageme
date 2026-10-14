@@ -31,7 +31,7 @@ const letterContainer = {
 };
 const letterChild = {
   hidden: { opacity: 0, y: 20, filter: 'blur(4px)' },
-  visible: { opacity: 1, y: 0, filter: 'blur(0px)', transition: { duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] } },
+  visible: { opacity: 1, y: 0, filter: 'blur(0px)', transition: { duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] as const } },
 };
 
 function StaggerText({ text, className = '' }: { text: string; className?: string }) {

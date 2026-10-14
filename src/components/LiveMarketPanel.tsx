@@ -200,7 +200,7 @@ export const LiveMarketPanel: React.FC<Props> = ({
             <div className="mt-4 pt-4 border-t border-border flex justify-between text-[10px] text-textMuted font-mono tabular-nums">
               <div>Total Bid: {bids.reduce((a,b)=> a + (Number(b?.volume) || 0), 0)}</div>
               <div>Spread: {(((Number(marketData?.spread) || 0) / (safePrice || 1)) * 100).toFixed(3)}%</div>
-              <div>Total Ask: {asks.reduce((a,b)=> a + (Number(a?.volume) || 0), 0)}</div>
+              <div>Total Ask: {asks.reduce((a,b)=> a + (Number(b?.volume) || 0), 0)}</div>
             </div>
           </div>
         </div>

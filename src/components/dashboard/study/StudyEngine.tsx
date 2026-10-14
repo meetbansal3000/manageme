@@ -16,7 +16,8 @@ import {
   GraduationCap,
   FileText,
   Layers,
-  CheckSquare
+  CheckSquare,
+  X
 } from 'lucide-react';
 import { Card } from '../../ui/Card';
 import { Button } from '../../ui/Button';
@@ -28,7 +29,7 @@ export interface AcademicModule {
   id: string;
   code: string;
   name: string;
-  term: 'Michaelmas' | 'Epiphany' | 'Easter';
+  term: 'Michaelmas' | 'Epiphany' | 'Easter' | 'Autumn' | string;
   credits: number;
   status: 'In Progress' | 'Completed';
   targetGrade: string;
@@ -318,7 +319,7 @@ export const StudyEngine: React.FC = () => {
                         <h3 className="text-sm font-bold text-white mt-0.5">{mod.name}</h3>
                       </div>
                       <div className="flex items-center gap-2">
-                        <Badge variant={mod.status === 'Completed' ? 'success' : 'info'} size="sm">
+                        <Badge variant={mod.status === 'Completed' ? 'emerald' : 'blue'} size="sm">
                           {mod.status}
                         </Badge>
                         <button

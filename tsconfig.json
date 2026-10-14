@@ -22,8 +22,24 @@
         "./*"
       ]
     },
-    "types": ["vite/client"],
+    "types": [
+      "vite/client"
+    ],
     "allowImportingTsExtensions": true,
     "noEmit": true
-  }
+  },
+  "include": [
+    "src",
+    "server.ts",
+    "server",
+    "api"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "skills",
+    "archive",
+    "workspace",
+    ".agents"
+  ]
 }

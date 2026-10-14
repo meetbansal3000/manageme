@@ -10,6 +10,7 @@ interface GoogleAuthButtonProps {
   className?: string;
   variant?: 'light' | 'dark' | 'glass';
   onSuccess?: () => void;
+  onAuthSuccess?: () => void;
   onError?: (err: Error) => void;
 }
 

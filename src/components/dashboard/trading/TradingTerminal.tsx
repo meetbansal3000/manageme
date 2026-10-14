@@ -132,10 +132,12 @@ export const TradingTerminal: React.FC<TradingTerminalProps> = ({
     if (updateData) {
       updateData({
         paperTrading: {
+          ...userData?.paperTrading,
           cashBalance: newCash,
           startingCapital: userData?.paperTrading?.startingCapital ?? 100000,
           positions: positions,
-          tradeHistory: [newTrade as any, ...tradeHistory]
+          tradeHistory: [newTrade as any, ...tradeHistory],
+          academyProgress: userData?.paperTrading?.academyProgress || {}
         }
       });
     }
@@ -240,10 +242,10 @@ export const TradingTerminal: React.FC<TradingTerminalProps> = ({
                   <div key={pos.id || idx} className="p-2.5 rounded-xl bg-black/[0.02] dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/5 flex items-center justify-between text-xs font-mono tabular-nums tracking-tight font-semibold">
                     <div>
                       <span className="font-bold text-[var(--text-primary)]">{pos.symbol}</span>
-                      <span className="text-[10px] text-[var(--text-muted)] ml-1.5">{pos.shares} shs</span>
+                      <span className="text-[10px] text-[var(--text-muted)] ml-1.5">{(pos.shares ?? pos.quantity)} shs</span>
                     </div>
                     <div className="text-right">
-                      <span className="text-[var(--text-primary)] font-mono tabular-nums">${((pos.currentPrice || pos.avgPrice || 0) * (pos.shares || 0)).toFixed(2)}</span>
+                      <span className="text-[var(--text-primary)] font-mono tabular-nums">${((pos.currentPrice || pos.averageEntryPrice || pos.avgPrice || 0) * (pos.shares ?? pos.quantity ?? 0)).toFixed(2)}</span>
                     </div>
                   </div>
                 ))}

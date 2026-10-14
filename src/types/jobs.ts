@@ -69,6 +69,7 @@ export interface GraduateScheme {
   accaAdvantage?: CertAdvantage;
   difficulty?: DifficultyLevel;
   applyVia?: string;
+  description?: string;
   notes: string;
   status: TrackerStatus;
   dateApplied?: string;

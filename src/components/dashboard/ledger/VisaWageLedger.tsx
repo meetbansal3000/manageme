@@ -342,7 +342,7 @@ export const VisaWageLedger: React.FC = () => {
               <span className="font-semibold text-[var(--text-primary)]">UKVI Compliance Safe:</span>
               <span>{currentWeekHours}h logged this week • {remainingWeeklyHours.toFixed(1)}h remaining buffer</span>
             </div>
-            <Badge variant="success" size="sm">Active Status OK</Badge>
+            <Badge variant="emerald" size="sm">Active Status OK</Badge>
           </div>
         </SpatialCard>
       )}

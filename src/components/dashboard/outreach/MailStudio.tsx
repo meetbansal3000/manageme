@@ -455,7 +455,7 @@ export const MailStudio: React.FC<MailStudioProps> = ({
                 <FileText className="w-4 h-4 text-purple-600 dark:text-purple-400" />
                 <span>Active Gmail Drafts</span>
               </h3>
-              <Badge variant="info">{drafts.length}</Badge>
+              <Badge variant="blue">{drafts.length}</Badge>
             </div>
 
             {drafts.length > 0 ? (

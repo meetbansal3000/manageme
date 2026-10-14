@@ -128,7 +128,7 @@ export async function PUT(req: Request) {
     }
 
     const index = localDraftsStore.findIndex(d => d.id === draftId);
-    let updatedDraft = {
+    let updatedDraft: any = {
       id: draftId,
       to: to?.trim() || 'recruiter@example.com',
       cc: cc?.trim() || '',

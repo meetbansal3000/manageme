@@ -30,6 +30,8 @@ interface OwnerSecurityContextType {
   isAuthModalOpen: boolean;
   closeAuthModal: () => void;
   pendingActionTitle: string | null;
+  openAuthModal: (title?: string) => void;
+  lockOwnerSession: () => void;
 }
 
 const OwnerSecurityContext = createContext<OwnerSecurityContextType | undefined>(undefined);
@@ -241,7 +243,9 @@ const hashPinSync = (pin: string): string => {
         requireOwnerPermission,
         isAuthModalOpen,
         closeAuthModal,
-        pendingActionTitle
+        pendingActionTitle,
+        openAuthModal: (title?: string) => { if (title) setPendingActionTitle(title); setIsAuthModalOpen(true); },
+        lockOwnerSession: lockOwnerMode
       }}
     >
       {children}

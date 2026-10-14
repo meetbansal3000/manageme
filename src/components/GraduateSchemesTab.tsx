@@ -424,7 +424,7 @@ export const GraduateSchemesTab: React.FC<GraduateSchemesTabProps> = ({
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
   // Form fields
-  const [formData, setFormData] = useState({
+  const INITIAL_FORM_STATE = {
     firm: '',
     roleTitle: '',
     sector: 'Asset Management',
@@ -440,7 +440,8 @@ export const GraduateSchemesTab: React.FC<GraduateSchemesTabProps> = ({
     notes: '',
     skills: [] as string[],
     newSkillInput: ''
-  });
+  };
+  const [formData, setFormData] = useState(INITIAL_FORM_STATE);
 
   useScrollLock(isModalOpen || !!deletingId);
   useModalDismiss(isModalOpen, () => setIsModalOpen(false));

@@ -10,6 +10,8 @@ export interface PortfolioPosition {
   quantity: number;
   averageEntryPrice: number;
   currentPrice: number;
+  shares?: number;
+  avgPrice?: number;
 }
 
 export interface TradeOrder {

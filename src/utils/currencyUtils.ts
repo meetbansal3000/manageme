@@ -1,15 +1,17 @@
-import { Currency } from '../types';
+import { Currency } from '../types/trading';
 
 export const EXCHANGE_RATES: Record<Currency, number> = {
   GBP: 1,
   USD: 1.28,
-  INR: 106.5
+  INR: 106.5,
+  EUR: 1.17
 };
 
 export const SYMBOLS: Record<Currency, string> = {
   GBP: '£',
   USD: '$',
-  INR: '₹'
+  INR: '₹',
+  EUR: '€'
 };
 
 export const formatCurrency = (amount: number, currency: Currency = 'GBP') => {

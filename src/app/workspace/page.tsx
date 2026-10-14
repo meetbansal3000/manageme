@@ -53,7 +53,8 @@ export default function WorkspacePage() {
           }
         }}
         onExportMultiSheet={() => {}}
-        onUploadDrive={() => {}}
+        onOpenGoogleSync={() => {}}
+        onOpenSettings={() => {}}
         googleSyncState={{
           isConnected: false,
           userEmail: null,
@@ -76,7 +77,7 @@ export default function WorkspacePage() {
             exit={{ opacity: 0, filter: "blur(4px)" }}
             transition={{ duration: 0.2 }}
           >
-            {activeTab === 'news' && <FinancialNewsTab />}
+            {activeTab === 'news' && <FinancialNewsTab userData={userData} updateData={updateData} />}
             {activeTab === 'trading' && <PaperTradingTab userData={userData} updateData={updateData} />}
             {activeTab === 'jobs' && <JobSearchTab userData={userData} updateData={updateData} />}
             {activeTab === 'finance' && <FinanceHubTab userData={userData} updateData={updateData} />}
