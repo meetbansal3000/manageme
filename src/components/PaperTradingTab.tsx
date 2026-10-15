@@ -79,47 +79,47 @@ export interface MarketAsset {
 // --- CURATED GLOBAL ASSETS DIRECTORY ---
 export const GLOBAL_ASSETS: MarketAsset[] = [
   // US
-  { symbol: 'AAPL', name: 'Apple Inc.', type: 'STOCKS', exchange: 'NASDAQ', region: 'US', currency: '$', price: 232.80, change: '+1.1%', isUp: true, logo: 'A', sparkline: [228, 229, 230, 231, 232.8] },
-  { symbol: 'NVDA', name: 'NVIDIA Corp', type: 'STOCKS', exchange: 'NASDAQ', region: 'US', currency: '$', price: 138.45, change: '+4.5%', isUp: true, logo: 'N', sparkline: [131, 133, 134, 136, 138.45] },
-  { symbol: 'TSLA', name: 'Tesla Inc.', type: 'STOCKS', exchange: 'NASDAQ', region: 'US', currency: '$', price: 218.90, change: '-2.1%', isUp: false, logo: 'T', sparkline: [224, 223, 220, 219, 218.9] },
-  { symbol: 'MSFT', name: 'Microsoft Corp', type: 'STOCKS', exchange: 'NASDAQ', region: 'US', currency: '$', price: 448.60, change: '+0.8%', isUp: true, logo: 'M', sparkline: [444, 445, 446, 447, 448.6] },
+  { symbol: 'AAPL', name: 'Apple Inc.', type: 'STOCKS', exchange: 'NASDAQ', region: 'US', currency: '$', price: 342.96, change: '+0.5%', isUp: true, logo: 'A', sparkline: [338, 339, 340, 341.5, 342.96] },
+  { symbol: 'NVDA', name: 'NVIDIA Corp', type: 'STOCKS', exchange: 'NASDAQ', region: 'US', currency: '$', price: 221.30, change: '-3.2%', isUp: false, logo: 'N', sparkline: [228, 226, 224, 222, 221.3] },
+  { symbol: 'TSLA', name: 'Tesla Inc.', type: 'STOCKS', exchange: 'NASDAQ', region: 'US', currency: '$', price: 412.80, change: '+1.9%', isUp: true, logo: 'T', sparkline: [405, 408, 410, 411.5, 412.8] },
+  { symbol: 'MSFT', name: 'Microsoft Corp', type: 'STOCKS', exchange: 'NASDAQ', region: 'US', currency: '$', price: 448.90, change: '+0.6%', isUp: true, logo: 'M', sparkline: [444, 445, 446, 447, 448.9] },
   { symbol: 'AMZN', name: 'Amazon.com', type: 'STOCKS', exchange: 'NASDAQ', region: 'US', currency: '$', price: 194.30, change: '+1.4%', isUp: true, logo: 'A', sparkline: [191, 192, 193, 193.5, 194.3] },
   { symbol: 'GOOGL', name: 'Alphabet Inc.', type: 'STOCKS', exchange: 'NASDAQ', region: 'US', currency: '$', price: 182.40, change: '-0.4%', isUp: false, logo: 'G', sparkline: [184, 183.5, 183, 182.8, 182.4] },
-  { symbol: 'SPY', name: 'SPDR S&P 500 ETF', type: 'ETF', exchange: 'NYSE', region: 'US', currency: '$', price: 598.40, change: '+0.7%', isUp: true, logo: 'S', sparkline: [594, 595, 596, 597, 598.4] },
-  { symbol: 'QQQ', name: 'Invesco QQQ Trust', type: 'ETF', exchange: 'NASDAQ', region: 'US', currency: '$', price: 518.20, change: '+0.9%', isUp: true, logo: 'Q', sparkline: [513, 514, 516, 517, 518.2] },
-  { symbol: 'GOLD', name: 'Gold (XAU/USD)', type: 'COMMODITY', exchange: 'MCX', region: 'US', currency: '$', price: 2892.40, change: '+1.2%', isUp: true, logo: 'G', sparkline: [2860, 2870, 2880, 2888, 2892.4] },
-  { symbol: 'BRENT', name: 'Brent Crude Oil', type: 'COMMODITY', exchange: 'NYMEX', region: 'US', currency: '$', price: 74.35, change: '-1.2%', isUp: false, logo: 'O', sparkline: [76, 75.5, 75, 74.6, 74.35] },
+  { symbol: 'SPY', name: 'SPDR S&P 500 ETF', type: 'ETF', exchange: 'NYSE', region: 'US', currency: '$', price: 654.20, change: '+0.5%', isUp: true, logo: 'S', sparkline: [648, 650, 652, 653, 654.2] },
+  { symbol: 'QQQ', name: 'Invesco QQQ Trust', type: 'ETF', exchange: 'NASDAQ', region: 'US', currency: '$', price: 542.10, change: '+0.4%', isUp: true, logo: 'Q', sparkline: [537, 538, 540, 541, 542.1] },
+  { symbol: 'GOLD', name: 'Gold (XAU/USD)', type: 'COMMODITY', exchange: 'MCX', region: 'US', currency: '$', price: 4127.30, change: '-1.2%', isUp: false, logo: 'G', sparkline: [4190, 4170, 4150, 4135, 4127.3] },
+  { symbol: 'BRENT', name: 'Brent Crude Oil', type: 'COMMODITY', exchange: 'NYMEX', region: 'US', currency: '$', price: 78.40, change: '+0.6%', isUp: true, logo: 'O', sparkline: [77.5, 77.8, 78.0, 78.2, 78.4] },
 
   // India
-  { symbol: 'RELIANCE.NS', name: 'Reliance Industries', type: 'STOCKS', exchange: 'NSE', region: 'India', currency: '₹', price: 2980.50, change: '+1.2%', isUp: true, logo: 'R', sparkline: [2940, 2955, 2965, 2975, 2980.5] },
-  { symbol: 'TCS.NS', name: 'Tata Consultancy Services', type: 'STOCKS', exchange: 'NSE', region: 'India', currency: '₹', price: 4190.20, change: '+0.9%', isUp: true, logo: 'T', sparkline: [4150, 4165, 4175, 4180, 4190.2] },
-  { symbol: 'HDFCBANK.NS', name: 'HDFC Bank Ltd', type: 'STOCKS', exchange: 'NSE', region: 'India', currency: '₹', price: 1640.80, change: '+1.5%', isUp: true, logo: 'H', sparkline: [1615, 1625, 1630, 1638, 1640.8] },
+  { symbol: 'RELIANCE.NS', name: 'Reliance Industries', type: 'STOCKS', exchange: 'NSE', region: 'India', currency: '₹', price: 1174.60, change: '+0.7%', isUp: true, logo: 'R', sparkline: [1162, 1165, 1170, 1172, 1174.6] },
+  { symbol: 'TCS.NS', name: 'Tata Consultancy Services', type: 'STOCKS', exchange: 'NSE', region: 'India', currency: '₹', price: 3980.00, change: '+0.4%', isUp: true, logo: 'T', sparkline: [3960, 3968, 3972, 3976, 3980] },
+  { symbol: 'HDFCBANK.NS', name: 'HDFC Bank Ltd', type: 'STOCKS', exchange: 'NSE', region: 'India', currency: '₹', price: 1680.00, change: '+0.5%', isUp: true, logo: 'H', sparkline: [1670, 1672, 1675, 1678, 1680] },
   { symbol: 'INFY.NS', name: 'Infosys Ltd', type: 'STOCKS', exchange: 'NSE', region: 'India', currency: '₹', price: 1875.40, change: '-0.3%', isUp: false, logo: 'I', sparkline: [1885, 1880, 1878, 1876, 1875.4] },
-  { symbol: 'ICICIBANK.NS', name: 'ICICI Bank Ltd', type: 'STOCKS', exchange: 'NSE', region: 'India', currency: '₹', price: 1210.60, change: '+2.1%', isUp: true, logo: 'I', sparkline: [1185, 1195, 1200, 1205, 1210.6] },
-  { symbol: 'TATAMOTORS.NS', name: 'Tata Motors Ltd', type: 'STOCKS', exchange: 'NSE', region: 'India', currency: '₹', price: 945.30, change: '+3.4%', isUp: true, logo: 'T', sparkline: [915, 925, 930, 938, 945.3] },
-  { symbol: 'NIFTY50', name: 'NIFTY 50 ETF', type: 'ETF', exchange: 'NSE', region: 'India', currency: '₹', price: 24850.00, change: '+0.8%', isUp: true, logo: 'N', sparkline: [24650, 24700, 24750, 24800, 24850] },
+  { symbol: 'ICICIBANK.NS', name: 'ICICI Bank Ltd', type: 'STOCKS', exchange: 'NSE', region: 'India', currency: '₹', price: 1210.60, change: '+0.5%', isUp: true, logo: 'I', sparkline: [1200, 1204, 1206, 1208, 1210.6] },
+  { symbol: 'TATAMOTORS.NS', name: 'Tata Motors Ltd', type: 'STOCKS', exchange: 'NSE', region: 'India', currency: '₹', price: 945.30, change: '+0.8%', isUp: true, logo: 'T', sparkline: [938, 940, 942, 944, 945.3] },
+  { symbol: 'NIFTY50', name: 'NIFTY 50 ETF', type: 'ETF', exchange: 'NSE', region: 'India', currency: '₹', price: 24850.00, change: '+0.6%', isUp: true, logo: 'N', sparkline: [24650, 24700, 24750, 24800, 24850] },
 
   // UK
-  { symbol: 'HSBA.L', name: 'HSBC Holdings plc', type: 'STOCKS', exchange: 'LSE', region: 'UK', currency: '£', price: 692.40, change: '+0.6%', isUp: true, logo: 'H', sparkline: [688, 689, 690, 691, 692.4] },
-  { symbol: 'AZN.L', name: 'AstraZeneca plc', type: 'STOCKS', exchange: 'LSE', region: 'UK', currency: '£', price: 12450.00, change: '+1.1%', isUp: true, logo: 'A', sparkline: [12300, 12350, 12400, 12420, 12450] },
-  { symbol: 'SHEL.L', name: 'Shell plc', type: 'STOCKS', exchange: 'LSE', region: 'UK', currency: '£', price: 2680.00, change: '-0.5%', isUp: false, logo: 'S', sparkline: [2695, 2690, 2688, 2684, 2680] },
-  { symbol: 'BP.L', name: 'BP plc', type: 'STOCKS', exchange: 'LSE', region: 'UK', currency: '£', price: 425.80, change: '-0.8%', isUp: false, logo: 'B', sparkline: [430, 428, 427, 426, 425.8] },
-  { symbol: 'RIO.L', name: 'Rio Tinto Group', type: 'STOCKS', exchange: 'LSE', region: 'UK', currency: '£', price: 4920.00, change: '+1.8%', isUp: true, logo: 'R', sparkline: [4830, 4850, 4880, 4900, 4920] },
-  { symbol: 'FTSE100', name: 'iShares Core FTSE 100', type: 'ETF', exchange: 'LSE', region: 'UK', currency: '£', price: 842.80, change: '+0.5%', isUp: true, logo: 'F', sparkline: [838, 839, 840, 841.5, 842.8] },
+  { symbol: 'HSBA.L', name: 'HSBC Holdings plc', type: 'STOCKS', exchange: 'LSE', region: 'UK', currency: '£', price: 1422.60, change: '-0.6%', isUp: false, logo: 'H', sparkline: [1430, 1428, 1426, 1424, 1422.6] },
+  { symbol: 'AZN.L', name: 'AstraZeneca plc', type: 'STOCKS', exchange: 'LSE', region: 'UK', currency: '£', price: 12450.00, change: '+0.6%', isUp: true, logo: 'A', sparkline: [12350, 12380, 12400, 12420, 12450] },
+  { symbol: 'SHEL.L', name: 'Shell plc', type: 'STOCKS', exchange: 'LSE', region: 'UK', currency: '£', price: 2680.00, change: '-0.4%', isUp: false, logo: 'S', sparkline: [2695, 2690, 2688, 2684, 2680] },
+  { symbol: 'BP.L', name: 'BP plc', type: 'STOCKS', exchange: 'LSE', region: 'UK', currency: '£', price: 425.80, change: '-0.5%', isUp: false, logo: 'B', sparkline: [430, 428, 427, 426, 425.8] },
+  { symbol: 'RIO.L', name: 'Rio Tinto Group', type: 'STOCKS', exchange: 'LSE', region: 'UK', currency: '£', price: 4920.00, change: '+0.6%', isUp: true, logo: 'R', sparkline: [4880, 4895, 4905, 4912, 4920] },
+  { symbol: 'FTSE100', name: 'iShares Core FTSE 100', type: 'ETF', exchange: 'LSE', region: 'UK', currency: '£', price: 842.80, change: '+0.4%', isUp: true, logo: 'F', sparkline: [838, 839, 840, 841.5, 842.8] },
 
   // EU
-  { symbol: 'ASML.AS', name: 'ASML Holding NV', type: 'STOCKS', exchange: 'Euronext', region: 'EU', currency: '€', price: 792.60, change: '+1.6%', isUp: true, logo: 'A', sparkline: [780, 783, 786, 790, 792.6] },
+  { symbol: 'ASML.AS', name: 'ASML Holding NV', type: 'STOCKS', exchange: 'Euronext', region: 'EU', currency: '€', price: 792.60, change: '+1.0%', isUp: true, logo: 'A', sparkline: [782, 785, 788, 790, 792.6] },
   { symbol: 'SAP.DE', name: 'SAP SE', type: 'STOCKS', exchange: 'XETRA', region: 'EU', currency: '€', price: 198.40, change: '+0.7%', isUp: true, logo: 'S', sparkline: [196, 197, 197.5, 198, 198.4] },
-  { symbol: 'MC.PA', name: 'LVMH Moët Hennessy', type: 'STOCKS', exchange: 'Euronext', region: 'EU', currency: '€', price: 685.20, change: '-0.9%', isUp: false, logo: 'L', sparkline: [692, 690, 688, 686, 685.2] },
-  { symbol: 'SIE.DE', name: 'Siemens AG', type: 'STOCKS', exchange: 'XETRA', region: 'EU', currency: '€', price: 178.90, change: '+1.3%', isUp: true, logo: 'S', sparkline: [176, 177, 177.5, 178.2, 178.9] },
-  { symbol: 'TTE.PA', name: 'TotalEnergies SE', type: 'STOCKS', exchange: 'Euronext', region: 'EU', currency: '€', price: 62.40, change: '+0.4%', isUp: true, logo: 'T', sparkline: [61.8, 62.0, 62.1, 62.2, 62.4] },
-  { symbol: 'STOXX50', name: 'EURO STOXX 50 ETF', type: 'ETF', exchange: 'XETRA', region: 'EU', currency: '€', price: 498.20, change: '+0.6%', isUp: true, logo: 'E', sparkline: [495, 496, 497, 497.8, 498.2] },
+  { symbol: 'MC.PA', name: 'LVMH Moët Hennessy', type: 'STOCKS', exchange: 'Euronext', region: 'EU', currency: '€', price: 685.20, change: '-0.8%', isUp: false, logo: 'L', sparkline: [692, 690, 688, 686, 685.2] },
+  { symbol: 'SIE.DE', name: 'Siemens AG', type: 'STOCKS', exchange: 'XETRA', region: 'EU', currency: '€', price: 178.90, change: '+1.0%', isUp: true, logo: 'S', sparkline: [176, 177, 177.5, 178.2, 178.9] },
+  { symbol: 'TTE.PA', name: 'TotalEnergies SE', type: 'STOCKS', exchange: 'Euronext', region: 'EU', currency: '€', price: 62.40, change: '+0.5%', isUp: true, logo: 'T', sparkline: [61.8, 62.0, 62.1, 62.2, 62.4] },
+  { symbol: 'STOXX50', name: 'EURO STOXX 50 ETF', type: 'ETF', exchange: 'XETRA', region: 'EU', currency: '€', price: 498.20, change: '+0.5%', isUp: true, logo: 'E', sparkline: [495, 496, 497, 497.8, 498.2] },
 
   // Singapore
-  { symbol: 'D05.SI', name: 'DBS Group Holdings', type: 'STOCKS', exchange: 'SGX', region: 'Singapore', currency: 'S$', price: 38.60, change: '+1.2%', isUp: true, logo: 'D', sparkline: [38.1, 38.2, 38.3, 38.5, 38.6] },
-  { symbol: 'O39.SI', name: 'OCBC Bank', type: 'STOCKS', exchange: 'SGX', region: 'Singapore', currency: 'S$', price: 15.20, change: '+0.8%', isUp: true, logo: 'O', sparkline: [15.05, 15.1, 15.12, 15.18, 15.2] },
-  { symbol: 'U11.SI', name: 'United Overseas Bank', type: 'STOCKS', exchange: 'SGX', region: 'Singapore', currency: 'S$', price: 32.40, change: '+1.4%', isUp: true, logo: 'U', sparkline: [31.9, 32.0, 32.15, 32.3, 32.4] },
-  { symbol: 'Z74.SI', name: 'Singtel Ltd', type: 'STOCKS', exchange: 'SGX', region: 'Singapore', currency: 'S$', price: 3.12, change: '-0.3%', isUp: false, logo: 'S', sparkline: [3.15, 3.14, 3.13, 3.12, 3.12] },
+  { symbol: 'D05.SI', name: 'DBS Group Holdings', type: 'STOCKS', exchange: 'SGX', region: 'Singapore', currency: 'S$', price: 38.60, change: '+1.1%', isUp: true, logo: 'D', sparkline: [38.1, 38.2, 38.3, 38.5, 38.6] },
+  { symbol: 'O39.SI', name: 'OCBC Bank', type: 'STOCKS', exchange: 'SGX', region: 'Singapore', currency: 'S$', price: 15.20, change: '+0.7%', isUp: true, logo: 'O', sparkline: [15.05, 15.1, 15.12, 15.18, 15.2] },
+  { symbol: 'U11.SI', name: 'United Overseas Bank', type: 'STOCKS', exchange: 'SGX', region: 'Singapore', currency: 'S$', price: 32.40, change: '+0.9%', isUp: true, logo: 'U', sparkline: [31.9, 32.0, 32.15, 32.3, 32.4] },
+  { symbol: 'Z74.SI', name: 'Singtel Ltd', type: 'STOCKS', exchange: 'SGX', region: 'Singapore', currency: 'S$', price: 3.12, change: '-0.6%', isUp: false, logo: 'S', sparkline: [3.15, 3.14, 3.13, 3.12, 3.12] },
   { symbol: 'C6L.SI', name: 'Singapore Airlines', type: 'STOCKS', exchange: 'SGX', region: 'Singapore', currency: 'S$', price: 6.45, change: '+0.5%', isUp: true, logo: 'S', sparkline: [6.41, 6.42, 6.43, 6.44, 6.45] },
   { symbol: 'STI', name: 'SPDR Straits Times Index ETF', type: 'ETF', exchange: 'SGX', region: 'Singapore', currency: 'S$', price: 35.80, change: '+0.4%', isUp: true, logo: 'S', sparkline: [35.6, 35.65, 35.7, 35.75, 35.8] }
 ];
@@ -180,11 +180,11 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
     exchange: 'NASDAQ',
     region: 'US',
     currency: '$',
-    price: 232.80,
-    change: '+1.1%',
+    price: 342.96,
+    change: '+0.5%',
     isUp: true,
     logo: 'A',
-    sparkline: [228, 229, 230, 231, 232.8]
+    sparkline: [338, 339, 340, 341.5, 342.96]
   });
   
   const [orderType, setOrderType] = useState<'Delivery' | 'Intraday'>('Delivery');
@@ -931,16 +931,18 @@ export const PaperTradingTab: React.FC<PaperTradingTabProps> = ({ userData, upda
                     <button 
                       type="button" 
                       onClick={() => { setOrderSide('Buy'); handleExecuteTrade(undefined, 'Buy'); }} 
-                      className="flex-1 py-3 bg-profitGreen hover:bg-profitGreen/90 text-black font-extrabold text-xs rounded-xl transition-all duration-300 ease-out cursor-pointer shadow-xs active:scale-95 hover:-translate-y-0.5"
+                      className="flex-1 py-3.5 px-4 bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-extrabold text-xs uppercase tracking-wider rounded-xl transition-all duration-200 cursor-pointer shadow-lg shadow-emerald-600/30 active:scale-95 flex items-center justify-center gap-1.5 border border-emerald-400/40"
                     >
-                      BUY {selectedAsset.symbol}
+                      <ArrowUpRight className="w-4 h-4 stroke-[3]" />
+                      <span>BUY {selectedAsset.symbol}</span>
                     </button>
                     <button 
                       type="button" 
                       onClick={() => { setOrderSide('Sell'); handleExecuteTrade(undefined, 'Sell'); }} 
-                      className="flex-1 py-3 bg-lossRed hover:bg-lossRed/90 text-white font-extrabold text-xs rounded-xl transition-all duration-300 ease-out cursor-pointer shadow-xs active:scale-95 hover:-translate-y-0.5"
+                      className="flex-1 py-3.5 px-4 bg-rose-600 hover:bg-rose-500 active:bg-rose-700 text-white font-extrabold text-xs uppercase tracking-wider rounded-xl transition-all duration-200 cursor-pointer shadow-lg shadow-rose-600/30 active:scale-95 flex items-center justify-center gap-1.5 border border-rose-400/40"
                     >
-                      SELL {selectedAsset.symbol}
+                      <ArrowDownRight className="w-4 h-4 stroke-[3]" />
+                      <span>SELL {selectedAsset.symbol}</span>
                     </button>
                   </div>
                 </form>
